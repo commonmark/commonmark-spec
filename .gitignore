@@ -21,3 +21,13 @@
 *.i*86
 *.x86_64
 *.hex
+
+*~
+*.bak
+*.diff
+*#
+scanners.c
+*.zip
+bstrlib.txt
+stmd.dSYM/*
+stmd

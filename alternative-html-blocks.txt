@@ -1,0 +1,247 @@
+# Appendix B: An alternate spec for HTML blocks {-}
+
+(The following spec departs less from original markdown than the
+one described above, but is also less flexible.)
+
+An [HTML block](#html-block) <a id="html-block-tag"/> begins
+with an [open tag](#open-tag), [HTML comment](#html-comment),
+[processing instruction](#processing-instruction),
+[declaration](#declaration), or [CDATA section](#cdata-section).
+This opening element may optionally be preceded by 1-3 spaces,
+and must not be followed on a line by anything other than white space.
+
+If the opening tag is self-closing, or if it is an [HTML
+comment](#html-comment), [processing
+instruction](#processing-instruction), [declaration](#declaration), or
+[CDATA section](#cdata-section), then the [HTML block](#html-block)
+contains just that tag.
+
+If it is an [open tag](#open-tag), then the [HTML block](#html-block)
+continues until a matching closing tag is found, or until the end
+of the document.  Note that the matching closing tag is not necessarily
+the first closing tag of the same type that is encountered, since
+that tag may close a later open tag of the same type.  Open and closing
+tags must be balanced.
+
+The contents of the HTML block are interpreted as raw HTML, and will not
+be escaped in HTML output.
+
+Some simple examples:
+
+.
+<table>
+  <tr>
+    <td>
+           hi
+    </td>
+  </tr>
+</table>
+
+okay.
+.
+<table>
+  <tr>
+    <td>
+           hi
+    </td>
+  </tr>
+</table>
+<p>okay.</p>
+.
+
+
+.
+<div class="outer">
+
+    <div class="inner">
+
+      <p>foo&ouml;</p>
+
+    </div>
+
+</div>
+.
+<div class="outer">
+
+    <div class="inner">
+
+      <p>foo&ouml;</p>
+
+    </div>
+
+</div>
+.
+
+A self-closing tag:
+
+.
+<div />
+.
+<div />
+.
+
+Here we have an unclosed tag, and the block continues to the end of
+the document:
+
+.
+<div>
+<div>
+foo
+</div>
+
+*bar*
+.
+<div>
+<div>
+foo
+</div>
+
+*bar*
+.
+
+A comment:
+
+.
+<!-- Foo
+bar
+   baz -->
+.
+<!-- Foo
+bar
+   baz -->
+.
+
+A processing instruction:
+
+.
+<?php
+  echo 'foo'
+?>
+.
+<?php
+  echo 'foo'
+?>
+.
+
+CDATA:
+
+.
+<![CDATA[
+function matchwo(a,b)
+{
+if (a < b && a < 0) then
+  {
+  return 1;
+  }
+else
+  {
+  return 0;
+  }
+}
+]]>
+.
+<![CDATA[
+function matchwo(a,b)
+{
+if (a < b && a < 0) then
+  {
+  return 1;
+  }
+else
+  {
+  return 0;
+  }
+}
+]]>
+.
+
+The opening tag can be indented 1-3 spaces, but not 4:
+
+.
+  <!-- foo -->
+    <!-- foo -->
+.
+  <!-- foo -->
+<pre><code>&lt;!-- foo --&gt;
+</code></pre>
+.
+
+The opening tag must be on a line (or lines) by itself:
+
+.
+<table><tr><td>
+foo
+</td></tr></table>
+.
+<p><table><tr<td> foo </td></tr></table></p>
+.
+
+.
+<!-- foo -->bar
+.
+<p><!-- foo -->bar</p>
+.
+
+The opening tag need not be an HTML block tag or even an HTML tag:
+
+.
+<a>
+foo
+</a>
+.
+<a>
+foo
+</a>
+.
+
+.
+<foo>
+bar
+</foo>
+.
+<foo>
+bar
+</foo>
+.
+
+So, note the difference:
+
+.
+<del>
+bar
+</del>
+
+<del>bar</del>
+.
+<del>
+bar
+</del>
+<p><del>bar</del></p>
+.
+
+This rule differs from John Gruber's original markdown syntax
+specification, which says:
+
+> The only restrictions are that block-level HTML elements —
+> e.g. `<div>`, `<table>`, `<pre>`, `<p>`, etc. — must be separated from
+> surrounding content by blank lines, and the start and end tags of the
+> block should not be indented with tabs or spaces.
+
+In some ways Gruber's rule is more restrictive than the one given
+here:
+
+- It requires that an HTML block be preceded and followed by a blank line.
+- It does not allow the start tag to be indented.
+- It does not allow the end tag to be indented.
+- It does not require that the open tag be an HTML block-level tag.
+
+Indeed, most markdown implementations, including some of Gruber's
+own perl implementations, do not impose these restrictions.
+
+However, unlike Gruber's rule, this one requires that the open
+tag be on a line by itself.  It also differs from most markdown
+implementations in how it handles the case where there is no matching
+closing tag (a case not mentioned in Gruber's rule).  In such a case,
+the rule stated above includes the whole rest of the document in the
+HTML block.
+

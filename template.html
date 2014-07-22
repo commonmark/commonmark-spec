@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>$title$</title>
+<style type="text/css">
+body { font-family: arial, sans-serif; line-height: 1.4em; max-width: 52em;
+  margin: 3em; }
+div#TOC ul { list-style: none; }
+h1 { font-size: 140%; font-weight: bold; border-top: 1px solid gray; padding-top: 0.5em; }
+h2 { font-size: 120%; font-weight: bold; }
+h3 { font-size: 110%; font-weight: bold; }
+h4 { font-size: 100%; font-weight: bold; }
+span.space { position: relative; }
+span.space:after {
+  content: "";
+  position: absolute;
+  /* create a mark that indicates a space (trick from D. Greenspan) */
+  top: 3px; bottom: 3px; left: 1px; right: 1px;
+  border: 1px solid #999;
+}
+div.example { overflow: hidden; }
+p { text-align: justify; }
+pre { padding: 0.5em; margin-left: 0; margin-right: 0; margin-top: 0.2em;
+  margin-bottom: 0.5em; font-size: 88%; }
+pre {
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+code { font-size: 120%; font-family: monospace; }
+div.example > pre { float:left; width: 48%; }
+div.example > pre.markdown { clear:left; }
+pre.tree { font-weight: bold; color: #777; }
+pre.markdown { background-color: #E3DEC1;}
+pre.html { background-color: #E89F65; }
+pre.html span.space:after {
+  border: 1px solid #666;
+}
+div.examplenum { font-size: 82%; text-align: left; }
+a.footnoteRef > sup:before {
+  content: "[";
+}
+a.footnoteRef > sup:after {
+  content: "]";
+}
+a.footnoteRef > sup {
+  vertical-align: baseline;
+  font-size: 100%;
+}
+</style>
+</head>
+<body>
+<h1 class="title">$title$</h1>
+<div class="version">Version $version$ ($date$)</div>
+<div class="authors">
+$for(author)$<span class="author">$author$</span>$sep$; $endfor$
+</div>
+<div id="TOC">
+$toc$
+</div>
+$body$
+</body>
+</html>
