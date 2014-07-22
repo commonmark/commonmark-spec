@@ -44,7 +44,16 @@ questions it does not answer:
     (John Gruber has also spoken [in favor of requiring the blank
     lines](http://article.gmane.org/gmane.text.markdown.general/2146).)
 
-3.  What is the exact rule for determining when list items get
+3.  Is a blank line needed before an indented code block?
+    (`Markdown.pl` requires it, but this is not mentioned in the
+    documentation, and some implementations do not require it.)
+
+    ``` markdown
+    paragraph
+        code?
+    ```
+
+4.  What is the exact rule for determining when list items get
     wrapped in `<p>` tags?  Can a list be partially "loose" and partially
     "tight"?  What should we do with a list like this?
 
@@ -59,7 +68,6 @@ questions it does not answer:
 
     ``` markdown
     1.  one
-
         - a
 
         - b
@@ -69,8 +77,26 @@ questions it does not answer:
     (There are some relevant comments by John Gruber
     [here](http://article.gmane.org/gmane.text.markdown.general/2554).)
 
-4.  When list markers change from bullets to numbers, should we have
-    two lists or one?
+5.  Can list markers be indented?  Can ordered list markers be right-aligned?
+
+    ``` markdown
+     8. item 1
+     9. item 2
+    10. item 2a
+    ```
+
+6.  Is this one list with a horizontal rule in its second item,
+    or two lists separated by a horizontal rule?
+
+    ``` markdown
+    * a
+    * * * * *
+    * b
+    ```
+
+7.  When list markers change from numbers to bullets, do we have
+    two lists or one?  (The markdown syntax description suggests two,
+    but the perl scripts and many other implementations produce one.)
 
     ``` markdown
     1. fee
@@ -79,33 +105,52 @@ questions it does not answer:
     -  fum
     ```
 
-5.  What are the precedence rules for the markers of inline structure?
+8.  What are the precedence rules for the markers of inline structure?
     For example, is the following a valid link, or does the code span
     take precedence ?
 
     ``` markdown
-    [foo `](bar)`
+    [a backtick (`)](/url) and [another backtick (`)](/url).
     ```
 
-6.  What are the precedence rules for markers of emphasis and strong
+9.  What are the precedence rules for markers of emphasis and strong
     emphasis?  For example, how should the following be parsed?
 
     ``` markdown
-    *foo *bar** baz*
+    *foo *bar* baz*
     ```
 
-7.  Can list items include headers?
+10. What are the precedence rules between block-level and inline-level
+    structure?  For example, how should the following be parsed?
+
+    ``` markdown
+    - `a long code span can contain a hyphen like this
+      - and it can screw things up`
+    ```
+
+11. Can list items include headers?  (`Markdown.pl` does not allow this,
+    but headers can occur in blockquotes.)
 
     ``` markdown
     - # Heading
     ```
 
-8.  Can link references be defined inside block quotes or list items?
+12. Can link references be defined inside block quotes or list items?
 
     ``` markdown
     > Blockquote [foo].
     >
     > [foo]: /url
+    ```
+
+13. If there are multiple definitions for the same reference, which takes
+    precedence?
+
+    ``` markdown
+    [foo]: /url1
+    [foo]: /url2
+
+    [foo][]
     ```
 
 In the absence of a spec, early implementers consulted `Markdown.pl`
