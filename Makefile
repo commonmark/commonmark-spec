@@ -44,7 +44,7 @@ $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 $(SRCDIR)/case_fold_switch.c: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
 
-.PHONY: leakcheck clean fuzztest dingus
+.PHONY: leakcheck clean fuzztest dingus upload
 
 dingus:
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
@@ -55,6 +55,9 @@ leakcheck: $(PROG)
 fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
+
+upload: spec.html spec.pdf
+	scp spec.html spec.pdf js/stmd.js js/index.html website:html/markdown/
 
 clean:
 	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
