@@ -3,7 +3,7 @@
 var fs = require('fs');
 var util = require('util');
 var stmd = require('./stmd');
-var ansi = require('ansi')
+var ansi = require('./ansi/ansi')
 var cursor = ansi(process.stdout);
 
 var writer = new stmd.HtmlRenderer();
