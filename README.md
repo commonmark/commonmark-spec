@@ -1,8 +1,8 @@
 Standard markdown
 =================
 
-Standard markdown is a specification of markdown syntax, together with
-implementations (`stmd`) in C and javascript.
+Standard markdown is a [specification of markdown syntax][the spec],
+together with implementations (`stmd`) in C and javascript.
 
 The implementations
 -------------------
@@ -25,15 +25,19 @@ version (using `node.js`) is also provided (`js/markdown`), and there is
 a "dingus" for playing with it interactively.  (`make dingus` will start
 this.)
 
-The spec contains over 400 embedded examples which serve as conformance
+[Try it now!](http://jgm.github.io/stmd/js/)
+
+[The spec] contains over 400 embedded examples which serve as conformance
 tests.  To run the tests for `stmd`, do `make test`.  To run them for
 another markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `stmd.js`, do `make testjs`.
 
+[The spec]:  http://jgm.github.io/stmd/spec.html
+
 The spec
 --------
 
-The source of the spec is `spec.txt`.  This is basically a markdown
+The source of [the spec] is `spec.txt`.  This is basically a markdown
 file, with code examples written in a shorthand form:
 
     .
