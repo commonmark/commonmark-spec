@@ -81,10 +81,10 @@ syntax for line breaks and fenced code blocks.
 In all of this, I have been guided by eight years experience writing
 markdown implementations in several languages, including the first
 markdown parser not based on regular expression substitutions
-([pandoc](http://github.com/jgm/pandoc) and the first markdown parsers
+([pandoc](http://github.com/jgm/pandoc)) and the first markdown parsers
 based on PEG grammars
 ([peg-markdown](http://github.com/jgm/peg-markdown),
-[lunamark](http://github.com/jgm/lunamark). Maintaining these projects
+[lunamark](http://github.com/jgm/lunamark)). Maintaining these projects
 and responding to years of user feedback have given me a good sense of
 the complexities involved in parsing markdown, and of the various design
 decisions that can be made.  I have also explored differences between
