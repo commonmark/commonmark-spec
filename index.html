@@ -1,20 +1,68 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <meta name="generator" content="pandoc">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title></title>
-  <style type="text/css">code{white-space: pre;}</style>
-  <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
+<meta charset="UTF-8">
+<title></title>
+<style type="text/css">
+body { font-family: arial, sans-serif; line-height: 1.4em; max-width: 52em;
+  margin: 3em; }
+div#TOC ul { list-style: none; }
+h1 { font-size: 140%; font-weight: bold; border-top: 1px solid gray; padding-top: 0.5em; }
+h2 { font-size: 120%; font-weight: bold; }
+h3 { font-size: 110%; font-weight: bold; }
+h4 { font-size: 100%; font-weight: bold; }
+span.space { position: relative; }
+span.space:after {
+  content: "";
+  position: absolute;
+  /* create a mark that indicates a space (trick from D. Greenspan) */
+  top: 3px; bottom: 3px; left: 1px; right: 1px;
+  border: 1px solid #999;
+}
+div.example { overflow: hidden; }
+p { text-align: justify; }
+pre { padding: 0.5em; margin-left: 0; margin-right: 0; margin-top: 0.2em;
+  margin-bottom: 0.5em; font-size: 88%; }
+pre {
+ white-space: pre-wrap;       /* css-3 */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+ white-space: -pre-wrap;      /* Opera 4-6 */
+ white-space: -o-pre-wrap;    /* Opera 7 */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+code { font-size: 120%; font-family: monospace; }
+div.example > pre { float:left; width: 48%; }
+div.example > pre.markdown { clear:left; }
+pre.tree { font-weight: bold; color: #777; }
+pre.markdown { background-color: #E3DEC1;}
+pre.html { background-color: #E89F65; }
+pre.html span.space:after {
+  border: 1px solid #666;
+}
+div.examplenum { font-size: 82%; text-align: left; }
+a.footnoteRef > sup:before {
+  content: "[";
+}
+a.footnoteRef > sup:after {
+  content: "]";
+}
+a.footnoteRef > sup {
+  vertical-align: baseline;
+  font-size: 100%;
+}
+</style>
 </head>
 <body>
+<div class="authors">
+
+</div>
+<div id="TOC">
+
+</div>
 <h1 id="standard-markdown">Standard markdown</h1>
 <p>Standard markdown is a <a href="http://jgm.github.io/stmd/spec.html">specification of markdown syntax</a>, together with BSD3-licensed implementations (<code>stmd</code>) in C and javascript.</p>
 <h2 id="the-implementations">The implementations</h2>
-<p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies. (However, if you check it out from the repository, you’ll need <code>re2c</code> to generate <code>scanners.c</code> from <code>scanners.re</code>. This is only a build dependency for developers, since <code>scanners.c</code> can be provided in a released source tarball.)</p>
+<p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies. (However, if you check it out from the repository, you’ll need <a href="http://re2c.org"><code>re2c</code></a> to generate <code>scanners.c</code> from <code>scanners.re</code>. This is only a build dependency for developers, since <code>scanners.c</code> can be provided in a released source tarball.)</p>
 <pre><code>Usage:   stmd [FILE*]
 Options: --help, -h    Print usage information
          --ast         Print AST instead of HTML
