@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>stmd.js demo</title>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+  <script src="stmd.js"></script>
+  <script type="text/javascript">
+
+var writer = new stmd.HtmlRenderer();
+var reader = new stmd.DocParser();
+
+$(document).ready(function() {
+  $(".timing").hide();
+  var timer;
+  var x;
+  var parsed;
+  var render = function() {
+      if (parsed === undefined) {
+        return;
+      }
+      var startTime = new Date().getTime();
+      var result = writer.renderBlock(parsed);
+      var endTime = new Date().getTime();
+      var renderTime = endTime - startTime;
+      // $("#html").text(result);
+      $("#preview").html(result);
+      $("#html").text(result);
+      $("#rendertime").text(renderTime);
+  };
+  var parseAndRender = function () {
+    if (x) { x.abort() } // If there is an existing XHR, abort it.
+    clearTimeout(timer); // Clear the timer so we don't end up with dupes.
+    timer = setTimeout(function() { // assign timer a new timeout
+      var startTime = new Date().getTime();
+      parsed = reader.parse($("#text").val());
+      var endTime = new Date().getTime();
+      var parseTime = endTime - startTime;
+      $("#parsetime").text(parseTime);
+      $(".timing").show();
+      /*
+      var warnings = parsed.warnings;
+      $("#warnings").html('');
+      for (i=0; i < warnings.length; i++) {
+        var w = warnings[i];
+        var warning = $("#warnings").append('<li></li>');
+        $("#warnings li").last().text('Line ' + w.line + ' column ' + w.column + ': ' + w.message);
+      }
+      */
+      render();
+    }, 0); // ms delay
+  };
+  $("#text").keyup(parseAndRender);
+  $(".option").change(render);
+});
+  </script>
+  <style type="text/css">
+    textarea#text { height: 400px; width: 95%; font-family: monospace; font-size: 92%; }
+    pre code#html { font-size: 92%; font-family: monospace; }
+    pre#htmlpre { height: 400px; width: 95%; overflow: scroll; }
+    div#preview { height: 400px; overflow: scroll; }
+    div.row { margin-top: 1em; }
+    blockquote { font-size: 100%; }
+    h3 { margin-top: 0; margin-bottom: 0; padding: 0; font-size: 100%; }
+    footer { color: #555; text-align: center; margin: 1em; }
+    pre { display: block; padding: 0.5em; color: #333; background: #f8f8ff }
+    #warnings li { color: red; font-weight: bold; }
+    label { padding-left: 1em; padding-top: 0; padding-bottom: 0; }
+    p.timing { color: red; }
+    span.timing { font-weight: bold; }
+    span.timing { font-weight: bold; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6">
+      <h1>stmd.js dingus</h1>
+    </div>
+    <div class="col-md-3">
+      <ul class="nav nav-tabs" role="tablist">
+        <li class="active"><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
+        <li><a href="#result" role="tab" data-toggle="tab">HTML</a></li>
+      </ul>
+    </div>
+    <div class="col-md-3">
+      <p class="timing">Parsed in <span class="timing" id="parsetime"></span> milliseconds.<br/>
+      Rendered in <span class="timing" id="rendertime"></span> milliseconds.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <textarea id="text"></textarea>
+      <ul id="warnings"></ul>
+    </div>
+    <div class="col-md-6">
+      <div class="tab-content">
+        <div id="preview" class="tab-pane active">
+        </div>
+        <div id="result" class="tab-pane">
+          <pre id="htmlpre"><code id="html"></code></pre>
+        </div>
+    </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
