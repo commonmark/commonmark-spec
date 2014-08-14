@@ -1436,7 +1436,7 @@ Hi
 <p>So there is no important loss of expressive power with the new rule.</p>
 <h2 id="link-reference-definitions"><span class="header-section-number">4.7</span> Link reference definitions</h2>
 <p>A <a href="#link-reference-definition">link reference definition</a> <a id="link-reference-definition"/> consists of a <a href="#link-label">link label</a>, indented up to three spaces, followed by a colon (<code>:</code>), optional blank space (including up to one newline), a <a href="#link-destination">link destination</a>, optional blank space (including up to one newline), and an optional <a href="#link-title">link title</a>, which if it is present must be separated from the <a href="#link-destination">link destination</a> by whitespace. No further non-space characters may occur on the line.</p>
-<p>A <a href="#link-reference-definition">link reference-definition</a> does not correspond to a structural element of a document. Instead, it defines a label which can be used in <a href="#reference-link">reference links</a> and reference-style <a href="#image">images</a> elsewhere in the document. [Link references] can be defined either before or after the links that use them.</p>
+<p>A <a href="#link-reference-definition">link reference-definition</a> does not correspond to a structural element of a document. Instead, it defines a label which can be used in <a href="#reference-link">reference links</a> and reference-style <a href="#image">images</a> elsewhere in the document. <a href="#link-reference-definitions">Link reference definitions</a> can come either before or after the links that use them.</p>
 <div id="example-101" class="example" data-section="Link reference definitions">
 <div class="examplenum">
 Example 101
@@ -4281,9 +4281,9 @@ Example 345
 <pre class="html"><code>&lt;p&gt;[foo &lt;bar attr=&quot;](baz)&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>There are three kinds of <a href="#reference-link">reference links</a>: <a id="reference-link"/></p>
-<p>A <a href="#full-reference-link">full reference link</a> <a id="full-reference-link"/> consists of a <a href="#link-label">link label</a>, optional whitespace, and another <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#reference-link-definition">reference link definition</a> elsewhere in the document.</p>
+<p>A <a href="#full-reference-link">full reference link</a> <a id="full-reference-link"/> consists of a <a href="#link-label">link label</a>, optional whitespace, and another <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document.</p>
 <p>One label <a href="#matches">matches</a> <a id="matches"/> another just in case their normalized forms are equal. To normalize a label, perform the <em>unicode case fold</em> and collapse consecutive internal whitespace to a single space. If there are multiple matching reference link definitions, the one that comes first in the document is used. (It is desirable in such cases to emit a warning.)</p>
-<p>The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching reference link definition.</p>
+<p>The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching <a href="#link-reference-definition">link reference definition</a>.</p>
 <p>Here is a simple example:</p>
 <div id="example-346" class="example" data-section="Links">
 <div class="examplenum">
@@ -4355,7 +4355,7 @@ Example 352
 [bar]: /url &quot;title&quot;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;/url&quot; title=&quot;title&quot;&gt;foo&lt;/a&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>When there are multiple matching reference link definitions, the first is used:</p>
+<p>When there are multiple matching <a href="#link-reference-definition">link reference definitions</a>, the first is used:</p>
 <div id="example-353" class="example" data-section="Links">
 <div class="examplenum">
 Example 353
@@ -4377,7 +4377,7 @@ Example 354
 [foo!]: /url</code></pre>
 <pre class="html"><code>&lt;p&gt;[bar][foo!]&lt;/p&gt;</code></pre>
 </div>
-<p>A <a href="#collapsed-reference-link">collapsed reference link</a> <a id="collapsed-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#reference-link-definition">reference link definition</a> elsewhere in the document, optional whitespace, and the string <code>[]</code>. The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching reference link definition. Thus, <code>[foo][]</code> is equivalent to <code>[foo][foo]</code>.</p>
+<p>A <a href="#collapsed-reference-link">collapsed reference link</a> <a id="collapsed-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document, optional whitespace, and the string <code>[]</code>. The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching reference link definition. Thus, <code>[foo][]</code> is equivalent to <code>[foo][foo]</code>.</p>
 <div id="example-355" class="example" data-section="Links">
 <div class="examplenum">
 Example 355
@@ -4417,7 +4417,7 @@ Example 358
 [foo]: /url &quot;title&quot;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;/url&quot; title=&quot;title&quot;&gt;foo&lt;/a&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>A <a href="#shortcut-reference-link">shortcut reference link</a> <a id="shortcut-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#reference-link-definition">reference link definition</a> elsewhere in the document and is not followed by <code>[]</code> or a link label. The contents of the first link label are parsed as inlines, which are used as the link’s text. the link’s URI and title are provided by the matching reference link definition. Thus, <code>[foo]</code> is equivalent to <code>[foo][]</code>.</p>
+<p>A <a href="#shortcut-reference-link">shortcut reference link</a> <a id="shortcut-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document and is not followed by <code>[]</code> or a link label. The contents of the first link label are parsed as inlines, which are used as the link’s text. the link’s URI and title are provided by the matching link reference definition. Thus, <code>[foo]</code> is equivalent to <code>[foo][]</code>.</p>
 <div id="example-359" class="example" data-section="Links">
 <div class="examplenum">
 Example 359
@@ -5172,7 +5172,7 @@ Example 439
 <h2 id="overview" class="unnumbered">Overview</h2>
 <p>Parsing has two phases:</p>
 <ol style="list-style-type: decimal">
-<li><p>In the first phase, lines of input are consumed and the block structure of the document—its division into paragraphs, block quotes, list items, and so on—is constructed. Text is assigned to these blocks but not parsed. Reference link definitions are parsed and a map of links is constructed.</p></li>
+<li><p>In the first phase, lines of input are consumed and the block structure of the document—its division into paragraphs, block quotes, list items, and so on—is constructed. Text is assigned to these blocks but not parsed. Link reference definitions are parsed and a map of links is constructed.</p></li>
 <li><p>In the second phase, the raw text contents of paragraphs and headers are parsed into sequences of markdown inline elements (strings, code spans, links, emphasis, and so on), using the map of link references constructed in phase 1.</p></li>
 </ol>
 <h2 id="the-document-tree" class="unnumbered">The document tree</h2>
