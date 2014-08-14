@@ -9,7 +9,7 @@ PROG=./stmd
 all: $(SRCDIR)/case_fold_switch.c $(PROG)
 
 README.html: README.md
-	pandoc -S -s -t html5 -o $@ $<
+	pandoc --template template.html -S -s -t html5 -o $@ $<
 
 spec: test spec.html
 

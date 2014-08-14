@@ -53,8 +53,12 @@ a.footnoteRef > sup {
 </style>
 </head>
 <body>
+$if(title)$
 <h1 class="title">$title$</h1>
+$endif$
+$if(version)$
 <div class="version">Version $version$ ($date$)</div>
+$endif$
 <div class="authors">
 $for(author)$<span class="author">$author$</span>$sep$; $endfor$
 </div>
