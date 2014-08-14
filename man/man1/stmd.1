@@ -1,0 +1,32 @@
+.TH "stmd" "1" "August 12, 2014" "stmd manual" ""
+.SH NAME
+.PP
+stmd \- convert markdown formatted text to HTML
+.SH SYNOPSIS
+.PP
+stmd [\f[I]options\f[]] [file*]
+.SH DESCRIPTION
+.PP
+\f[C]stmd\f[] acts as a pipe, reading from stdin or from the specified
+files and writing to stdout.
+It converts markdown formatted plain text to HTML, using the conventions
+described in the standard markdown spec.
+.SH OPTIONS
+.TP
+.B \f[C]\-\-ast\f[]
+Print an abstract syntax tree instead of HTML.
+.RS
+.RE
+.TP
+.B \f[C]\-\-help\f[]
+Print usage information.
+.RS
+.RE
+.TP
+.B \f[C]\-\-version\f[]
+Print version.
+.RS
+.RE
+.SH AUTHORS
+.PP
+John MacFarlane
