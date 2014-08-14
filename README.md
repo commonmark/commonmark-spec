@@ -2,7 +2,7 @@ Standard markdown
 =================
 
 Standard markdown is a [specification of markdown syntax][the spec],
-together with implementations (`stmd`) in C and javascript.
+together with BSD3-licensed implementations (`stmd`) in C and javascript.
 
 The implementations
 -------------------
@@ -93,4 +93,3 @@ markdown implementations extensively using [babelmark
 working out the spec, I benefited greatly from collaboration with David
 Greenspan, and from feedback from several industrial users of markdown,
 including Jeff Atwood, Vincent Marti, and Neil Williams.
-
