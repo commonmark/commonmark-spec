@@ -8,6 +8,9 @@ PROG=./stmd
 .PHONY: all oldtests test spec benchjs testjs
 all: $(SRCDIR)/case_fold_switch.c $(PROG)
 
+README.html: README.md
+	pandoc -S -s -t html5 -o $@ $<
+
 spec: test spec.html
 
 spec.md: spec.txt
