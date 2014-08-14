@@ -1639,7 +1639,7 @@ A [link reference-definition](#link-reference-definition)
 does not correspond to a structural element of a document.  Instead, it
 defines a label which can be used in [reference links](#reference-link)
 and reference-style [images](#image) elsewhere in the document.  [Link
-references] can be defined either before or after the links that use
+reference definitions] can come either before or after the links that use
 them.
 
 .
@@ -4872,7 +4872,7 @@ There are three kinds of [reference links](#reference-link):
 A [full reference link](#full-reference-link) <a id="full-reference-link"/>
 consists of a [link label](#link-label), optional whitespace, and
 another [link label](#link-label) that [matches](#matches) a
-[reference link definition](#reference-link-definition) elsewhere in the
+[link reference definition](#link-reference-definition) elsewhere in the
 document.
 
 One label [matches](#matches) <a id="matches"/>
@@ -4884,7 +4884,7 @@ is desirable in such cases to emit a warning.)
 
 The contents of the first link label are parsed as inlines, which are
 used as the link's text.  The link's URI and title are provided by the
-matching reference link definition.
+matching [link reference definition](#link-reference-definition).
 
 Here is a simple example:
 
@@ -4957,8 +4957,8 @@ There can be whitespace between the two labels:
 <p><a href="/url" title="title">foo</a></p>
 .
 
-When there are multiple matching reference link definitions,
-the first is used:
+When there are multiple matching [link reference
+definitions](#link-reference-definition), the first is used:
 
 .
 [foo]: /url1
@@ -4984,8 +4984,8 @@ labels define equivalent inline content:
 
 A [collapsed reference link](#collapsed-reference-link)
 <a id="collapsed-reference-link"/> consists of a [link
-label](#link-label) that [matches](#matches) a [reference link
-definition](#reference-link-definition) elsewhere in the
+label](#link-label) that [matches](#matches) a [link reference
+definition](#link-reference-definition) elsewhere in the
 document, optional whitespace, and the string `[]`.  The contents of the
 first link label are parsed as inlines, which are used as the link's
 text.  The link's URI and title are provided by the matching reference
@@ -5032,12 +5032,12 @@ between the two sets of brackets:
 
 A [shortcut reference link](#shortcut-reference-link)
 <a id="shortcut-reference-link"/> consists of a [link
-label](#link-label) that [matches](#matches) a [reference link
-definition](#reference-link-definition)  elsewhere in the
+label](#link-label) that [matches](#matches) a [link reference
+definition](#link-reference-definition)  elsewhere in the
 document and is not followed by `[]` or a link label.
 The contents of the first link label are parsed as inlines,
 which are used as the link's text.  the link's URI and title
-are provided by the matching reference link definition.
+are provided by the matching link reference definition.
 Thus, `[foo]` is equivalent to `[foo][]`.
 
 .
@@ -5907,7 +5907,7 @@ Parsing has two phases:
 1. In the first phase, lines of input are consumed and the block
 structure of the document---its division into paragraphs, block quotes,
 list items, and so on---is constructed.  Text is assigned to these
-blocks but not parsed. Reference link definitions are parsed and a
+blocks but not parsed. Link reference definitions are parsed and a
 map of links is constructed.
 
 2. In the second phase, the raw text contents of paragraphs and headers
