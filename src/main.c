@@ -67,16 +67,13 @@ int main(int argc, char *argv[]) {
         exit(1);
       }
 
-      struct bStream *stream = bsopen((bNread)fread, fp);
-      if (stream == NULL) {
-        printf("Error opening stream\n");
-      }
-      while (bsreadln(s, stream, '\n') != BSTR_ERR) {
+      while ((s = bgets((bNgetc) fgetc, fp, '\n'))) {
         check(incorporate_line(s, linenum, &cur) == 0,
-              "error incorporating line %d of %s", linenum, argv[files[g]]);
+            "error incorporating line %d", linenum);
+        bdestroy(s);
         linenum++;
       }
-      bsclose(stream);
+      fclose(fp);
     }
   }
 
