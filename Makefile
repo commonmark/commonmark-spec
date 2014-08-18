@@ -60,7 +60,6 @@ fuzztest:
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
 update-site: README.html spec.html
-	cp README.html _site/index.html
 	cp spec.html _site/
 	cp -r js/* _site/js/
 
