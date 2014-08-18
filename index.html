@@ -67,6 +67,7 @@ a.footnoteRef > sup {
 </div>
 <h1 id="standard-markdown">Standard markdown</h1>
 <p>Standard markdown is a <a href="http://jgm.github.io/stmd/spec.html">specification of markdown syntax</a>, together with BSD3-licensed implementations (<code>stmd</code>) in C and javascript.</p>
+<p>The spec and all of the code can be found in <a href="http://github.com/jgm/stmd">this repository</a>.</p>
 <h2 id="the-implementations">The implementations</h2>
 <p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies. (However, if you check it out from the repository, you’ll need <a href="http://re2c.org"><code>re2c</code></a> to generate <code>scanners.c</code> from <code>scanners.re</code>. This is only a build dependency for developers, since <code>scanners.c</code> can be provided in a released source tarball.)</p>
 <pre><code>Usage:   stmd [FILE*]
