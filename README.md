@@ -4,9 +4,6 @@ Standard markdown
 Standard markdown is a [specification of markdown syntax][the spec],
 together with BSD3-licensed implementations (`stmd`) in C and javascript.
 
-The spec and all of the code can be found in
-[this repository](http://github.com/jgm/stmd).
-
 The implementations
 -------------------
 
