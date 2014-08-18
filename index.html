@@ -70,10 +70,6 @@ a.footnoteRef > sup {
 <p>The spec and all of the code can be found in <a href="http://github.com/jgm/stmd">this repository</a>.</p>
 <h2 id="the-implementations">The implementations</h2>
 <p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies. (However, if you check it out from the repository, you’ll need <a href="http://re2c.org"><code>re2c</code></a> to generate <code>scanners.c</code> from <code>scanners.re</code>. This is only a build dependency for developers, since <code>scanners.c</code> can be provided in a released source tarball.)</p>
-<pre><code>Usage:   stmd [FILE*]
-Options: --help, -h    Print usage information
-         --ast         Print AST instead of HTML
-         --version     Print version</code></pre>
 <p>The javascript implementation is a single javascript file, with no dependencies, that can be linked to in an HTML page. A standalone version (using <code>node.js</code>) is also provided (<code>js/markdown</code>), and there is a “dingus” for playing with it interactively. (<code>make dingus</code> will start this.)</p>
 <p><a href="http://jgm.github.io/stmd/js/">Try it now!</a></p>
 <p><a href="http://jgm.github.io/stmd/spec.html">The spec</a> contains over 400 embedded examples which serve as conformance tests. To run the tests for <code>stmd</code>, do <code>make test</code>. To run them for another markdown program, say <code>myprog</code>, do <code>make test PROG=myprog</code>. To run the tests for <code>stmd.js</code>, do <code>make testjs</code>.</p>
