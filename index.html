@@ -68,19 +68,11 @@ a.footnoteRef > sup {
 <h1 id="standard-markdown">Standard markdown</h1>
 <p>Standard markdown is a <a href="http://jgm.github.io/stmd/spec.html">specification of markdown syntax</a>, together with BSD3-licensed implementations (<code>stmd</code>) in C and javascript.</p>
 <p>The spec and all of the code can be found in <a href="http://github.com/jgm/stmd">this repository</a>.</p>
-<h2 id="the-implementations">The implementations</h2>
-<p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies. (However, if you check it out from the repository, you’ll need <a href="http://re2c.org"><code>re2c</code></a> to generate <code>scanners.c</code> from <code>scanners.re</code>. This is only a build dependency for developers, since <code>scanners.c</code> can be provided in a released source tarball.)</p>
-<p>The javascript implementation is a single javascript file, with no dependencies, that can be linked to in an HTML page. A standalone version (using <code>node.js</code>) is also provided (<code>js/markdown</code>), and there is a “dingus” for playing with it interactively. (<code>make dingus</code> will start this.)</p>
+<p>The C implementation provides both a library and a standalone program <code>stmd</code> that converts markdown to HTML. It is written in standard C99 and has no library dependencies.</p>
+<p>The javascript implementation is a single javascript file, with no dependencies, that can be linked to in an HTML page.</p>
 <p><a href="http://jgm.github.io/stmd/js/">Try it now!</a></p>
 <p><a href="http://jgm.github.io/stmd/spec.html">The spec</a> contains over 400 embedded examples which serve as conformance tests. To run the tests for <code>stmd</code>, do <code>make test</code>. To run them for another markdown program, say <code>myprog</code>, do <code>make test PROG=myprog</code>. To run the tests for <code>stmd.js</code>, do <code>make testjs</code>.</p>
 <h2 id="the-spec">The spec</h2>
-<p>The source of <a href="http://jgm.github.io/stmd/spec.html">the spec</a> is <code>spec.txt</code>. This is basically a markdown file, with code examples written in a shorthand form:</p>
-<pre><code>.
-markdown source
-.
-expected HTML output
-.</code></pre>
-<p>To build an HTML version of the spec, do <code>make spec.html</code>. To build a PDF version, do <code>make spec.pdf</code>. Both these commands require that pandoc is installed, and creating a PDF requires a latex installation.</p>
 <p>The spec is written from the point of view of the human writer, not the computer reader. It is not an algorithm—an English translation of a computer program—but a declarative description of what counts as a block quote, a code block, and each of the other structural elements that can make up a markdown document.</p>
 <p>Because John Gruber’s <a href="http://daringfireball.net/projects/markdown/syntax">canonical syntax description</a> leaves many aspects of the syntax undetermined, writing a precise spec requires making a large number of decisions, many of them somewhat arbitrary. In making them, I have appealed to existing conventions and considerations of simplicity, readability, expressive power, and consistency. I have tried to ensure that “normal” documents in the many incompatible existing implementations of markdown will render, as far as possible, as their authors intended. And I have tried to make the rules for different elements work together harmoniously. In places where different decisions could have been made (for example, the rules governing list indentation), I have explained the rationale for my choices. In a few cases, I have departed slightly from the canonical syntax description, in ways that I think further the goals of markdown as stated in that description.</p>
 <p>For the most part, I have limited myself to the basic elements described in Gruber’s canonical syntax description, eschewing extensions like footnotes and definition lists. It is important to get the core right before considering such things. However, I have included a visible syntax for line breaks and fenced code blocks.</p>
