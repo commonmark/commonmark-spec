@@ -5513,6 +5513,18 @@ These are not autolinks:
 <p>&lt;localhost:5001/foo&gt;</p>
 .
 
+.
+http://google.com
+.
+<p>http://google.com</p>
+.
+
+.
+foo@bar.baz.com
+.
+<p>foo@bar.baz.com</p>
+.
+
 ## Raw HTML
 
 Text between `<` and `>` that looks like an HTML tag is parsed as a
