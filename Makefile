@@ -63,9 +63,6 @@ update-site: README.html spec.html
 	cp spec.html _site/
 	cp -r js/* _site/js/
 
-upload: spec.html spec.pdf
-	scp spec.html spec.pdf js/stmd.js js/index.html website:html/markdown/
-
 clean:
 	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
 	-rm -r *.dSYM
