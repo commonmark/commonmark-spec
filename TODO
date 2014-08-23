@@ -1,4 +1,1 @@
 - give example of URL not in <> that is not linkified
-- state that two blank lines INSIDE fenced code does not break
-  out of lists -- and make the js implementation obey this
-
