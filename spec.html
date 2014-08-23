@@ -2217,7 +2217,7 @@ Example 159
 &lt;/blockquote&gt;
 &lt;/blockquote&gt;</code></pre>
 </div>
-<p>A list item may not contain blocks that are separated by more than one blank line. Thus, two blank lines will end a list:</p>
+<p>A list item may not contain blocks that are separated by more than one blank line. Thus, two blank lines will end a list, unless the two blanks are contained in a <a href="#fenced-code-block">fenced code block</a>.</p>
 <div id="example-160" class="example" data-section="List items">
 <div class="examplenum">
 Example 160
@@ -2229,13 +2229,27 @@ Example 160
 - foo
 
 
-  bar</code></pre>
+  bar
+
+- ```
+  foo
+
+
+  bar
+  ```</code></pre>
 <pre class="html"><code>&lt;ul&gt;
 &lt;li&gt;&lt;p&gt;foo&lt;/p&gt;
 &lt;p&gt;bar&lt;/p&gt;&lt;/li&gt;
 &lt;li&gt;&lt;p&gt;foo&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;bar&lt;/p&gt;</code></pre>
+&lt;p&gt;bar&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;pre&gt;&lt;code&gt;foo
+
+
+bar
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
 </div>
 <p>A list item may contain any kind of block:</p>
 <div id="example-161" class="example" data-section="List items">
@@ -4837,6 +4851,20 @@ Example 404
 <pre class="markdown"><code>&lt;localhost:5001/foo&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;localhost:5001/foo&amp;gt;&lt;/p&gt;</code></pre>
 </div>
+<div id="example-405" class="example" data-section="Autolinks">
+<div class="examplenum">
+Example 405
+</div>
+<pre class="markdown"><code>http://google.com</code></pre>
+<pre class="html"><code>&lt;p&gt;http://google.com&lt;/p&gt;</code></pre>
+</div>
+<div id="example-406" class="example" data-section="Autolinks">
+<div class="examplenum">
+Example 406
+</div>
+<pre class="markdown"><code>foo@bar.baz.com</code></pre>
+<pre class="html"><code>&lt;p&gt;foo@bar.baz.com&lt;/p&gt;</code></pre>
+</div>
 <h2 id="raw-html"><span class="header-section-number">6.8</span> Raw HTML</h2>
 <p>Text between <code>&lt;</code> and <code>&gt;</code> that looks like an HTML tag is parsed as a raw HTML tag and will be rendered in HTML without escaping. Tag and attribute names are not limited to current HTML tags, so custom tags (and even, say, DocBook tags) may be used.</p>
 <p>Here is the grammar for tags:</p>
@@ -4856,25 +4884,25 @@ Example 404
 <p>A <a href="#cdata-section">CDATA section</a> <a id="cdata-section"/> consists of the string <code>&lt;![CDATA[</code>, a string of characters not including the string <code>]]&gt;</code>, and the string <code>]]&gt;</code>.</p>
 <p>An <a href="#html-tag">HTML tag</a> <a id="html-tag"/> consists of an <a href="#open-tag">open tag</a>, a <a href="#closing-tag">closing tag</a>, an <a href="#html-comment">HTML comment</a>, a <a href="#processing-instruction">processing instruction</a>, an <a href="#element-type-declaration">element type declaration</a>, or a <a href="#cdata-section">CDATA section</a>.</p>
 <p>Here are some simple open tags:</p>
-<div id="example-405" class="example" data-section="Raw HTML">
+<div id="example-407" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 405
+Example 407
 </div>
 <pre class="markdown"><code>&lt;a&gt;&lt;bab&gt;&lt;c2c&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a&gt;&lt;bab&gt;&lt;c2c&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Empty elements:</p>
-<div id="example-406" class="example" data-section="Raw HTML">
+<div id="example-408" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 406
+Example 408
 </div>
 <pre class="markdown"><code>&lt;a/&gt;&lt;b2/&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a/&gt;&lt;b2/&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Whitespace is allowed:</p>
-<div id="example-407" class="example" data-section="Raw HTML">
+<div id="example-409" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 407
+Example 409
 </div>
 <pre class="markdown"><code>&lt;a  /&gt;&lt;b2
 data=&quot;foo&quot; &gt;</code></pre>
@@ -4882,9 +4910,9 @@ data=&quot;foo&quot; &gt;</code></pre>
 data=&quot;foo&quot; &gt;&lt;/p&gt;</code></pre>
 </div>
 <p>With attributes:</p>
-<div id="example-408" class="example" data-section="Raw HTML">
+<div id="example-410" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 408
+Example 410
 </div>
 <pre class="markdown"><code>&lt;a foo=&quot;bar&quot; bam = &#39;baz &lt;em&gt;&quot;&lt;/em&gt;&#39;
 _boolean zoop:33=zoop:33 /&gt;</code></pre>
@@ -4892,33 +4920,33 @@ _boolean zoop:33=zoop:33 /&gt;</code></pre>
 _boolean zoop:33=zoop:33 /&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Illegal tag names, not parsed as HTML:</p>
-<div id="example-409" class="example" data-section="Raw HTML">
+<div id="example-411" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 409
+Example 411
 </div>
 <pre class="markdown"><code>&lt;33&gt; &lt;__&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;33&amp;gt; &amp;lt;__&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Illegal attribute names:</p>
-<div id="example-410" class="example" data-section="Raw HTML">
+<div id="example-412" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 410
+Example 412
 </div>
 <pre class="markdown"><code>&lt;a h*#ref=&quot;hi&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;a h*#ref=&amp;quot;hi&amp;quot;&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Illegal attribute values:</p>
-<div id="example-411" class="example" data-section="Raw HTML">
+<div id="example-413" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 411
+Example 413
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;hi&#39;&gt; &lt;a href=hi&#39;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;a href=&amp;quot;hi&#39;&amp;gt; &amp;lt;a href=hi&#39;&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Illegal whitespace:</p>
-<div id="example-412" class="example" data-section="Raw HTML">
+<div id="example-414" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 412
+Example 414
 </div>
 <pre class="markdown"><code>&lt; a&gt;&lt;
 foo&gt;&lt;bar/ &gt;</code></pre>
@@ -4926,17 +4954,17 @@ foo&gt;&lt;bar/ &gt;</code></pre>
 foo&amp;gt;&amp;lt;bar/ &amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Missing whitespace:</p>
-<div id="example-413" class="example" data-section="Raw HTML">
+<div id="example-415" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 413
+Example 415
 </div>
 <pre class="markdown"><code>&lt;a href=&#39;bar&#39;title=title&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;a href=&#39;bar&#39;title=title&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Closing tags:</p>
-<div id="example-414" class="example" data-section="Raw HTML">
+<div id="example-416" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 414
+Example 416
 </div>
 <pre class="markdown"><code>&lt;/a&gt;
 &lt;/foo &gt;</code></pre>
@@ -4944,82 +4972,82 @@ Example 414
 &lt;/foo &gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Illegal attributes in closing tag:</p>
-<div id="example-415" class="example" data-section="Raw HTML">
+<div id="example-417" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 415
+Example 417
 </div>
 <pre class="markdown"><code>&lt;/a href=&quot;foo&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;/a href=&amp;quot;foo&amp;quot;&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Comments:</p>
-<div id="example-416" class="example" data-section="Raw HTML">
+<div id="example-418" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 416
+Example 418
 </div>
 <pre class="markdown"><code>foo &lt;!-- this is a
 comment - with hyphen --&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;foo &lt;!-- this is a
 comment - with hyphen --&gt;&lt;/p&gt;</code></pre>
 </div>
-<div id="example-417" class="example" data-section="Raw HTML">
+<div id="example-419" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 417
+Example 419
 </div>
 <pre class="markdown"><code>foo &lt;!-- not a comment -- two hyphens --&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;foo &amp;lt;!-- not a comment -- two hyphens --&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Processing instructions:</p>
-<div id="example-418" class="example" data-section="Raw HTML">
+<div id="example-420" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 418
+Example 420
 </div>
 <pre class="markdown"><code>foo &lt;?php echo $a; ?&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;foo &lt;?php echo $a; ?&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Declarations:</p>
-<div id="example-419" class="example" data-section="Raw HTML">
+<div id="example-421" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 419
+Example 421
 </div>
 <pre class="markdown"><code>foo &lt;!ELEMENT br EMPTY&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;foo &lt;!ELEMENT br EMPTY&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>CDATA sections:</p>
-<div id="example-420" class="example" data-section="Raw HTML">
+<div id="example-422" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 420
+Example 422
 </div>
 <pre class="markdown"><code>foo &lt;![CDATA[&gt;&amp;&lt;]]&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;foo &lt;![CDATA[&gt;&amp;&lt;]]&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Entities are preserved in HTML attributes:</p>
-<div id="example-421" class="example" data-section="Raw HTML">
+<div id="example-423" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 421
+Example 423
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;&amp;ouml;&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;&amp;ouml;&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Backslash escapes do not work in HTML attributes:</p>
-<div id="example-422" class="example" data-section="Raw HTML">
+<div id="example-424" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 422
+Example 424
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;\*&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;\*&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
-<div id="example-423" class="example" data-section="Raw HTML">
+<div id="example-425" class="example" data-section="Raw HTML">
 <div class="examplenum">
-Example 423
+Example 425
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;\&quot;&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;a href=&amp;quot;&amp;quot;&amp;quot;&amp;gt;&lt;/p&gt;</code></pre>
 </div>
 <h2 id="hard-line-breaks"><span class="header-section-number">6.9</span> Hard line breaks</h2>
 <p>A line break (not in a code span or HTML tag) that is preceded by two or more spaces is parsed as a linebreak (rendered in HTML as a <code>&lt;br /&gt;</code> tag):</p>
-<div id="example-424" class="example" data-section="Hard line breaks">
+<div id="example-426" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 424
+Example 426
 </div>
 <pre class="markdown"><code>foo  
 baz</code></pre>
@@ -5027,9 +5055,9 @@ baz</code></pre>
 baz&lt;/p&gt;</code></pre>
 </div>
 <p>For a more visible alternative, a backslash before the newline may be used instead of two spaces:</p>
-<div id="example-425" class="example" data-section="Hard line breaks">
+<div id="example-427" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 425
+Example 427
 </div>
 <pre class="markdown"><code>foo\
 baz</code></pre>
@@ -5037,9 +5065,9 @@ baz</code></pre>
 baz&lt;/p&gt;</code></pre>
 </div>
 <p>More than two spaces can be used:</p>
-<div id="example-426" class="example" data-section="Hard line breaks">
+<div id="example-428" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 426
+Example 428
 </div>
 <pre class="markdown"><code>foo       
 baz</code></pre>
@@ -5047,18 +5075,18 @@ baz</code></pre>
 baz&lt;/p&gt;</code></pre>
 </div>
 <p>Leading spaces at the beginning of the next line are ignored:</p>
-<div id="example-427" class="example" data-section="Hard line breaks">
+<div id="example-429" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 427
+Example 429
 </div>
 <pre class="markdown"><code>foo  
      bar</code></pre>
 <pre class="html"><code>&lt;p&gt;foo&lt;br /&gt;
 bar&lt;/p&gt;</code></pre>
 </div>
-<div id="example-428" class="example" data-section="Hard line breaks">
+<div id="example-430" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 428
+Example 430
 </div>
 <pre class="markdown"><code>foo\
      bar</code></pre>
@@ -5066,18 +5094,18 @@ Example 428
 bar&lt;/p&gt;</code></pre>
 </div>
 <p>Line breaks can occur inside emphasis, links, and other constructs that allow inline content:</p>
-<div id="example-429" class="example" data-section="Hard line breaks">
+<div id="example-431" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 429
+Example 431
 </div>
 <pre class="markdown"><code>*foo  
 bar*</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;em&gt;foo&lt;br /&gt;
 bar&lt;/em&gt;&lt;/p&gt;</code></pre>
 </div>
-<div id="example-430" class="example" data-section="Hard line breaks">
+<div id="example-432" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 430
+Example 432
 </div>
 <pre class="markdown"><code>*foo\
 bar*</code></pre>
@@ -5085,35 +5113,35 @@ bar*</code></pre>
 bar&lt;/em&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>Line breaks do not occur inside code spans</p>
-<div id="example-431" class="example" data-section="Hard line breaks">
+<div id="example-433" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 431
+Example 433
 </div>
 <pre class="markdown"><code>`code  
 span`</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;code&gt;code span&lt;/code&gt;&lt;/p&gt;</code></pre>
 </div>
-<div id="example-432" class="example" data-section="Hard line breaks">
+<div id="example-434" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 432
+Example 434
 </div>
 <pre class="markdown"><code>`code\
 span`</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;code&gt;code\ span&lt;/code&gt;&lt;/p&gt;</code></pre>
 </div>
 <p>or HTML tags:</p>
-<div id="example-433" class="example" data-section="Hard line breaks">
+<div id="example-435" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 433
+Example 435
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;foo  
 bar&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;foo  
 bar&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
-<div id="example-434" class="example" data-section="Hard line breaks">
+<div id="example-436" class="example" data-section="Hard line breaks">
 <div class="examplenum">
-Example 434
+Example 436
 </div>
 <pre class="markdown"><code>&lt;a href=&quot;foo\
 bar&quot;&gt;</code></pre>
@@ -5122,9 +5150,9 @@ bar&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
 <h2 id="soft-line-breaks"><span class="header-section-number">6.10</span> Soft line breaks</h2>
 <p>A regular line break (not in a code span or HTML tag) that is not preceded by two or more spaces is parsed as a softbreak. (A softbreak may be rendered in HTML either as a newline or as a space. The result will be the same in browsers. In the examples here, a newline will be used.)</p>
-<div id="example-435" class="example" data-section="Soft line breaks">
+<div id="example-437" class="example" data-section="Soft line breaks">
 <div class="examplenum">
-Example 435
+Example 437
 </div>
 <pre class="markdown"><code>foo
 baz</code></pre>
@@ -5132,9 +5160,9 @@ baz</code></pre>
 baz&lt;/p&gt;</code></pre>
 </div>
 <p>Spaces at the end of the line and beginning of the next line are removed:</p>
-<div id="example-436" class="example" data-section="Soft line breaks">
+<div id="example-438" class="example" data-section="Soft line breaks">
 <div class="examplenum">
-Example 436
+Example 438
 </div>
 <pre class="markdown"><code>foo 
  baz</code></pre>
@@ -5145,29 +5173,30 @@ baz&lt;/p&gt;</code></pre>
 <p>A renderer may also provide an option to render soft line breaks as hard line breaks.</p>
 <h2 id="strings"><span class="header-section-number">6.11</span> Strings</h2>
 <p>Any characters not given an interpretation by the above rules will be parsed as string content.</p>
-<div id="example-437" class="example" data-section="Strings">
+<div id="example-439" class="example" data-section="Strings">
 <div class="examplenum">
-Example 437
+Example 439
 </div>
 <pre class="markdown"><code>hello $.;&#39;there</code></pre>
 <pre class="html"><code>&lt;p&gt;hello $.;&#39;there&lt;/p&gt;</code></pre>
 </div>
-<div id="example-438" class="example" data-section="Strings">
+<div id="example-440" class="example" data-section="Strings">
 <div class="examplenum">
-Example 438
+Example 440
 </div>
 <pre class="markdown"><code>Foo χρῆν</code></pre>
 <pre class="html"><code>&lt;p&gt;Foo χρῆν&lt;/p&gt;</code></pre>
 </div>
 <p>Internal spaces are preserved verbatim:</p>
-<div id="example-439" class="example" data-section="Strings">
+<div id="example-441" class="example" data-section="Strings">
 <div class="examplenum">
-Example 439
+Example 441
 </div>
 <pre class="markdown"><code>Multiple     spaces</code></pre>
 <pre class="html"><code>&lt;p&gt;Multiple     spaces&lt;/p&gt;</code></pre>
 </div>
 <!-- END TESTS -->
+
 <h1 id="appendix-a-a-parsing-strategy" class="unnumbered">Appendix A: A parsing strategy</h1>
 <h2 id="overview" class="unnumbered">Overview</h2>
 <p>Parsing has two phases:</p>
