@@ -736,7 +736,7 @@ function InlineParser(){
     parseImage: parseImage,
     parseReference: parseReference,
     parseInline: parseInline,
-    parse: parseInlines,
+    parse: parseInlines
   };
 }
 
@@ -756,7 +756,7 @@ var makeBlock = function(tag, start_line, start_column) {
            // string_content is formed by concatenating strings, in finalize:
            string_content: "",
            strings: [],
-           inline_content: [],
+           inline_content: []
         };
 };
 
@@ -1364,7 +1364,7 @@ function DocParser(){
     incorporateLine: incorporateLine,
     finalize: finalize,
     processInlines: processInlines,
-    parse: parse,
+    parse: parse
   };
 }
 
