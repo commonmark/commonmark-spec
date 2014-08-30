@@ -19,6 +19,9 @@ spec.md: spec.txt
 spec.html: spec.md template.html
 	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< > $@ # | perl -pe 's/␣/<span class="space"> <\/span>/g' > $@
 
+narrative.html: narrative.md template.html
+	pandoc --template template.html -s -S $< -o $@
+
 spec.pdf: spec.md template.tex specfilter.hs
 	pandoc -s $< --template template.tex \
 	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
@@ -59,8 +62,9 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: README.html spec.html
+update-site: README.html spec.html narrative.html
 	cp spec.html _site/
+	cp narrative.html _site/index.html
 	cp -r js/* _site/js/
 
 clean:
