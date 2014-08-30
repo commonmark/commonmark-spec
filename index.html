@@ -89,19 +89,22 @@ the canonical syntax description:</p>
 <li><p>The rule for HTML blocks differs, though in most real cases it shouldn't 
 make a difference. (See <a href="http://jgm.github.io/stmd/spec.html#html-blocks">here</a> for details.) The spec's proposal makes it easy to include markdown inside HTML block-level tags, if you want to, but also allows you to exclude this. It is also makes parsing much easier, avoiding expensive backtracking.</p></li>
 <li><p>It does not collapse adjacent bird-track blocks into a single blockquote:</p></li>
-</ul>
-<blockquote>
-<p>this is</p>
-</blockquote>
-<blockquote>
-<p>two block quotes</p>
-</blockquote>
-<blockquote>
-<p>this is</p>
-<p>one block quote with two paragraphs</p>
-</blockquote>
-<ul>
-<li><p>Rules for content in lists differ in a few respects, though (as with HTML blocks), most lists in existing documents should render as intended. There is some discussion of the choice points and differences <a href="http://jgm.github.io/stmd/spec.html#motivation">here</a>. I think that the spec's proposal does better than any existing implementation in rendering lists the way a human writer or reader would intuitively understand them. (I could give numerous examples of perfectly natural looking lists that nearly every existing implementation flubs up.)</p></li>
+<pre><code>&lt; this is
+
+&lt; two block quotes
+
+&lt; this is
+&lt;
+&lt; one block quote with two paragraphs
+</code></pre></li>
+<li><p>Rules for content in lists differ in a few respects, though (as with 
+HTML blocks), most lists in existing documents should render as intended. There 
+is some discussion of the choice points and differences <a 
+  href="http://jgm.github.io/stmd/spec.html#motivation">here</a>. I think that 
+the spec's proposal does better than any existing implementation in rendering 
+lists the way a human writer or reader would intuitively understand them. (I 
+could give numerous examples of perfectly natural looking lists that nearly 
+every existing implementation flubs up.)</p></li>
 <li><p>The spec stipulates that two blank lines break out of all list contexts. This is an attempt to deal with issues that often come up when someone wants to have two adjacent lists, or a list followed by an indented code block.</p></li>
 <li><p>Changing bullet characters, or changing from bullets to numbers or vice versa, starts a new list. I think that is almost always going to be the writer's intent.</p></li>
 <li><p>The start number of an ordered list is significant.</p></li>
