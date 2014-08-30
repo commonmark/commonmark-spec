@@ -89,13 +89,13 @@ the canonical syntax description:</p>
 <li><p>The rule for HTML blocks differs, though in most real cases it shouldn't 
 make a difference. (See <a href="http://jgm.github.io/stmd/spec.html#html-blocks">here</a> for details.) The spec's proposal makes it easy to include markdown inside HTML block-level tags, if you want to, but also allows you to exclude this. It is also makes parsing much easier, avoiding expensive backtracking.</p></li>
 <li><p>It does not collapse adjacent bird-track blocks into a single blockquote:</p></li>
-<pre><code>&lt; this is
+<pre><code>&gt; this is
 
-&lt; two block quotes
+&gt; two block quotes
 
-&lt; this is
-&lt;
-&lt; one block quote with two paragraphs
+&gt; this is
+&gt;
+&gt; one block quote with two paragraphs
 </code></pre></li>
 <li><p>Rules for content in lists differ in a few respects, though (as with 
 HTML blocks), most lists in existing documents should render as intended. There 
