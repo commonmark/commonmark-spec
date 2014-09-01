@@ -66,10 +66,7 @@ update-site: spec.html narrative.html
 	cp spec.html _site/
 	cp narrative.html _site/index.html
 	cp -r js/* _site/js/
-	cd _site
-	git commit -a -m "Updated site for latest spec, narrative, js"
-	git push
-	cd ..
+	(cd _site ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
 	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
