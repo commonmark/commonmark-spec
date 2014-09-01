@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
     print_blocks(cur, 0);
   } else {
     check(blocks_to_html(cur, &html, false) == 0, "could not format as HTML");
-    printf("%s", html->data);
+    // printf("%s", html->data);
     bdestroy(html);
   }
   free_blocks(cur);

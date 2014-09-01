@@ -2,105 +2,142 @@
 #include "bstrlib.h"
 #include "debug.h"
 
-#define advance(s) \
-  s++; \
-  check(*s >> 6 == 0x02, "UTF-8 decode error on byte %x", *s);
+static const int8_t utf8proc_utf8class[256] = {
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+	4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-// Reads a unicode code point from a UTF8-encoded string, and
-// puts it in the pointer n. If something illegal
-// is encountered, 0xFFFD is emitted.
-// Returns a pointer to next position in string, or NULL if no
-// more characters remain.
-extern unsigned char * from_utf8(unsigned char * s, unsigned int *n)
+ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
 {
-  int x = 0;
+	ssize_t length, i;
 
-  if (*s == 0) {
-    return NULL;
-  } else if (*s < 0x80) {
-    x = *s;
-  } else if (*s >> 5 == 0x06) {
-    x = *s & 0x1F;
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-  } else if (*s >> 4 == 0x0E) {
-    x = *s & 0x0F;
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-  } else if (*s >> 3 == 0x1E) {
-    x = *s & 0x07;
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-  } else if (*s >> 2 == 0x3E) {
-    x = *s & 0x03;
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-    advance(s);
-    x = (x << 6) + (*s & 0x3F);
-   } else {
-    log_err("UTF-8 decode error on byte %x", *s);
-    goto error;
-  }
-  *n = x;
-  s++;
-  return s;
- error:
-  *n = 0xFFFD;
-  return s;
+	if (!str_len)
+		return 0;
+
+	length = utf8proc_utf8class[str[0]];
+
+	if (!length)
+		return -1;
+
+	if (str_len >= 0 && length > str_len)
+		return -1;
+
+	for (i = 1; i < length; i++) {
+		if ((str[i] & 0xC0) != 0x80)
+			return -1;
+	}
+
+	return length;
 }
 
-// Converts the unicode code point c to UTF-8,
-// putting the result in dest.  Returns 0 on success, -1 on error.
-extern int to_utf8(unsigned int c, bstring dest)
+ssize_t utf8proc_iterate(const uint8_t *str, ssize_t str_len, int32_t *dst)
 {
-  if (c < 0x80) {
-    bconchar(dest, c);
-  } else if (c < 0x800) {
-    bconchar(dest, 192 + c/64);
-    bconchar(dest, 128 + c%64);
-  } else if (c - 0xd800u < 0x800) {
-    goto error;
-  } else if (c < 0x10000) {
-    bconchar(dest, 224 + c / 4096);
-    bconchar(dest, 128 + c /64%64);
-    bconchar(dest, 128 + c%64);
-  } else if (c < 0x110000) {
-    bconchar(dest, 240 + c/262144);
-    bconchar(dest, 128 + c/4096%64);
-    bconchar(dest, 128 + c/64%64);
-    bconchar(dest, 128 + c%64);
-  } else {
-    goto error;
-  }
-  return 0;
-error:
-  return -1;
+	ssize_t length;
+	int32_t uc = -1;
+
+	*dst = -1;
+	length = utf8proc_charlen(str, str_len);
+	if (length < 0)
+		return -1;
+
+	switch (length) {
+		case 1:
+			uc = str[0];
+			break;
+		case 2:
+			uc = ((str[0] & 0x1F) <<  6) + (str[1] & 0x3F);
+			if (uc < 0x80) uc = -1;
+			break;
+		case 3:
+			uc = ((str[0] & 0x0F) << 12) + ((str[1] & 0x3F) <<  6)
+				+ (str[2] & 0x3F);
+			if (uc < 0x800 || (uc >= 0xD800 && uc < 0xE000) ||
+					(uc >= 0xFDD0 && uc < 0xFDF0)) uc = -1;
+			break;
+		case 4:
+			uc = ((str[0] & 0x07) << 18) + ((str[1] & 0x3F) << 12)
+				+ ((str[2] & 0x3F) <<  6) + (str[3] & 0x3F);
+			if (uc < 0x10000 || uc >= 0x110000) uc = -1;
+			break;
+	}
+
+	if (uc < 0 || ((uc & 0xFFFF) >= 0xFFFE))
+		return -1;
+
+	*dst = uc;
+	return length;
 }
+
+void utf8_encode_char(int32_t uc, gh_buf *buf)
+{
+	char dst[4];
+	int len = 0;
+
+	if (uc < 0x00) {
+		assert(false);
+	} else if (uc < 0x80) {
+		dst[0] = uc;
+		len = 1;
+	} else if (uc < 0x800) {
+		dst[0] = 0xC0 + (uc >> 6);
+		dst[1] = 0x80 + (uc & 0x3F);
+		len = 2;
+	} else if (uc == 0xFFFF) {
+		dst[0] = 0xFF;
+		return 1;
+	} else if (uc == 0xFFFE) {
+		dst[0] = 0xFE;
+		len = 1;
+	} else if (uc < 0x10000) {
+		dst[0] = 0xE0 + (uc >> 12);
+		dst[1] = 0x80 + ((uc >> 6) & 0x3F);
+		dst[2] = 0x80 + (uc & 0x3F);
+		len = 3;
+	} else if (uc < 0x110000) {
+		dst[0] = 0xF0 + (uc >> 18);
+		dst[1] = 0x80 + ((uc >> 12) & 0x3F);
+		dst[2] = 0x80 + ((uc >> 6) & 0x3F);
+		dst[3] = 0x80 + (uc & 0x3F);
+		len = 4;
+	} else {
+		assert(false);
+	}
+
+	gh_buf_put(buf, dst, len);
+}
+
+void utf8proc_case_fold(gh_buf *dest, const unsigned char *str, int len)
+{
+	int32_t c;
 
 #define bufpush(x) \
-  check(to_utf8(x, buf) == 0, "UTF-8 encode error on code point  %04x", x)
+	utf8proc_encode_char(x, dest)
 
-// Returns the case-folded version of the source string, or NULL on error.
-extern bstring case_fold(bstring source)
-{
-  unsigned char * s = source->data;
-  unsigned int c = 0;
-  bstring buf = bfromcstr("");
-  while ((s = from_utf8(s, &c))) {
-#include "case_fold_switch.c"
-  }
-  return buf;
-error:
-  return NULL;
+	while (len > 0) {
+		ssize_t char_len = utf8proc_iterate(str, len, &c);
+
+		if (char_len < 0) {
+			bufpush(0xFFFD);
+			continue;
+		}
+
+#include "case_fold_switch.inc"
+
+		str += char_len;
+		len -= char_len;
+	}
 }
 

@@ -1,5 +1,5 @@
-CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -O3 -Wall -Werror
+CFLAGS=-ggdb3 -O0 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
+LDFLAGS=-ggdb3 -O0 -Wall -Werror
 SRCDIR=src
 DATADIR=data
 
@@ -41,13 +41,13 @@ testjs: spec.txt
 benchjs:
 	node js/bench.js ${BENCHINP}
 
-$(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab.o $(SRCDIR)/bstrlib.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
+$(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -bis $< > $@ || (rm $@ && false)
 
-$(SRCDIR)/case_fold_switch.c: $(DATADIR)/CaseFolding-3.2.0.txt
+$(SRCDIR)/case_fold_switch.inc $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
 
 .PHONY: leakcheck clean fuzztest dingus upload
@@ -57,6 +57,9 @@ dingus:
 
 leakcheck: $(PROG)
 	cat oldtests/*/*.markdown | valgrind --leak-check=full --dsymutil=yes $(PROG)
+
+operf: $(PROG)
+	operf $(PROG) <bench.md >/dev/null
 
 fuzztest:
 	for i in `seq 1 10`; do \
@@ -69,7 +72,7 @@ update-site: spec.html narrative.html
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
-	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
-	-rm -r *.dSYM
-	-rm README.html
-	-rm spec.md fuzz.txt spec.html
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
+	-rm -rf *.dSYM
+	-rm -f README.html
+	-rm -f spec.md fuzz.txt spec.html
