@@ -2484,7 +2484,7 @@ blocks must be indented at least to the column of the first nonspace
 character after the list marker.  However, that is not quite right.
 The spaces after the list marker determine how much relative indentation
 is needed.  Which column this indentation reaches will depend on
-how the list item is embedded in other constructions, as show by
+how the list item is embedded in other constructions, as shown by
 this example:
 
 .
@@ -3090,7 +3090,7 @@ as the four-space rule demands, rather than a single list,
 ``` html
 <ul>
 <li><p>foo<p>
-<p>bar></p></li>
+<p>bar</p></li>
 <li><p>baz</p><li>
 </ul>
 ```
@@ -3731,7 +3731,7 @@ except code spans and code blocks. Three kinds of entities are recognized.
 .
 
 [Decimal entities](#decimal-entities) <a id="decimal-entities"/>
-consist of `&` + a string of 1--8 arabic digits + `;`.
+consist of `&#` + a string of 1--8 arabic digits + `;`.
 
 .
 &#1; &#35; &#1234; &#992; &#98765432;
@@ -3740,7 +3740,7 @@ consist of `&` + a string of 1--8 arabic digits + `;`.
 .
 
 [Hexadecimal entities](#hexadecimal-entities) <a id="hexadecimal-entities"/>
-consist of `&` + either `X` or `x` + a string of 1-8 hexadecimal digits
+consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
 + `;`.
 
 .
