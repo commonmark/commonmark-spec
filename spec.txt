@@ -2817,7 +2817,7 @@ Four spaces indent gives a code block:
 4.  **Laziness.**  If a string of lines *Ls* constitute a [list
     item](#list-item) with contents *Bs*, then the result of deleting
     some or all of the indentation from one or more lines in which the
-    next non-space character after the [list marker](#list--marker) is
+    next non-space character after the indentation is
     [paragraph continuation text](#paragraph-continuation-text) is a
     list item with the same contents and attributes.
 
