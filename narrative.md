@@ -54,7 +54,7 @@ the canonical syntax description:
     escaped.
 
 -   It introduces an [alternative syntax for hard line
-    breaks](http://jgm.github.io/stmd/spec.html#hard-line-breaks)), a
+    breaks](http://jgm.github.io/stmd/spec.html#hard-line-breaks), a
     backslash at the end of the line, supplementing the
     two-spaces-at-the-end-of-line rule. This is motivated by persistent
     complaints about the “invisible” nature of the two-space rule.
