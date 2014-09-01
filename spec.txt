@@ -3090,9 +3090,11 @@ as the four-space rule demands, rather than a single list,
 
 ``` html
 <ul>
-<li><p>foo<p>
-<p>bar</p></li>
-<li><p>baz</p><li>
+<li><p>foo</p>
+<p>bar</p>
+<ul>
+<li>baz</li>
+</ul></li>
 </ul>
 ```
 
