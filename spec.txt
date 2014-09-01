@@ -1038,11 +1038,12 @@ spaces, all of the indentation is removed.)
 
 The closing code fence may be indented up to three spaces, and may be
 followed only by spaces, which are ignored.  If the end of the
-document is reached and no closing code fence has been found, the code
-block contains all of the lines after the opening code fence.
-(An alternative spec would require backtracking in the event
-that a closing code fence is not found.  But this makes parsing much
-less efficient, and there seems to be no real down side to the
+containing block (or document) is reached and no closing code fence
+has been found, the code block contains all of the lines after the
+opening code fence until the end of the containing block (or
+document).  (An alternative spec would require backtracking in the
+event that a closing code fence is not found.  But this makes parsing
+much less efficient, and there seems to be no real down side to the
 behavior described here.)
 
 A fenced code block may interrupt a paragraph, and does not require
