@@ -47,11 +47,14 @@ description.
 There are only a few places where this spec says things that contradict
 the canonical syntax description:
 
--   It allows all puncutation symbols to be backslash-escaped, not just
-    the symbols with special meanings in markdown. I found that it was
-    just too hard to remember which symbols could be escaped.
+-   It [allows all puncutation symbols to be
+    backslash-escaped](http://jgm.github.io/stmd/spec.html#backslash-escapes),
+    not just the symbols with special meanings in markdown. I found
+    that it was just too hard to remember which symbols could be
+    escaped.
 
--   It introduces an alternative syntax for hard line breaks, a
+-   It introduces an [alternative syntax for hard line
+    breaks](http://jgm.github.io/stmd/spec.html#hard-line-breaks)), a
     backslash at the end of the line, supplementing the
     two-spaces-at-the-end-of-line rule. This is motivated by persistent
     complaints about the “invisible” nature of the two-space rule.
@@ -93,7 +96,7 @@ the canonical syntax description:
     implementation flubs up.)
 
 -   The spec stipulates that two blank lines break out of all list
-    contexts. This is an attempt to deal with issues that often come up
+    contexts.  This is an attempt to deal with issues that often come up
     when someone wants to have two adjacent lists, or a list followed by
     an indented code block.
 
@@ -101,7 +104,14 @@ the canonical syntax description:
     vice versa, starts a new list. I think that is almost always going
     to be the writer's intent.
 
+-   The number that begins an ordered list item may be followed by
+    either `.` or `)`. Changing the delimiter style starts a new
+    list.
+
 -   The start number of an ordered list is significant.
+
+-   [Fenced code blocks](http://jgm.github.io/stmd/spec.html#fenced-code-blocks) are supported, delimited by either
+    backticks (` ``` `) or tildes (` ~~~ `).
 
 In all of this, I have been guided by eight years experience writing
 markdown implementations in several languages, including the first

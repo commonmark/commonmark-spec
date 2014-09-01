@@ -39,7 +39,7 @@ testjs: spec.txt
 #	perl runtests.pl js/markdown $<
 
 benchjs:
-	node js/bench.js
+	node js/bench.js ${BENCHINP}
 
 $(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab.o $(SRCDIR)/bstrlib.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
 	$(CC) $(LDFLAGS) -o $@ $^
@@ -62,10 +62,14 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: README.html spec.html narrative.html
+update-site: spec.html narrative.html
 	cp spec.html _site/
 	cp narrative.html _site/index.html
 	cp -r js/* _site/js/
+	cd _site
+	git commit -a -m "Updated site for latest spec, narrative, js"
+	git push
+	cd ..
 
 clean:
 	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
