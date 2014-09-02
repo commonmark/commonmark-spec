@@ -12,8 +12,8 @@ typedef struct {
 } chunk;
 
 typedef struct Inline {
-	enum { str, softbreak, linebreak, code, raw_html, entity,
-		emph, strong, link, image } tag;
+	enum { INL_STRING, INL_SOFTBREAK, INL_LINEBREAK, INL_CODE, INL_RAW_HTML, INL_ENTITY,
+		INL_EMPH, INL_STRONG, INL_LINK, INL_IMAGE } tag;
 	union {
 		chunk literal;
 		struct Inline *inlines;

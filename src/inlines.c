@@ -151,15 +151,15 @@ inline static inl* make_simple(int t)
 }
 
 // Macros for creating various kinds of inlines.
-#define make_str(s) make_literal(str, s)
-#define make_code(s) make_literal(code, s)
-#define make_raw_html(s) make_literal(raw_html, s)
-#define make_entity(s) make_literal(entity, s)
-#define make_linebreak() make_simple(linebreak)
-#define make_softbreak() make_simple(softbreak)
-#define make_link(label, url, title) make_linkable(link, label, url, title)
-#define make_emph(contents) make_inlines(emph, contents)
-#define make_strong(contents) make_inlines(strong, contents)
+#define make_str(s) make_literal(INL_STRING, s)
+#define make_code(s) make_literal(INL_CODE, s)
+#define make_raw_html(s) make_literal(INL_RAW_HTML, s)
+#define make_entity(s) make_literal(INL_ENTITY, s)
+#define make_linebreak() make_simple(INL_LINEBREAK)
+#define make_softbreak() make_simple(INL_SOFTBREAK)
+#define make_link(label, url, title) make_linkable(INL_LINK, label, url, title)
+#define make_emph(contents) make_inlines(INL_EMPH, contents)
+#define make_strong(contents) make_inlines(INL_STRONG, contents)
 
 // Free an inline list.
 extern void free_inlines(inl* e)
@@ -167,23 +167,23 @@ extern void free_inlines(inl* e)
 	inl * next;
 	while (e != NULL) {
 		switch (e->tag){
-			case str:
-			case raw_html:
-			case code:
-			case entity:
+			case INL_STRING:
+			case INL_RAW_HTML:
+			case INL_CODE:
+			case INL_ENTITY:
 				chunk_free(&e->content.literal);
 				break;
-			case linebreak:
-			case softbreak:
+			case INL_LINEBREAK:
+			case INL_SOFTBREAK:
 				break;
-			case link:
-			case image:
+			case INL_LINK:
+			case INL_IMAGE:
 				free(e->content.linkable.url);
 				free(e->content.linkable.title);
 				free_inlines(e->content.linkable.label);
 				break;
-			case emph:
-			case strong:
+			case INL_EMPH:
+			case INL_STRONG:
 				free_inlines(e->content.inlines);
 				break;
 			default:
@@ -454,7 +454,7 @@ static inl* handle_strong_emph(subject* subj, char c)
 				numdelims = scan_delims(subj, c, &can_open, &can_close);
 				if (numdelims >= 1 && can_close) {
 					subj->pos += 1;
-					first_head->tag = emph;
+					first_head->tag = INL_EMPH;
 					chunk_free(&first_head->content.literal);
 					first_head->content.inlines = first_head->next;
 					first_head->next = NULL;
@@ -471,7 +471,7 @@ static inl* handle_strong_emph(subject* subj, char c)
 				numdelims = scan_delims(subj, c, &can_open, &can_close);
 				if (numdelims >= 2 && can_close) {
 					subj->pos += 2;
-					first_head->tag = strong;
+					first_head->tag = INL_STRONG;
 					chunk_free(&first_head->content.literal);
 					first_head->content.inlines = first_head->next;
 					first_head->next = NULL;
@@ -502,10 +502,10 @@ static inl* handle_strong_emph(subject* subj, char c)
 					}
 					subj->pos += numdelims;
 					if (first_close) {
-						first_head->tag = first_close_delims == 1 ? strong : emph;
+						first_head->tag = first_close_delims == 1 ? INL_STRONG : INL_EMPH;
 						chunk_free(&first_head->content.literal);
 						first_head->content.inlines =
-							make_inlines(first_close_delims == 1 ? emph : strong,
+							make_inlines(first_close_delims == 1 ? INL_EMPH : INL_STRONG,
 									first_head->next);
 
 						il = first_head->next;
@@ -989,8 +989,8 @@ static int parse_inline(subject* subj, inl ** last)
 			advance(subj);
 			if (peek_char(subj) == '[') {
 				new = handle_left_bracket(subj);
-				if (new != NULL && new->tag == link) {
-					new->tag = image;
+				if (new != NULL && new->tag == INL_LINK) {
+					new->tag = INL_IMAGE;
 				} else {
 					new = append_inlines(make_str(chunk_literal("!")), new);
 				}

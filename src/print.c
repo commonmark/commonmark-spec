@@ -124,35 +124,35 @@ extern void print_inlines(inl* ils, int indent)
 			putchar(' ');
 		}
 		switch(ils->tag) {
-		case str:
+		case INL_STRING:
 			printf("str ");
 			print_str(ils->content.literal.data, ils->content.literal.len);
 			putchar('\n');
 			break;
-		case linebreak:
+		case INL_LINEBREAK:
 			printf("linebreak\n");
 			break;
-		case softbreak:
+		case INL_SOFTBREAK:
 			printf("softbreak\n");
 			break;
-		case code:
+		case INL_CODE:
 			printf("code ");
 			print_str(ils->content.literal.data, ils->content.literal.len);
 			putchar('\n');
 			break;
-		case raw_html:
+		case INL_RAW_HTML:
 			printf("html ");
 			print_str(ils->content.literal.data, ils->content.literal.len);
 			putchar('\n');
 			break;
-		case entity:
+		case INL_ENTITY:
 			printf("entity ");
 			print_str(ils->content.literal.data, ils->content.literal.len);
 			putchar('\n');
 			break;
-		case link:
-		case image:
-			printf("%s url=", ils->tag == link ? "link" : "image");
+		case INL_LINK:
+		case INL_IMAGE:
+			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");
 			print_str(ils->content.linkable.url, -1);
 			if (ils->content.linkable.title) {
 				printf(" title=");
@@ -161,11 +161,11 @@ extern void print_inlines(inl* ils, int indent)
 			putchar('\n');
 			print_inlines(ils->content.linkable.label, indent + 2);
 			break;
-		case strong:
+		case INL_STRONG:
 			printf("strong\n");
 			print_inlines(ils->content.linkable.label, indent + 2);
 			break;
-		case emph:
+		case INL_EMPH:
 			printf("emph\n");
 			print_inlines(ils->content.linkable.label, indent + 2);
 			break;
