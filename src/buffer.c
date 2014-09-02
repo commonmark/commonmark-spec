@@ -245,11 +245,11 @@ int gh_buf_cmp(const gh_buf *a, const gh_buf *b)
 
 int gh_buf_strchr(const gh_buf *buf, int c, int pos)
 {
-	const char *p = memchr(buf->ptr + pos, c, buf->size - pos);
+	const unsigned char *p = memchr(buf->ptr + pos, c, buf->size - pos);
 	if (!p)
 		return -1;
 
-	return (int)(p - buf->ptr);
+	return (int)(p - (const unsigned char *)buf->ptr);
 }
 
 int gh_buf_strrchr(const gh_buf *buf, int c, int pos)
@@ -264,7 +264,7 @@ int gh_buf_strrchr(const gh_buf *buf, int c, int pos)
 	return -1;
 }
 
-void gh_buf_truncate(gh_buf *buf, size_t len)
+void gh_buf_truncate(gh_buf *buf, int len)
 {
 	if (len < buf->size) {
 		buf->size = len;

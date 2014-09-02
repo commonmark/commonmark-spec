@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "stmd.h"
 
@@ -83,9 +84,9 @@ ssize_t utf8proc_iterate(const uint8_t *str, ssize_t str_len, int32_t *dst)
 	return length;
 }
 
-void utf8_encode_char(int32_t uc, gh_buf *buf)
+void utf8proc_encode_char(int32_t uc, gh_buf *buf)
 {
-	char dst[4];
+	unsigned char dst[4];
 	int len = 0;
 
 	if (uc < 0x00) {
@@ -99,7 +100,7 @@ void utf8_encode_char(int32_t uc, gh_buf *buf)
 		len = 2;
 	} else if (uc == 0xFFFF) {
 		dst[0] = 0xFF;
-		return 1;
+		len = 1;
 	} else if (uc == 0xFFFE) {
 		dst[0] = 0xFE;
 		len = 1;

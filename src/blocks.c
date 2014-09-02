@@ -8,6 +8,7 @@
 #include "scanners.h"
 #include "uthash.h"
 
+static void incorporate_line(gh_buf *ln, int line_number, block** curptr);
 static void finalize(block* b, int line_number);
 
 static block* make_block(int tag, int start_line, int start_column)
@@ -390,7 +391,7 @@ static void expand_tabs(gh_buf *ob, const unsigned char *line, size_t size)
 	}
 }
 
-static block *finalize_parsing(block *document, int linenum)
+static block *finalize_document(block *document, int linenum)
 {
 	while (document != document->top) {
 		finalize(document, linenum);
@@ -411,7 +412,7 @@ extern block *stmd_parse_file(FILE *f)
 	block *document = make_document();
 
 	while (fgets((char *)buffer, sizeof(buffer), f)) {
-		expand_tabs(&line, buffer, strlen(buffer));
+		expand_tabs(&line, buffer, strlen((char *)buffer));
 		incorporate_line(&line, linenum, &document);
 		gh_buf_clear(&line);
 		linenum++;
@@ -429,7 +430,7 @@ extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
 	block *document = make_document();
 
 	while (buffer < end) {
-		const char *eol = memchr(buffer, '\n', end - buffer);
+		const unsigned char *eol = memchr(buffer, '\n', end - buffer);
 
 		if (!eol) {
 			expand_tabs(&line, buffer, end - buffer);
@@ -449,9 +450,7 @@ extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
 }
 
 // Process one line at a time, modifying a block.
-// Returns 0 if successful.  curptr is changed to point to
-// the currently open block.
-extern void incorporate_line(gh_buf *ln, int line_number, block** curptr)
+static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 {
 	block* last_matched_container;
 	int offset = 0;
