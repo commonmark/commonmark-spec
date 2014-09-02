@@ -84,7 +84,7 @@ extern reference* lookup_reference(reference** refmap, chunk *label)
 	if (refmap != NULL) {
 		HASH_FIND_STR(*refmap, (char*)norm, ref);
 	}
-	free(label);
+	free(norm);
 	return ref;
 }
 
@@ -262,7 +262,7 @@ inline static unsigned char *chunk_to_cstr(chunk *c)
 
 inline static chunk chunk_literal(const char *data)
 {
-	chunk c = {data, strlen(data), 0};
+	chunk c = {data, data ? strlen(data) : 0, 0};
 	return c;
 }
 
@@ -937,6 +937,7 @@ static int find_special_char(subject *subj)
 	while (n < size) {
 		if (strchr("\n\\`&_*[]<!", gh_buf_at(subj->buffer, n)))
 			return n;
+		n++;
 	}
 
 	return -1;
@@ -974,7 +975,9 @@ static int parse_inline(subject* subj, inl ** last)
 		case '_':
 			if (subj->pos > 0 && (isalnum(gh_buf_at(subj->buffer, subj->pos - 1)) ||
 						gh_buf_at(subj->buffer, subj->pos - 1) == '_')) {
-				goto text_literal;
+				new = make_str(chunk_literal("_"));
+				advance(subj);
+				break;
 			}
 
 			new = handle_strong_emph(subj, '_');
