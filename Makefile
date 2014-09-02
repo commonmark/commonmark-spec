@@ -6,7 +6,7 @@ DATADIR=data
 PROG=./stmd
 
 .PHONY: all oldtests test spec benchjs testjs
-all: $(SRCDIR)/case_fold_switch.c $(PROG)
+all: $(SRCDIR)/case_fold_switch.inc $(PROG)
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -41,13 +41,16 @@ testjs: spec.txt
 benchjs:
 	node js/bench.js ${BENCHINP}
 
-$(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
+HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o
+STMD_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o
+
+$(PROG): $(SRCDIR)/main.c $(HTML_OBJ) $(STMD_OBJ)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -bis $< > $@ || (rm $@ && false)
 
-$(SRCDIR)/case_fold_switch.inc $(DATADIR)/CaseFolding-3.2.0.txt
+$(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
 
 .PHONY: leakcheck clean fuzztest dingus upload
@@ -72,7 +75,7 @@ update-site: spec.html narrative.html
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html

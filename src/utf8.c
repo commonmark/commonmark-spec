@@ -1,6 +1,8 @@
 #include <stdlib.h>
-#include "bstrlib.h"
-#include "debug.h"
+#include <stdint.h>
+#include <unistd.h>
+
+#include "stmd.h"
 
 static const int8_t utf8proc_utf8class[256] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

@@ -105,19 +105,14 @@ extern block* add_child(block* parent,
                         int block_type, int start_line, int start_column);
 void free_blocks(block* e);
 
-block *stmd_parse_document(const char *buffer, size_t len);
-
-// FOR NOW:
-void process_inlines(block* cur, reference** refmap);
-void incorporate_line(gh_buf *ln, int line_number, block** curptr);
-void finalize(block* b, int line_number);
+extern block *stmd_parse_document(const unsigned char *buffer, size_t len);
+extern block *stmd_parse_file(FILE *f);
 
 void print_inlines(inl* ils, int indent);
 void print_blocks(block* blk, int indent);
 
-/* TODO */
-// int blocks_to_html(block* b, bstring* result, bool tight);
-// int inlines_to_html(inl* b, bstring* result);
+void blocks_to_html(gh_buf *html, block *b, bool tight);
+void inlines_to_html(gh_buf *html, inl *b);
 
 void utf8proc_case_fold(gh_buf *dest, const unsigned char *str, int len);
 

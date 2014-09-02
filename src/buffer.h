@@ -24,13 +24,6 @@ extern unsigned char gh_buf__oom[];
  */
 extern void gh_buf_init(gh_buf *buf, int initial_size);
 
-static inline void gh_buf_static(gh_buf *buf, unsigned char *source)
-{
-	buf->ptr = source;
-	buf->size = strlen(source);
-	buf->asize = -1;
-}
-
 /**
  * Attempt to grow the buffer to hold at least `target_size` bytes.
  *
@@ -81,13 +74,13 @@ static inline size_t gh_buf_len(const gh_buf *buf)
 
 extern int gh_buf_cmp(const gh_buf *a, const gh_buf *b);
 
-extern void gh_buf_attach(gh_buf *buf, char *ptr, int asize);
-extern char *gh_buf_detach(gh_buf *buf);
+extern void gh_buf_attach(gh_buf *buf, unsigned char *ptr, int asize);
+extern unsigned char *gh_buf_detach(gh_buf *buf);
 extern void gh_buf_copy_cstr(char *data, int datasize, const gh_buf *buf);
 
 static inline const char *gh_buf_cstr(const gh_buf *buf)
 {
-	return buf->ptr;
+	return (char *)buf->ptr;
 }
 
 #define gh_buf_at(buf, n) ((buf)->ptr[n])
@@ -100,10 +93,10 @@ static inline const char *gh_buf_cstr(const gh_buf *buf)
  * return code of these functions and call them in a series then just call
  * gh_buf_oom at the end.
  */
-extern int gh_buf_set(gh_buf *buf, const char *data, int len);
+extern int gh_buf_set(gh_buf *buf, const unsigned char *data, int len);
 extern int gh_buf_sets(gh_buf *buf, const char *string);
-extern int gh_buf_putc(gh_buf *buf, char c);
-extern int gh_buf_put(gh_buf *buf, const char *data, int len);
+extern int gh_buf_putc(gh_buf *buf, int c);
+extern int gh_buf_put(gh_buf *buf, const unsigned char *data, int len);
 extern int gh_buf_puts(gh_buf *buf, const char *string);
 extern int gh_buf_printf(gh_buf *buf, const char *format, ...)
 	__attribute__((format (printf, 2, 3)));

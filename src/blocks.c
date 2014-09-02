@@ -3,11 +3,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "bstrlib.h"
+
 #include "stmd.h"
-#include "uthash.h"
-#include "debug.h"
 #include "scanners.h"
+#include "uthash.h"
+
+static void finalize(block* b, int line_number);
 
 static block* make_block(int tag, int start_line, int start_column)
 {
@@ -140,7 +141,7 @@ static int break_out_of_lists(block ** bptr, int line_number)
 }
 
 
-extern void finalize(block* b, int line_number)
+static void finalize(block* b, int line_number)
 {
 	int firstlinelen;
 	int pos;
@@ -364,7 +365,7 @@ static int lists_match(struct ListData list_data,
 			list_data.bullet_char == item_data.bullet_char);
 }
 
-static void expand_tabs(gh_buf *ob, const char *line, size_t size)
+static void expand_tabs(gh_buf *ob, const unsigned char *line, size_t size)
 {
 	size_t  i = 0, tab = 0;
 
@@ -389,13 +390,43 @@ static void expand_tabs(gh_buf *ob, const char *line, size_t size)
 	}
 }
 
-extern block *stmd_parse_document(const char *buffer, size_t len)
+static block *finalize_parsing(block *document, int linenum)
+{
+	while (document != document->top) {
+		finalize(document, linenum);
+		document = document->parent;
+	}
+
+	finalize(document, linenum);
+	process_inlines(document, document->attributes.refmap);
+
+	return document;
+}
+
+extern block *stmd_parse_file(FILE *f)
 {
 	gh_buf line = GH_BUF_INIT;
-
-	block *document = make_document();
+	unsigned char buffer[4096];
 	int linenum = 1;
-	const char *end = buffer + len;
+	block *document = make_document();
+
+	while (fgets((char *)buffer, sizeof(buffer), f)) {
+		expand_tabs(&line, buffer, strlen(buffer));
+		incorporate_line(&line, linenum, &document);
+		gh_buf_clear(&line);
+		linenum++;
+	}
+
+	gh_buf_free(&line);
+	return finalize_document(document, linenum);
+}
+
+extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
+{
+	gh_buf line = GH_BUF_INIT;
+	int linenum = 1;
+	const unsigned char *end = buffer + len;
+	block *document = make_document();
 
 	while (buffer < end) {
 		const char *eol = memchr(buffer, '\n', end - buffer);
@@ -414,16 +445,7 @@ extern block *stmd_parse_document(const char *buffer, size_t len)
 	}
 
 	gh_buf_free(&line);
-
-	while (document != document->top) {
-		finalize(document, linenum);
-		document = document->parent;
-	}
-
-	finalize(document, linenum);
-	process_inlines(document, document->attributes.refmap);
-
-	return document;
+	return finalize_document(document, linenum);
 }
 
 // Process one line at a time, modifying a block.

@@ -6,9 +6,7 @@
 
 #include "stmd.h"
 #include "uthash.h"
-#include "debug.h"
 #include "scanners.h"
-#include "utf8.h"
 
 typedef struct Subject {
   const gh_buf   *buffer;
@@ -119,7 +117,7 @@ inline static inl* make_linkable(int t, inl* label, chunk url, chunk title)
 	e->tag = t;
 	e->content.linkable.label = label;
 	e->content.linkable.url   = chunk_to_cstr(&url);
-	e->content.linkable.title = chunk_to_cstr(&title);
+	e->content.linkable.title = url.len ? chunk_to_cstr(&title) : NULL;
 	e->next = NULL;
 	return e;
 }
