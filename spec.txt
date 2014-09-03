@@ -2208,7 +2208,7 @@ A blank line always separates block quotes:
 .
 
 (Most current markdown implementations, including John Gruber's
-original `Markdown.pl`, will parse this eample as a single block quote
+original `Markdown.pl`, will parse this example as a single block quote
 with two paragraphs.  But it seems better to allow the author to decide
 whether two block quotes or one are wanted.)
 
