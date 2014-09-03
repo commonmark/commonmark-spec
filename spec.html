@@ -179,7 +179,7 @@ a.footnoteRef > sup {
 <p>This document is generated from a text file, <code>spec.txt</code>, written in markdown with a small extension for the side-by-side tests. The script <code>spec2md.pl</code> can be used to turn <code>spec.txt</code> into pandoc markdown, which can then be converted into other formats.</p>
 <p>In the examples, the <code>→</code> character is used to represent tabs.</p>
 <h1 id="preprocessing"><span class="header-section-number">2</span> Preprocessing</h1>
-<p>A <a href="#line">line</a> <a id="line"/> is a sequence of one or more characters followed by a line ending (CR, LF, or CRLF) or by the end of file.</p>
+<p>A <a href="#line">line</a> <a id="line"/> is a sequence of zero or more characters followed by a line ending (CR, LF, or CRLF) or by the end of file.</p>
 <p>This spec does not specify an encoding; it thinks of lines as composed of characters rather than bytes. A conforming parser may be limited to a certain encoding.</p>
 <p>Tabs in lines are expanded to spaces, with a tab stop of 4 characters:</p>
 <div id="example-1" class="example" data-section="Preprocessing">
