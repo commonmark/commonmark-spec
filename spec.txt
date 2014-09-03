@@ -659,7 +659,7 @@ with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  A [setext header
 underline](#setext-header-underline) <a id="setext-header-underline"/>
 is a sequence of `=` characters or a sequence of `-` characters, with no
-more than 3 spaces indentation and any number of leading or trailing
+more than 3 spaces indentation and any number of trailing
 spaces.  The header is a level 1 header if `=` characters are used, and
 a level 2 header if `-` characters are used.  The contents of the header
 are the result of parsing the first line as markdown inline content.
