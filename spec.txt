@@ -2014,10 +2014,10 @@ The following rules define [block quotes](#block-quote):
     more lines in which the next non-space character after the [block
     quote marker](#block-quote-marker) is [paragraph continuation
     text](#paragraph-continuation-text) is a block quote with *Bs* as
-    its content.  [Paragraph continuation
-    text](#paragraph-continuation-text) is text that will be parsed as
-    part of the content of a paragraph, but does not occur at the
-    beginning of the paragraph.
+    its content.  <a id="paragraph-continuation-text"/>
+    [Paragraph continuation text](#paragraph-continuation-text) is text
+    that will be parsed as part of the content of a paragraph, but does
+    not occur at the beginning of the paragraph.
 
 3.  **Consecutiveness.**  A document cannot contain two [block
     quotes](#block-quote) in a row unless there is a [blank
