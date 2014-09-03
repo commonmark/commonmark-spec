@@ -1064,7 +1064,7 @@ var incorporateLine = function(ln, line_number) {
       container.level = match[0].trim().length; // number of #s
       // remove trailing ###s:
       container.strings =
-        [ln.slice(offset).replace(/(?:(\\#) *#+| *#+) *$/,'$1')];
+            [ln.slice(offset).replace(/(?:(\\#) *#*| *#+) *$/,'$1')];
       break;
 
     } else if ((match = ln.slice(first_nonspace).match(/^`{3,}(?!.*`)|^~{3,}(?!.*~)/))) {
