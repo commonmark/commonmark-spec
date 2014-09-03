@@ -192,7 +192,7 @@ In the examples, the `→` character is used to represent tabs.
 # Preprocessing
 
 A [line](#line) <a id="line"/>
-is a sequence of one or more characters followed by a line
+is a sequence of zero or more characters followed by a line
 ending (CR, LF, or CRLF) or by the end of
 file.
 
