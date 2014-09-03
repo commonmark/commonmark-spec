@@ -834,7 +834,7 @@ Example 57
   chunk2
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
-<p>An indented code code block cannot interrupt a paragraph. (This allows hanging indents and the like.)</p>
+<p>An indented code block cannot interrupt a paragraph. (This allows hanging indents and the like.)</p>
 <div id="example-58" class="example" data-section="Indented code blocks">
 <div class="examplenum">
 Example 58
@@ -909,9 +909,9 @@ Example 63
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <h2 id="fenced-code-blocks"><span class="header-section-number">4.5</span> Fenced code blocks</h2>
-<p>A <a href="#code-fence">code fence</a> <a id="code-fence"/> is a sequence of at least three consecutive backtick characters (<code>`</code>) or tildes (<code>~</code>). (Tildes and backticks cannot be mixed.). A <a href="#fenced-code-block">fenced code block</a> <a id="fenced-code-block"/> begins with a code fence, indented no more than three spaces.</p>
+<p>A <a href="#code-fence">code fence</a> <a id="code-fence"/> is a sequence of at least three consecutive backtick characters (<code>`</code>) or tildes (<code>~</code>). (Tildes and backticks cannot be mixed.) A <a href="#fenced-code-block">fenced code block</a> <a id="fenced-code-block"/> begins with a code fence, indented no more than three spaces.</p>
 <p>The line with the opening code fence may optionally contain some text following the code fence; this is trimmed of leading and trailing spaces and called the <a href="#info-string">info string</a>. <a
-id="info-string"/> The [info string] may not contain any backtick characters. (The reason for this restriction is that otherwise some inline code would be incorrectly interpreted as the beginning of a fenced code block.)</p>
+id="info-string"/> The info string may not contain any backtick characters. (The reason for this restriction is that otherwise some inline code would be incorrectly interpreted as the beginning of a fenced code block.)</p>
 <p>The content of the code block consists of all subsequent lines, until a closing <a href="#code-fence">code fence</a> of the same type as the code block began with (backticks or tildes), and with at least as many backticks or tildes as the opening code fence. If the leading code fence is indented N spaces, then up to N spaces of indentation are removed from each line of the content (if present). (If a content line is not indented, it is preserved unchanged. If it is indented less than N spaces, all of the indentation is removed.)</p>
 <p>The closing code fence may be indented up to three spaces, and may be followed only by spaces, which are ignored. If the end of the containing block (or document) is reached and no closing code fence has been found, the code block contains all of the lines after the opening code fence until the end of the containing block (or document). (An alternative spec would require backtracking in the event that a closing code fence is not found. But this makes parsing much less efficient, and there seems to be no real down side to the behavior described here.)</p>
 <p>A fenced code block may interrupt a paragraph, and does not require a blank line either before or after.</p>
@@ -3272,7 +3272,7 @@ Example 225
 <pre class="markdown"><code>&amp;MadeUpEntity;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;MadeUpEntity;&lt;/p&gt;</code></pre>
 </div>
-<p>Entities are recognized in any any context besides code spans or code blocks, including raw HTML, URLs, <a href="#link-title">link titles</a>, and <a href="#fenced-code-block">fenced code block</a> info strings:</p>
+<p>Entities are recognized in any context besides code spans or code blocks, including raw HTML, URLs, <a href="#link-title">link titles</a>, and <a href="#fenced-code-block">fenced code block</a> info strings:</p>
 <div id="example-226" class="example" data-section="Entities">
 <div class="examplenum">
 Example 226
@@ -4099,7 +4099,7 @@ Example 324
 <pre class="html"><code>&lt;p&gt;***foo &lt;em&gt;bar&lt;/em&gt;&lt;/p&gt;</code></pre>
 </div>
 <h2 id="links"><span class="header-section-number">6.5</span> Links</h2>
-<p>A link contains a <a href="#link-label">link label</a> (the visible text), a <a href="#destination">destination</a> (the URI that is the link destination), and optionally a <a href="#link-title">link title</a>. There are two basic kinds of links in markdown. In <a href="#inline-links">inline links</a> the destination and title are given immediately after the lable. In <a href="#reference-links">reference links</a> the destination and title are defined elsewhere in the document.</p>
+<p>A link contains a <a href="#link-label">link label</a> (the visible text), a <a href="#destination">destination</a> (the URI that is the link destination), and optionally a <a href="#link-title">link title</a>. There are two basic kinds of links in markdown. In <a href="#inline-links">inline links</a> the destination and title are given immediately after the label. In <a href="#reference-links">reference links</a> the destination and title are defined elsewhere in the document.</p>
 <p>A <a href="#link-label">link label</a> <a id="link-label"/> consists of</p>
 <ul>
 <li>an opening <code>[</code>, followed by</li>
