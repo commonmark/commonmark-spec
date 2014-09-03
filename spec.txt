@@ -931,7 +931,7 @@ in interior blank lines:
 </code></pre>
 .
 
-An indented code code block cannot interrupt a paragraph.  (This
+An indented code block cannot interrupt a paragraph.  (This
 allows hanging indents and the like.)
 
 .
@@ -1015,14 +1015,14 @@ Trailing spaces are included in the code block's content:
 
 A [code fence](#code-fence) <a id="code-fence"/> is a sequence
 of at least three consecutive backtick characters (`` ` ``) or
-tildes (`~`).  (Tildes and backticks cannot be mixed.).
+tildes (`~`).  (Tildes and backticks cannot be mixed.)
 A [fenced code block](#fenced-code-block) <a id="fenced-code-block"/>
 begins with a code fence, indented no more than three spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
 spaces and called the [info string](#info-string). <a
-id="info-string"/> The [info string] may not contain any backtick
+id="info-string"/> The info string may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
 beginning of a fenced code block.)
@@ -3778,7 +3778,7 @@ named entities are recognized as entities here:
 <p>&MadeUpEntity;</p>
 .
 
-Entities are recognized in any any context besides code spans or
+Entities are recognized in any context besides code spans or
 code blocks, including raw HTML, URLs, [link titles](#link-title), and
 [fenced code block](#fenced-code-block) info strings:
 
@@ -4636,7 +4636,7 @@ A link contains a [link label](#link-label) (the visible text),
 a [destination](#destination) (the URI that is the link destination),
 and optionally a [link title](#link-title).  There are two basic kinds
 of links in markdown.  In [inline links](#inline-links) the destination
-and title are given immediately after the lable.  In [reference
+and title are given immediately after the label.  In [reference
 links](#reference-links) the destination and title are defined elsewhere
 in the document.
 
