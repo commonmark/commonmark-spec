@@ -68,7 +68,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				cr(html);
 				gh_buf_puts(html, "<li>");
 				blocks_to_html(html, b->children, tight);
-				gh_buf_trim(html);
+				gh_buf_trim(html); /* TODO: rtrim */
 				gh_buf_puts(html, "</li>");
 				cr(html);
 				break;
@@ -106,7 +106,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				cr(html);
 				gh_buf_puts(html, "<pre><code>");
 				escape_html(html, b->string_content.ptr, b->string_content.size);
-				gh_buf_puts(html, "</pre></code>");
+				gh_buf_puts(html, "</code></pre>");
 				cr(html);
 				break;
 

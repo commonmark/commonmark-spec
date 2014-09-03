@@ -54,16 +54,8 @@ houdini_escape_html0(gh_buf *ob, const uint8_t *src, size_t size, int secure)
 		while (i < size && (esc = HTML_ESCAPE_TABLE[src[i]]) == 0)
 			i++;
 
-		if (i > org) {
-			if (unlikely(org == 0)) {
-				if (i >= size)
-					return 0;
-
-				gh_buf_grow(ob, HOUDINI_ESCAPED_SIZE(size));
-			}
-
+		if (i > org)
 			gh_buf_put(ob, src + org, i - org);
-		}
 
 		/* escaping */
 		if (unlikely(i >= size))

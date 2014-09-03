@@ -9,7 +9,7 @@ static void print_str(const unsigned char *s, int len)
 	int i;
 
 	if (len < 0)
-		len = strlen(s);
+		len = strlen((char *)s);
 
 	putchar('"');
 	for (i = 0; i < len; ++i) {

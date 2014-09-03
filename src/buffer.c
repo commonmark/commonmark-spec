@@ -95,7 +95,7 @@ void gh_buf_clear(gh_buf *buf)
 
 int gh_buf_set(gh_buf *buf, const unsigned char *data, int len)
 {
-	if (len == 0 || data == NULL) {
+	if (len <= 0 || data == NULL) {
 		gh_buf_clear(buf);
 	} else {
 		if (data != buf->ptr) {
@@ -125,6 +125,9 @@ int gh_buf_putc(gh_buf *buf, int c)
 
 int gh_buf_put(gh_buf *buf, const unsigned char *data, int len)
 {
+	if (len <= 0)
+		return 0;
+
 	ENSURE_SIZE(buf, buf->size + len + 1);
 	memmove(buf->ptr + buf->size, data, len);
 	buf->size += len;
@@ -272,15 +275,28 @@ void gh_buf_truncate(gh_buf *buf, int len)
 	}
 }
 
+void gh_buf_drop(gh_buf *buf, int n)
+{
+	if (n > 0) {
+		buf->size = buf->size - n;
+		if (buf->size)
+			memmove(buf->ptr, buf->ptr + n, buf->size);
+
+		buf->ptr[buf->size] = '\0';
+	}
+}
+
 void gh_buf_trim(gh_buf *buf)
 {
-	/* TODO: leading whitespace? */
-	/*
+	int i = 0;
+
+	if (!buf->size)
+		return;
+
 	while (i < buf->size && isspace(buf->ptr[i]))
 		i++;
 
-	gh_buf_truncate(buf, i);
-	*/
+	gh_buf_drop(buf, i);
 
 	/* rtrim */
 	while (buf->size > 0) {

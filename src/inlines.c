@@ -9,10 +9,10 @@
 #include "scanners.h"
 
 typedef struct Subject {
-  const gh_buf   *buffer;
-  int            pos;
-  reference**    reference_map;
-  int            label_nestlevel;
+	chunk input;
+	int pos;
+	int            label_nestlevel;
+	reference**    reference_map;
 } subject;
 
 reference* lookup_reference(reference** refmap, chunk *label);
@@ -27,11 +27,15 @@ inline static void chunk_trim(chunk *c);
 
 inline static chunk chunk_literal(const char *data);
 inline static chunk chunk_buf_detach(gh_buf *buf);
-inline static chunk chunk_buf(const gh_buf *buf, int pos, int len);
+inline static chunk chunk_dup(const chunk *ch, int pos, int len);
 
 static inl *parse_chunk_inlines(chunk *chunk, reference** refmap);
 static inl *parse_inlines_while(subject* subj, int (*f)(subject*));
 static int parse_inline(subject* subj, inl ** last);
+
+static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap);
+static void subject_from_buf(subject *e, gh_buf *buffer, reference** refmap);
+static int subject_find_special_char(subject *subj);
 
 extern void free_reference(reference *ref) {
 	free(ref->label);
@@ -101,10 +105,12 @@ extern reference* make_reference(chunk *label, chunk *url, chunk *title)
 extern void add_reference(reference** refmap, reference* ref)
 {
 	reference * t = NULL;
-	HASH_FIND(hh, *refmap, (char*)ref->label, (unsigned)strlen(ref->label), t);
+	const char *label = (const char *)ref->label;
+
+	HASH_FIND(hh, *refmap, label, strlen(label), t);
 
 	if (t == NULL) {
-		HASH_ADD_KEYPTR(hh, *refmap, (char*)ref->label, (unsigned)strlen(ref->label), ref);
+		HASH_ADD_KEYPTR(hh, *refmap, label, strlen(label), ref);
 	} else {
 		free_reference(ref);  // we free this now since it won't be in the refmap
 	}
@@ -210,13 +216,28 @@ inline static inl* append_inlines(inl* a, inl* b)
 	return a;
 }
 
-// Make a 'subject' from an input string.
-static void init_subject(subject *e, gh_buf *buffer, int input_pos, reference** refmap)
+static void subject_from_buf(subject *e, gh_buf *buffer, reference** refmap)
 {
-	e->buffer = buffer;
-	e->pos = input_pos;
+	e->input.data = buffer->ptr;
+	e->input.len = buffer->size;
+	e->input.alloc = 0;
+	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->reference_map = refmap;
+
+	chunk_rtrim(&e->input);
+}
+
+static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap)
+{
+	e->input.data = chunk->data;
+	e->input.len = chunk->len;
+	e->input.alloc = 0;
+	e->pos = 0;
+	e->label_nestlevel = 0;
+	e->reference_map = refmap;
+
+	chunk_rtrim(&e->input);
 }
 
 inline static int isbacktick(int c)
@@ -224,73 +245,20 @@ inline static int isbacktick(int c)
 	return (c == '`');
 }
 
-inline static void chunk_free(chunk *c)
+static inline unsigned char peek_char(subject *subj)
 {
-	if (c->alloc)
-		free((char *)c->data);
-
-	c->data = NULL;
-	c->alloc = 0;
-	c->len = 0;
+	return (subj->pos < subj->input.len) ? subj->input.data[subj->pos] : 0;
 }
 
-inline static void chunk_trim(chunk *c)
+static inline unsigned char peek_at(subject *subj, int pos)
 {
-	while (c->len && isspace(c->data[0])) {
-		c->data++;
-		c->len--;
-	}
-
-	while (c->len > 0) {
-		if (!isspace(c->data[c->len - 1]))
-			break;
-
-		c->len--;
-	}
+	return subj->input.data[pos];
 }
-
-inline static unsigned char *chunk_to_cstr(chunk *c)
-{
-	unsigned char *str;
-
-	str = malloc(c->len + 1);
-	memcpy(str, c->data, c->len);
-	str[c->len] = 0;
-
-	return str;
-}
-
-inline static chunk chunk_literal(const char *data)
-{
-	chunk c = {data, data ? strlen(data) : 0, 0};
-	return c;
-}
-
-inline static chunk chunk_buf(const gh_buf *buf, int pos, int len)
-{
-	chunk c = {buf->ptr + pos, len, 0};
-	return c;
-}
-
-inline static chunk chunk_buf_detach(gh_buf *buf)
-{
-	chunk c;
-
-	c.len = buf->size;
-	c.data = gh_buf_detach(buf);
-	c.alloc = 1;
-
-	return c;
-}
-
-// Return the next character in the subject, without advancing.
-// Return 0 if at the end of the subject.
-#define peek_char(subj) gh_buf_at((subj)->buffer, (subj)->pos)
 
 // Return true if there are more characters in the subject.
 inline static int is_eof(subject* subj)
 {
-	return (subj->pos >= gh_buf_len(subj->buffer));
+	return (subj->pos >= subj->input.len);
 }
 
 // Advance the subject.  Doesn't check for eof.
@@ -308,7 +276,7 @@ inline static chunk take_while(subject* subj, int (*f)(int))
 		len++;
 	}
 
-	return chunk_buf(subj->buffer, startpos, len);
+	return chunk_dup(&subj->input, startpos, len);
 }
 
 // Try to process a backtick code span that began with a
@@ -388,7 +356,7 @@ static inl* handle_backticks(subject *subj)
 	} else {
 		gh_buf buf = GH_BUF_INIT;
 
-		gh_buf_set(&buf, subj->buffer->ptr + startpos, endpos - startpos - openticks.len);
+		gh_buf_set(&buf, subj->input.data + startpos, endpos - startpos - openticks.len);
 		gh_buf_trim(&buf);
 		normalize_whitespace(&buf);
 
@@ -404,7 +372,7 @@ static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 	char char_before, char_after;
 	int startpos = subj->pos;
 
-	char_before = subj->pos == 0 ? '\n' : gh_buf_at(subj->buffer, subj->pos - 1);
+	char_before = subj->pos == 0 ? '\n' : peek_at(subj, subj->pos - 1);
 	while (peek_char(subj) == c) {
 		numdelims++;
 		advance(subj);
@@ -439,7 +407,7 @@ static inl* handle_strong_emph(subject* subj, char c)
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
 	subj->pos += numdelims;
 
-	new = make_str(chunk_buf(subj->buffer, subj->pos - numdelims, numdelims));
+	new = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 	*last = new;
 	first_head = new;
 	result = new;
@@ -488,7 +456,7 @@ static inl* handle_strong_emph(subject* subj, char c)
 				numdelims = scan_delims(subj, c, &can_open, &can_close);
 				if (can_close && numdelims >= 1 && numdelims <= 3 &&
 						numdelims != first_close_delims) {
-					new = make_str(chunk_buf(subj->buffer, subj->pos, numdelims));
+					new = make_str(chunk_dup(&subj->input, subj->pos, numdelims));
 					append_inlines(*last, new);
 					*last = new;
 					if (first_close_delims == 1 && numdelims > 2) {
@@ -554,7 +522,7 @@ static inl* handle_backslash(subject *subj)
 	unsigned char nextchar = peek_char(subj);
 	if (ispunct(nextchar)) {  // only ascii symbols and newline can be escaped
 		advance(subj);
-		return make_str(chunk_buf(subj->buffer, subj->pos - 1, 1));
+		return make_str(chunk_dup(&subj->input, subj->pos - 1, 1));
 	} else if (nextchar == '\n') {
 		advance(subj);
 		return make_linebreak();
@@ -569,9 +537,9 @@ static inl* handle_entity(subject* subj)
 {
 	int match;
 	inl *result;
-	match = scan_entity(subj->buffer, subj->pos);
+	match = scan_entity(&subj->input, subj->pos);
 	if (match) {
-		result = make_entity(chunk_buf(subj->buffer, subj->pos, match));
+		result = make_entity(chunk_dup(&subj->input, subj->pos, match));
 		subj->pos += match;
 	} else {
 		advance(subj);
@@ -584,15 +552,13 @@ static inl* handle_entity(subject* subj)
 // Returns an inline sequence consisting of str and entity elements.
 static inl *make_str_with_entities(chunk *content)
 {
-	inl * result = NULL;
-	inl * new;
+	inl *result = NULL;
+	inl *new;
 	int searchpos;
 	char c;
 	subject subj;
-	gh_buf content_buf = GH_BUF_INIT;
 
-	gh_buf_set(&content_buf, content->data, content->len);
-	init_subject(&subj, &content_buf, 0, NULL);
+	subject_from_chunk(&subj, content, NULL);
 
 	while ((c = peek_char(&subj))) {
 		switch (c) {
@@ -600,18 +566,13 @@ static inl *make_str_with_entities(chunk *content)
 				new = handle_entity(&subj);
 				break;
 			default:
-				searchpos = gh_buf_strchr(subj.buffer, '&', subj.pos);
-				if (searchpos < 0) {
-					searchpos = gh_buf_len(subj.buffer);
-				}
-
-				new = make_str(chunk_buf(subj.buffer, subj.pos, searchpos - subj.pos));
+				searchpos = chunk_strchr(&subj.input, '&', subj.pos);
+				new = make_str(chunk_dup(&subj.input, subj.pos, searchpos - subj.pos));
 				subj.pos = searchpos;
 		}
 		result = append_inlines(result, new);
 	}
 
-	gh_buf_free(&content_buf);
 	return result;
 }
 
@@ -678,9 +639,9 @@ static inl* handle_pointy_brace(subject* subj)
 	advance(subj);  // advance past first <
 
 	// first try to match a URL autolink
-	matchlen = scan_autolink_uri(subj->buffer, subj->pos);
+	matchlen = scan_autolink_uri(&subj->input, subj->pos);
 	if (matchlen > 0) {
-		contents = chunk_buf(subj->buffer, subj->pos, matchlen - 1);
+		contents = chunk_dup(&subj->input, subj->pos, matchlen - 1);
 		subj->pos += matchlen;
 
 		return make_link(
@@ -691,11 +652,11 @@ static inl* handle_pointy_brace(subject* subj)
 	}
 
 	// next try to match an email autolink
-	matchlen = scan_autolink_email(subj->buffer, subj->pos);
+	matchlen = scan_autolink_email(&subj->input, subj->pos);
 	if (matchlen > 0) {
 		gh_buf mail_url = GH_BUF_INIT;
 
-		contents = chunk_buf(subj->buffer, subj->pos, matchlen - 1);
+		contents = chunk_dup(&subj->input, subj->pos, matchlen - 1);
 		subj->pos += matchlen;
 
 		gh_buf_puts(&mail_url, "mailto:");
@@ -709,9 +670,9 @@ static inl* handle_pointy_brace(subject* subj)
 	}
 
 	// finally, try to match an html tag
-	matchlen = scan_html_tag(subj->buffer, subj->pos);
+	matchlen = scan_html_tag(&subj->input, subj->pos);
 	if (matchlen > 0) {
-		contents = chunk_buf(subj->buffer, subj->pos - 1, matchlen + 1);
+		contents = chunk_dup(&subj->input, subj->pos - 1, matchlen + 1);
 		subj->pos += matchlen;
 		return make_raw_html(contents);
 	}
@@ -776,12 +737,7 @@ static int link_label(subject* subj, chunk *raw_label)
 		}
 	}
 	if (c == ']') {
-		*raw_label = chunk_buf(
-			subj->buffer,
-			startpos + 1,
-			subj->pos - (startpos + 1)
-		);
-
+		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
 		subj->label_nestlevel = 0;
 		advance(subj);  // advance past ]
 		return 1;
@@ -813,25 +769,25 @@ static inl* handle_left_bracket(subject* subj)
 
 	if (found_label) {
 		if (peek_char(subj) == '(' &&
-				((sps = scan_spacechars(subj->buffer, subj->pos + 1)) > -1) &&
-				((n = scan_link_url(subj->buffer, subj->pos + 1 + sps)) > -1)) {
+				((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
+				((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
 
 			// try to parse an explicit link:
 			starturl = subj->pos + 1 + sps; // after (
 			endurl = starturl + n;
-			starttitle = endurl + scan_spacechars(subj->buffer, endurl);
+			starttitle = endurl + scan_spacechars(&subj->input, endurl);
 
 			// ensure there are spaces btw url and title
 			endtitle = (starttitle == endurl) ? starttitle :
-				starttitle + scan_link_title(subj->buffer, starttitle);
+				starttitle + scan_link_title(&subj->input, starttitle);
 
-			endall = endtitle + scan_spacechars(subj->buffer, endtitle);
+			endall = endtitle + scan_spacechars(&subj->input, endtitle);
 
-			if (gh_buf_at(subj->buffer, endall) == ')') {
+			if (peek_at(subj, endall) == ')') {
 				subj->pos = endall + 1;
 
-				url = chunk_buf(subj->buffer, starturl, endurl - starturl);
-				title = chunk_buf(subj->buffer, starttitle, endtitle - starttitle);
+				url = chunk_dup(&subj->input, starturl, endurl - starturl);
+				title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
 				lab = parse_chunk_inlines(&rawlabel, NULL);
 
 				return make_link(lab, url, title);
@@ -850,7 +806,7 @@ static inl* handle_left_bracket(subject* subj)
 
 			// Check for reference link.
 			// First, see if there's another label:
-			subj->pos = subj->pos + scan_spacechars(subj->buffer, endlabel);
+			subj->pos = subj->pos + scan_spacechars(&subj->input, endlabel);
 			reflabel = rawlabel;
 
 			// if followed by a nonempty link label, we change reflabel to it:
@@ -892,8 +848,8 @@ static inl* handle_newline(subject *subj)
 		advance(subj);
 	}
 	if (nlpos > 1 &&
-			gh_buf_at(subj->buffer, nlpos - 1) == ' ' &&
-			gh_buf_at(subj->buffer, nlpos - 2) == ' ') {
+			peek_at(subj, nlpos - 1) == ' ' &&
+			peek_at(subj, nlpos - 2) == ' ') {
 		return make_linebreak();
 	} else {
 		return make_softbreak();
@@ -917,30 +873,22 @@ extern inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 
 inl *parse_chunk_inlines(chunk *chunk, reference** refmap)
 {
-	inl *result;
 	subject subj;
-	gh_buf full_chunk = GH_BUF_INIT;
-
-	gh_buf_set(&full_chunk, chunk->data, chunk->len);
-	init_subject(&subj, &full_chunk, 0, refmap);
-	result = parse_inlines_while(&subj, not_eof);
-
-	gh_buf_free(&full_chunk);
-	return result;
+	subject_from_chunk(&subj, chunk, refmap);
+	return parse_inlines_while(&subj, not_eof);
 }
 
-static int find_special_char(subject *subj)
+static int subject_find_special_char(subject *subj)
 {
 	int n = subj->pos + 1;
-	int size = (int)gh_buf_len(subj->buffer);
 
-	while (n < size) {
-		if (strchr("\n\\`&_*[]<!", gh_buf_at(subj->buffer, n)))
+	while (n < subj->input.len) {
+		if (strchr("\n\\`&_*[]<!", subj->input.data[n]))
 			return n;
 		n++;
 	}
 
-	return -1;
+	return subj->input.len;
 }
 
 // Parse an inline, advancing subject, and add it to last element.
@@ -973,11 +921,13 @@ static int parse_inline(subject* subj, inl ** last)
 			new = handle_pointy_brace(subj);
 			break;
 		case '_':
-			if (subj->pos > 0 && (isalnum(gh_buf_at(subj->buffer, subj->pos - 1)) ||
-						gh_buf_at(subj->buffer, subj->pos - 1) == '_')) {
-				new = make_str(chunk_literal("_"));
-				advance(subj);
-				break;
+			if (subj->pos > 0) {
+				unsigned char prev = peek_at(subj, subj->pos - 1);
+				if (isalnum(prev) || prev == '_') {
+					new = make_str(chunk_literal("_"));
+					advance(subj);
+					break;
+				}
 			}
 
 			new = handle_strong_emph(subj, '_');
@@ -1002,18 +952,13 @@ static int parse_inline(subject* subj, inl ** last)
 			}
 			break;
 		default:
-		text_literal:
-			endpos = find_special_char(subj);
-			if (endpos < 0) {
-				endpos = gh_buf_len(subj->buffer);
-			}
-
-			contents = chunk_buf(subj->buffer, subj->pos, endpos - subj->pos);
+			endpos = subject_find_special_char(subj);
+			contents = chunk_dup(&subj->input, subj->pos, endpos - subj->pos);
 			subj->pos = endpos;
 
 			// if we're at a newline, strip trailing spaces.
 			if (peek_char(subj) == '\n') {
-				chunk_trim(&contents);
+				chunk_rtrim(&contents);
 			}
 
 			new = make_str(contents);
@@ -1026,10 +971,10 @@ static int parse_inline(subject* subj, inl ** last)
 	return 1;
 }
 
-extern inl* parse_inlines(gh_buf *input, int input_pos, reference** refmap)
+extern inl* parse_inlines(gh_buf *input, reference** refmap)
 {
 	subject subj;
-	init_subject(&subj, input, input_pos, refmap);
+	subject_from_buf(&subj, input, refmap);
 	return parse_inlines_while(&subj, not_eof);
 }
 
@@ -1048,7 +993,7 @@ void spnl(subject* subj)
 // Modify refmap if a reference is encountered.
 // Return 0 if no reference found, otherwise position of subject
 // after reference is parsed.
-extern int parse_reference(gh_buf *input, int input_pos, reference** refmap)
+extern int parse_reference(gh_buf *input, reference** refmap)
 {
 	subject subj;
 
@@ -1058,9 +1003,9 @@ extern int parse_reference(gh_buf *input, int input_pos, reference** refmap)
 
 	int matchlen = 0;
 	int beforetitle;
-	reference * new = NULL;
+	reference *new = NULL;
 
-	init_subject(&subj, input, input_pos, NULL);
+	subject_from_buf(&subj, input, NULL);
 
 	// parse label:
 	if (!link_label(&subj, &lab))
@@ -1075,9 +1020,9 @@ extern int parse_reference(gh_buf *input, int input_pos, reference** refmap)
 
 	// parse link url:
 	spnl(&subj);
-	matchlen = scan_link_url(subj.buffer, subj.pos);
+	matchlen = scan_link_url(&subj.input, subj.pos);
 	if (matchlen) {
-		url = chunk_buf(subj.buffer, subj.pos, matchlen);
+		url = chunk_dup(&subj.input, subj.pos, matchlen);
 		subj.pos += matchlen;
 	} else {
 		return 0;
@@ -1086,9 +1031,9 @@ extern int parse_reference(gh_buf *input, int input_pos, reference** refmap)
 	// parse optional link_title
 	beforetitle = subj.pos;
 	spnl(&subj);
-	matchlen = scan_link_title(subj.buffer, subj.pos);
+	matchlen = scan_link_title(&subj.input, subj.pos);
 	if (matchlen) {
-		title = chunk_buf(subj.buffer, subj.pos, matchlen);
+		title = chunk_dup(&subj.input, subj.pos, matchlen);
 		subj.pos += matchlen;
 	} else {
 		subj.pos = beforetitle;

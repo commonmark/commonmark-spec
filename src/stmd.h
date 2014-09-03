@@ -1,16 +1,14 @@
+#ifndef _STDMD_H_
+#define _STDMD_H_
+
 #include <stdbool.h>
 #include <stdio.h>
 #include "buffer.h"
+#include "chunk.h"
 #include "uthash.h"
 
 #define VERSION "0.1"
 #define CODE_INDENT 4
-
-typedef struct {
-	const unsigned char *data;
-	int len;
-	int alloc;
-} chunk;
 
 typedef struct Inline {
 	enum { INL_STRING, INL_SOFTBREAK, INL_LINEBREAK, INL_CODE, INL_RAW_HTML, INL_ENTITY,
@@ -79,7 +77,6 @@ typedef struct Block {
   struct Block*      parent;
   struct Block*      top;
   gh_buf			 string_content;
-  int				 string_pos;
   inl*               inline_content;
   union  {
     struct ListData       list_data;
@@ -91,10 +88,10 @@ typedef struct Block {
   struct Block *     prev;
 } block;
 
-inl* parse_inlines(gh_buf *input, int input_pos, reference** refmap);
+inl* parse_inlines(gh_buf *input, reference** refmap);
 void free_inlines(inl* e);
 
-int parse_reference(gh_buf *input, int input_pos, reference** refmap);
+int parse_reference(gh_buf *input, reference** refmap);
 void free_reference(reference *ref);
 void free_reference_map(reference **refmap);
 
@@ -117,3 +114,4 @@ void inlines_to_html(gh_buf *html, inl *b);
 
 void utf8proc_case_fold(gh_buf *dest, const unsigned char *str, int len);
 
+#endif

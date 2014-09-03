@@ -8,6 +8,8 @@
 #include "scanners.h"
 #include "uthash.h"
 
+#define peek_at(i, n) (i)->data[n]
+
 static void incorporate_line(gh_buf *ln, int line_number, block** curptr);
 static void finalize(block* b, int line_number);
 
@@ -27,7 +29,6 @@ static block* make_block(int tag, int start_line, int start_column)
 	e->top = NULL;
 	e->attributes.refmap = NULL;
 	gh_buf_init(&e->string_content, 32);
-	e->string_pos = 0;
 	e->inline_content = NULL;
 	e->next = NULL;
 	e->prev = NULL;
@@ -80,10 +81,10 @@ static inline bool accepts_lines(int block_type)
 			block_type == fenced_code);
 }
 
-static void add_line(block* block, gh_buf *ln, int offset)
+static void add_line(block* block, chunk *ch, int offset)
 {
 	assert(block->open);
-	gh_buf_put(&block->string_content, ln->ptr + offset, ln->size - offset);
+	gh_buf_put(&block->string_content, ch->data + offset, ch->len - offset);
 }
 
 static void remove_trailing_blank_lines(gh_buf *ln)
@@ -104,7 +105,7 @@ static void remove_trailing_blank_lines(gh_buf *ln)
 
 	i = gh_buf_strchr(ln, '\n', i);
 	if (i >= 0)
-		gh_buf_truncate(ln, i + 1);
+		gh_buf_truncate(ln, i);
 }
 
 // Check to see if a block ends with a blank line, descending
@@ -162,12 +163,12 @@ static void finalize(block* b, int line_number)
 	switch (b->tag) {
 		case paragraph:
 			pos = 0;
-			while (gh_buf_at(&b->string_content, b->string_pos) == '[' &&
-					(pos = parse_reference(&b->string_content, b->string_pos,
-										   b->top->attributes.refmap))) {
-				b->string_pos = pos;
+			while (gh_buf_at(&b->string_content, 0) == '[' &&
+					(pos = parse_reference(&b->string_content, b->top->attributes.refmap))) {
+
+				gh_buf_drop(&b->string_content, pos);
 			}
-			if (is_blank(&b->string_content, b->string_pos)) {
+			if (is_blank(&b->string_content, 0)) {
 				b->tag = reference_def;
 			}
 			break;
@@ -179,14 +180,16 @@ static void finalize(block* b, int line_number)
 
 		case fenced_code:
 			// first line of contents becomes info
-			firstlinelen = gh_buf_strchr(&b->string_content, '\n', b->string_pos);
+			firstlinelen = gh_buf_strchr(&b->string_content, '\n', 0);
+
+			gh_buf_init(&b->attributes.fenced_code_data.info, 0);
 			gh_buf_set(
 				&b->attributes.fenced_code_data.info,
-				b->string_content.ptr + b->string_pos,
+				b->string_content.ptr,
 				firstlinelen
 			);
 
-			b->string_pos = firstlinelen + 1;
+			gh_buf_drop(&b->string_content, firstlinelen + 1);
 
 			gh_buf_trim(&b->attributes.fenced_code_data.info);
 			unescape_buffer(&b->attributes.fenced_code_data.info);
@@ -281,7 +284,7 @@ void process_inlines(block* cur, reference** refmap)
 		case paragraph:
 		case atx_header:
 		case setext_header:
-			cur->inline_content = parse_inlines(&cur->string_content, cur->string_pos, refmap);
+			cur->inline_content = parse_inlines(&cur->string_content, refmap);
 			// MEM
 			// gh_buf_free(&cur->string_content);
 			break;
@@ -300,19 +303,18 @@ void process_inlines(block* cur, reference** refmap)
 // Attempts to parse a list item marker (bullet or enumerated).
 // On success, returns length of the marker, and populates
 // data with the details.  On failure, returns 0.
-static int parse_list_marker(gh_buf *ln, int pos,
-		struct ListData ** dataptr)
+static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 {
-	char c;
+	unsigned char c;
 	int startpos;
 	struct ListData * data;
 
 	startpos = pos;
-	c = gh_buf_at(ln, pos);
+	c = peek_at(input, pos);
 
-	if ((c == '*' || c == '-' || c == '+') && !scan_hrule(ln, pos)) {
+	if ((c == '*' || c == '-' || c == '+') && !scan_hrule(input, pos)) {
 		pos++;
-		if (!isspace(gh_buf_at(ln, pos))) {
+		if (!isspace(peek_at(input, pos))) {
 			return 0;
 		}
 		data = malloc(sizeof(struct ListData));
@@ -327,14 +329,14 @@ static int parse_list_marker(gh_buf *ln, int pos,
 		int start = 0;
 
 		do {
-			start = (10 * start) + (gh_buf_at(ln, pos) - '0');
+			start = (10 * start) + (peek_at(input, pos) - '0');
 			pos++;
-		} while (isdigit(gh_buf_at(ln, pos)));
+		} while (isdigit(peek_at(input, pos)));
 
-		c = gh_buf_at(ln, pos);
+		c = peek_at(input, pos);
 		if (c == '.' || c == ')') {
 			pos++;
-			if (!isspace(gh_buf_at(ln, pos))) {
+			if (!isspace(peek_at(input, pos))) {
 				return 0;
 			}
 			data = malloc(sizeof(struct ListData));
@@ -449,8 +451,26 @@ extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
 	return finalize_document(document, linenum);
 }
 
+static void chop_trailing_hashtags(chunk *ch)
+{
+	int n;
+
+	chunk_rtrim(ch);
+	n = ch->len - 1;
+
+	// if string ends in #s, remove these:
+	while (n >= 0 && peek_at(ch, n) == '#')
+		n--;
+
+	// the last # was escaped, so we include it.
+	if (n >= 0 && peek_at(ch, n) == '\\')
+		n++;
+
+	ch->len = n + 1;
+}
+
 // Process one line at a time, modifying a block.
-static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
+static void incorporate_line(gh_buf *line, int line_number, block** curptr)
 {
 	block* last_matched_container;
 	int offset = 0;
@@ -464,6 +484,10 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 	bool blank = false;
 	int first_nonspace;
 	int indent;
+	chunk input;
+
+	input.data = line->ptr;
+	input.len = line->size;
 
 	// container starts at the document root.
 	container = cur->top;
@@ -475,21 +499,19 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 		container = container->last_child;
 
 		first_nonspace = offset;
-		while (gh_buf_at(ln, first_nonspace) == ' ') {
+		while (peek_at(&input, first_nonspace) == ' ') {
 			first_nonspace++;
 		}
 
 		indent = first_nonspace - offset;
-		blank = gh_buf_at(ln, first_nonspace) == '\n';
+		blank = peek_at(&input, first_nonspace) == '\n';
 
 		if (container->tag == block_quote) {
-
-			matched = indent <= 3 && gh_buf_at(ln, first_nonspace) == '>';
+			matched = indent <= 3 && peek_at(&input, first_nonspace) == '>';
 			if (matched) {
 				offset = first_nonspace + 1;
-				if (gh_buf_at(ln, offset) == ' ') {
+				if (peek_at(&input, offset) == ' ')
 					offset++;
-				}
 			} else {
 				all_matched = false;
 			}
@@ -526,7 +548,7 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 
 			// skip optional spaces of fence offset
 			i = container->attributes.fenced_code_data.fence_offset;
-			while (i > 0 && gh_buf_at(ln, offset) == ' ') {
+			while (i > 0 && peek_at(&input, offset) == ' ') {
 				offset++;
 				i--;
 			}
@@ -564,15 +586,13 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 			container->tag != html_block) {
 
 		first_nonspace = offset;
-		while (gh_buf_at(ln, first_nonspace) == ' ') {
+		while (peek_at(&input, first_nonspace) == ' ')
 			first_nonspace++;
-		}
 
 		indent = first_nonspace - offset;
-		blank = gh_buf_at(ln, first_nonspace) == '\n';
+		blank = peek_at(&input, first_nonspace) == '\n';
 
 		if (indent >= CODE_INDENT) {
-
 			if (cur->tag != paragraph && !blank) {
 				offset += CODE_INDENT;
 				container = add_child(container, indented_code, line_number, offset + 1);
@@ -580,76 +600,70 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 				break;
 			}
 
-		} else if (gh_buf_at(ln, first_nonspace) == '>') {
+		} else if (peek_at(&input, first_nonspace) == '>') {
 
 			offset = first_nonspace + 1;
 			// optional following character
-			if (gh_buf_at(ln, offset) == ' ') {
+			if (peek_at(&input, offset) == ' ')
 				offset++;
-			}
 			container = add_child(container, block_quote, line_number, offset + 1);
 
-		} else if ((matched = scan_atx_header_start(ln, first_nonspace))) {
+		} else if ((matched = scan_atx_header_start(&input, first_nonspace))) {
 
 			offset = first_nonspace + matched;
 			container = add_child(container, atx_header, line_number, offset + 1);
 
-			int hashpos = gh_buf_strchr(ln, '#', first_nonspace);
-			assert(hashpos >= 0);
-
+			int hashpos = chunk_strchr(&input, '#', first_nonspace);
 			int level = 0;
-			while (gh_buf_at(ln, hashpos) == '#') {
+
+			while (peek_at(&input, hashpos) == '#') {
 				level++;
 				hashpos++;
 			}
 			container->attributes.header_level = level;
 
-		} else if ((matched = scan_open_code_fence(ln, first_nonspace))) {
+		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
-			container = add_child(container, fenced_code, line_number,
-					first_nonspace + 1);
-			container->attributes.fenced_code_data.fence_char = gh_buf_at(ln,
-					first_nonspace);
+			container = add_child(container, fenced_code, line_number, first_nonspace + 1);
+			container->attributes.fenced_code_data.fence_char = peek_at(&input, first_nonspace);
 			container->attributes.fenced_code_data.fence_length = matched;
-			container->attributes.fenced_code_data.fence_offset =
-				first_nonspace - offset;
+			container->attributes.fenced_code_data.fence_offset = first_nonspace - offset;
 			offset = first_nonspace + matched;
 
-		} else if ((matched = scan_html_block_tag(ln, first_nonspace))) {
+		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {
 
-			container = add_child(container, html_block, line_number,
-					first_nonspace + 1);
+			container = add_child(container, html_block, line_number, first_nonspace + 1);
 			// note, we don't adjust offset because the tag is part of the text
 
 		} else if (container->tag == paragraph &&
-				(lev = scan_setext_header_line(ln, first_nonspace)) &&
+				(lev = scan_setext_header_line(&input, first_nonspace)) &&
 				// check that there is only one line in the paragraph:
 				gh_buf_strrchr(&container->string_content, '\n',
 					gh_buf_len(&container->string_content) - 2) < 0) {
 
 			container->tag = setext_header;
 			container->attributes.header_level = lev;
-			offset = gh_buf_len(ln) - 1;
+			offset = input.len - 1;
 
 		} else if (!(container->tag == paragraph && !all_matched) &&
-				(matched = scan_hrule(ln, first_nonspace))) {
+				(matched = scan_hrule(&input, first_nonspace))) {
 
 			// it's only now that we know the line is not part of a setext header:
 			container = add_child(container, hrule, line_number, first_nonspace + 1);
 			finalize(container, line_number);
 			container = container->parent;
-			offset = gh_buf_len(ln) - 1;
+			offset = input.len - 1;
 
-		} else if ((matched = parse_list_marker(ln, first_nonspace, &data))) {
+		} else if ((matched = parse_list_marker(&input, first_nonspace, &data))) {
 
 			// compute padding:
 			offset = first_nonspace + matched;
 			i = 0;
-			while (i <= 5 && gh_buf_at(ln, offset + i) == ' ') {
+			while (i <= 5 && peek_at(&input, offset + i) == ' ') {
 				i++;
 			}
 			// i = number of spaces after marker, up to 5
-			if (i >= 5 || i < 1 || gh_buf_at(ln, offset) == '\n') {
+			if (i >= 5 || i < 1 || peek_at(&input, offset) == '\n') {
 				data->padding = matched + 1;
 				if (i > 0) {
 					offset += 1;
@@ -674,6 +688,7 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 			// add the list item
 			container = add_child(container, list_item, line_number,
 					first_nonspace + 1);
+			/* TODO: static */
 			container->attributes.list_data = *data;
 			free(data);
 
@@ -691,12 +706,11 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 	// appropriate container.
 
 	first_nonspace = offset;
-	while (gh_buf_at(ln, first_nonspace) == ' ') {
+	while (peek_at(&input, first_nonspace) == ' ')
 		first_nonspace++;
-	}
 
 	indent = first_nonspace - offset;
-	blank = gh_buf_at(ln, first_nonspace) == '\n';
+	blank = peek_at(&input, first_nonspace) == '\n';
 
 	// block quote lines are never blank as they start with >
 	// and we don't count blanks in fenced code for purposes of tight/loose
@@ -721,13 +735,12 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 			cur->tag == paragraph &&
 			gh_buf_len(&cur->string_content) > 0) {
 
-		add_line(cur, ln, offset);
+		add_line(cur, &input, offset);
 
 	} else { // not a lazy continuation
 
 		// finalize any blocks that were not matched and set cur to container:
 		while (cur != last_matched_container) {
-
 			finalize(cur, line_number);
 			cur = cur->parent;
 			assert(cur != NULL);
@@ -735,58 +748,46 @@ static void incorporate_line(gh_buf *ln, int line_number, block** curptr)
 
 		if (container->tag == indented_code) {
 
-			add_line(container, ln, offset);
+			add_line(container, &input, offset);
 
 		} else if (container->tag == fenced_code) {
 
 			matched = (indent <= 3
-					&& gh_buf_at(ln, first_nonspace) == container->attributes.fenced_code_data.fence_char)
-				&& scan_close_code_fence(ln, first_nonspace,
+					&& peek_at(&input, first_nonspace) == container->attributes.fenced_code_data.fence_char)
+				&& scan_close_code_fence(&input, first_nonspace,
 						container->attributes.fenced_code_data.fence_length);
 			if (matched) {
 				// if closing fence, don't add line to container; instead, close it:
 				finalize(container, line_number);
 				container = container->parent; // back up to parent
 			} else {
-				add_line(container, ln, offset);
+				add_line(container, &input, offset);
 			}
 
 		} else if (container->tag == html_block) {
 
-			add_line(container, ln, offset);
+			add_line(container, &input, offset);
 
 		} else if (blank) {
 
 			// ??? do nothing
 
 		} else if (container->tag == atx_header) {
-			// chop off trailing ###s...use a scanner?
-			gh_buf_trim(ln);
-			int p = gh_buf_len(ln) - 1;
 
-			// if string ends in #s, remove these:
-			while (gh_buf_at(ln, p) == '#') {
-				p--;
-			}
-			if (gh_buf_at(ln, p) == '\\') {
-				// the last # was escaped, so we include it.
-				p++;
-			}
-
-			gh_buf_truncate(ln, p + 1);
-			add_line(container, ln, first_nonspace);
+			chop_trailing_hashtags(&input);
+			add_line(container, &input, first_nonspace);
 			finalize(container, line_number);
 			container = container->parent;
 
 		} else if (accepts_lines(container->tag)) {
 
-			add_line(container, ln, first_nonspace);
+			add_line(container, &input, first_nonspace);
 
 		} else if (container->tag != hrule && container->tag != setext_header) {
 
 			// create paragraph container for line
 			container = add_child(container, paragraph, line_number, first_nonspace + 1);
-			add_line(container, ln, first_nonspace);
+			add_line(container, &input, first_nonspace);
 
 		} else {
 			assert(false);

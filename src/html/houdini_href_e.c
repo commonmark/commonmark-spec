@@ -62,16 +62,8 @@ houdini_escape_href(gh_buf *ob, const uint8_t *src, size_t size)
 		while (i < size && HREF_SAFE[src[i]] != 0)
 			i++;
 
-		if (likely(i > org)) {
-			if (unlikely(org == 0)) {
-				if (i >= size)
-					return 0;
-
-				gh_buf_grow(ob, HOUDINI_ESCAPED_SIZE(size));
-			}
-
+		if (likely(i > org))
 			gh_buf_put(ob, src + org, i - org);
-		}
 
 		/* escaping */
 		if (i >= size)

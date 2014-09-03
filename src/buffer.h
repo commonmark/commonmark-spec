@@ -105,8 +105,8 @@ extern void gh_buf_clear(gh_buf *buf);
 
 int gh_buf_strchr(const gh_buf *buf, int c, int pos);
 int gh_buf_strrchr(const gh_buf *buf, int c, int pos);
+void gh_buf_drop(gh_buf *buf, int n);
 void gh_buf_truncate(gh_buf *buf, int len);
-void gh_buf_ltruncate(gh_buf *buf, int len);
 void gh_buf_trim(gh_buf *buf);
 
 #endif
