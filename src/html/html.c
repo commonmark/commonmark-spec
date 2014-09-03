@@ -102,9 +102,26 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 
 			case indented_code:
 			case fenced_code:
-				/* TODO: fenced code lang attributes */
 				cr(html);
-				gh_buf_puts(html, "<pre><code>");
+
+				gh_buf_puts(html, "<pre");
+
+				if (b->tag == fenced_code) {
+					gh_buf *info = &b->attributes.fenced_code_data.info;
+
+					if (gh_buf_len(info) > 0) {
+						int first_tag = gh_buf_strchr(info, ' ', 0);
+						if (first_tag < 0)
+							first_tag = gh_buf_len(info);
+
+
+						gh_buf_puts(html, " class=\"");
+						escape_html(html, info->ptr, first_tag);
+						gh_buf_putc(html, '"');
+					}
+				}
+
+				gh_buf_puts(html, "><code>");
 				escape_html(html, b->string_content.ptr, b->string_content.size);
 				gh_buf_puts(html, "</code></pre>");
 				cr(html);
