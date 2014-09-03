@@ -47,7 +47,7 @@ description.
 There are only a few places where this spec says things that contradict
 the canonical syntax description:
 
--   It [allows all puncutation symbols to be
+-   It [allows all punctuation symbols to be
     backslash-escaped](http://jgm.github.io/stmd/spec.html#backslash-escapes),
     not just the symbols with special meanings in markdown. I found
     that it was just too hard to remember which symbols could be
