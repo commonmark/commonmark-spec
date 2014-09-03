@@ -193,7 +193,7 @@ In the examples, the `→` character is used to represent tabs.
 
 A [line](#line) <a id="line"/>
 is a sequence of one or more characters followed by a line
-ending (CR, LF, or CRLF, depending on the platform) or by the end of
+ending (CR, LF, or CRLF) or by the end of
 file.
 
 This spec does not specify an encoding; it thinks of lines as composed
