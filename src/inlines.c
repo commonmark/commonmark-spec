@@ -108,13 +108,26 @@ extern void add_reference(reference** refmap, reference* ref)
 	}
 }
 
+static unsigned char *bufdup(const unsigned char *buf)
+{
+	unsigned char *new = NULL;
+
+	if (!buf) {
+		int len = strlen((char *)buf);
+		new = malloc(len + 1);
+		memcpy(new, buf, len + 1);
+	}
+
+	return new;
+}
+
 inline static node_inl* make_link_from_reference(node_inl* label, reference *ref)
 {
 	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = INL_LINK;
 	e->content.linkable.label = label;
-	e->content.linkable.url   = strdup(ref->url);
-	e->content.linkable.title = ref->title ? strdup(ref->title) : NULL;
+	e->content.linkable.url   = bufdup(ref->url);
+	e->content.linkable.title = bufdup(ref->title);
 	e->next = NULL;
 	return e;
 }

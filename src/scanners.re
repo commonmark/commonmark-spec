@@ -1,9 +1,5 @@
 #include <stdlib.h>
 
-#define SCAN_DATA \
-  const unsigned char *marker = NULL; \
-  const unsigned char *start = p; \
-
 /*!re2c
   re2c:define:YYCTYPE  = "unsigned char";
   re2c:define:YYCURSOR = p;
@@ -61,7 +57,8 @@
 // Try to match URI autolink after first <, returning number of chars matched.
 extern int _scan_autolink_uri(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   scheme [:]([^\x00-\x20<>\\]|escaped_char)*[>]  { return (p - start); }
   .? { return 0; }
@@ -71,7 +68,8 @@ extern int _scan_autolink_uri(const unsigned char *p)
 // Try to match email autolink after first <, returning num of chars matched.
 extern int _scan_autolink_email(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+
     [@]
@@ -85,7 +83,8 @@ extern int _scan_autolink_email(const unsigned char *p)
 // Try to match an HTML tag after first <, returning num of chars matched.
 extern int _scan_html_tag(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   htmltag { return (p - start); }
   .? { return 0; }
@@ -96,7 +95,8 @@ extern int _scan_html_tag(const unsigned char *p)
 // returning num of chars matched.
 extern int _scan_html_block_tag(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [<] [/] blocktagname (spacechar | [>])  { return (p - start); }
   [<] blocktagname (spacechar | [/>]) { return (p - start); }
@@ -111,7 +111,8 @@ extern int _scan_html_block_tag(const unsigned char *p)
 // Newlines aren't ever allowed.
 extern int _scan_link_url(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [ \n]* [<] ([^<>\n\\\x00] | escaped_char | [\\])* [>] { return (p - start); }
   [ \n]* (reg_char+ | escaped_char | in_parens_nosp)* { return (p - start); }
@@ -124,7 +125,8 @@ extern int _scan_link_url(const unsigned char *p)
 // level of internal nesting (quotes within quotes).
 extern int _scan_link_title(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   ["] (escaped_char|[^"\x00])* ["]   { return (p - start); }
   ['] (escaped_char|[^'\x00])* ['] { return (p - start); }
@@ -136,7 +138,7 @@ extern int _scan_link_title(const unsigned char *p)
 // Match space characters, including newlines.
 extern int _scan_spacechars(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *start = p; \
 /*!re2c
   [ \t\n]* { return (p - start); }
   . { return 0; }
@@ -146,7 +148,8 @@ extern int _scan_spacechars(const unsigned char *p)
 // Match ATX header start.
 extern int _scan_atx_header_start(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [#]{1,6} ([ ]+|[\n])  { return (p - start); }
   .? { return 0; }
@@ -157,7 +160,7 @@ extern int _scan_atx_header_start(const unsigned char *p)
 // 2 for level-2, 0 for no match.
 extern int _scan_setext_header_line(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
 /*!re2c
   [=]+ [ ]* [\n] { return 1; }
   [-]+ [ ]* [\n] { return 2; }
@@ -170,7 +173,8 @@ extern int _scan_setext_header_line(const unsigned char *p)
 // spaces between the hyphens or asterisks."
 extern int _scan_hrule(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   ([*][ ]*){3,} [ \t]* [\n] { return (p - start); }
   ([_][ ]*){3,} [ \t]* [\n] { return (p - start); }
@@ -182,7 +186,8 @@ extern int _scan_hrule(const unsigned char *p)
 // Scan an opening code fence.
 extern int _scan_open_code_fence(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [`]{3,} / [^`\n\x00]*[\n] { return (p - start); }
   [~]{3,} / [^~\n\x00]*[\n] { return (p - start); }
@@ -193,7 +198,8 @@ extern int _scan_open_code_fence(const unsigned char *p)
 // Scan a closing code fence with length at least len.
 extern int _scan_close_code_fence(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   ([`]{3,} | [~]{3,}) / spacechar* [\n] { return (p - start); }
   .? { return 0; }
@@ -204,7 +210,8 @@ extern int _scan_close_code_fence(const unsigned char *p)
 // Returns number of chars matched.
 extern int _scan_entity(const unsigned char *p)
 {
-  SCAN_DATA;
+  const unsigned char *marker = NULL;
+  const unsigned char *start = p;
 /*!re2c
   [&] ([#] ([Xx][A-Fa-f0-9]{1,8}|[0-9]{1,8}) |[A-Za-z][A-Za-z0-9]{1,31} ) [;]
      { return (p - start); }

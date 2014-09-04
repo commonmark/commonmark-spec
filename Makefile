@@ -1,5 +1,5 @@
-CFLAGS=-g -O3 -Wall -Wextra -Wno-unused-variable -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -O3 -Wall -Wno-unused-variable # -Werror
+CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror
 SRCDIR=src
 DATADIR=data
 
