@@ -179,7 +179,7 @@ a.footnoteRef > sup {
 <p>This document is generated from a text file, <code>spec.txt</code>, written in Markdown with a small extension for the side-by-side tests. The script <code>spec2md.pl</code> can be used to turn <code>spec.txt</code> into pandoc Markdown, which can then be converted into other formats.</p>
 <p>In the examples, the <code>→</code> character is used to represent tabs.</p>
 <h1 id="preprocessing"><span class="header-section-number">2</span> Preprocessing</h1>
-<p>A <a href="#line">line</a> <a id="line"/> is a sequence of zero or more characters followed by a line ending (CR, LF, or CRLF) or by the end of file.</p>
+<p>A <a href="#line">line</a> <a id="line"></a> is a sequence of zero or more characters followed by a line ending (CR, LF, or CRLF) or by the end of file.</p>
 <p>This spec does not specify an encoding; it thinks of lines as composed of characters rather than bytes. A conforming parser may be limited to a certain encoding.</p>
 <p>Tabs in lines are expanded to spaces, with a tab stop of 4 characters:</p>
 <div id="example-1" class="example" data-section="Preprocessing">
@@ -197,11 +197,10 @@ Example 2
 <pre class="html"><code>&lt;p&gt;οὐ  χρῆν&lt;/p&gt;</code></pre>
 </div>
 <p>Line endings are replaced by newline characters (LF).</p>
-<p>A line containing only spaces (after tab expansion) followed by a line ending is called a <a href="#blank-line">blank line</a>. <a
-id="blank-line"/></p>
+<p>A line containing only spaces (after tab expansion) followed by a line ending is called a <a href="#blank-line">blank line</a>. <a id="blank-line"></a></p>
 <h1 id="blocks-and-inlines"><span class="header-section-number">3</span> Blocks and inlines</h1>
 <p>We can think of a document as a sequence of <a href="#block">blocks</a><a
-id="block"/>—structural elements like paragraphs, block quotations, lists, headers, rules, and code blocks. Blocks can contain other blocks, or they can contain <a href="#inline">inline</a><a id="inline"/> content: words, spaces, links, emphasized text, images, and inline code.</p>
+id="block"></a>—structural elements like paragraphs, block quotations, lists, headers, rules, and code blocks. Blocks can contain other blocks, or they can contain <a href="#inline">inline</a><a id="inline"></a> content: words, spaces, links, emphasized text, images, and inline code.</p>
 <h2 id="precedence"><span class="header-section-number">3.1</span> Precedence</h2>
 <p>Indicators of block structure always take precedence over indicators of inline structure. So, for example, the following is a list with two items, not a list with one item containing a code span:</p>
 <div id="example-3" class="example" data-section="Precedence">
@@ -217,11 +216,11 @@ Example 3
 </div>
 <p>This means that parsing can proceed in two steps: first, the block structure of the document can be discerned; second, text lines inside paragraphs, headers, and other block constructs can be parsed for inline structure. The second step requires information about link reference definitions that will be available only at the end of the first step. Note that the first step requires processing lines in sequence, but the second can be parallelized, since the inline parsing of one block element does not affect the inline parsing of any other.</p>
 <h2 id="container-blocks-and-leaf-blocks"><span class="header-section-number">3.2</span> Container blocks and leaf blocks</h2>
-<p>We can divide blocks into two types: <a href="#container-block">container blocks</a>, <a id="container-block"/> which can contain other blocks, and <a href="#leaf-block">leaf blocks</a>, <a id="leaf-block"/> which cannot.</p>
+<p>We can divide blocks into two types: <a href="#container-block">container blocks</a>, <a id="container-block"></a> which can contain other blocks, and <a href="#leaf-block">leaf blocks</a>, <a id="leaf-block"></a> which cannot.</p>
 <h1 id="leaf-blocks"><span class="header-section-number">4</span> Leaf blocks</h1>
 <p>This section describes the different kinds of leaf block that make up a Markdown document.</p>
 <h2 id="horizontal-rules"><span class="header-section-number">4.1</span> Horizontal rules</h2>
-<p>A line consisting of 0-3 spaces of indentation, followed by a sequence of three or more matching <code>-</code>, <code>_</code>, or <code>*</code> characters, each followed optionally any number of spaces, forms a <a href="#horizontal-rule">horizontal rule</a>. <a id="horizontal-rule"/></p>
+<p>A line consisting of 0-3 spaces of indentation, followed by a sequence of three or more matching <code>-</code>, <code>_</code>, or <code>*</code> characters, each followed optionally any number of spaces, forms a <a href="#horizontal-rule">horizontal rule</a>. <a id="horizontal-rule"></a></p>
 <div id="example-4" class="example" data-section="Horizontal rules">
 <div class="examplenum">
 Example 4
@@ -415,7 +414,7 @@ Example 22
 &lt;/ul&gt;</code></pre>
 </div>
 <h2 id="atx-headers"><span class="header-section-number">4.2</span> ATX headers</h2>
-<p>An <a href="#atx-header">ATX header</a> <a id="atx-header"/> consists of a string of characters, parsed as inline content, between an opening sequence of 1–6 unescaped <code>#</code> characters and an optional closing sequence of any number of <code>#</code> characters. The opening sequence of <code>#</code> characters cannot be followed directly by a nonspace character. The closing <code>#</code> characters may be followed by spaces only. The opening <code>#</code> character may be indented 0-3 spaces. The raw contents of the header are stripped of leading and trailing spaces before being parsed as inline content. The header level is equal to the number of <code>#</code> characters in the opening sequence.</p>
+<p>An <a href="#atx-header">ATX header</a> <a id="atx-header"></a> consists of a string of characters, parsed as inline content, between an opening sequence of 1–6 unescaped <code>#</code> characters and an optional closing sequence of any number of <code>#</code> characters. The opening sequence of <code>#</code> characters cannot be followed directly by a nonspace character. The closing <code>#</code> characters may be followed by spaces only. The opening <code>#</code> character may be indented 0-3 spaces. The raw contents of the header are stripped of leading and trailing spaces before being parsed as inline content. The header level is equal to the number of <code>#</code> characters in the opening sequence.</p>
 <p>Simple headers:</p>
 <div id="example-23" class="example" data-section="ATX headers">
 <div class="examplenum">
@@ -588,7 +587,7 @@ Example 39
 &lt;h3&gt;&lt;/h3&gt;</code></pre>
 </div>
 <h2 id="setext-headers"><span class="header-section-number">4.3</span> Setext headers</h2>
-<p>A <a href="#setext-header">setext header</a> <a id="setext-header"/> consists of a line of text, containing at least one nonspace character, with no more than 3 spaces indentation, followed by a <a href="#setext-header-underline">setext header underline</a>. A <a href="#setext-header-underline">setext header underline</a> <a id="setext-header-underline"/> is a sequence of <code>=</code> characters or a sequence of <code>-</code> characters, with no more than 3 spaces indentation and any number of trailing spaces. The header is a level 1 header if <code>=</code> characters are used, and a level 2 header if <code>-</code> characters are used. The contents of the header are the result of parsing the first line as Markdown inline content.</p>
+<p>A <a href="#setext-header">setext header</a> <a id="setext-header"></a> consists of a line of text, containing at least one nonspace character, with no more than 3 spaces indentation, followed by a <a href="#setext-header-underline">setext header underline</a>. A <a href="#setext-header-underline">setext header underline</a> <a id="setext-header-underline"></a> is a sequence of <code>=</code> characters or a sequence of <code>-</code> characters, with no more than 3 spaces indentation and any number of trailing spaces. The header is a level 1 header if <code>=</code> characters are used, and a level 2 header if <code>-</code> characters are used. The contents of the header are the result of parsing the first line as Markdown inline content.</p>
 <p>In general, a setext header need not be preceded or followed by a blank line. However, it cannot interrupt a paragraph, so when a setext header comes after a paragraph, a blank line is needed between them.</p>
 <p>Simple examples:</p>
 <div id="example-40" class="example" data-section="Setext headers">
@@ -776,7 +775,7 @@ Example 53
 <pre class="html"><code>&lt;p&gt;====&lt;/p&gt;</code></pre>
 </div>
 <h2 id="indented-code-blocks"><span class="header-section-number">4.4</span> Indented code blocks</h2>
-<p>An <a href="#indented-code-block">indented code block</a> <a id="indented-code-block"/> is composed of one or more <a href="#indented-chunk">indented chunks</a> separated by blank lines. An <a href="#indented-chunk">indented chunk</a> <a id="indented-chunk"/> is a sequence of non-blank lines, each indented four or more spaces. An indented code block cannot interrupt a paragraph, so if it occurs before or after a paragraph, there must be an intervening blank line. The contents of the code block are the literal contents of the lines, including trailing newlines, minus four spaces of indentation. An indented code block has no attributes.</p>
+<p>An <a href="#indented-code-block">indented code block</a> <a id="indented-code-block"></a> is composed of one or more <a href="#indented-chunk">indented chunks</a> separated by blank lines. An <a href="#indented-chunk">indented chunk</a> <a id="indented-chunk"></a> is a sequence of non-blank lines, each indented four or more spaces. An indented code block cannot interrupt a paragraph, so if it occurs before or after a paragraph, there must be an intervening blank line. The contents of the code block are the literal contents of the lines, including trailing newlines, minus four spaces of indentation. An indented code block has no attributes.</p>
 <div id="example-54" class="example" data-section="Indented code blocks">
 <div class="examplenum">
 Example 54
@@ -911,9 +910,8 @@ Example 63
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <h2 id="fenced-code-blocks"><span class="header-section-number">4.5</span> Fenced code blocks</h2>
-<p>A <a href="#code-fence">code fence</a> <a id="code-fence"/> is a sequence of at least three consecutive backtick characters (<code>`</code>) or tildes (<code>~</code>). (Tildes and backticks cannot be mixed.) A <a href="#fenced-code-block">fenced code block</a> <a id="fenced-code-block"/> begins with a code fence, indented no more than three spaces.</p>
-<p>The line with the opening code fence may optionally contain some text following the code fence; this is trimmed of leading and trailing spaces and called the <a href="#info-string">info string</a>. <a
-id="info-string"/> The info string may not contain any backtick characters. (The reason for this restriction is that otherwise some inline code would be incorrectly interpreted as the beginning of a fenced code block.)</p>
+<p>A <a href="#code-fence">code fence</a> <a id="code-fence"></a> is a sequence of at least three consecutive backtick characters (<code>`</code>) or tildes (<code>~</code>). (Tildes and backticks cannot be mixed.) A <a href="#fenced-code-block">fenced code block</a> <a id="fenced-code-block"></a> begins with a code fence, indented no more than three spaces.</p>
+<p>The line with the opening code fence may optionally contain some text following the code fence; this is trimmed of leading and trailing spaces and called the <a href="#info-string">info string</a>. <a id="info-string"></a> The info string may not contain any backtick characters. (The reason for this restriction is that otherwise some inline code would be incorrectly interpreted as the beginning of a fenced code block.)</p>
 <p>The content of the code block consists of all subsequent lines, until a closing <a href="#code-fence">code fence</a> of the same type as the code block began with (backticks or tildes), and with at least as many backticks or tildes as the opening code fence. If the leading code fence is indented N spaces, then up to N spaces of indentation are removed from each line of the content (if present). (If a content line is not indented, it is preserved unchanged. If it is indented less than N spaces, all of the indentation is removed.)</p>
 <p>The closing code fence may be indented up to three spaces, and may be followed only by spaces, which are ignored. If the end of the containing block (or document) is reached and no closing code fence has been found, the code block contains all of the lines after the opening code fence until the end of the containing block (or document). (An alternative spec would require backtracking in the event that a closing code fence is not found. But this makes parsing much less efficient, and there seems to be no real down side to the behavior described here.)</p>
 <p>A fenced code block may interrupt a paragraph, and does not require a blank line either before or after.</p>
@@ -1202,8 +1200,8 @@ Example 86
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <h2 id="html-blocks"><span class="header-section-number">4.6</span> HTML blocks</h2>
-<p>An <a href="#html-block-tag">HTML block tag</a> <a id="html-block-tag"/> is an <a href="#open-tag">open tag</a> or <a href="#closing-tag">closing tag</a> whose tag name is one of the following (case-insensitive): <code>article</code>, <code>header</code>, <code>aside</code>, <code>hgroup</code>, <code>blockquote</code>, <code>hr</code>, <code>body</code>, <code>li</code>, <code>br</code>, <code>map</code>, <code>button</code>, <code>object</code>, <code>canvas</code>, <code>ol</code>, <code>caption</code>, <code>output</code>, <code>col</code>, <code>p</code>, <code>colgroup</code>, <code>pre</code>, <code>dd</code>, <code>progress</code>, <code>div</code>, <code>section</code>, <code>dl</code>, <code>table</code>, <code>td</code>, <code>dt</code>, <code>tbody</code>, <code>embed</code>, <code>textarea</code>, <code>fieldset</code>, <code>tfoot</code>, <code>figcaption</code>, <code>th</code>, <code>figure</code>, <code>thead</code>, <code>footer</code>, <code>footer</code>, <code>tr</code>, <code>form</code>, <code>ul</code>, <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>, <code>h5</code>, <code>h6</code>, <code>video</code>, <code>script</code>, <code>style</code>.</p>
-<p>An <a href="#html-block">HTML block</a> <a id="html-block"/> begins with an <a href="#html-block-tag">HTML block tag</a>, <a href="#html-comment">HTML comment</a>, <a href="#processing-instruction">processing instruction</a>, <a href="#declaration">declaration</a>, or <a href="#cdata-section">CDATA section</a>. It ends when a <a href="#blank-line">blank line</a> or the end of the input is encountered. The initial line may be indented up to three spaces, and subsequent lines may have any indentation. The contents of the HTML block are interpreted as raw HTML, and will not be escaped in HTML output.</p>
+<p>An <a href="#html-block-tag">HTML block tag</a> <a id="html-block-tag"></a> is an <a href="#open-tag">open tag</a> or <a href="#closing-tag">closing tag</a> whose tag name is one of the following (case-insensitive): <code>article</code>, <code>header</code>, <code>aside</code>, <code>hgroup</code>, <code>blockquote</code>, <code>hr</code>, <code>body</code>, <code>li</code>, <code>br</code>, <code>map</code>, <code>button</code>, <code>object</code>, <code>canvas</code>, <code>ol</code>, <code>caption</code>, <code>output</code>, <code>col</code>, <code>p</code>, <code>colgroup</code>, <code>pre</code>, <code>dd</code>, <code>progress</code>, <code>div</code>, <code>section</code>, <code>dl</code>, <code>table</code>, <code>td</code>, <code>dt</code>, <code>tbody</code>, <code>embed</code>, <code>textarea</code>, <code>fieldset</code>, <code>tfoot</code>, <code>figcaption</code>, <code>th</code>, <code>figure</code>, <code>thead</code>, <code>footer</code>, <code>footer</code>, <code>tr</code>, <code>form</code>, <code>ul</code>, <code>h1</code>, <code>h2</code>, <code>h3</code>, <code>h4</code>, <code>h5</code>, <code>h6</code>, <code>video</code>, <code>script</code>, <code>style</code>.</p>
+<p>An <a href="#html-block">HTML block</a> <a id="html-block"></a> begins with an <a href="#html-block-tag">HTML block tag</a>, <a href="#html-comment">HTML comment</a>, <a href="#processing-instruction">processing instruction</a>, <a href="#declaration">declaration</a>, or <a href="#cdata-section">CDATA section</a>. It ends when a <a href="#blank-line">blank line</a> or the end of the input is encountered. The initial line may be indented up to three spaces, and subsequent lines may have any indentation. The contents of the HTML block are interpreted as raw HTML, and will not be escaped in HTML output.</p>
 <p>Some simple examples:</p>
 <div id="example-87" class="example" data-section="HTML blocks">
 <div class="examplenum">
@@ -1437,7 +1435,7 @@ Hi
 <p>Moreover, blank lines are usually not necessary and can be deleted. The exception is inside <code>&lt;pre&gt;</code> tags; here, one can replace the blank lines with <code>&amp;#10;</code> entities.</p>
 <p>So there is no important loss of expressive power with the new rule.</p>
 <h2 id="link-reference-definitions"><span class="header-section-number">4.7</span> Link reference definitions</h2>
-<p>A <a href="#link-reference-definition">link reference definition</a> <a id="link-reference-definition"/> consists of a <a href="#link-label">link label</a>, indented up to three spaces, followed by a colon (<code>:</code>), optional blank space (including up to one newline), a <a href="#link-destination">link destination</a>, optional blank space (including up to one newline), and an optional <a href="#link-title">link title</a>, which if it is present must be separated from the <a href="#link-destination">link destination</a> by whitespace. No further non-space characters may occur on the line.</p>
+<p>A <a href="#link-reference-definition">link reference definition</a> <a id="link-reference-definition"></a> consists of a <a href="#link-label">link label</a>, indented up to three spaces, followed by a colon (<code>:</code>), optional blank space (including up to one newline), a <a href="#link-destination">link destination</a>, optional blank space (including up to one newline), and an optional <a href="#link-title">link title</a>, which if it is present must be separated from the <a href="#link-destination">link destination</a> by whitespace. No further non-space characters may occur on the line.</p>
 <p>A <a href="#link-reference-definition">link reference-definition</a> does not correspond to a structural element of a document. Instead, it defines a label which can be used in <a href="#reference-link">reference links</a> and reference-style <a href="#image">images</a> elsewhere in the document. <a href="#link-reference-definitions">Link reference definitions</a> can come either before or after the links that use them.</p>
 <div id="example-101" class="example" data-section="Link reference definitions">
 <div class="examplenum">
@@ -1639,7 +1637,7 @@ Example 118
 &lt;/blockquote&gt;</code></pre>
 </div>
 <h2 id="paragraphs"><span class="header-section-number">4.8</span> Paragraphs</h2>
-<p>A sequence of non-blank lines that cannot be interpreted as other kinds of blocks forms a <a href="#paragraph">paragraph</a> <a id="paragraph"/>. The contents of the paragraph are the result of parsing the paragraph’s raw content as inlines. The paragraph’s raw content is formed by concatenating the lines and removing initial and final spaces.</p>
+<p>A sequence of non-blank lines that cannot be interpreted as other kinds of blocks forms a <a href="#paragraph">paragraph</a> <a id="paragraph"></a>. The contents of the paragraph are the result of parsing the paragraph’s raw content as inlines. The paragraph’s raw content is formed by concatenating the lines and removing initial and final spaces.</p>
 <p>A simple example with two paragraphs:</p>
 <div id="example-119" class="example" data-section="Paragraphs">
 <div class="examplenum">
@@ -1756,11 +1754,11 @@ aaa
 </blockquote>
 <p>So, we explain what counts as a block quote or list item by explaining how these can be <em>generated</em> from their contents. This should suffice to define the syntax, although it does not give a recipe for <em>parsing</em> these constructions. (A recipe is provided below in the section entitled [A parsing strategy].)</p>
 <h2 id="block-quotes"><span class="header-section-number">5.1</span> Block quotes</h2>
-<p>A <a href="#block-quote-marker">block quote marker</a> <a id="block-quote-marker"/> consists of 0-3 spaces of initial indent, plus (a) the character <code>&gt;</code> together with a following space, or (b) a single character <code>&gt;</code> not followed by a space.</p>
-<p>The following rules define <a href="#block-quote">block quotes</a>: <a id="block-quote"/></p>
+<p>A <a href="#block-quote-marker">block quote marker</a> <a id="block-quote-marker"></a> consists of 0-3 spaces of initial indent, plus (a) the character <code>&gt;</code> together with a following space, or (b) a single character <code>&gt;</code> not followed by a space.</p>
+<p>The following rules define <a href="#block-quote">block quotes</a>: <a id="block-quote"></a></p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Basic case.</strong> If a string of lines <em>Ls</em> constitute a sequence of blocks <em>Bs</em>, then the result of appending a [block quote marker] to the beginning of each line in <em>Ls</em> is a <a href="#block-quote">block quote</a> containing <em>Bs</em>.</p></li>
-<li><p><strong>Laziness.</strong> If a string of lines <em>Ls</em> constitute a <a href="#block-quote">block quote</a> with contents <em>Bs</em>, then the result of deleting the initial <a href="#block-quote-marker">block quote marker</a> from one or more lines in which the next non-space character after the <a href="#block-quote-marker">block quote marker</a> is <a href="#paragraph-continuation-text">paragraph continuation text</a> is a block quote with <em>Bs</em> as its content. <a id="paragraph-continuation-text"/> <a href="#paragraph-continuation-text">Paragraph continuation text</a> is text that will be parsed as part of the content of a paragraph, but does not occur at the beginning of the paragraph.</p></li>
+<li><p><strong>Laziness.</strong> If a string of lines <em>Ls</em> constitute a <a href="#block-quote">block quote</a> with contents <em>Bs</em>, then the result of deleting the initial <a href="#block-quote-marker">block quote marker</a> from one or more lines in which the next non-space character after the <a href="#block-quote-marker">block quote marker</a> is <a href="#paragraph-continuation-text">paragraph continuation text</a> is a block quote with <em>Bs</em> as its content. <a id="paragraph-continuation-text"></a> <a href="#paragraph-continuation-text">Paragraph continuation text</a> is text that will be parsed as part of the content of a paragraph, but does not occur at the beginning of the paragraph.</p></li>
 <li><p><strong>Consecutiveness.</strong> A document cannot contain two <a href="#block-quote">block quotes</a> in a row unless there is a <a href="#blank-line">blank line</a> between them.</p></li>
 </ol>
 <p>Nothing else counts as a <a href="#block-quote">block quote</a>.</p>
@@ -2086,9 +2084,9 @@ Example 151
 &lt;/blockquote&gt;</code></pre>
 </div>
 <h2 id="list-items"><span class="header-section-number">5.2</span> List items</h2>
-<p>A <a href="#list-marker">list marker</a> <a id="list-marker"/> is a <a href="#bullet-list-marker">bullet list marker</a> or an <a href="#ordered-list-marker">ordered list marker</a>.</p>
-<p>A <a href="#bullet-list-marker">bullet list marker</a> <a id="bullet-list-marker"/> is a <code>-</code>, <code>+</code>, or <code>*</code> character.</p>
-<p>An <a href="#ordered-list-marker">ordered list marker</a> <a id="ordered-list-marker"/> is a sequence of one of more digits (<code>0-9</code>), followed by either a <code>.</code> character or a <code>)</code> character.</p>
+<p>A <a href="#list-marker">list marker</a> <a id="list-marker"></a> is a <a href="#bullet-list-marker">bullet list marker</a> or an <a href="#ordered-list-marker">ordered list marker</a>.</p>
+<p>A <a href="#bullet-list-marker">bullet list marker</a> <a id="bullet-list-marker"></a> is a <code>-</code>, <code>+</code>, or <code>*</code> character.</p>
+<p>An <a href="#ordered-list-marker">ordered list marker</a> <a id="ordered-list-marker"></a> is a sequence of one of more digits (<code>0-9</code>), followed by either a <code>.</code> character or a <code>)</code> character.</p>
 <p>The following rules define <a href="#list-item">list items</a>:</p>
 <ol style="list-style-type: decimal">
 <li><strong>Basic case.</strong> If a sequence of lines <em>Ls</em> constitute a sequence of blocks <em>Bs</em> starting with a non-space character and not separated from each other by more than one blank line, and <em>M</em> is a list marker <em>M</em> of width <em>W</em> followed by 0 &lt; <em>N</em> &lt; 5 spaces, then the result of prepending <em>M</em> and the following spaces to the first line of <em>Ls</em>, and indenting subsequent lines of <em>Ls</em> by <em>W + N</em> spaces, is a list item with <em>Bs</em> as its contents. The type of the list item (bullet or ordered) is determined by the type of its list marker. If the list item is ordered, then it is also assigned a start number, based on the ordered list marker.</li>
@@ -2548,7 +2546,7 @@ continued here.&lt;/p&gt;
 &lt;/blockquote&gt;</code></pre>
 </div>
 <ol start="5" style="list-style-type: decimal">
-<li><strong>That’s all.</strong> Nothing that is not counted as a list item by rules #1–4 counts as a <a href="#block-quote">list item</a>.</li>
+<li><strong>That’s all.</strong> Nothing that is not counted as a list item by rules #1–4 counts as a <a href="#list-item">list item</a>.</li>
 </ol>
 <p>The rules for sublists follow from the general rules above. A sublist must be indented the same number of spaces a paragraph would need to be in order to be included in the list item.</p>
 <p>So, in this case we need two spaces indent:</p>
@@ -2728,10 +2726,10 @@ Example 185
 <p>where the code is indented eight spaces. The spec above, by contrast, will parse this text as expected, since the code block’s indentation is measured from the beginning of <code>foo</code>.</p>
 <p>The one case that needs special treatment is a list item that <em>starts</em> with indented code. How much indentation is required in that case, since we don’t have a “first paragraph” to measure from? Rule #2 simply stipulates that in such cases, we require one space indentation from the list marker (and then the normal four spaces for the indented code). This will match the four-space rule in cases where the list marker plus its initial indentation takes four spaces (a common case), but diverge in other cases.</p>
 <h2 id="lists"><span class="header-section-number">5.3</span> Lists</h2>
-<p>A <a href="#list">list</a> <a id="list"/> is a sequence of one or more list items <a href="#of-the-same-type">of the same type</a>. The list items may be separated by single <a href="#blank-line">blank lines</a>, but two blank lines end all containing lists.</p>
-<p>Two list items are <a href="#of-the-same-type">of the same type</a> <a id="of-the-same-type"/> if they begin with a <a href="#list-marker">list marker</a> of the same type. Two list markers are of the same type if (a) they are bullet list markers using the same character (<code>-</code>, <code>+</code>, or <code>*</code>) or (b) they are ordered list numbers with the same delimiter (either <code>.</code> or <code>)</code>).</p>
-<p>A list is an <a href="#ordered-list">ordered list</a> <a id="ordered-list"/> if its constituent list items begin with <a href="#ordered-list-marker">ordered list markers</a>, and a <a href="#bullet-list">bullet list</a> <a id="bullet-list"/> if its constituent list items begin with <a href="#bullet-list-marker">bullet list markers</a>.</p>
-<p>The <a href="#start-number">start number</a> <a id="start-number"/> of an <a href="#ordered-list">ordered list</a> is determined by the list number of its initial list item. The numbers of subsequent list items are disregarded.</p>
+<p>A <a href="#list">list</a> <a id="list"></a> is a sequence of one or more list items <a href="#of-the-same-type">of the same type</a>. The list items may be separated by single <a href="#blank-line">blank lines</a>, but two blank lines end all containing lists.</p>
+<p>Two list items are <a href="#of-the-same-type">of the same type</a> <a id="of-the-same-type"></a> if they begin with a <a href="#list-marker">list marker</a> of the same type. Two list markers are of the same type if (a) they are bullet list markers using the same character (<code>-</code>, <code>+</code>, or <code>*</code>) or (b) they are ordered list numbers with the same delimiter (either <code>.</code> or <code>)</code>).</p>
+<p>A list is an <a href="#ordered-list">ordered list</a> <a id="ordered-list"></a> if its constituent list items begin with <a href="#ordered-list-marker">ordered list markers</a>, and a <a href="#bullet-list">bullet list</a> <a id="bullet-list"></a> if its constituent list items begin with <a href="#bullet-list-marker">bullet list markers</a>.</p>
+<p>The <a href="#start-number">start number</a> <a id="start-number"></a> of an <a href="#ordered-list">ordered list</a> is determined by the list number of its initial list item. The numbers of subsequent list items are disregarded.</p>
 <p>A list is <a href="#loose">loose</a> if it any of its constituent list items are separated by blank lines, or if any of its constituent list items directly contain two block-level elements with a blank line between them. Otherwise a list is <a href="#tight">tight</a>. (The difference in HTML output is that paragraphs in a loose with are wrapped in <code>&lt;p&gt;</code> tags, while paragraphs in a tight list are not.)</p>
 <p>Changing the bullet or ordered list delimiter starts a new list:</p>
 <div id="example-186" class="example" data-section="Lists">
@@ -3226,7 +3224,7 @@ foo
 </div>
 <h2 id="entities"><span class="header-section-number">6.2</span> Entities</h2>
 <p>Entities are parsed as entities, not as literal text, in all contexts except code spans and code blocks. Three kinds of entities are recognized.</p>
-<p><a href="#name-entities">Named entities</a> <a id="named-entities"/> consist of <code>&amp;</code> + a string of 2-32 alphanumerics beginning with a letter + <code>;</code>.</p>
+<p><a href="#name-entities">Named entities</a> <a id="named-entities"></a> consist of <code>&amp;</code> + a string of 2-32 alphanumerics beginning with a letter + <code>;</code>.</p>
 <div id="example-220" class="example" data-section="Entities">
 <div class="examplenum">
 Example 220
@@ -3234,7 +3232,7 @@ Example 220
 <pre class="markdown"><code>&amp;nbsp; &amp;amp; &amp;copy; &amp;AElig; &amp;Dcaron; &amp;frac34; &amp;HilbertSpace; &amp;DifferentialD; &amp;ClockwiseContourIntegral;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;nbsp; &amp;amp; &amp;copy; &amp;AElig; &amp;Dcaron; &amp;frac34; &amp;HilbertSpace; &amp;DifferentialD; &amp;ClockwiseContourIntegral;&lt;/p&gt;</code></pre>
 </div>
-<p><a href="#decimal-entities">Decimal entities</a> <a id="decimal-entities"/> consist of <code>&amp;#</code> + a string of 1–8 arabic digits + <code>;</code>.</p>
+<p><a href="#decimal-entities">Decimal entities</a> <a id="decimal-entities"></a> consist of <code>&amp;#</code> + a string of 1–8 arabic digits + <code>;</code>.</p>
 <div id="example-221" class="example" data-section="Entities">
 <div class="examplenum">
 Example 221
@@ -3242,7 +3240,7 @@ Example 221
 <pre class="markdown"><code>&amp;#1; &amp;#35; &amp;#1234; &amp;#992; &amp;#98765432;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;#1; &amp;#35; &amp;#1234; &amp;#992; &amp;#98765432;&lt;/p&gt;</code></pre>
 </div>
-<p><a href="#hexadecimal-entities">Hexadecimal entities</a> <a id="hexadecimal-entities"/> consist of <code>&amp;#</code> + either <code>X</code> or <code>x</code> + a string of 1-8 hexadecimal digits + <code>;</code>.</p>
+<p><a href="#hexadecimal-entities">Hexadecimal entities</a> <a id="hexadecimal-entities"></a> consist of <code>&amp;#</code> + either <code>X</code> or <code>x</code> + a string of 1-8 hexadecimal digits + <code>;</code>.</p>
 <div id="example-222" class="example" data-section="Entities">
 <div class="examplenum">
 Example 222
@@ -3325,7 +3323,7 @@ Example 231
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <h2 id="code-span"><span class="header-section-number">6.3</span> Code span</h2>
-<p>A <a href="#backtick-string">backtick string</a> <a id="backtick-string"/> is a string of one or more backtick characters (<code>`</code>) that is neither preceded nor followed by a backtick.</p>
+<p>A <a href="#backtick-string">backtick string</a> <a id="backtick-string"></a> is a string of one or more backtick characters (<code>`</code>) that is neither preceded nor followed by a backtick.</p>
 <p>A code span begins with a backtick string and ends with a backtick string of equal length. The contents of the code span are the characters between the two backtick strings, with leading and trailing spaces and newlines removed, and consecutive spaces and newlines collapsed to single spaces.</p>
 <p>This is a simple code span:</p>
 <div id="example-232" class="example" data-section="Code span">
@@ -3454,7 +3452,7 @@ Example 244
 no emphasis: foo_bar_baz</code></pre>
 <p>The following rules capture all of these patterns, while allowing for efficient parsing strategies that do not backtrack:</p>
 <ol style="list-style-type: decimal">
-<li><p>A single <code>*</code> character <a href="#can-open-emphasis">can open emphasis</a> <a id="can-open-emphasis"/> iff</p>
+<li><p>A single <code>*</code> character <a href="#can-open-emphasis">can open emphasis</a> <a id="can-open-emphasis"></a> iff</p>
 <ol style="list-style-type: lower-alpha">
 <li>it is not part of a sequence of four or more unescaped <code>*</code>s,</li>
 <li>it is not followed by whitespace, and</li>
@@ -3467,7 +3465,7 @@ no emphasis: foo_bar_baz</code></pre>
 <li>is is not preceded by an ASCII alphanumeric character, and</li>
 <li>either it is not followed by a <code>_</code> character or it is followed immediately by strong emphasis.</li>
 </ol></li>
-<li><p>A single <code>*</code> character <a href="#can-close-emphasis">can close emphasis</a> <a id="can-close-emphasis"/> iff</p>
+<li><p>A single <code>*</code> character <a href="#can-close-emphasis">can close emphasis</a> <a id="can-close-emphasis"></a> iff</p>
 <ol style="list-style-type: lower-alpha">
 <li>it is not part of a sequence of four or more unescaped <code>*</code>s, and</li>
 <li>it is not preceded by whitespace.</li>
@@ -3478,7 +3476,7 @@ no emphasis: foo_bar_baz</code></pre>
 <li>it is not preceded by whitespace, and</li>
 <li>it is not followed by an ASCII alphanumeric character.</li>
 </ol></li>
-<li><p>A double <code>**</code> <a href="#can-open-strong-emphasis">can open strong emphasis</a> <a id="can-open-strong-emphasis" /> iff</p>
+<li><p>A double <code>**</code> <a href="#can-open-strong-emphasis">can open strong emphasis</a> <a id="can-open-strong-emphasis" ></a> iff</p>
 <ol style="list-style-type: lower-alpha">
 <li>it is not part of a sequence of four or more unescaped <code>*</code>s,</li>
 <li>it is not followed by whitespace, and</li>
@@ -3491,7 +3489,7 @@ no emphasis: foo_bar_baz</code></pre>
 <li>it is not preceded by an ASCII alphanumeric character, and</li>
 <li>either it is not followed by a <code>_</code> character or it is followed immediately by emphasis.</li>
 </ol></li>
-<li><p>A double <code>**</code> <a href="#can-close-strong-emphasis">can close strong emphasis</a> <a id="can-close-strong-emphasis" /> iff</p>
+<li><p>A double <code>**</code> <a href="#can-close-strong-emphasis">can close strong emphasis</a> <a id="can-close-strong-emphasis" ></a> iff</p>
 <ol style="list-style-type: lower-alpha">
 <li>it is not part of a sequence of four or more unescaped <code>*</code>s, and</li>
 <li>it is not preceded by whitespace.</li>
@@ -4102,7 +4100,7 @@ Example 324
 </div>
 <h2 id="links"><span class="header-section-number">6.5</span> Links</h2>
 <p>A link contains a <a href="#link-label">link label</a> (the visible text), a <a href="#destination">destination</a> (the URI that is the link destination), and optionally a <a href="#link-title">link title</a>. There are two basic kinds of links in Markdown. In <a href="#inline-links">inline links</a> the destination and title are given immediately after the label. In <a href="#reference-links">reference links</a> the destination and title are defined elsewhere in the document.</p>
-<p>A <a href="#link-label">link label</a> <a id="link-label"/> consists of</p>
+<p>A <a href="#link-label">link label</a> <a id="link-label"></a> consists of</p>
 <ul>
 <li>an opening <code>[</code>, followed by</li>
 <li>zero or more backtick code spans, autolinks, HTML tags, link labels, backslash-escaped ASCII punctuation characters, or non-<code>]</code> characters, followed by</li>
@@ -4114,18 +4112,18 @@ Example 324
 <li>The square brackets bind more tightly than emphasis markers, but less tightly than <code>&lt;&gt;</code> or <code>`</code>.</li>
 <li>Link labels may contain material in matching square brackets.</li>
 </ul>
-<p>A <a href="#link-destination">link destination</a> <a id="link-destination"/> consists of either</p>
+<p>A <a href="#link-destination">link destination</a> <a id="link-destination"></a> consists of either</p>
 <ul>
 <li><p>a sequence of zero or more characters between an opening <code>&lt;</code> and a closing <code>&gt;</code> that contains no line breaks or unescaped <code>&lt;</code> or <code>&gt;</code> characters, or</p></li>
 <li><p>a nonempty sequence of characters that does not include ASCII space or control characters, and includes parentheses only if (a) they are backslash-escaped or (b) they are part of a balanced pair of unescaped parentheses that is not itself inside a balanced pair of unescaped paretheses.</p></li>
 </ul>
-<p>A <a href="#link-title">link title</a> <a id="link-title"/> consists of either</p>
+<p>A <a href="#link-title">link title</a> <a id="link-title"></a> consists of either</p>
 <ul>
 <li><p>a sequence of zero or more characters between straight double-quote characters (<code>&quot;</code>), including a <code>&quot;</code> character only if it is backslash-escaped, or</p></li>
 <li><p>a sequence of zero or more characters between straight single-quote characters (<code>'</code>), including a <code>'</code> character only if it is backslash-escaped, or</p></li>
 <li><p>a sequence of zero or more characters between matching parentheses (<code>(...)</code>), including a <code>)</code> character only if it is backslash-escaped.</p></li>
 </ul>
-<p>An <a href="#inline-link">inline link</a> <a id="inline-link"/> consists of a <a href="#link-label">link label</a> followed immediately by a left parenthesis <code>(</code>, optional whitespace, an optional <a href="#link-destination">link destination</a>, an optional <a href="#link-title">link title</a> separated from the link destination by whitespace, optional whitespace, and a right parenthesis <code>)</code>. The link’s text consists of the label (excluding the enclosing square brackets) parsed as inlines. The link’s URI consists of the link destination, excluding enclosing <code>&lt;...&gt;</code> if present, with backslash-escapes in effect as described above. The link’s title consists of the link title, excluding its enclosing delimiters, with backslash-escapes in effect as described above.</p>
+<p>An <a href="#inline-link">inline link</a> <a id="inline-link"></a> consists of a <a href="#link-label">link label</a> followed immediately by a left parenthesis <code>(</code>, optional whitespace, an optional <a href="#link-destination">link destination</a>, an optional <a href="#link-title">link title</a> separated from the link destination by whitespace, optional whitespace, and a right parenthesis <code>)</code>. The link’s text consists of the label (excluding the enclosing square brackets) parsed as inlines. The link’s URI consists of the link destination, excluding enclosing <code>&lt;...&gt;</code> if present, with backslash-escapes in effect as described above. The link’s title consists of the link title, excluding its enclosing delimiters, with backslash-escapes in effect as described above.</p>
 <p>Here is a simple inline link:</p>
 <div id="example-325" class="example" data-section="Links">
 <div class="examplenum">
@@ -4298,9 +4296,9 @@ Example 345
 <pre class="markdown"><code>[foo &lt;bar attr=&quot;](baz)&quot;&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;[foo &lt;bar attr=&quot;](baz)&quot;&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>There are three kinds of <a href="#reference-link">reference links</a>: <a id="reference-link"/></p>
-<p>A <a href="#full-reference-link">full reference link</a> <a id="full-reference-link"/> consists of a <a href="#link-label">link label</a>, optional whitespace, and another <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document.</p>
-<p>One label <a href="#matches">matches</a> <a id="matches"/> another just in case their normalized forms are equal. To normalize a label, perform the <em>unicode case fold</em> and collapse consecutive internal whitespace to a single space. If there are multiple matching reference link definitions, the one that comes first in the document is used. (It is desirable in such cases to emit a warning.)</p>
+<p>There are three kinds of <a href="#reference-link">reference links</a>: <a id="reference-link"></a></p>
+<p>A <a href="#full-reference-link">full reference link</a> <a id="full-reference-link"></a> consists of a <a href="#link-label">link label</a>, optional whitespace, and another <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document.</p>
+<p>One label <a href="#matches">matches</a> <a id="matches"></a> another just in case their normalized forms are equal. To normalize a label, perform the <em>unicode case fold</em> and collapse consecutive internal whitespace to a single space. If there are multiple matching reference link definitions, the one that comes first in the document is used. (It is desirable in such cases to emit a warning.)</p>
 <p>The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching <a href="#link-reference-definition">link reference definition</a>.</p>
 <p>Here is a simple example:</p>
 <div id="example-346" class="example" data-section="Links">
@@ -4395,7 +4393,7 @@ Example 354
 [foo!]: /url</code></pre>
 <pre class="html"><code>&lt;p&gt;[bar][foo!]&lt;/p&gt;</code></pre>
 </div>
-<p>A <a href="#collapsed-reference-link">collapsed reference link</a> <a id="collapsed-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document, optional whitespace, and the string <code>[]</code>. The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching reference link definition. Thus, <code>[foo][]</code> is equivalent to <code>[foo][foo]</code>.</p>
+<p>A <a href="#collapsed-reference-link">collapsed reference link</a> <a id="collapsed-reference-link"></a> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document, optional whitespace, and the string <code>[]</code>. The contents of the first link label are parsed as inlines, which are used as the link’s text. The link’s URI and title are provided by the matching reference link definition. Thus, <code>[foo][]</code> is equivalent to <code>[foo][foo]</code>.</p>
 <div id="example-355" class="example" data-section="Links">
 <div class="examplenum">
 Example 355
@@ -4435,7 +4433,7 @@ Example 358
 [foo]: /url &quot;title&quot;</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;/url&quot; title=&quot;title&quot;&gt;foo&lt;/a&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>A <a href="#shortcut-reference-link">shortcut reference link</a> <a id="shortcut-reference-link"/> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document and is not followed by <code>[]</code> or a link label. The contents of the first link label are parsed as inlines, which are used as the link’s text. the link’s URI and title are provided by the matching link reference definition. Thus, <code>[foo]</code> is equivalent to <code>[foo][]</code>.</p>
+<p>A <a href="#shortcut-reference-link">shortcut reference link</a> <a id="shortcut-reference-link"></a> consists of a <a href="#link-label">link label</a> that <a href="#matches">matches</a> a <a href="#link-reference-definition">link reference definition</a> elsewhere in the document and is not followed by <code>[]</code> or a link label. The contents of the first link label are parsed as inlines, which are used as the link’s text. the link’s URI and title are provided by the matching link reference definition. Thus, <code>[foo]</code> is equivalent to <code>[foo][]</code>.</p>
 <div id="example-359" class="example" data-section="Links">
 <div class="examplenum">
 Example 359
@@ -4493,7 +4491,7 @@ Example 364
 *[foo*]</code></pre>
 <pre class="html"><code>&lt;p&gt;*&lt;a href=&quot;/url&quot;&gt;foo*&lt;/a&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>However, this is not, because link labels bind tight less tightly than code backticks:</p>
+<p>However, this is not, because link labels bind less tightly than code backticks:</p>
 <div id="example-365" class="example" data-section="Links">
 <div class="examplenum">
 Example 365
@@ -4759,9 +4757,9 @@ Example 392
 </div>
 <h2 id="autolinks"><span class="header-section-number">6.7</span> Autolinks</h2>
 <p>Autolinks are absolute URIs and email addresses inside <code>&lt;</code> and <code>&gt;</code>. They are parsed as links, with the URL or email address as the link label.</p>
-<p>A <a href="#uri-autolink">URI autolink</a> <a id="uri-autolink"/> consists of <code>&lt;</code>, followed by an <a href="#absolute-uri">absolute URI</a> not containing <code>&lt;</code>, followed by <code>&gt;</code>. It is parsed as a link to the URI, with the URI as the link’s label.</p>
-<p>An <a href="#absolute-uri">absolute URI</a>, <a id="absolute-uri"/> for these purposes, consists of a <a href="#scheme">scheme</a> followed by a colon (<code>:</code>) followed by zero or more characters other than ASCII whitespace and control characters, <code>&lt;</code>, and <code>&gt;</code>. If the URI includes these characters, you must use percent-encoding (e.g. <code>%20</code> for a space).</p>
-<p>The following <a href="#scheme">schemes</a> <a id="scheme"/> are recognized (case-insensitive): <code>coap</code>, <code>doi</code>, <code>javascript</code>, <code>aaa</code>, <code>aaas</code>, <code>about</code>, <code>acap</code>, <code>cap</code>, <code>cid</code>, <code>crid</code>, <code>data</code>, <code>dav</code>, <code>dict</code>, <code>dns</code>, <code>file</code>, <code>ftp</code>, <code>geo</code>, <code>go</code>, <code>gopher</code>, <code>h323</code>, <code>http</code>, <code>https</code>, <code>iax</code>, <code>icap</code>, <code>im</code>, <code>imap</code>, <code>info</code>, <code>ipp</code>, <code>iris</code>, <code>iris.beep</code>, <code>iris.xpc</code>, <code>iris.xpcs</code>, <code>iris.lwz</code>, <code>ldap</code>, <code>mailto</code>, <code>mid</code>, <code>msrp</code>, <code>msrps</code>, <code>mtqp</code>, <code>mupdate</code>, <code>news</code>, <code>nfs</code>, <code>ni</code>, <code>nih</code>, <code>nntp</code>, <code>opaquelocktoken</code>, <code>pop</code>, <code>pres</code>, <code>rtsp</code>, <code>service</code>, <code>session</code>, <code>shttp</code>, <code>sieve</code>, <code>sip</code>, <code>sips</code>, <code>sms</code>, <code>snmp</code>,<code>soap.beep</code>, <code>soap.beeps</code>, <code>tag</code>, <code>tel</code>, <code>telnet</code>, <code>tftp</code>, <code>thismessage</code>, <code>tn3270</code>, <code>tip</code>, <code>tv</code>, <code>urn</code>, <code>vemmi</code>, <code>ws</code>, <code>wss</code>, <code>xcon</code>, <code>xcon-userid</code>, <code>xmlrpc.beep</code>, <code>xmlrpc.beeps</code>, <code>xmpp</code>, <code>z39.50r</code>, <code>z39.50s</code>, <code>adiumxtra</code>, <code>afp</code>, <code>afs</code>, <code>aim</code>, <code>apt</code>,<code>attachment</code>, <code>aw</code>, <code>beshare</code>, <code>bitcoin</code>, <code>bolo</code>, <code>callto</code>, <code>chrome</code>,<code>chrome-extension</code>, <code>com-eventbrite-attendee</code>, <code>content</code>, <code>cvs</code>,<code>dlna-playsingle</code>, <code>dlna-playcontainer</code>, <code>dtn</code>, <code>dvb</code>, <code>ed2k</code>, <code>facetime</code>, <code>feed</code>, <code>finger</code>, <code>fish</code>, <code>gg</code>, <code>git</code>, <code>gizmoproject</code>, <code>gtalk</code>, <code>hcp</code>, <code>icon</code>, <code>ipn</code>, <code>irc</code>, <code>irc6</code>, <code>ircs</code>, <code>itms</code>, <code>jar</code>, <code>jms</code>, <code>keyparc</code>, <code>lastfm</code>, <code>ldaps</code>, <code>magnet</code>, <code>maps</code>, <code>market</code>,<code>message</code>, <code>mms</code>, <code>ms-help</code>, <code>msnim</code>, <code>mumble</code>, <code>mvn</code>, <code>notes</code>, <code>oid</code>, <code>palm</code>, <code>paparazzi</code>, <code>platform</code>, <code>proxy</code>, <code>psyc</code>, <code>query</code>, <code>res</code>, <code>resource</code>, <code>rmi</code>, <code>rsync</code>, <code>rtmp</code>, <code>secondlife</code>, <code>sftp</code>, <code>sgn</code>, <code>skype</code>, <code>smb</code>, <code>soldat</code>, <code>spotify</code>, <code>ssh</code>, <code>steam</code>, <code>svn</code>, <code>teamspeak</code>, <code>things</code>, <code>udp</code>, <code>unreal</code>, <code>ut2004</code>, <code>ventrilo</code>, <code>view-source</code>, <code>webcal</code>, <code>wtai</code>, <code>wyciwyg</code>, <code>xfire</code>, <code>xri</code>, <code>ymsgr</code>.</p>
+<p>A <a href="#uri-autolink">URI autolink</a> <a id="uri-autolink"></a> consists of <code>&lt;</code>, followed by an <a href="#absolute-uri">absolute URI</a> not containing <code>&lt;</code>, followed by <code>&gt;</code>. It is parsed as a link to the URI, with the URI as the link’s label.</p>
+<p>An <a href="#absolute-uri">absolute URI</a>, <a id="absolute-uri"></a> for these purposes, consists of a <a href="#scheme">scheme</a> followed by a colon (<code>:</code>) followed by zero or more characters other than ASCII whitespace and control characters, <code>&lt;</code>, and <code>&gt;</code>. If the URI includes these characters, you must use percent-encoding (e.g. <code>%20</code> for a space).</p>
+<p>The following <a href="#scheme">schemes</a> <a id="scheme"></a> are recognized (case-insensitive): <code>coap</code>, <code>doi</code>, <code>javascript</code>, <code>aaa</code>, <code>aaas</code>, <code>about</code>, <code>acap</code>, <code>cap</code>, <code>cid</code>, <code>crid</code>, <code>data</code>, <code>dav</code>, <code>dict</code>, <code>dns</code>, <code>file</code>, <code>ftp</code>, <code>geo</code>, <code>go</code>, <code>gopher</code>, <code>h323</code>, <code>http</code>, <code>https</code>, <code>iax</code>, <code>icap</code>, <code>im</code>, <code>imap</code>, <code>info</code>, <code>ipp</code>, <code>iris</code>, <code>iris.beep</code>, <code>iris.xpc</code>, <code>iris.xpcs</code>, <code>iris.lwz</code>, <code>ldap</code>, <code>mailto</code>, <code>mid</code>, <code>msrp</code>, <code>msrps</code>, <code>mtqp</code>, <code>mupdate</code>, <code>news</code>, <code>nfs</code>, <code>ni</code>, <code>nih</code>, <code>nntp</code>, <code>opaquelocktoken</code>, <code>pop</code>, <code>pres</code>, <code>rtsp</code>, <code>service</code>, <code>session</code>, <code>shttp</code>, <code>sieve</code>, <code>sip</code>, <code>sips</code>, <code>sms</code>, <code>snmp</code>,<code>soap.beep</code>, <code>soap.beeps</code>, <code>tag</code>, <code>tel</code>, <code>telnet</code>, <code>tftp</code>, <code>thismessage</code>, <code>tn3270</code>, <code>tip</code>, <code>tv</code>, <code>urn</code>, <code>vemmi</code>, <code>ws</code>, <code>wss</code>, <code>xcon</code>, <code>xcon-userid</code>, <code>xmlrpc.beep</code>, <code>xmlrpc.beeps</code>, <code>xmpp</code>, <code>z39.50r</code>, <code>z39.50s</code>, <code>adiumxtra</code>, <code>afp</code>, <code>afs</code>, <code>aim</code>, <code>apt</code>,<code>attachment</code>, <code>aw</code>, <code>beshare</code>, <code>bitcoin</code>, <code>bolo</code>, <code>callto</code>, <code>chrome</code>,<code>chrome-extension</code>, <code>com-eventbrite-attendee</code>, <code>content</code>, <code>cvs</code>,<code>dlna-playsingle</code>, <code>dlna-playcontainer</code>, <code>dtn</code>, <code>dvb</code>, <code>ed2k</code>, <code>facetime</code>, <code>feed</code>, <code>finger</code>, <code>fish</code>, <code>gg</code>, <code>git</code>, <code>gizmoproject</code>, <code>gtalk</code>, <code>hcp</code>, <code>icon</code>, <code>ipn</code>, <code>irc</code>, <code>irc6</code>, <code>ircs</code>, <code>itms</code>, <code>jar</code>, <code>jms</code>, <code>keyparc</code>, <code>lastfm</code>, <code>ldaps</code>, <code>magnet</code>, <code>maps</code>, <code>market</code>,<code>message</code>, <code>mms</code>, <code>ms-help</code>, <code>msnim</code>, <code>mumble</code>, <code>mvn</code>, <code>notes</code>, <code>oid</code>, <code>palm</code>, <code>paparazzi</code>, <code>platform</code>, <code>proxy</code>, <code>psyc</code>, <code>query</code>, <code>res</code>, <code>resource</code>, <code>rmi</code>, <code>rsync</code>, <code>rtmp</code>, <code>secondlife</code>, <code>sftp</code>, <code>sgn</code>, <code>skype</code>, <code>smb</code>, <code>soldat</code>, <code>spotify</code>, <code>ssh</code>, <code>steam</code>, <code>svn</code>, <code>teamspeak</code>, <code>things</code>, <code>udp</code>, <code>unreal</code>, <code>ut2004</code>, <code>ventrilo</code>, <code>view-source</code>, <code>webcal</code>, <code>wtai</code>, <code>wyciwyg</code>, <code>xfire</code>, <code>xri</code>, <code>ymsgr</code>.</p>
 <p>Here are some valid autolinks:</p>
 <div id="example-393" class="example" data-section="Autolinks">
 <div class="examplenum">
@@ -4800,8 +4798,8 @@ Example 397
 <pre class="markdown"><code>&lt;http://foo.bar/baz bim&gt;</code></pre>
 <pre class="html"><code>&lt;p&gt;&amp;lt;http://foo.bar/baz bim&amp;gt;&lt;/p&gt;</code></pre>
 </div>
-<p>An <a href="#email-autolink">email autolink</a> <a id="email-autolink"/> consists of <code>&lt;</code>, followed by an <a href="#email-address">email address</a>, followed by <code>&gt;</code>. The link’s label is the email address, and the URL is <code>mailto:</code> followed by the email address.</p>
-<p>An <a href="#email-address">email address</a>, <a id="email-address"/> for these purposes, is anything that matches the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-%28type=email%29">non-normative regex from the HTML5 spec</a>:</p>
+<p>An <a href="#email-autolink">email autolink</a> <a id="email-autolink"></a> consists of <code>&lt;</code>, followed by an <a href="#email-address">email address</a>, followed by <code>&gt;</code>. The link’s label is the email address, and the URL is <code>mailto:</code> followed by the email address.</p>
+<p>An <a href="#email-address">email address</a>, <a id="email-address"></a> for these purposes, is anything that matches the <a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-%28type=email%29">non-normative regex from the HTML5 spec</a>:</p>
 <pre><code>/^[a-zA-Z0-9.!#$%&amp;&#39;*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
 (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/</code></pre>
 <p>Examples of email autolinks:</p>
@@ -4872,21 +4870,21 @@ Example 406
 <h2 id="raw-html"><span class="header-section-number">6.8</span> Raw HTML</h2>
 <p>Text between <code>&lt;</code> and <code>&gt;</code> that looks like an HTML tag is parsed as a raw HTML tag and will be rendered in HTML without escaping. Tag and attribute names are not limited to current HTML tags, so custom tags (and even, say, DocBook tags) may be used.</p>
 <p>Here is the grammar for tags:</p>
-<p>A <a href="#tag-name">tag name</a> <a id="tag-name"/> consists of an ASCII letter followed by zero or more ASCII letters or digits.</p>
-<p>An <a href="#attribute">attribute</a> <a id="attribute"/> consists of whitespace, an <strong>attribute name</strong>, and an optional <strong>attribute value specification</strong>.</p>
-<p>An <a href="#attribute-name">attribute name</a> <a id="attribute-name"/> consists of an ASCII letter, <code>_</code>, or <code>:</code>, followed by zero or more ASCII letters, digits, <code>_</code>, <code>.</code>, <code>:</code>, or <code>-</code>. (Note: This is the XML specification restricted to ASCII. HTML5 is laxer.)</p>
-<p>An <a href="#attribute-value-specification">attribute value specification</a> <a id="attribute-value-specification"/> consists of optional whitespace, a <code>=</code> character, optional whitespace, and an <a href="#attribute-value">attribute value</a>.</p>
-<p>An <a href="#attribute-value">attribute value</a> <a id="attribute-value"/> consists of an <a href="#unquoted-attribute-value">unquoted attribute value</a>, a <a href="#single-quoted-attribute-value">single-quoted attribute value</a>, or a <a href="#double-quoted-attribute-value">double-quoted attribute value</a>.</p>
-<p>An <a href="#unquoted-attribute-value">unquoted attribute value</a> <a id="unquoted-attribute-value"/> is a nonempty string of characters not including spaces, <code>&quot;</code>, <code>'</code>, <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, or <code>`</code>.</p>
-<p>A <a href="#single-quoted-attribute-value">single-quoted attribute value</a> <a id="single-quoted-attribute-value"/> consists of <code>'</code>, zero or more characters not including <code>'</code>, and a final <code>'</code>.</p>
-<p>A <a href="#double-quoted-attribute-value">double-quoted attribute value</a> <a id="double-quoted-attribute-value"/> consists of <code>&quot;</code>, zero or more characters not including <code>&quot;</code>, and a final <code>&quot;</code>.</p>
-<p>An <a href="#open-tag">open tag</a> <a id="open-tag"/> consists of a <code>&lt;</code> character, a <a href="#tag-name">tag name</a>, zero or more <a href="#attribute">attributes</a>, optional whitespace, an optional <code>/</code> character, and a <code>&gt;</code> character.</p>
-<p>A <a href="#closing-tag">closing tag</a> <a id="closing-tag"/> consists of the string <code>&lt;/</code>, a <a href="#tag-name">tag name</a>, optional whitespace, and the character <code>&gt;</code>.</p>
-<p>An <a href="#html-comment">HTML comment</a> <a id="html-comment"/> consists of the string <code>&lt;!--</code>, a string of characters not including the string <code>--</code>, and the string <code>--&gt;</code>.</p>
-<p>A <a href="#processing-instruction">processing instruction</a> <a id="processing-instruction"/> consists of the string <code>&lt;?</code>, a string of characters not including the string <code>?&gt;</code>, and the string <code>?&gt;</code>.</p>
-<p>A <a href="#declaration">declaration</a> <a id="declaration"/> consists of the string <code>&lt;!</code>, a name consisting of one or more uppercase ASCII letters, whitespace, a string of characters not including the character <code>&gt;</code>, and the character <code>&gt;</code>.</p>
-<p>A <a href="#cdata-section">CDATA section</a> <a id="cdata-section"/> consists of the string <code>&lt;![CDATA[</code>, a string of characters not including the string <code>]]&gt;</code>, and the string <code>]]&gt;</code>.</p>
-<p>An <a href="#html-tag">HTML tag</a> <a id="html-tag"/> consists of an <a href="#open-tag">open tag</a>, a <a href="#closing-tag">closing tag</a>, an <a href="#html-comment">HTML comment</a>, a <a href="#processing-instruction">processing instruction</a>, an <a href="#element-type-declaration">element type declaration</a>, or a <a href="#cdata-section">CDATA section</a>.</p>
+<p>A <a href="#tag-name">tag name</a> <a id="tag-name"></a> consists of an ASCII letter followed by zero or more ASCII letters or digits.</p>
+<p>An <a href="#attribute">attribute</a> <a id="attribute"></a> consists of whitespace, an <strong>attribute name</strong>, and an optional <strong>attribute value specification</strong>.</p>
+<p>An <a href="#attribute-name">attribute name</a> <a id="attribute-name"></a> consists of an ASCII letter, <code>_</code>, or <code>:</code>, followed by zero or more ASCII letters, digits, <code>_</code>, <code>.</code>, <code>:</code>, or <code>-</code>. (Note: This is the XML specification restricted to ASCII. HTML5 is laxer.)</p>
+<p>An <a href="#attribute-value-specification">attribute value specification</a> <a id="attribute-value-specification"></a> consists of optional whitespace, a <code>=</code> character, optional whitespace, and an <a href="#attribute-value">attribute value</a>.</p>
+<p>An <a href="#attribute-value">attribute value</a> <a id="attribute-value"></a> consists of an <a href="#unquoted-attribute-value">unquoted attribute value</a>, a <a href="#single-quoted-attribute-value">single-quoted attribute value</a>, or a <a href="#double-quoted-attribute-value">double-quoted attribute value</a>.</p>
+<p>An <a href="#unquoted-attribute-value">unquoted attribute value</a> <a id="unquoted-attribute-value"></a> is a nonempty string of characters not including spaces, <code>&quot;</code>, <code>'</code>, <code>=</code>, <code>&lt;</code>, <code>&gt;</code>, or <code>`</code>.</p>
+<p>A <a href="#single-quoted-attribute-value">single-quoted attribute value</a> <a id="single-quoted-attribute-value"></a> consists of <code>'</code>, zero or more characters not including <code>'</code>, and a final <code>'</code>.</p>
+<p>A <a href="#double-quoted-attribute-value">double-quoted attribute value</a> <a id="double-quoted-attribute-value"></a> consists of <code>&quot;</code>, zero or more characters not including <code>&quot;</code>, and a final <code>&quot;</code>.</p>
+<p>An <a href="#open-tag">open tag</a> <a id="open-tag"></a> consists of a <code>&lt;</code> character, a <a href="#tag-name">tag name</a>, zero or more <a href="#attribute">attributes</a>, optional whitespace, an optional <code>/</code> character, and a <code>&gt;</code> character.</p>
+<p>A <a href="#closing-tag">closing tag</a> <a id="closing-tag"></a> consists of the string <code>&lt;/</code>, a <a href="#tag-name">tag name</a>, optional whitespace, and the character <code>&gt;</code>.</p>
+<p>An <a href="#html-comment">HTML comment</a> <a id="html-comment"></a> consists of the string <code>&lt;!--</code>, a string of characters not including the string <code>--</code>, and the string <code>--&gt;</code>.</p>
+<p>A <a href="#processing-instruction">processing instruction</a> <a id="processing-instruction"></a> consists of the string <code>&lt;?</code>, a string of characters not including the string <code>?&gt;</code>, and the string <code>?&gt;</code>.</p>
+<p>A <a href="#declaration">declaration</a> <a id="declaration"></a> consists of the string <code>&lt;!</code>, a name consisting of one or more uppercase ASCII letters, whitespace, a string of characters not including the character <code>&gt;</code>, and the character <code>&gt;</code>.</p>
+<p>A <a href="#cdata-section">CDATA section</a> <a id="cdata-section"></a> consists of the string <code>&lt;![CDATA[</code>, a string of characters not including the string <code>]]&gt;</code>, and the string <code>]]&gt;</code>.</p>
+<p>An <a href="#html-tag">HTML tag</a> <a id="html-tag"></a> consists of an <a href="#open-tag">open tag</a>, a <a href="#closing-tag">closing tag</a>, an <a href="#html-comment">HTML comment</a>, a <a href="#processing-instruction">processing instruction</a>, an <a href="#element-type-declaration">element type declaration</a>, or a <a href="#cdata-section">CDATA section</a>.</p>
 <p>Here are some simple open tags:</p>
 <div id="example-407" class="example" data-section="Raw HTML">
 <div class="examplenum">
@@ -5208,7 +5206,7 @@ Example 441
 <li><p>In the second phase, the raw text contents of paragraphs and headers are parsed into sequences of Markdown inline elements (strings, code spans, links, emphasis, and so on), using the map of link references constructed in phase 1.</p></li>
 </ol>
 <h2 id="the-document-tree" class="unnumbered">The document tree</h2>
-<p>At each point in processing, the document is represented as a tree of <strong>blocks</strong>. The root of the tree is a <code>document</code> block. The <code>document</code> may have any number of other blocks as <strong>children</strong>. These children may, in turn, have other blocks a children. The last child of a block is normally considered <strong>open</strong>, meaning that subsequent lines of input can alter its contents. (Blocks that are not open are <strong>closed</strong>.) Here, for example, is a possible document tree, with the open blocks marked by arrows:</p>
+<p>At each point in processing, the document is represented as a tree of <strong>blocks</strong>. The root of the tree is a <code>document</code> block. The <code>document</code> may have any number of other blocks as <strong>children</strong>. These children may, in turn, have other blocks as children. The last child of a block is normally considered <strong>open</strong>, meaning that subsequent lines of input can alter its contents. (Blocks that are not open are <strong>closed</strong>.) Here, for example, is a possible document tree, with the open blocks marked by arrows:</p>
 <pre class="tree"><code>-&gt; document
   -&gt; block_quote
        paragraph
@@ -5251,7 +5249,7 @@ sit amet.
          &quot;Lorem ipsum dolor\nsit amet.&quot;</code></pre>
 <p>The third line,</p>
 <pre class="markdown"><code>&gt; - Qui *quodsi iracundia*</code></pre>
-<p>causes the <code>paragraph</code> block to be closed, and a new <code>list</code> block opened as a child of the <code>block_quote</code>. A <code>list_item</code> is also added as a child of the <code>list</code>, and a <code>paragraph</code> as a chid of the <code>list_item</code>. The text is then added to the <code>paragraph</code>:</p>
+<p>causes the <code>paragraph</code> block to be closed, and a new <code>list</code> block opened as a child of the <code>block_quote</code>. A <code>list_item</code> is also added as a child of the <code>list</code>, and a <code>paragraph</code> as a child of the <code>list_item</code>. The text is then added to the new <code>paragraph</code>:</p>
 <pre class="tree"><code>-&gt; document
   -&gt; block_quote
        paragraph
