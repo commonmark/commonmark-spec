@@ -5771,7 +5771,7 @@ by two or more spaces is parsed as a linebreak (rendered
 in HTML as a `<br />` tag):
 
 .
-foo  
+foo･･
 baz
 .
 <p>foo<br />
@@ -5792,7 +5792,7 @@ baz</p>
 More than two spaces can be used:
 
 .
-foo       
+foo･･･････
 baz
 .
 <p>foo<br />
@@ -5802,8 +5802,8 @@ baz</p>
 Leading spaces at the beginning of the next line are ignored:
 
 .
-foo  
-     bar
+foo･･
+･････bar
 .
 <p>foo<br />
 bar</p>
@@ -5811,7 +5811,7 @@ bar</p>
 
 .
 foo\
-     bar
+･････bar
 .
 <p>foo<br />
 bar</p>
@@ -5821,7 +5821,7 @@ Line breaks can occur inside emphasis, links, and other constructs
 that allow inline content:
 
 .
-*foo  
+*foo･･
 bar*
 .
 <p><em>foo<br />
@@ -5839,7 +5839,7 @@ bar</em></p>
 Line breaks do not occur inside code spans
 
 .
-`code  
+`code･･
 span`
 .
 <p><code>code span</code></p>
@@ -5855,10 +5855,10 @@ span`
 or HTML tags:
 
 .
-<a href="foo  
+<a href="foo･･
 bar">
 .
-<p><a href="foo  
+<p><a href="foo･･
 bar"></p>
 .
 
@@ -5890,8 +5890,8 @@ Spaces at the end of the line and beginning of the next line are
 removed:
 
 .
-foo 
- baz
+foo･
+･baz
 .
 <p>foo
 baz</p>
@@ -5923,9 +5923,9 @@ Foo χρῆν
 Internal spaces are preserved verbatim:
 
 .
-Multiple     spaces
+Multiple･････spaces
 .
-<p>Multiple     spaces</p>
+<p>Multiple･････spaces</p>
 .
 
 <!-- END TESTS -->
