@@ -6,6 +6,7 @@ use utf8;
 use Term::ANSIColor;
 use IO::Handle;
 use IPC::Open2;
+$|++;
 
 my $usage="runtests.pl PROGRAM SPEC\nSet ANSI_COLORS_DISABLED=1 if you redirect to a file.\nSet PATT='...' to restrict tests to sections matching a regex.\n";
 
