@@ -1,7 +1,7 @@
 {
   "name": "stmd",
   "version": "1.0.0-beta",
-  "description": "Standardized Markdown",
+  "description": "Standard Markdown",
   "main": "js/stmd.js",
   "directories": {
     "man": "man"
@@ -16,13 +16,9 @@
   "keywords": [
     "markdown",
     "standard",
-    "markdown",
-    "markdown",
-    "to",
-    "html",
     "md",
-    "markdown->html",
-    "md->html"
+    "html",
+    "markup"
   ],
   "author": "John MacFarlane",
   "license": "BSD",
