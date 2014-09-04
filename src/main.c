@@ -12,7 +12,7 @@ void print_usage()
 	printf("         --version     Print version\n");
 }
 
-static void print_document(block *document, bool ast)
+static void print_document(node_block *document, bool ast)
 {
 	strbuf html = GH_BUF_INIT;
 
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
 	int i, numfps = 0;
 	bool ast = false;
 	int files[argc];
-	block *document = NULL;
+	node_block *document = NULL;
 
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--version") == 0) {

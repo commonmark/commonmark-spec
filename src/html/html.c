@@ -8,7 +8,7 @@
 #include "debug.h"
 #include "html/houdini.h"
 
-// Functions to convert block and inline lists to HTML strings.
+// Functions to convert node_block and inline lists to HTML strings.
 
 static void escape_html(strbuf *dest, const unsigned char *source, int length)
 {
@@ -32,8 +32,8 @@ static inline void cr(strbuf *html)
 		strbuf_putc(html, '\n');
 }
 
-// Convert a block list to HTML.  Returns 0 on success, and sets result.
-void blocks_to_html(strbuf *html, block *b, bool tight)
+// Convert a node_block list to HTML.  Returns 0 on success, and sets result.
+void blocks_to_html(strbuf *html, node_block *b, bool tight)
 {
 	struct ListData *data;
 

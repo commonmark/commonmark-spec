@@ -10,13 +10,13 @@
 
 #define peek_at(i, n) (i)->data[n]
 
-static void incorporate_line(strbuf *ln, int line_number, block** curptr);
-static void finalize(block* b, int line_number);
+static void incorporate_line(strbuf *ln, int line_number, node_block** curptr);
+static void finalize(node_block* b, int line_number);
 
-static block* make_block(int tag, int start_line, int start_column)
+static node_block* make_block(int tag, int start_line, int start_column)
 {
-	block* e;
-	e = (block*) malloc(sizeof(block));
+	node_block* e;
+	e = (node_block*) malloc(sizeof(node_block));
 	e->tag = tag;
 	e->open = true;
 	e->last_line_blank = false;
@@ -35,10 +35,10 @@ static block* make_block(int tag, int start_line, int start_column)
 	return e;
 }
 
-// Create a root document block.
-extern block* make_document()
+// Create a root document node_block.
+extern node_block* make_document()
 {
-	block * e = make_block(document, 1, 1);
+	node_block * e = make_block(document, 1, 1);
 	reference * map = NULL;
 	reference ** refmap;
 	refmap = (reference**) malloc(sizeof(reference*));
@@ -82,10 +82,10 @@ static inline bool accepts_lines(int block_type)
 			block_type == fenced_code);
 }
 
-static void add_line(block* block, chunk *ch, int offset)
+static void add_line(node_block* node_block, chunk *ch, int offset)
 {
-	assert(block->open);
-	strbuf_put(&block->string_content, ch->data + offset, ch->len - offset);
+	assert(node_block->open);
+	strbuf_put(&node_block->string_content, ch->data + offset, ch->len - offset);
 }
 
 static void remove_trailing_blank_lines(strbuf *ln)
@@ -109,25 +109,25 @@ static void remove_trailing_blank_lines(strbuf *ln)
 		strbuf_truncate(ln, i);
 }
 
-// Check to see if a block ends with a blank line, descending
+// Check to see if a node_block ends with a blank line, descending
 // if needed into lists and sublists.
-static bool ends_with_blank_line(block* block)
+static bool ends_with_blank_line(node_block* node_block)
 {
-	if (block->last_line_blank) {
+	if (node_block->last_line_blank) {
 		return true;
 	}
-	if ((block->tag == list || block->tag == list_item) && block->last_child) {
-		return ends_with_blank_line(block->last_child);
+	if ((node_block->tag == list || node_block->tag == list_item) && node_block->last_child) {
+		return ends_with_blank_line(node_block->last_child);
 	} else {
 		return false;
 	}
 }
 
 // Break out of all containing lists
-static int break_out_of_lists(block ** bptr, int line_number)
+static int break_out_of_lists(node_block ** bptr, int line_number)
 {
-	block * container = *bptr;
-	block * b = container->top;
+	node_block * container = *bptr;
+	node_block * b = container->top;
 	// find first containing list:
 	while (b && b->tag != list) {
 		b = b->last_child;
@@ -144,15 +144,15 @@ static int break_out_of_lists(block ** bptr, int line_number)
 }
 
 
-static void finalize(block* b, int line_number)
+static void finalize(node_block* b, int line_number)
 {
 	int firstlinelen;
 	int pos;
-	block* item;
-	block* subitem;
+	node_block* item;
+	node_block* subitem;
 
 	if (!b->open)
-		return; // don't do anything if the block is already closed
+		return; // don't do anything if the node_block is already closed
 
 	b->open = false;
 	if (line_number > b->start_line) {
@@ -230,20 +230,20 @@ static void finalize(block* b, int line_number)
 	}
 }
 
-// Add a block as child of another.  Return pointer to child.
-extern block* add_child(block* parent,
+// Add a node_block as child of another.  Return pointer to child.
+extern node_block* add_child(node_block* parent,
 		int block_type, int start_line, int start_column)
 {
 	assert(parent);
 
-	// if 'parent' isn't the kind of block that can accept this child,
-	// then back up til we hit a block that can.
+	// if 'parent' isn't the kind of node_block that can accept this child,
+	// then back up til we hit a node_block that can.
 	while (!can_contain(parent->tag, block_type)) {
 		finalize(parent, start_line);
 		parent = parent->parent;
 	}
 
-	block* child = make_block(block_type, start_line, start_column);
+	node_block* child = make_block(block_type, start_line, start_column);
 	child->parent = parent;
 	child->top = parent->top;
 
@@ -258,10 +258,10 @@ extern block* add_child(block* parent,
 	return child;
 }
 
-// Free a block list and any children.
-extern void free_blocks(block* e)
+// Free a node_block list and any children.
+extern void free_blocks(node_block* e)
 {
-	block * next;
+	node_block * next;
 	while (e != NULL) {
 		next = e->next;
 		free_inlines(e->inline_content);
@@ -277,9 +277,9 @@ extern void free_blocks(block* e)
 	}
 }
 
-// Walk through block and all children, recursively, parsing
+// Walk through node_block and all children, recursively, parsing
 // string content into inline content where appropriate.
-void process_inlines(block* cur, reference** refmap)
+void process_inlines(node_block* cur, reference** refmap)
 {
 	switch (cur->tag) {
 		case paragraph:
@@ -294,7 +294,7 @@ void process_inlines(block* cur, reference** refmap)
 			break;
 	}
 
-	block *child = cur->children;
+	node_block *child = cur->children;
 	while (child != NULL) {
 		process_inlines(child, refmap);
 		child = child->next;
@@ -394,7 +394,7 @@ static void expand_tabs(strbuf *ob, const unsigned char *line, size_t size)
 	}
 }
 
-static block *finalize_document(block *document, int linenum)
+static node_block *finalize_document(node_block *document, int linenum)
 {
 	while (document != document->top) {
 		finalize(document, linenum);
@@ -407,12 +407,12 @@ static block *finalize_document(block *document, int linenum)
 	return document;
 }
 
-extern block *stmd_parse_file(FILE *f)
+extern node_block *stmd_parse_file(FILE *f)
 {
 	strbuf line = GH_BUF_INIT;
 	unsigned char buffer[4096];
 	int linenum = 1;
-	block *document = make_document();
+	node_block *document = make_document();
 
 	while (fgets((char *)buffer, sizeof(buffer), f)) {
 		expand_tabs(&line, buffer, strlen((char *)buffer));
@@ -425,12 +425,12 @@ extern block *stmd_parse_file(FILE *f)
 	return finalize_document(document, linenum);
 }
 
-extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
+extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len)
 {
 	strbuf line = GH_BUF_INIT;
 	int linenum = 1;
 	const unsigned char *end = buffer + len;
-	block *document = make_document();
+	node_block *document = make_document();
 
 	while (buffer < end) {
 		const unsigned char *eol = memchr(buffer, '\n', end - buffer);
@@ -470,18 +470,18 @@ static void chop_trailing_hashtags(chunk *ch)
 	ch->len = n + 1;
 }
 
-// Process one line at a time, modifying a block.
-static void incorporate_line(strbuf *line, int line_number, block** curptr)
+// Process one line at a time, modifying a node_block.
+static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 {
-	block* last_matched_container;
+	node_block* last_matched_container;
 	int offset = 0;
 	int matched = 0;
 	int lev = 0;
 	int i;
 	struct ListData * data = NULL;
 	bool all_matched = true;
-	block* container;
-	block* cur = *curptr;
+	node_block* container;
+	node_block* cur = *curptr;
 	bool blank = false;
 	int first_nonspace;
 	int indent;
@@ -493,8 +493,8 @@ static void incorporate_line(strbuf *line, int line_number, block** curptr)
 	// container starts at the document root.
 	container = cur->top;
 
-	// for each containing block, try to parse the associated line start.
-	// bail out on failure:  container will point to the last matching block.
+	// for each containing node_block, try to parse the associated line start.
+	// bail out on failure:  container will point to the last matching node_block.
 
 	while (container->last_child && container->last_child->open) {
 		container = container->last_child;
@@ -570,7 +570,7 @@ static void incorporate_line(strbuf *line, int line_number, block** curptr)
 		}
 
 		if (!all_matched) {
-			container = container->parent;  // back up to last matching block
+			container = container->parent;  // back up to last matching node_block
 			break;
 		}
 	}
@@ -582,7 +582,7 @@ static void incorporate_line(strbuf *line, int line_number, block** curptr)
 		break_out_of_lists(&container, line_number);
 	}
 
-	// unless last matched container is code block, try new container starts:
+	// unless last matched container is code node_block, try new container starts:
 	while (container->tag != fenced_code && container->tag != indented_code &&
 			container->tag != html_block) {
 
@@ -713,7 +713,7 @@ static void incorporate_line(strbuf *line, int line_number, block** curptr)
 	indent = first_nonspace - offset;
 	blank = peek_at(&input, first_nonspace) == '\n';
 
-	// block quote lines are never blank as they start with >
+	// node_block quote lines are never blank as they start with >
 	// and we don't count blanks in fenced code for purposes of tight/loose
 	// lists or breaking out of lists.  we also don't set last_line_blank
 	// on an empty list item.
@@ -724,7 +724,7 @@ static void incorporate_line(strbuf *line, int line_number, block** curptr)
 				container->children == NULL &&
 				container->start_line == line_number));
 
-	block *cont = container;
+	node_block *cont = container;
 	while (cont->parent) {
 		cont->parent->last_line_blank = false;
 		cont = cont->parent;

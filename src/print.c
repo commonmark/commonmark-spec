@@ -32,9 +32,9 @@ static void print_str(const unsigned char *s, int len)
 	putchar('"');
 }
 
-// Functions to pretty-print inline and block lists, for debugging.
+// Functions to pretty-print inline and node_block lists, for debugging.
 // Prettyprint an inline list, for debugging.
-extern void print_blocks(block* b, int indent)
+extern void print_blocks(node_block* b, int indent)
 {
 	struct ListData *data;
 

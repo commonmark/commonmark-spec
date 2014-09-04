@@ -67,29 +67,30 @@ struct FencedCodeData {
   strbuf            info;
 };
 
-typedef struct Block {
-  enum { document,
-         block_quote,
-         list,
-         list_item,
-         fenced_code,
-         indented_code,
-         html_block,
-         paragraph,
-         atx_header,
-         setext_header,
-         hrule,
-         reference_def
+struct node_block {
+  enum {
+	  document,
+	  block_quote,
+	  list,
+	  list_item,
+	  fenced_code,
+	  indented_code,
+	  html_block,
+	  paragraph,
+	  atx_header,
+	  setext_header,
+	  hrule,
+	  reference_def
   }                  tag;
   int                start_line;
   int                start_column;
   int                end_line;
   bool               open;
   bool               last_line_blank;
-  struct Block*      children;
-  struct Block*      last_child;
-  struct Block*      parent;
-  struct Block*      top;
+  struct node_block*      children;
+  struct node_block*      last_child;
+  struct node_block*      parent;
+  struct node_block*      top;
   strbuf			 string_content;
   node_inl*               inline_content;
   union  {
@@ -98,9 +99,11 @@ typedef struct Block {
     int                   header_level;
     reference**           refmap;
     }                     attributes;
-  struct Block *     next;
-  struct Block *     prev;
-} block;
+  struct node_block *     next;
+  struct node_block *     prev;
+};
+
+typedef struct node_block node_block;
 
 node_inl* parse_inlines(strbuf *input, reference** refmap);
 void free_inlines(node_inl* e);
@@ -112,18 +115,18 @@ void free_reference_map(reference **refmap);
 void add_reference(reference** refmap, reference* ref);
 void unescape_buffer(strbuf *buf);
 
-extern block* make_document();
-extern block* add_child(block* parent,
+extern node_block* make_document();
+extern node_block* add_child(node_block* parent,
                         int block_type, int start_line, int start_column);
-void free_blocks(block* e);
+void free_blocks(node_block* e);
 
-extern block *stmd_parse_document(const unsigned char *buffer, size_t len);
-extern block *stmd_parse_file(FILE *f);
+extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len);
+extern node_block *stmd_parse_file(FILE *f);
 
 void print_inlines(node_inl* ils, int indent);
-void print_blocks(block* blk, int indent);
+void print_blocks(node_block* blk, int indent);
 
-void blocks_to_html(strbuf *html, block *b, bool tight);
+void blocks_to_html(strbuf *html, node_block *b, bool tight);
 void inlines_to_html(strbuf *html, node_inl *b);
 
 void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len);
