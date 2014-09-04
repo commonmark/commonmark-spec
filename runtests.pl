@@ -16,6 +16,9 @@ if (!(@PROG && defined $SPEC)) {
   exit 1;
 }
 
+# Disable ANSI colors if we're not hooked up to a terminal
+$ENV{ANSI_COLORS_DISABLED} ||= !-t *STDOUT;
+
 my $passed = 0;
 my $failed = 0;
 my $skipped = 0;
