@@ -32,7 +32,7 @@ oldtests:
 	make -C oldtests --quiet clean all
 
 test: spec.txt
-	perl runtests.pl $(PROG) $<
+	perl runtests.pl $< $(PROG)
 
 testjs: spec.txt
 	node js/test.js
