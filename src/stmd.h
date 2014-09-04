@@ -67,30 +67,29 @@ struct FencedCodeData {
   strbuf            info;
 };
 
-struct node_block {
-  enum {
-	  document,
-	  block_quote,
-	  list,
-	  list_item,
-	  fenced_code,
-	  indented_code,
-	  html_block,
-	  paragraph,
-	  atx_header,
-	  setext_header,
-	  hrule,
-	  reference_def
+typedef struct Block {
+  enum { BLOCK_DOCUMENT,
+         BLOCK_BQUOTE,
+         BLOCK_LIST,
+         BLOCK_LIST_ITEM,
+         BLOCK_FENCED_CODE,
+         BLOCK_INDENTED_CODE,
+         BLOCK_HTML,
+         BLOCK_PARAGRAPH,
+         BLOCK_ATX_HEADER,
+         BLOCK_SETEXT_HEADER,
+         BLOCK_HRULE,
+         BLOCK_REFERENCE_DEF
   }                  tag;
   int                start_line;
   int                start_column;
   int                end_line;
   bool               open;
   bool               last_line_blank;
-  struct node_block*      children;
-  struct node_block*      last_child;
-  struct node_block*      parent;
-  struct node_block*      top;
+  struct Block*      children;
+  struct Block*      last_child;
+  struct Block*      parent;
+  struct Block*      top;
   strbuf			 string_content;
   node_inl*               inline_content;
   union  {
@@ -99,11 +98,9 @@ struct node_block {
     int                   header_level;
     reference**           refmap;
     }                     attributes;
-  struct node_block *     next;
-  struct node_block *     prev;
-};
-
-typedef struct node_block node_block;
+  struct Block *     next;
+  struct Block *     prev;
+} node_block;
 
 node_inl* parse_inlines(strbuf *input, reference** refmap);
 void free_inlines(node_inl* e);

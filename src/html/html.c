@@ -39,11 +39,11 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 
 	while(b != NULL) {
 		switch(b->tag) {
-			case document:
+			case BLOCK_DOCUMENT:
 				blocks_to_html(html, b->children, false);
 				break;
 
-			case paragraph:
+			case BLOCK_PARAGRAPH:
 				if (tight) {
 					inlines_to_html(html, b->inline_content);
 				} else {
@@ -54,14 +54,14 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				}
 				break;
 
-			case block_quote:
+			case BLOCK_BQUOTE:
 				cr(html);
 				strbuf_puts(html, "<blockquote>\n");
 				blocks_to_html(html, b->children, false);
 				strbuf_puts(html, "</blockquote>\n");
 				break;
 
-			case list_item:
+			case BLOCK_LIST_ITEM:
 				cr(html);
 				strbuf_puts(html, "<li>");
 				blocks_to_html(html, b->children, tight);
@@ -69,7 +69,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				strbuf_puts(html, "</li>\n");
 				break;
 
-			case list:
+			case BLOCK_LIST:
 				// make sure a list starts at the beginning of the line:
 				cr(html);
 				data = &(b->attributes.list_data);
@@ -87,21 +87,21 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				strbuf_putc(html, '\n');
 				break;
 
-			case atx_header:
-			case setext_header:
+			case BLOCK_ATX_HEADER:
+			case BLOCK_SETEXT_HEADER:
 				cr(html);
 				strbuf_printf(html, "<h%d>", b->attributes.header_level);
 				inlines_to_html(html, b->inline_content);
 				strbuf_printf(html, "</h%d>\n", b->attributes.header_level);
 				break;
 
-			case indented_code:
-			case fenced_code:
+			case BLOCK_INDENTED_CODE:
+			case BLOCK_FENCED_CODE:
 				cr(html);
 
 				strbuf_puts(html, "<pre");
 
-				if (b->tag == fenced_code) {
+				if (b->tag == BLOCK_FENCED_CODE) {
 					strbuf *info = &b->attributes.fenced_code_data.info;
 
 					if (strbuf_len(info) > 0) {
@@ -121,15 +121,15 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				strbuf_puts(html, "</code></pre>\n");
 				break;
 
-			case html_block:
+			case BLOCK_HTML:
 				strbuf_put(html, b->string_content.ptr, b->string_content.size);
 				break;
 
-			case hrule:
+			case BLOCK_HRULE:
 				strbuf_puts(html, "<hr />\n");
 				break;
 
-			case reference_def:
+			case BLOCK_REFERENCE_DEF:
 				break;
 
 			default:

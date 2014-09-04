@@ -45,20 +45,20 @@ extern void print_blocks(node_block* b, int indent)
 		}
 
 		switch(b->tag) {
-		case document:
+		case BLOCK_DOCUMENT:
 			printf("document\n");
 			print_blocks(b->children, indent + 2);
 			break;
-		case block_quote:
+		case BLOCK_BQUOTE:
 			printf("block_quote\n");
 			print_blocks(b->children, indent + 2);
 			break;
-		case list_item:
+		case BLOCK_LIST_ITEM:
 			data = &(b->attributes.list_data);
 			printf("list_item\n");
 			print_blocks(b->children, indent + 2);
 			break;
-		case list:
+		case BLOCK_LIST:
 			data = &(b->attributes.list_data);
 			if (data->list_type == ordered) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
@@ -72,27 +72,27 @@ extern void print_blocks(node_block* b, int indent)
 			}
 			print_blocks(b->children, indent + 2);
 			break;
-		case atx_header:
+		case BLOCK_ATX_HEADER:
 			printf("atx_header (level=%d)\n", b->attributes.header_level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case setext_header:
+		case BLOCK_SETEXT_HEADER:
 			printf("setext_header (level=%d)\n", b->attributes.header_level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case paragraph:
+		case BLOCK_PARAGRAPH:
 			printf("paragraph\n");
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case hrule:
+		case BLOCK_HRULE:
 			printf("hrule\n");
 			break;
-		case indented_code:
+		case BLOCK_INDENTED_CODE:
 			printf("indented_code ");
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case fenced_code:
+		case BLOCK_FENCED_CODE:
 			printf("fenced_code length=%d info=",
 				b->attributes.fenced_code_data.fence_length);
 			print_str(b->attributes.fenced_code_data.info.ptr, -1);
@@ -100,12 +100,12 @@ extern void print_blocks(node_block* b, int indent)
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case html_block:
+		case BLOCK_HTML:
 			printf("html_block ");
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case reference_def:
+		case BLOCK_REFERENCE_DEF:
 			printf("reference_def\n");
 			break;
 		default:
