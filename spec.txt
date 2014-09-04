@@ -5116,7 +5116,7 @@ than emphasis:
 <p>*<a href="/url">foo*</a></p>
 .
 
-However, this is not, because link labels bind tight less
+However, this is not, because link labels bind less
 tightly than code backticks:
 
 .
