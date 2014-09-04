@@ -591,6 +591,9 @@ static unsigned char *clean_url(chunk *url, int is_email)
 
 	chunk_trim(url);
 
+	if (url->len == 0)
+		return NULL;
+
 	if (is_email)
 		gh_buf_puts(&buf, "mailto:");
 

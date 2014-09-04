@@ -3946,7 +3946,7 @@ But this is a link:
 .
 <http://foo.bar.`baz>`
 .
-<p><a href="http://foo.bar.`baz">http://foo.bar.`baz</a>`</p>
+<p><a href="http://foo.bar.%60baz">http://foo.bar.`baz</a>`</p>
 .
 
 And this is an HTML tag:

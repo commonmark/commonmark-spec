@@ -174,7 +174,8 @@ void inlines_to_html(gh_buf *html, inl* ils)
 
 			case INL_LINK:
 				gh_buf_puts(html, "<a href=\"");
-				escape_href(html, ils->content.linkable.url, -1);
+				if (ils->content.linkable.url)
+					escape_href(html, ils->content.linkable.url, -1);
 
 				if (ils->content.linkable.title) {
 					gh_buf_puts(html, "\" title=\"");
@@ -188,7 +189,8 @@ void inlines_to_html(gh_buf *html, inl* ils)
 
 			case INL_IMAGE:
 				gh_buf_puts(html, "<img src=\"");
-				escape_href(html, ils->content.linkable.url, -1);
+				if (ils->content.linkable.url)
+					escape_href(html, ils->content.linkable.url, -1);
 
 				inlines_to_html(&scrap, ils->content.inlines);
 				gh_buf_puts(html, "\" alt=\"");

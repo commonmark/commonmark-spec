@@ -153,7 +153,10 @@ extern void print_inlines(inl* ils, int indent)
 		case INL_LINK:
 		case INL_IMAGE:
 			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");
-			print_str(ils->content.linkable.url, -1);
+
+			if (ils->content.linkable.url)
+				print_str(ils->content.linkable.url, -1);
+
 			if (ils->content.linkable.title) {
 				printf(" title=");
 				print_str(ils->content.linkable.title, -1);
