@@ -49,58 +49,65 @@ typedef struct reference reference;
 // Types for blocks
 
 struct ListData {
-  enum { bullet,
-         ordered }  list_type;
-  int               marker_offset;
-  int               padding;
-  int               start;
-  enum { period,
-         parens }   delimiter;
-  unsigned char     bullet_char;
-  bool              tight;
+	enum {
+		bullet,
+		ordered
+	}  list_type;
+	int               marker_offset;
+	int               padding;
+	int               start;
+	enum {
+		period,
+		parens
+	} delimiter;
+	unsigned char     bullet_char;
+	bool              tight;
 };
 
 struct FencedCodeData {
-  int               fence_length;
-  int               fence_offset;
-  char              fence_char;
-  strbuf            info;
+	int               fence_length;
+	int               fence_offset;
+	char              fence_char;
+	strbuf            info;
 };
 
-typedef struct Block {
-  enum { BLOCK_DOCUMENT,
-         BLOCK_BQUOTE,
-         BLOCK_LIST,
-         BLOCK_LIST_ITEM,
-         BLOCK_FENCED_CODE,
-         BLOCK_INDENTED_CODE,
-         BLOCK_HTML,
-         BLOCK_PARAGRAPH,
-         BLOCK_ATX_HEADER,
-         BLOCK_SETEXT_HEADER,
-         BLOCK_HRULE,
-         BLOCK_REFERENCE_DEF
-  }                  tag;
-  int                start_line;
-  int                start_column;
-  int                end_line;
-  bool               open;
-  bool               last_line_blank;
-  struct Block*      children;
-  struct Block*      last_child;
-  struct Block*      parent;
-  struct Block*      top;
-  strbuf			 string_content;
-  node_inl*               inline_content;
-  union  {
-    struct ListData       list_data;
-    struct FencedCodeData fenced_code_data;
-    int                   header_level;
-    reference**           refmap;
-    }                     attributes;
-  struct Block *     next;
-  struct Block *     prev;
-} node_block;
+struct node_block {
+	enum {
+		BLOCK_DOCUMENT,
+		BLOCK_BQUOTE,
+		BLOCK_LIST,
+		BLOCK_LIST_ITEM,
+		BLOCK_FENCED_CODE,
+		BLOCK_INDENTED_CODE,
+		BLOCK_HTML,
+		BLOCK_PARAGRAPH,
+		BLOCK_ATX_HEADER,
+		BLOCK_SETEXT_HEADER,
+		BLOCK_HRULE,
+		BLOCK_REFERENCE_DEF
+	} tag;
+	int start_line;
+	int start_column;
+	int end_line;
+	bool open;
+	bool last_line_blank;
+	struct node_block* children;
+	struct node_block* last_child;
+	struct node_block* parent;
+	struct node_block* top;
+	strbuf string_content;
+	node_inl* inline_content;
+	union  {
+		struct ListData list_data;
+		struct FencedCodeData fenced_code_data;
+		int header_level;
+		reference** refmap;
+	}                     attributes;
+	struct node_block *     next;
+	struct node_block *     prev;
+};
+
+typedef struct node_block node_block;
 
 node_inl* parse_inlines(strbuf *input, reference** refmap);
 void free_inlines(node_inl* e);
