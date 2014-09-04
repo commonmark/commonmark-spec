@@ -1,12 +1,9 @@
 #!/usr/bin/env perl
-use 5.006;
 use warnings;
 use strict;
-use utf8;
 use Term::ANSIColor;
 use IO::Handle;
 use IPC::Open2;
-$|++;
 
 my $usage="runtests.pl SPEC PROGRAM\nSet ANSI_COLORS_DISABLED=1 if you redirect to a file.\nSet PATT='...' to restrict tests to sections matching a regex.\n";
 
