@@ -3688,7 +3688,7 @@ raw HTML:
 .
 <http://google.com?find=\*>
 .
-<p><a href="http://google.com?find=%5C*">http://google.com?find=\*</a></p>
+<p><a href="http://google.com?find=*">http://google.com?find=\*</a></p>
 .
 
 .
@@ -4755,7 +4755,7 @@ braces:
 .
 [link](</my uri>)
 .
-<p><a href="/my uri">link</a></p>
+<p><a href="/my%20uri">link</a></p>
 .
 
 The destination cannot contain line breaks, even with pointy braces:
@@ -4821,7 +4821,7 @@ get unexpected results:
 .
 [link]("title")
 .
-<p><a href="&quot;title&quot;">link</a></p>
+<p><a href="%22title%22">link</a></p>
 .
 
 Titles may be in single quotes, double quotes, or parentheses:
