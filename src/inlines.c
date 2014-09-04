@@ -112,7 +112,7 @@ static unsigned char *bufdup(const unsigned char *buf)
 {
 	unsigned char *new = NULL;
 
-	if (!buf) {
+	if (buf) {
 		int len = strlen((char *)buf);
 		new = malloc(len + 1);
 		memcpy(new, buf, len + 1);
