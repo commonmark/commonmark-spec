@@ -9,20 +9,20 @@
 typedef struct {
 	unsigned char *ptr;
 	int asize, size;
-} gh_buf;
+} strbuf;
 
-extern unsigned char gh_buf__initbuf[];
-extern unsigned char gh_buf__oom[];
+extern unsigned char strbuf__initbuf[];
+extern unsigned char strbuf__oom[];
 
-#define GH_BUF_INIT { gh_buf__initbuf, 0, 0 }
+#define GH_BUF_INIT { strbuf__initbuf, 0, 0 }
 
 /**
- * Initialize a gh_buf structure.
+ * Initialize a strbuf structure.
  *
  * For the cases where GH_BUF_INIT cannot be used to do static
  * initialization.
  */
-extern void gh_buf_init(gh_buf *buf, int initial_size);
+extern void strbuf_init(strbuf *buf, int initial_size);
 
 /**
  * Attempt to grow the buffer to hold at least `target_size` bytes.
@@ -32,7 +32,7 @@ extern void gh_buf_init(gh_buf *buf, int initial_size);
  * existing buffer content will be preserved, but calling code must handle
  * that buffer was not expanded.
  */
-extern int gh_buf_try_grow(gh_buf *buf, int target_size, bool mark_oom);
+extern int strbuf_try_grow(strbuf *buf, int target_size, bool mark_oom);
 
 /**
  * Grow the buffer to hold at least `target_size` bytes.
@@ -42,71 +42,71 @@ extern int gh_buf_try_grow(gh_buf *buf, int target_size, bool mark_oom);
  *
  * @return 0 on success or -1 on failure
  */
-static inline int gh_buf_grow(gh_buf *buf, int target_size)
+static inline int strbuf_grow(strbuf *buf, int target_size)
 {
-	return gh_buf_try_grow(buf, target_size, true);
+	return strbuf_try_grow(buf, target_size, true);
 }
 
-extern void gh_buf_free(gh_buf *buf);
-extern void gh_buf_swap(gh_buf *buf_a, gh_buf *buf_b);
+extern void strbuf_free(strbuf *buf);
+extern void strbuf_swap(strbuf *buf_a, strbuf *buf_b);
 
 /**
- * Test if there have been any reallocation failures with this gh_buf.
+ * Test if there have been any reallocation failures with this strbuf.
  *
- * Any function that writes to a gh_buf can fail due to memory allocation
- * issues.  If one fails, the gh_buf will be marked with an OOM error and
- * further calls to modify the buffer will fail.  Check gh_buf_oom() at the
+ * Any function that writes to a strbuf can fail due to memory allocation
+ * issues.  If one fails, the strbuf will be marked with an OOM error and
+ * further calls to modify the buffer will fail.  Check strbuf_oom() at the
  * end of your sequence and it will be true if you ran out of memory at any
  * point with that buffer.
  *
  * @return false if no error, true if allocation error
  */
-static inline bool gh_buf_oom(const gh_buf *buf)
+static inline bool strbuf_oom(const strbuf *buf)
 {
-	return (buf->ptr == gh_buf__oom);
+	return (buf->ptr == strbuf__oom);
 }
 
 
-static inline size_t gh_buf_len(const gh_buf *buf)
+static inline size_t strbuf_len(const strbuf *buf)
 {
 	return buf->size;
 }
 
-extern int gh_buf_cmp(const gh_buf *a, const gh_buf *b);
+extern int strbuf_cmp(const strbuf *a, const strbuf *b);
 
-extern void gh_buf_attach(gh_buf *buf, unsigned char *ptr, int asize);
-extern unsigned char *gh_buf_detach(gh_buf *buf);
-extern void gh_buf_copy_cstr(char *data, int datasize, const gh_buf *buf);
+extern void strbuf_attach(strbuf *buf, unsigned char *ptr, int asize);
+extern unsigned char *strbuf_detach(strbuf *buf);
+extern void strbuf_copy_cstr(char *data, int datasize, const strbuf *buf);
 
-static inline const char *gh_buf_cstr(const gh_buf *buf)
+static inline const char *strbuf_cstr(const strbuf *buf)
 {
 	return (char *)buf->ptr;
 }
 
-#define gh_buf_at(buf, n) ((buf)->ptr[n])
+#define strbuf_at(buf, n) ((buf)->ptr[n])
 
 /*
  * Functions below that return int value error codes will return 0 on
  * success or -1 on failure (which generally means an allocation failed).
- * Using a gh_buf where the allocation has failed with result in -1 from
+ * Using a strbuf where the allocation has failed with result in -1 from
  * all further calls using that buffer.  As a result, you can ignore the
  * return code of these functions and call them in a series then just call
- * gh_buf_oom at the end.
+ * strbuf_oom at the end.
  */
-extern int gh_buf_set(gh_buf *buf, const unsigned char *data, int len);
-extern int gh_buf_sets(gh_buf *buf, const char *string);
-extern int gh_buf_putc(gh_buf *buf, int c);
-extern int gh_buf_put(gh_buf *buf, const unsigned char *data, int len);
-extern int gh_buf_puts(gh_buf *buf, const char *string);
-extern int gh_buf_printf(gh_buf *buf, const char *format, ...)
+extern int strbuf_set(strbuf *buf, const unsigned char *data, int len);
+extern int strbuf_sets(strbuf *buf, const char *string);
+extern int strbuf_putc(strbuf *buf, int c);
+extern int strbuf_put(strbuf *buf, const unsigned char *data, int len);
+extern int strbuf_puts(strbuf *buf, const char *string);
+extern int strbuf_printf(strbuf *buf, const char *format, ...)
 	__attribute__((format (printf, 2, 3)));
-extern int gh_buf_vprintf(gh_buf *buf, const char *format, va_list ap);
-extern void gh_buf_clear(gh_buf *buf);
+extern int strbuf_vprintf(strbuf *buf, const char *format, va_list ap);
+extern void strbuf_clear(strbuf *buf);
 
-int gh_buf_strchr(const gh_buf *buf, int c, int pos);
-int gh_buf_strrchr(const gh_buf *buf, int c, int pos);
-void gh_buf_drop(gh_buf *buf, int n);
-void gh_buf_truncate(gh_buf *buf, int len);
-void gh_buf_trim(gh_buf *buf);
+int strbuf_strchr(const strbuf *buf, int c, int pos);
+int strbuf_strrchr(const strbuf *buf, int c, int pos);
+void strbuf_drop(strbuf *buf, int n);
+void strbuf_truncate(strbuf *buf, int len);
+void strbuf_trim(strbuf *buf);
 
 #endif

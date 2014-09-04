@@ -14,14 +14,14 @@ void print_usage()
 
 static void print_document(block *document, bool ast)
 {
-	gh_buf html = GH_BUF_INIT;
+	strbuf html = GH_BUF_INIT;
 
 	if (ast) {
 		print_blocks(document, 0);
 	} else {
 		blocks_to_html(&html, document, false);
 		printf("%s", html.ptr);
-		gh_buf_free(&html);
+		strbuf_free(&html);
 	}
 }
 

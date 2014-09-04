@@ -50,7 +50,7 @@ struct FencedCodeData {
   int               fence_length;
   int               fence_offset;
   char              fence_char;
-  gh_buf            info;
+  strbuf            info;
 };
 
 typedef struct Block {
@@ -76,7 +76,7 @@ typedef struct Block {
   struct Block*      last_child;
   struct Block*      parent;
   struct Block*      top;
-  gh_buf			 string_content;
+  strbuf			 string_content;
   inl*               inline_content;
   union  {
     struct ListData       list_data;
@@ -88,15 +88,15 @@ typedef struct Block {
   struct Block *     prev;
 } block;
 
-inl* parse_inlines(gh_buf *input, reference** refmap);
+inl* parse_inlines(strbuf *input, reference** refmap);
 void free_inlines(inl* e);
 
-int parse_reference(gh_buf *input, reference** refmap);
+int parse_reference(strbuf *input, reference** refmap);
 void free_reference(reference *ref);
 void free_reference_map(reference **refmap);
 
 void add_reference(reference** refmap, reference* ref);
-void unescape_buffer(gh_buf *buf);
+void unescape_buffer(strbuf *buf);
 
 extern block* make_document();
 extern block* add_child(block* parent,
@@ -109,9 +109,9 @@ extern block *stmd_parse_file(FILE *f);
 void print_inlines(inl* ils, int indent);
 void print_blocks(block* blk, int indent);
 
-void blocks_to_html(gh_buf *html, block *b, bool tight);
-void inlines_to_html(gh_buf *html, inl *b);
+void blocks_to_html(strbuf *html, block *b, bool tight);
+void inlines_to_html(strbuf *html, inl *b);
 
-void utf8proc_case_fold(gh_buf *dest, const unsigned char *str, int len);
+void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len);
 
 #endif

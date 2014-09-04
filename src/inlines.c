@@ -25,7 +25,7 @@ inline static void chunk_free(chunk *c);
 inline static void chunk_trim(chunk *c);
 
 inline static chunk chunk_literal(const char *data);
-inline static chunk chunk_buf_detach(gh_buf *buf);
+inline static chunk chunk_buf_detach(strbuf *buf);
 inline static chunk chunk_dup(const chunk *ch, int pos, int len);
 
 static inl *parse_chunk_inlines(chunk *chunk, reference** refmap);
@@ -33,10 +33,10 @@ static inl *parse_inlines_while(subject* subj, int (*f)(subject*));
 static int parse_inline(subject* subj, inl ** last);
 
 static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap);
-static void subject_from_buf(subject *e, gh_buf *buffer, reference** refmap);
+static void subject_from_buf(subject *e, strbuf *buffer, reference** refmap);
 static int subject_find_special_char(subject *subj);
 
-static void normalize_whitespace(gh_buf *s);
+static void normalize_whitespace(strbuf *s);
 
 extern void free_reference(reference *ref) {
 	free(ref->label);
@@ -62,13 +62,13 @@ extern void free_reference_map(reference **refmap) {
 // remove leading/trailing whitespace, case fold
 static unsigned char *normalize_reference(chunk *ref)
 {
-	gh_buf normalized = GH_BUF_INIT;
+	strbuf normalized = GH_BUF_INIT;
 
 	utf8proc_case_fold(&normalized, ref->data, ref->len);
-	gh_buf_trim(&normalized);
+	strbuf_trim(&normalized);
 	normalize_whitespace(&normalized);
 
-	return gh_buf_detach(&normalized);
+	return strbuf_detach(&normalized);
 }
 
 // Returns reference if refmap contains a reference with matching
@@ -218,7 +218,7 @@ inline static inl* append_inlines(inl* a, inl* b)
 	return a;
 }
 
-static void subject_from_buf(subject *e, gh_buf *buffer, reference** refmap)
+static void subject_from_buf(subject *e, strbuf *buffer, reference** refmap)
 {
 	e->input.data = buffer->ptr;
 	e->input.len = buffer->size;
@@ -309,7 +309,7 @@ static int scan_to_closing_backticks(subject* subj, int openticklength)
 
 // Destructively modify string, collapsing consecutive
 // space and newline characters into a single space.
-static void normalize_whitespace(gh_buf *s)
+static void normalize_whitespace(strbuf *s)
 {
 	bool last_char_was_space = false;
 	int r, w;
@@ -331,7 +331,7 @@ static void normalize_whitespace(gh_buf *s)
 		}
 	}
 
-	gh_buf_truncate(s, w);
+	strbuf_truncate(s, w);
 }
 
 // Parse backtick code section or raw backticks, return an inline.
@@ -346,10 +346,10 @@ static inl* handle_backticks(subject *subj)
 		subj->pos = startpos; // rewind
 		return make_str(openticks);
 	} else {
-		gh_buf buf = GH_BUF_INIT;
+		strbuf buf = GH_BUF_INIT;
 
-		gh_buf_set(&buf, subj->input.data + startpos, endpos - startpos - openticks.len);
-		gh_buf_trim(&buf);
+		strbuf_set(&buf, subj->input.data + startpos, endpos - startpos - openticks.len);
+		strbuf_trim(&buf);
 		normalize_whitespace(&buf);
 
 		return make_code(chunk_buf_detach(&buf));
@@ -569,7 +569,7 @@ static inl *make_str_with_entities(chunk *content)
 }
 
 // Destructively unescape a string: remove backslashes before punctuation chars.
-extern void unescape_buffer(gh_buf *buf)
+extern void unescape_buffer(strbuf *buf)
 {
 	int r, w;
 
@@ -580,14 +580,14 @@ extern void unescape_buffer(gh_buf *buf)
 		buf->ptr[w++] = buf->ptr[r];
 	}
 
-	gh_buf_truncate(buf, w);
+	strbuf_truncate(buf, w);
 }
 
 // Clean a URL: remove surrounding whitespace and surrounding <>,
 // and remove \ that escape punctuation.
 static unsigned char *clean_url(chunk *url, int is_email)
 {
-	gh_buf buf = GH_BUF_INIT;
+	strbuf buf = GH_BUF_INIT;
 
 	chunk_trim(url);
 
@@ -595,22 +595,22 @@ static unsigned char *clean_url(chunk *url, int is_email)
 		return NULL;
 
 	if (is_email)
-		gh_buf_puts(&buf, "mailto:");
+		strbuf_puts(&buf, "mailto:");
 
 	if (url->data[0] == '<' && url->data[url->len - 1] == '>') {
-		gh_buf_put(&buf, url->data + 1, url->len - 2);
+		strbuf_put(&buf, url->data + 1, url->len - 2);
 	} else {
-		gh_buf_put(&buf, url->data, url->len);
+		strbuf_put(&buf, url->data, url->len);
 	}
 
 	unescape_buffer(&buf);
-	return gh_buf_detach(&buf);
+	return strbuf_detach(&buf);
 }
 
 // Clean a title: remove surrounding quotes and remove \ that escape punctuation.
 static unsigned char *clean_title(chunk *title)
 {
-	gh_buf buf = GH_BUF_INIT;
+	strbuf buf = GH_BUF_INIT;
 	unsigned char first, last;
 
 	if (title->len == 0)
@@ -623,13 +623,13 @@ static unsigned char *clean_title(chunk *title)
 	if ((first == '\'' && last == '\'') ||
 		(first == '(' && last == ')') ||
 		(first == '"' && last == '"')) {
-		gh_buf_set(&buf, title->data + 1, title->len - 2);
+		strbuf_set(&buf, title->data + 1, title->len - 2);
 	} else {
-		gh_buf_set(&buf, title->data, title->len);
+		strbuf_set(&buf, title->data, title->len);
 	}
 
 	unescape_buffer(&buf);
-	return gh_buf_detach(&buf);
+	return strbuf_detach(&buf);
 }
 
 // Parse an autolink or HTML tag.
@@ -971,7 +971,7 @@ static int parse_inline(subject* subj, inl ** last)
 	return 1;
 }
 
-extern inl* parse_inlines(gh_buf *input, reference** refmap)
+extern inl* parse_inlines(strbuf *input, reference** refmap)
 {
 	subject subj;
 	subject_from_buf(&subj, input, refmap);
@@ -993,7 +993,7 @@ void spnl(subject* subj)
 // Modify refmap if a reference is encountered.
 // Return 0 if no reference found, otherwise position of subject
 // after reference is parsed.
-extern int parse_reference(gh_buf *input, reference** refmap)
+extern int parse_reference(strbuf *input, reference** refmap)
 {
 	subject subj;
 

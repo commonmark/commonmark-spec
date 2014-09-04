@@ -10,7 +10,7 @@
 
 #define peek_at(i, n) (i)->data[n]
 
-static void incorporate_line(gh_buf *ln, int line_number, block** curptr);
+static void incorporate_line(strbuf *ln, int line_number, block** curptr);
 static void finalize(block* b, int line_number);
 
 static block* make_block(int tag, int start_line, int start_column)
@@ -28,7 +28,7 @@ static block* make_block(int tag, int start_line, int start_column)
 	e->parent = NULL;
 	e->top = NULL;
 	e->attributes.refmap = NULL;
-	gh_buf_init(&e->string_content, 32);
+	strbuf_init(&e->string_content, 32);
 	e->inline_content = NULL;
 	e->next = NULL;
 	e->prev = NULL;
@@ -49,7 +49,7 @@ extern block* make_document()
 }
 
 // Returns true if line has only space characters, else false.
-bool is_blank(gh_buf *s, int offset)
+bool is_blank(strbuf *s, int offset)
 {
 	while (offset < s->size) {
 		switch (s->ptr[offset]) {
@@ -85,10 +85,10 @@ static inline bool accepts_lines(int block_type)
 static void add_line(block* block, chunk *ch, int offset)
 {
 	assert(block->open);
-	gh_buf_put(&block->string_content, ch->data + offset, ch->len - offset);
+	strbuf_put(&block->string_content, ch->data + offset, ch->len - offset);
 }
 
-static void remove_trailing_blank_lines(gh_buf *ln)
+static void remove_trailing_blank_lines(strbuf *ln)
 {
 	int i;
 
@@ -100,13 +100,13 @@ static void remove_trailing_blank_lines(gh_buf *ln)
 	}
 
 	if (i < 0) {
-		gh_buf_clear(ln);
+		strbuf_clear(ln);
 		return;
 	}
 
-	i = gh_buf_strchr(ln, '\n', i);
+	i = strbuf_strchr(ln, '\n', i);
 	if (i >= 0)
-		gh_buf_truncate(ln, i);
+		strbuf_truncate(ln, i);
 }
 
 // Check to see if a block ends with a blank line, descending
@@ -164,10 +164,10 @@ static void finalize(block* b, int line_number)
 	switch (b->tag) {
 		case paragraph:
 			pos = 0;
-			while (gh_buf_at(&b->string_content, 0) == '[' &&
+			while (strbuf_at(&b->string_content, 0) == '[' &&
 					(pos = parse_reference(&b->string_content, b->top->attributes.refmap))) {
 
-				gh_buf_drop(&b->string_content, pos);
+				strbuf_drop(&b->string_content, pos);
 			}
 			if (is_blank(&b->string_content, 0)) {
 				b->tag = reference_def;
@@ -176,23 +176,23 @@ static void finalize(block* b, int line_number)
 
 		case indented_code:
 			remove_trailing_blank_lines(&b->string_content);
-			gh_buf_putc(&b->string_content, '\n');
+			strbuf_putc(&b->string_content, '\n');
 			break;
 
 		case fenced_code:
 			// first line of contents becomes info
-			firstlinelen = gh_buf_strchr(&b->string_content, '\n', 0);
+			firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
-			gh_buf_init(&b->attributes.fenced_code_data.info, 0);
-			gh_buf_set(
+			strbuf_init(&b->attributes.fenced_code_data.info, 0);
+			strbuf_set(
 				&b->attributes.fenced_code_data.info,
 				b->string_content.ptr,
 				firstlinelen
 			);
 
-			gh_buf_drop(&b->string_content, firstlinelen + 1);
+			strbuf_drop(&b->string_content, firstlinelen + 1);
 
-			gh_buf_trim(&b->attributes.fenced_code_data.info);
+			strbuf_trim(&b->attributes.fenced_code_data.info);
 			unescape_buffer(&b->attributes.fenced_code_data.info);
 			break;
 
@@ -265,9 +265,9 @@ extern void free_blocks(block* e)
 	while (e != NULL) {
 		next = e->next;
 		free_inlines(e->inline_content);
-		gh_buf_free(&e->string_content);
+		strbuf_free(&e->string_content);
 		if (e->tag == fenced_code) {
-			gh_buf_free(&e->attributes.fenced_code_data.info);
+			strbuf_free(&e->attributes.fenced_code_data.info);
 		} else if (e->tag == document) {
 			free_reference_map(e->attributes.refmap);
 		}
@@ -287,7 +287,7 @@ void process_inlines(block* cur, reference** refmap)
 		case setext_header:
 			cur->inline_content = parse_inlines(&cur->string_content, refmap);
 			// MEM
-			// gh_buf_free(&cur->string_content);
+			// strbuf_free(&cur->string_content);
 			break;
 
 		default:
@@ -369,7 +369,7 @@ static int lists_match(struct ListData list_data,
 			list_data.bullet_char == item_data.bullet_char);
 }
 
-static void expand_tabs(gh_buf *ob, const unsigned char *line, size_t size)
+static void expand_tabs(strbuf *ob, const unsigned char *line, size_t size)
 {
 	size_t  i = 0, tab = 0;
 
@@ -381,13 +381,13 @@ static void expand_tabs(gh_buf *ob, const unsigned char *line, size_t size)
 		}
 
 		if (i > org)
-			gh_buf_put(ob, line + org, i - org);
+			strbuf_put(ob, line + org, i - org);
 
 		if (i >= size)
 			break;
 
 		do {
-			gh_buf_putc(ob, ' '); tab++;
+			strbuf_putc(ob, ' '); tab++;
 		} while (tab % 4);
 
 		i++;
@@ -409,7 +409,7 @@ static block *finalize_document(block *document, int linenum)
 
 extern block *stmd_parse_file(FILE *f)
 {
-	gh_buf line = GH_BUF_INIT;
+	strbuf line = GH_BUF_INIT;
 	unsigned char buffer[4096];
 	int linenum = 1;
 	block *document = make_document();
@@ -417,17 +417,17 @@ extern block *stmd_parse_file(FILE *f)
 	while (fgets((char *)buffer, sizeof(buffer), f)) {
 		expand_tabs(&line, buffer, strlen((char *)buffer));
 		incorporate_line(&line, linenum, &document);
-		gh_buf_clear(&line);
+		strbuf_clear(&line);
 		linenum++;
 	}
 
-	gh_buf_free(&line);
+	strbuf_free(&line);
 	return finalize_document(document, linenum);
 }
 
 extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
 {
-	gh_buf line = GH_BUF_INIT;
+	strbuf line = GH_BUF_INIT;
 	int linenum = 1;
 	const unsigned char *end = buffer + len;
 	block *document = make_document();
@@ -444,11 +444,11 @@ extern block *stmd_parse_document(const unsigned char *buffer, size_t len)
 		}
 
 		incorporate_line(&line, linenum, &document);
-		gh_buf_clear(&line);
+		strbuf_clear(&line);
 		linenum++;
 	}
 
-	gh_buf_free(&line);
+	strbuf_free(&line);
 	return finalize_document(document, linenum);
 }
 
@@ -471,7 +471,7 @@ static void chop_trailing_hashtags(chunk *ch)
 }
 
 // Process one line at a time, modifying a block.
-static void incorporate_line(gh_buf *line, int line_number, block** curptr)
+static void incorporate_line(strbuf *line, int line_number, block** curptr)
 {
 	block* last_matched_container;
 	int offset = 0;
@@ -639,8 +639,8 @@ static void incorporate_line(gh_buf *line, int line_number, block** curptr)
 		} else if (container->tag == paragraph &&
 				(lev = scan_setext_header_line(&input, first_nonspace)) &&
 				// check that there is only one line in the paragraph:
-				gh_buf_strrchr(&container->string_content, '\n',
-					gh_buf_len(&container->string_content) - 2) < 0) {
+				strbuf_strrchr(&container->string_content, '\n',
+					strbuf_len(&container->string_content) - 2) < 0) {
 
 			container->tag = setext_header;
 			container->attributes.header_level = lev;
@@ -734,7 +734,7 @@ static void incorporate_line(gh_buf *line, int line_number, block** curptr)
 			container == last_matched_container &&
 			!blank &&
 			cur->tag == paragraph &&
-			gh_buf_len(&cur->string_content) > 0) {
+			strbuf_len(&cur->string_content) > 0) {
 
 		add_line(cur, &input, offset);
 

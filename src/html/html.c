@@ -10,7 +10,7 @@
 
 // Functions to convert block and inline lists to HTML strings.
 
-static void escape_html(gh_buf *dest, const unsigned char *source, int length)
+static void escape_html(strbuf *dest, const unsigned char *source, int length)
 {
 	if (length < 0)
 		length = strlen((char *)source);
@@ -18,7 +18,7 @@ static void escape_html(gh_buf *dest, const unsigned char *source, int length)
 	houdini_escape_html0(dest, source, (size_t)length, 0);
 }
 
-static void escape_href(gh_buf *dest, const unsigned char *source, int length)
+static void escape_href(strbuf *dest, const unsigned char *source, int length)
 {
 	if (length < 0)
 		length = strlen((char *)source);
@@ -26,14 +26,14 @@ static void escape_href(gh_buf *dest, const unsigned char *source, int length)
 	houdini_escape_href(dest, source, (size_t)length);
 }
 
-static inline void cr(gh_buf *html)
+static inline void cr(strbuf *html)
 {
 	if (html->size && html->ptr[html->size - 1] != '\n')
-		gh_buf_putc(html, '\n');
+		strbuf_putc(html, '\n');
 }
 
 // Convert a block list to HTML.  Returns 0 on success, and sets result.
-void blocks_to_html(gh_buf *html, block *b, bool tight)
+void blocks_to_html(strbuf *html, block *b, bool tight)
 {
 	struct ListData *data;
 
@@ -48,25 +48,25 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 					inlines_to_html(html, b->inline_content);
 				} else {
 					cr(html);
-					gh_buf_puts(html, "<p>");
+					strbuf_puts(html, "<p>");
 					inlines_to_html(html, b->inline_content);
-					gh_buf_puts(html, "</p>\n");
+					strbuf_puts(html, "</p>\n");
 				}
 				break;
 
 			case block_quote:
 				cr(html);
-				gh_buf_puts(html, "<blockquote>\n");
+				strbuf_puts(html, "<blockquote>\n");
 				blocks_to_html(html, b->children, false);
-				gh_buf_puts(html, "</blockquote>\n");
+				strbuf_puts(html, "</blockquote>\n");
 				break;
 
 			case list_item:
 				cr(html);
-				gh_buf_puts(html, "<li>");
+				strbuf_puts(html, "<li>");
 				blocks_to_html(html, b->children, tight);
-				gh_buf_trim(html); /* TODO: rtrim */
-				gh_buf_puts(html, "</li>\n");
+				strbuf_trim(html); /* TODO: rtrim */
+				strbuf_puts(html, "</li>\n");
 				break;
 
 			case list:
@@ -75,58 +75,58 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				data = &(b->attributes.list_data);
 
 				if (data->start > 1) {
-					gh_buf_printf(html, "<%s start=\"%d\">\n",
+					strbuf_printf(html, "<%s start=\"%d\">\n",
 							data->list_type == bullet ? "ul" : "ol",
 							data->start);
 				} else {
-					gh_buf_puts(html, data->list_type == bullet ? "<ul>\n" : "<ol>\n");
+					strbuf_puts(html, data->list_type == bullet ? "<ul>\n" : "<ol>\n");
 				}
 
 				blocks_to_html(html, b->children, data->tight);
-				gh_buf_puts(html, data->list_type == bullet ? "</ul>" : "</ol>");
-				gh_buf_putc(html, '\n');
+				strbuf_puts(html, data->list_type == bullet ? "</ul>" : "</ol>");
+				strbuf_putc(html, '\n');
 				break;
 
 			case atx_header:
 			case setext_header:
 				cr(html);
-				gh_buf_printf(html, "<h%d>", b->attributes.header_level);
+				strbuf_printf(html, "<h%d>", b->attributes.header_level);
 				inlines_to_html(html, b->inline_content);
-				gh_buf_printf(html, "</h%d>\n", b->attributes.header_level);
+				strbuf_printf(html, "</h%d>\n", b->attributes.header_level);
 				break;
 
 			case indented_code:
 			case fenced_code:
 				cr(html);
 
-				gh_buf_puts(html, "<pre");
+				strbuf_puts(html, "<pre");
 
 				if (b->tag == fenced_code) {
-					gh_buf *info = &b->attributes.fenced_code_data.info;
+					strbuf *info = &b->attributes.fenced_code_data.info;
 
-					if (gh_buf_len(info) > 0) {
-						int first_tag = gh_buf_strchr(info, ' ', 0);
+					if (strbuf_len(info) > 0) {
+						int first_tag = strbuf_strchr(info, ' ', 0);
 						if (first_tag < 0)
-							first_tag = gh_buf_len(info);
+							first_tag = strbuf_len(info);
 
 
-						gh_buf_puts(html, " class=\"");
+						strbuf_puts(html, " class=\"");
 						escape_html(html, info->ptr, first_tag);
-						gh_buf_putc(html, '"');
+						strbuf_putc(html, '"');
 					}
 				}
 
-				gh_buf_puts(html, "><code>");
+				strbuf_puts(html, "><code>");
 				escape_html(html, b->string_content.ptr, b->string_content.size);
-				gh_buf_puts(html, "</code></pre>\n");
+				strbuf_puts(html, "</code></pre>\n");
 				break;
 
 			case html_block:
-				gh_buf_put(html, b->string_content.ptr, b->string_content.size);
+				strbuf_put(html, b->string_content.ptr, b->string_content.size);
 				break;
 
 			case hrule:
-				gh_buf_puts(html, "<hr />\n");
+				strbuf_puts(html, "<hr />\n");
 				break;
 
 			case reference_def:
@@ -141,9 +141,9 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 }
 
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
-void inlines_to_html(gh_buf *html, inl* ils)
+void inlines_to_html(strbuf *html, inl* ils)
 {
-	gh_buf scrap = GH_BUF_INIT;
+	strbuf scrap = GH_BUF_INIT;
 
 	while(ils != NULL) {
 		switch(ils->tag) {
@@ -152,70 +152,70 @@ void inlines_to_html(gh_buf *html, inl* ils)
 				break;
 
 			case INL_LINEBREAK:
-				gh_buf_puts(html, "<br />\n");
+				strbuf_puts(html, "<br />\n");
 				break;
 
 			case INL_SOFTBREAK:
-				gh_buf_putc(html, '\n');
+				strbuf_putc(html, '\n');
 				break;
 
 			case INL_CODE:
-				gh_buf_puts(html, "<code>");
+				strbuf_puts(html, "<code>");
 				escape_html(html, ils->content.literal.data, ils->content.literal.len);
-				gh_buf_puts(html, "</code>");
+				strbuf_puts(html, "</code>");
 				break;
 
 			case INL_RAW_HTML:
 			case INL_ENTITY:
-				gh_buf_put(html,
+				strbuf_put(html,
 						ils->content.literal.data,
 						ils->content.literal.len);
 				break;
 
 			case INL_LINK:
-				gh_buf_puts(html, "<a href=\"");
+				strbuf_puts(html, "<a href=\"");
 				if (ils->content.linkable.url)
 					escape_href(html, ils->content.linkable.url, -1);
 
 				if (ils->content.linkable.title) {
-					gh_buf_puts(html, "\" title=\"");
+					strbuf_puts(html, "\" title=\"");
 					escape_html(html, ils->content.linkable.title, -1);
 				}
 
-				gh_buf_puts(html, "\">");
+				strbuf_puts(html, "\">");
 				inlines_to_html(html, ils->content.inlines);
-				gh_buf_puts(html, "</a>");
+				strbuf_puts(html, "</a>");
 				break;
 
 			case INL_IMAGE:
-				gh_buf_puts(html, "<img src=\"");
+				strbuf_puts(html, "<img src=\"");
 				if (ils->content.linkable.url)
 					escape_href(html, ils->content.linkable.url, -1);
 
 				inlines_to_html(&scrap, ils->content.inlines);
-				gh_buf_puts(html, "\" alt=\"");
+				strbuf_puts(html, "\" alt=\"");
 				if (scrap.size)
 					escape_html(html, scrap.ptr, scrap.size);
-				gh_buf_clear(&scrap);
+				strbuf_clear(&scrap);
 
 				if (ils->content.linkable.title) {
-					gh_buf_puts(html, "\" title=\"");
+					strbuf_puts(html, "\" title=\"");
 					escape_html(html, ils->content.linkable.title, -1);
 				}
 
-				gh_buf_puts(html, "\"/>");
+				strbuf_puts(html, "\"/>");
 				break;
 
 			case INL_STRONG:
-				gh_buf_puts(html, "<strong>");
+				strbuf_puts(html, "<strong>");
 				inlines_to_html(html, ils->content.inlines);
-				gh_buf_puts(html, "</strong>");
+				strbuf_puts(html, "</strong>");
 				break;
 
 			case INL_EMPH:
-				gh_buf_puts(html, "<em>");
+				strbuf_puts(html, "<em>");
 				inlines_to_html(html, ils->content.inlines);
-				gh_buf_puts(html, "</em>");
+				strbuf_puts(html, "</em>");
 				break;
 		}
 		ils = ils->next;

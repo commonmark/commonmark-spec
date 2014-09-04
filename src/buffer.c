@@ -9,32 +9,32 @@
 
 #include "buffer.h"
 
-/* Used as default value for gh_buf->ptr so that people can always
- * assume ptr is non-NULL and zero terminated even for new gh_bufs.
+/* Used as default value for strbuf->ptr so that people can always
+ * assume ptr is non-NULL and zero terminated even for new strbufs.
  */
-unsigned char gh_buf__initbuf[1];
-unsigned char gh_buf__oom[1];
+unsigned char strbuf__initbuf[1];
+unsigned char strbuf__oom[1];
 
 #define ENSURE_SIZE(b, d) \
-	if ((d) > buf->asize && gh_buf_grow(b, (d)) < 0)\
+	if ((d) > buf->asize && strbuf_grow(b, (d)) < 0)\
 		return -1;
 
-void gh_buf_init(gh_buf *buf, int initial_size)
+void strbuf_init(strbuf *buf, int initial_size)
 {
 	buf->asize = 0;
 	buf->size = 0;
-	buf->ptr = gh_buf__initbuf;
+	buf->ptr = strbuf__initbuf;
 
 	if (initial_size)
-		gh_buf_grow(buf, initial_size);
+		strbuf_grow(buf, initial_size);
 }
 
-int gh_buf_try_grow(gh_buf *buf, int target_size, bool mark_oom)
+int strbuf_try_grow(strbuf *buf, int target_size, bool mark_oom)
 {
 	unsigned char *new_ptr;
 	int new_size;
 
-	if (buf->ptr == gh_buf__oom)
+	if (buf->ptr == strbuf__oom)
 		return -1;
 
 	if (target_size <= buf->asize)
@@ -60,7 +60,7 @@ int gh_buf_try_grow(gh_buf *buf, int target_size, bool mark_oom)
 
 	if (!new_ptr) {
 		if (mark_oom)
-			buf->ptr = gh_buf__oom;
+			buf->ptr = strbuf__oom;
 		return -1;
 	}
 
@@ -75,17 +75,17 @@ int gh_buf_try_grow(gh_buf *buf, int target_size, bool mark_oom)
 	return 0;
 }
 
-void gh_buf_free(gh_buf *buf)
+void strbuf_free(strbuf *buf)
 {
 	if (!buf) return;
 
-	if (buf->ptr != gh_buf__initbuf && buf->ptr != gh_buf__oom)
+	if (buf->ptr != strbuf__initbuf && buf->ptr != strbuf__oom)
 		free(buf->ptr);
 
-	gh_buf_init(buf, 0);
+	strbuf_init(buf, 0);
 }
 
-void gh_buf_clear(gh_buf *buf)
+void strbuf_clear(strbuf *buf)
 {
 	buf->size = 0;
 
@@ -93,10 +93,10 @@ void gh_buf_clear(gh_buf *buf)
 		buf->ptr[0] = '\0';
 }
 
-int gh_buf_set(gh_buf *buf, const unsigned char *data, int len)
+int strbuf_set(strbuf *buf, const unsigned char *data, int len)
 {
 	if (len <= 0 || data == NULL) {
-		gh_buf_clear(buf);
+		strbuf_clear(buf);
 	} else {
 		if (data != buf->ptr) {
 			ENSURE_SIZE(buf, len + 1);
@@ -108,14 +108,14 @@ int gh_buf_set(gh_buf *buf, const unsigned char *data, int len)
 	return 0;
 }
 
-int gh_buf_sets(gh_buf *buf, const char *string)
+int strbuf_sets(strbuf *buf, const char *string)
 {
-	return gh_buf_set(buf,
+	return strbuf_set(buf,
 		(const unsigned char *)string,
 		string ? strlen(string) : 0);
 }
 
-int gh_buf_putc(gh_buf *buf, int c)
+int strbuf_putc(strbuf *buf, int c)
 {
 	ENSURE_SIZE(buf, buf->size + 2);
 	buf->ptr[buf->size++] = c;
@@ -123,7 +123,7 @@ int gh_buf_putc(gh_buf *buf, int c)
 	return 0;
 }
 
-int gh_buf_put(gh_buf *buf, const unsigned char *data, int len)
+int strbuf_put(strbuf *buf, const unsigned char *data, int len)
 {
 	if (len <= 0)
 		return 0;
@@ -135,12 +135,12 @@ int gh_buf_put(gh_buf *buf, const unsigned char *data, int len)
 	return 0;
 }
 
-int gh_buf_puts(gh_buf *buf, const char *string)
+int strbuf_puts(strbuf *buf, const char *string)
 {
-	return gh_buf_put(buf, (const unsigned char *)string, strlen(string));
+	return strbuf_put(buf, (const unsigned char *)string, strlen(string));
 }
 
-int gh_buf_vprintf(gh_buf *buf, const char *format, va_list ap)
+int strbuf_vprintf(strbuf *buf, const char *format, va_list ap)
 {
 	const int expected_size = buf->size + (strlen(format) * 2);
 	int len;
@@ -159,7 +159,7 @@ int gh_buf_vprintf(gh_buf *buf, const char *format, va_list ap)
 
 		if (len < 0) {
 			free(buf->ptr);
-			buf->ptr = gh_buf__oom;
+			buf->ptr = strbuf__oom;
 			return -1;
 		}
 
@@ -174,19 +174,19 @@ int gh_buf_vprintf(gh_buf *buf, const char *format, va_list ap)
 	return 0;
 }
 
-int gh_buf_printf(gh_buf *buf, const char *format, ...)
+int strbuf_printf(strbuf *buf, const char *format, ...)
 {
 	int r;
 	va_list ap;
 
 	va_start(ap, format);
-	r = gh_buf_vprintf(buf, format, ap);
+	r = strbuf_vprintf(buf, format, ap);
 	va_end(ap);
 
 	return r;
 }
 
-void gh_buf_copy_cstr(char *data, int datasize, const gh_buf *buf)
+void strbuf_copy_cstr(char *data, int datasize, const strbuf *buf)
 {
 	int copylen;
 
@@ -204,28 +204,28 @@ void gh_buf_copy_cstr(char *data, int datasize, const gh_buf *buf)
 	data[copylen] = '\0';
 }
 
-void gh_buf_swap(gh_buf *buf_a, gh_buf *buf_b)
+void strbuf_swap(strbuf *buf_a, strbuf *buf_b)
 {
-	gh_buf t = *buf_a;
+	strbuf t = *buf_a;
 	*buf_a = *buf_b;
 	*buf_b = t;
 }
 
-unsigned char *gh_buf_detach(gh_buf *buf)
+unsigned char *strbuf_detach(strbuf *buf)
 {
 	unsigned char *data = buf->ptr;
 
-	if (buf->asize == 0 || buf->ptr == gh_buf__oom)
+	if (buf->asize == 0 || buf->ptr == strbuf__oom)
 		return NULL;
 
-	gh_buf_init(buf, 0);
+	strbuf_init(buf, 0);
 
 	return data;
 }
 
-void gh_buf_attach(gh_buf *buf, unsigned char *ptr, int asize)
+void strbuf_attach(strbuf *buf, unsigned char *ptr, int asize)
 {
-	gh_buf_free(buf);
+	strbuf_free(buf);
 
 	if (ptr) {
 		buf->ptr = ptr;
@@ -235,18 +235,18 @@ void gh_buf_attach(gh_buf *buf, unsigned char *ptr, int asize)
 		else /* pass 0 to fall back on strlen + 1 */
 			buf->asize = buf->size + 1;
 	} else {
-		gh_buf_grow(buf, asize);
+		strbuf_grow(buf, asize);
 	}
 }
 
-int gh_buf_cmp(const gh_buf *a, const gh_buf *b)
+int strbuf_cmp(const strbuf *a, const strbuf *b)
 {
 	int result = memcmp(a->ptr, b->ptr, MIN(a->size, b->size));
 	return (result != 0) ? result :
 		(a->size < b->size) ? -1 : (a->size > b->size) ? 1 : 0;
 }
 
-int gh_buf_strchr(const gh_buf *buf, int c, int pos)
+int strbuf_strchr(const strbuf *buf, int c, int pos)
 {
 	const unsigned char *p = memchr(buf->ptr + pos, c, buf->size - pos);
 	if (!p)
@@ -255,7 +255,7 @@ int gh_buf_strchr(const gh_buf *buf, int c, int pos)
 	return (int)(p - (const unsigned char *)buf->ptr);
 }
 
-int gh_buf_strrchr(const gh_buf *buf, int c, int pos)
+int strbuf_strrchr(const strbuf *buf, int c, int pos)
 {
 	int i;
 
@@ -267,7 +267,7 @@ int gh_buf_strrchr(const gh_buf *buf, int c, int pos)
 	return -1;
 }
 
-void gh_buf_truncate(gh_buf *buf, int len)
+void strbuf_truncate(strbuf *buf, int len)
 {
 	if (len < buf->size) {
 		buf->size = len;
@@ -275,7 +275,7 @@ void gh_buf_truncate(gh_buf *buf, int len)
 	}
 }
 
-void gh_buf_drop(gh_buf *buf, int n)
+void strbuf_drop(strbuf *buf, int n)
 {
 	if (n > 0) {
 		buf->size = buf->size - n;
@@ -286,7 +286,7 @@ void gh_buf_drop(gh_buf *buf, int n)
 	}
 }
 
-void gh_buf_trim(gh_buf *buf)
+void strbuf_trim(strbuf *buf)
 {
 	int i = 0;
 
@@ -296,7 +296,7 @@ void gh_buf_trim(gh_buf *buf)
 	while (i < buf->size && isspace(buf->ptr[i]))
 		i++;
 
-	gh_buf_drop(buf, i);
+	strbuf_drop(buf, i);
 
 	/* rtrim */
 	while (buf->size > 0) {
