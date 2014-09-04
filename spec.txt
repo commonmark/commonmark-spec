@@ -3688,7 +3688,7 @@ raw HTML:
 .
 <http://google.com?find=\*>
 .
-<p><a href="http://google.com?find=*">http://google.com?find=\*</a></p>
+<p><a href="http://google.com?find=\*">http://google.com?find=\*</a></p>
 .
 
 .
