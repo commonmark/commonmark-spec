@@ -28,9 +28,9 @@ inline static chunk chunk_literal(const char *data);
 inline static chunk chunk_buf_detach(strbuf *buf);
 inline static chunk chunk_dup(const chunk *ch, int pos, int len);
 
-static struct inl *parse_chunk_inlines(chunk *chunk, reference** refmap);
-static struct inl *parse_inlines_while(subject* subj, int (*f)(subject*));
-static int parse_inline(subject* subj, struct inl ** last);
+static node_inl *parse_chunk_inlines(chunk *chunk, reference** refmap);
+static node_inl *parse_inlines_while(subject* subj, int (*f)(subject*));
+static int parse_inline(subject* subj, node_inl ** last);
 
 static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap);
 static void subject_from_buf(subject *e, strbuf *buffer, reference** refmap);
@@ -108,9 +108,9 @@ extern void add_reference(reference** refmap, reference* ref)
 	}
 }
 
-inline static struct inl* make_link_from_reference(struct inl* label, reference *ref)
+inline static node_inl* make_link_from_reference(node_inl* label, reference *ref)
 {
-	struct inl* e = (struct inl*) malloc(sizeof(struct inl));
+	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = INL_LINK;
 	e->content.linkable.label = label;
 	e->content.linkable.url   = strdup(ref->url);
@@ -120,9 +120,9 @@ inline static struct inl* make_link_from_reference(struct inl* label, reference 
 }
 
 // Create an inline with a linkable string value.
-inline static struct inl* make_link(struct inl* label, chunk url, chunk title, int is_email)
+inline static node_inl* make_link(node_inl* label, chunk url, chunk title, int is_email)
 {
-	struct inl* e = (struct inl*) malloc(sizeof(struct inl));
+	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = INL_LINK;
 	e->content.linkable.label = label;
 	e->content.linkable.url   = clean_url(&url, is_email);
@@ -131,9 +131,9 @@ inline static struct inl* make_link(struct inl* label, chunk url, chunk title, i
 	return e;
 }
 
-inline static struct inl* make_inlines(int t, struct inl* contents)
+inline static node_inl* make_inlines(int t, node_inl* contents)
 {
-	struct inl* e = (struct inl*) malloc(sizeof(struct inl));
+	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = t;
 	e->content.inlines = contents;
 	e->next = NULL;
@@ -141,9 +141,9 @@ inline static struct inl* make_inlines(int t, struct inl* contents)
 }
 
 // Create an inline with a literal string value.
-inline static struct inl* make_literal(int t, chunk s)
+inline static node_inl* make_literal(int t, chunk s)
 {
-	struct inl* e = (struct inl*) malloc(sizeof(struct inl));
+	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = t;
 	e->content.literal = s;
 	e->next = NULL;
@@ -151,9 +151,9 @@ inline static struct inl* make_literal(int t, chunk s)
 }
 
 // Create an inline with no value.
-inline static struct inl* make_simple(int t)
+inline static node_inl* make_simple(int t)
 {
-	struct inl* e = (struct inl*) malloc(sizeof(struct inl));
+	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = t;
 	e->next = NULL;
 	return e;
@@ -170,9 +170,9 @@ inline static struct inl* make_simple(int t)
 #define make_strong(contents) make_inlines(INL_STRONG, contents)
 
 // Free an inline list.
-extern void free_inlines(struct inl* e)
+extern void free_inlines(node_inl* e)
 {
-	struct inl * next;
+	node_inl * next;
 	while (e != NULL) {
 		switch (e->tag){
 			case INL_STRING:
@@ -205,12 +205,12 @@ extern void free_inlines(struct inl* e)
 
 // Append inline list b to the end of inline list a.
 // Return pointer to head of new list.
-inline static struct inl* append_inlines(struct inl* a, struct inl* b)
+inline static node_inl* append_inlines(node_inl* a, node_inl* b)
 {
 	if (a == NULL) {  // NULL acts like an empty list
 		return b;
 	}
-	struct inl* cur = a;
+	node_inl* cur = a;
 	while (cur->next) {
 		cur = cur->next;
 	}
@@ -336,7 +336,7 @@ static void normalize_whitespace(strbuf *s)
 
 // Parse backtick code section or raw backticks, return an inline.
 // Assumes that the subject has a backtick at the current position.
-static struct inl* handle_backticks(subject *subj)
+static node_inl* handle_backticks(subject *subj)
 {
 	chunk openticks = take_while(subj, isbacktick);
 	int startpos = subj->pos;
@@ -382,15 +382,15 @@ static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static struct inl* handle_strong_emph(subject* subj, char c)
+static node_inl* handle_strong_emph(subject* subj, char c)
 {
 	bool can_open, can_close;
-	struct inl * result = NULL;
-	struct inl ** last = malloc(sizeof(struct inl *));
-	struct inl * new;
-	struct inl * il;
-	struct inl * first_head = NULL;
-	struct inl * first_close = NULL;
+	node_inl * result = NULL;
+	node_inl ** last = malloc(sizeof(node_inl *));
+	node_inl * new;
+	node_inl * il;
+	node_inl * first_head = NULL;
+	node_inl * first_close = NULL;
 	int first_close_delims = 0;
 	int numdelims;
 
@@ -508,7 +508,7 @@ done:
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
-static struct inl* handle_backslash(subject *subj)
+static node_inl* handle_backslash(subject *subj)
 {
 	advance(subj);
 	unsigned char nextchar = peek_char(subj);
@@ -525,10 +525,10 @@ static struct inl* handle_backslash(subject *subj)
 
 // Parse an entity or a regular "&" string.
 // Assumes the subject has an '&' character at the current position.
-static struct inl* handle_entity(subject* subj)
+static node_inl* handle_entity(subject* subj)
 {
 	int match;
-	struct inl *result;
+	node_inl *result;
 	match = scan_entity(&subj->input, subj->pos);
 	if (match) {
 		result = make_entity(chunk_dup(&subj->input, subj->pos, match));
@@ -542,10 +542,10 @@ static struct inl* handle_entity(subject* subj)
 
 // Like make_str, but parses entities.
 // Returns an inline sequence consisting of str and entity elements.
-static struct inl *make_str_with_entities(chunk *content)
+static node_inl *make_str_with_entities(chunk *content)
 {
-	struct inl *result = NULL;
-	struct inl *new;
+	node_inl *result = NULL;
+	node_inl *new;
 	int searchpos;
 	char c;
 	subject subj;
@@ -634,7 +634,7 @@ static unsigned char *clean_title(chunk *title)
 
 // Parse an autolink or HTML tag.
 // Assumes the subject has a '<' character at the current position.
-static struct inl* handle_pointy_brace(subject* subj)
+static node_inl* handle_pointy_brace(subject* subj)
 {
 	int matchlen = 0;
 	chunk contents;
@@ -693,7 +693,7 @@ static struct inl* handle_pointy_brace(subject* subj)
 static int link_label(subject* subj, chunk *raw_label)
 {
 	int nestlevel = 0;
-	struct inl* tmp = NULL;
+	node_inl* tmp = NULL;
 	int startpos = subj->pos;
 
 	if (subj->label_nestlevel) {
@@ -751,10 +751,10 @@ static int link_label(subject* subj, chunk *raw_label)
 }
 
 // Parse a link or the link portion of an image, or return a fallback.
-static struct inl* handle_left_bracket(subject* subj)
+static node_inl* handle_left_bracket(subject* subj)
 {
-	struct inl *lab = NULL;
-	struct inl *result = NULL;
+	node_inl *lab = NULL;
+	node_inl *result = NULL;
 	reference *ref;
 	int n;
 	int sps;
@@ -838,7 +838,7 @@ static struct inl* handle_left_bracket(subject* subj)
 
 // Parse a hard or soft linebreak, returning an inline.
 // Assumes the subject has a newline at the current position.
-static struct inl* handle_newline(subject *subj)
+static node_inl* handle_newline(subject *subj)
 {
 	int nlpos = subj->pos;
 	// skip over newline
@@ -862,16 +862,16 @@ inline static int not_eof(subject* subj)
 }
 
 // Parse inlines while a predicate is satisfied.  Return inlines.
-extern struct inl* parse_inlines_while(subject* subj, int (*f)(subject*))
+extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 {
-	struct inl* result = NULL;
-	struct inl** last = &result;
+	node_inl* result = NULL;
+	node_inl** last = &result;
 	while ((*f)(subj) && parse_inline(subj, last)) {
 	}
 	return result;
 }
 
-struct inl *parse_chunk_inlines(chunk *chunk, reference** refmap)
+node_inl *parse_chunk_inlines(chunk *chunk, reference** refmap)
 {
 	subject subj;
 	subject_from_chunk(&subj, chunk, refmap);
@@ -894,9 +894,9 @@ static int subject_find_special_char(subject *subj)
 // Parse an inline, advancing subject, and add it to last element.
 // Adjust tail to point to new last element of list.
 // Return 0 if no inline can be parsed, 1 otherwise.
-static int parse_inline(subject* subj, struct inl ** last)
+static int parse_inline(subject* subj, node_inl ** last)
 {
-	struct inl* new = NULL;
+	node_inl* new = NULL;
 	chunk contents;
 	unsigned char c;
 	int endpos;
@@ -971,7 +971,7 @@ static int parse_inline(subject* subj, struct inl ** last)
 	return 1;
 }
 
-extern struct inl* parse_inlines(strbuf *input, reference** refmap)
+extern node_inl* parse_inlines(strbuf *input, reference** refmap)
 {
 	subject subj;
 	subject_from_buf(&subj, input, refmap);

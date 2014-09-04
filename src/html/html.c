@@ -141,7 +141,7 @@ void blocks_to_html(strbuf *html, block *b, bool tight)
 }
 
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
-void inlines_to_html(strbuf *html, struct inl* ils)
+void inlines_to_html(strbuf *html, node_inl* ils)
 {
 	strbuf scrap = GH_BUF_INIT;
 
