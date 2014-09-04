@@ -2002,8 +2002,8 @@ A [block quote marker](#block-quote-marker) <a id="block-quote-marker"/>
 consists of 0-3 spaces of initial indent, plus (a) the character `>` together
 with a following space, or (b) a single character `>` not followed by a space.
 
-The following rules define [block quotes](#block-quote):
 <a id="block-quote"/>
+The following rules define [block quotes](#block-quote):
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
     of blocks *Bs*, then the result of appending a [block quote marker]
