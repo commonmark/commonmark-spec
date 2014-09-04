@@ -1,7 +1,7 @@
 {
   "name": "stmd",
   "version": "1.0.0-beta",
-  "description": "Standard Markdown",
+  "description": "CommonMark",
   "main": "js/stmd.js",
   "directories": {
     "man": "man"
