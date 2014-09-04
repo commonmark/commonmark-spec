@@ -1,0 +1,33 @@
+{
+  "name": "stmd",
+  "version": "1.0.0-beta",
+  "description": "Standardized Markdown",
+  "main": "js/stmd.js",
+  "directories": {
+    "man": "man"
+  },
+  "scripts": {
+    "test": "node js/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jgm/stmd"
+  },
+  "keywords": [
+    "markdown",
+    "standard",
+    "markdown",
+    "markdown",
+    "to",
+    "html",
+    "md",
+    "markdown->html",
+    "md->html"
+  ],
+  "author": "John MacFarlane",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/jgm/stmd/issues"
+  },
+  "homepage": "https://github.com/jgm/stmd"
+}
