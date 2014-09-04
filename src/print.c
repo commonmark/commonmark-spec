@@ -117,7 +117,7 @@ extern void print_blocks(block* b, int indent)
 }
 
 // Prettyprint an inline list, for debugging.
-extern void print_inlines(inl* ils, int indent)
+extern void print_inlines(struct inl* ils, int indent)
 {
 	while(ils != NULL) {
 		for (int i=0; i < indent; i++) {

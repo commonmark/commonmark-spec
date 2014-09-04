@@ -10,20 +10,30 @@
 #define VERSION "0.1"
 #define CODE_INDENT 4
 
-typedef struct Inline {
-	enum { INL_STRING, INL_SOFTBREAK, INL_LINEBREAK, INL_CODE, INL_RAW_HTML, INL_ENTITY,
-		INL_EMPH, INL_STRONG, INL_LINK, INL_IMAGE } tag;
+struct inl {
+	enum {
+		INL_STRING,
+		INL_SOFTBREAK,
+		INL_LINEBREAK,
+		INL_CODE,
+		INL_RAW_HTML,
+		INL_ENTITY,
+		INL_EMPH,
+		INL_STRONG,
+		INL_LINK,
+		INL_IMAGE
+	} tag;
 	union {
 		chunk literal;
-		struct Inline *inlines;
+		struct inl *inlines;
 		struct {
-			struct Inline *label;
+			struct inl *label;
 			unsigned char *url;
 			unsigned char *title;
 		} linkable;
 	} content;
-	struct Inline *next;
-} inl;
+	struct inl *next;
+};
 
 typedef struct Reference {
   unsigned char *label;
@@ -77,7 +87,7 @@ typedef struct Block {
   struct Block*      parent;
   struct Block*      top;
   strbuf			 string_content;
-  inl*               inline_content;
+  struct inl*               inline_content;
   union  {
     struct ListData       list_data;
     struct FencedCodeData fenced_code_data;
@@ -88,8 +98,8 @@ typedef struct Block {
   struct Block *     prev;
 } block;
 
-inl* parse_inlines(strbuf *input, reference** refmap);
-void free_inlines(inl* e);
+struct inl* parse_inlines(strbuf *input, reference** refmap);
+void free_inlines(struct inl* e);
 
 int parse_reference(strbuf *input, reference** refmap);
 void free_reference(reference *ref);
@@ -106,11 +116,11 @@ void free_blocks(block* e);
 extern block *stmd_parse_document(const unsigned char *buffer, size_t len);
 extern block *stmd_parse_file(FILE *f);
 
-void print_inlines(inl* ils, int indent);
+void print_inlines(struct inl* ils, int indent);
 void print_blocks(block* blk, int indent);
 
 void blocks_to_html(strbuf *html, block *b, bool tight);
-void inlines_to_html(strbuf *html, inl *b);
+void inlines_to_html(strbuf *html, struct inl *b);
 
 void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len);
 
