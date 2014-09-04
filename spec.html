@@ -67,7 +67,7 @@ a.footnoteRef > sup {
 <div id="TOC">
 <ul>
 <li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a><ul>
-<li><a href="#what-is-markdown"><span class="toc-section-number">1.1</span> What is markdown?</a></li>
+<li><a href="#what-is-markdown"><span class="toc-section-number">1.1</span> What is Markdown?</a></li>
 <li><a href="#why-is-a-spec-needed"><span class="toc-section-number">1.2</span> Why is a spec needed?</a></li>
 <li><a href="#about-this-document"><span class="toc-section-number">1.3</span> About this document</a></li>
 </ul></li>
@@ -116,10 +116,10 @@ a.footnoteRef > sup {
 </ul>
 </div>
 <h1 id="introduction"><span class="header-section-number">1</span> Introduction</h1>
-<h2 id="what-is-markdown"><span class="header-section-number">1.1</span> What is markdown?</h2>
-<p>Markdown is a plain text format for writing structured documents, based on conventions used for indicating formatting in email and usenet posts. It was developed in 2004 by John Gruber, who wrote the first markdown-to-HTML converter in perl, and it soon became widely used in websites. By 2014 there were dozens of implementations in many languages. Some of them extended basic markdown syntax with conventions for footnotes, definition lists, tables, and other constructs, and some allowed output not just in HTML but in LaTeX and many other formats.</p>
+<h2 id="what-is-markdown"><span class="header-section-number">1.1</span> What is Markdown?</h2>
+<p>Markdown is a plain text format for writing structured documents, based on conventions used for indicating formatting in email and usenet posts. It was developed in 2004 by John Gruber, who wrote the first Markdown-to-HTML converter in perl, and it soon became widely used in websites. By 2014 there were dozens of implementations in many languages. Some of them extended basic Markdown syntax with conventions for footnotes, definition lists, tables, and other constructs, and some allowed output not just in HTML but in LaTeX and many other formats.</p>
 <h2 id="why-is-a-spec-needed"><span class="header-section-number">1.2</span> Why is a spec needed?</h2>
-<p>John Gruber’s <a href="http://daringfireball.net/projects/markdown/syntax">canonical description of markdown’s syntax</a> does not specify the syntax unambiguously. Here are some examples of questions it does not answer:</p>
+<p>John Gruber’s <a href="http://daringfireball.net/projects/markdown/syntax">canonical description of Markdown’s syntax</a> does not specify the syntax unambiguously. Here are some examples of questions it does not answer:</p>
 <ol style="list-style-type: decimal">
 <li><p>How much indentation is needed for a sublist? The spec says that continuation paragraphs need to be indented four spaces, but is not fully explicit about sublists. It is natural to think that they, too, must be indented four spaces, but <code>Markdown.pl</code> does not require that. This is hardly a “corner case,” and divergences between implementations on this issue often lead to surprises for users in real documents. (See <a href="http://article.gmane.org/gmane.text.markdown.general/1997">this comment by John Gruber</a>.)</p></li>
 <li><p>Is a blank line needed before a block quote or header? Most implementations do not require the blank line. However, this can lead to unexpected results in hard-wrapped text, and also to ambiguities in parsing (note that some implementations put the header inside the blockquote, while others do not). (John Gruber has also spoken <a href="http://article.gmane.org/gmane.text.markdown.general/2146">in favor of requiring the blank lines</a>.)</p></li>
@@ -146,7 +146,7 @@ a.footnoteRef > sup {
 <pre class="markdown"><code>* a
 * * * * *
 * b</code></pre></li>
-<li><p>When list markers change from numbers to bullets, do we have two lists or one? (The markdown syntax description suggests two, but the perl scripts and many other implementations produce one.)</p>
+<li><p>When list markers change from numbers to bullets, do we have two lists or one? (The Markdown syntax description suggests two, but the perl scripts and many other implementations produce one.)</p>
 <pre class="markdown"><code>1. fee
 2. fie
 -  foe
@@ -171,12 +171,12 @@ a.footnoteRef > sup {
 [foo][]</code></pre></li>
 </ol>
 <p>In the absence of a spec, early implementers consulted <code>Markdown.pl</code> to resolve these ambiguities. But <code>Markdown.pl</code> was quite buggy, and gave manifestly bad results in many cases, so it was not a satisfactory replacement for a spec.</p>
-<p>Because there is no unambiguous spec, implementations have diverged considerably. As a result, users are often surprised to find that a document that renders one way on one system (say, a github wiki) renders differently on another (say, converting to docbook using pandoc). To make matters worse, because nothing in markdown counts as a “syntax error,” the divergence often isn’t discovered right away.</p>
+<p>Because there is no unambiguous spec, implementations have diverged considerably. As a result, users are often surprised to find that a document that renders one way on one system (say, a github wiki) renders differently on another (say, converting to docbook using pandoc). To make matters worse, because nothing in Markdown counts as a “syntax error,” the divergence often isn’t discovered right away.</p>
 <h2 id="about-this-document"><span class="header-section-number">1.3</span> About this document</h2>
-<p>This document attempts to specify markdown syntax unambiguously. It contains many examples with side-by-side markdown and HTML. These are intended to double as conformance tests. An accompanying script <code>runtests.pl</code> can be used to run the tests against any markdown program:</p>
+<p>This document attempts to specify Markdown syntax unambiguously. It contains many examples with side-by-side Markdown and HTML. These are intended to double as conformance tests. An accompanying script <code>runtests.pl</code> can be used to run the tests against any Markdown program:</p>
 <pre><code>perl runtests.pl PROGRAM spec.html</code></pre>
-<p>Since this document describes how markdown is to be parsed into an abstract syntax tree, it would have made sense to use an abstract representation of the syntax tree instead of HTML. But HTML is capable of representing the structural distinctions we need to make, and the choice of HTML for the tests makes it possible to run the tests against an implementation without writing an abstract syntax tree renderer.</p>
-<p>This document is generated from a text file, <code>spec.txt</code>, written in markdown with a small extension for the side-by-side tests. The script <code>spec2md.pl</code> can be used to turn <code>spec.txt</code> into pandoc markdown, which can then be converted into other formats.</p>
+<p>Since this document describes how Markdown is to be parsed into an abstract syntax tree, it would have made sense to use an abstract representation of the syntax tree instead of HTML. But HTML is capable of representing the structural distinctions we need to make, and the choice of HTML for the tests makes it possible to run the tests against an implementation without writing an abstract syntax tree renderer.</p>
+<p>This document is generated from a text file, <code>spec.txt</code>, written in Markdown with a small extension for the side-by-side tests. The script <code>spec2md.pl</code> can be used to turn <code>spec.txt</code> into pandoc Markdown, which can then be converted into other formats.</p>
 <p>In the examples, the <code>→</code> character is used to represent tabs.</p>
 <h1 id="preprocessing"><span class="header-section-number">2</span> Preprocessing</h1>
 <p>A <a href="#line">line</a> <a id="line"/> is a sequence of zero or more characters followed by a line ending (CR, LF, or CRLF) or by the end of file.</p>
@@ -219,7 +219,7 @@ Example 3
 <h2 id="container-blocks-and-leaf-blocks"><span class="header-section-number">3.2</span> Container blocks and leaf blocks</h2>
 <p>We can divide blocks into two types: <a href="#container-block">container blocks</a>, <a id="container-block"/> which can contain other blocks, and <a href="#leaf-block">leaf blocks</a>, <a id="leaf-block"/> which cannot.</p>
 <h1 id="leaf-blocks"><span class="header-section-number">4</span> Leaf blocks</h1>
-<p>This section describes the different kinds of leaf block that make up a markdown document.</p>
+<p>This section describes the different kinds of leaf block that make up a Markdown document.</p>
 <h2 id="horizontal-rules"><span class="header-section-number">4.1</span> Horizontal rules</h2>
 <p>A line consisting of 0-3 spaces of indentation, followed by a sequence of three or more matching <code>-</code>, <code>_</code>, or <code>*</code> characters, each followed optionally any number of spaces, forms a <a href="#horizontal-rule">horizontal rule</a>. <a id="horizontal-rule"/></p>
 <div id="example-4" class="example" data-section="Horizontal rules">
@@ -588,7 +588,7 @@ Example 39
 &lt;h3&gt;&lt;/h3&gt;</code></pre>
 </div>
 <h2 id="setext-headers"><span class="header-section-number">4.3</span> Setext headers</h2>
-<p>A <a href="#setext-header">setext header</a> <a id="setext-header"/> consists of a line of text, containing at least one nonspace character, with no more than 3 spaces indentation, followed by a <a href="#setext-header-underline">setext header underline</a>. A <a href="#setext-header-underline">setext header underline</a> <a id="setext-header-underline"/> is a sequence of <code>=</code> characters or a sequence of <code>-</code> characters, with no more than 3 spaces indentation and any number of trailing spaces. The header is a level 1 header if <code>=</code> characters are used, and a level 2 header if <code>-</code> characters are used. The contents of the header are the result of parsing the first line as markdown inline content.</p>
+<p>A <a href="#setext-header">setext header</a> <a id="setext-header"/> consists of a line of text, containing at least one nonspace character, with no more than 3 spaces indentation, followed by a <a href="#setext-header-underline">setext header underline</a>. A <a href="#setext-header-underline">setext header underline</a> <a id="setext-header-underline"/> is a sequence of <code>=</code> characters or a sequence of <code>-</code> characters, with no more than 3 spaces indentation and any number of trailing spaces. The header is a level 1 header if <code>=</code> characters are used, and a level 2 header if <code>-</code> characters are used. The contents of the header are the result of parsing the first line as Markdown inline content.</p>
 <p>In general, a setext header need not be preceded or followed by a blank line. However, it cannot interrupt a paragraph, so when a setext header comes after a paragraph, a blank line is needed between them.</p>
 <p>Simple examples:</p>
 <div id="example-40" class="example" data-section="Setext headers">
@@ -787,7 +787,7 @@ Example 54
   indented code block
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
-<p>The contents are literal text, and do not get parsed as markdown:</p>
+<p>The contents are literal text, and do not get parsed as Markdown:</p>
 <div id="example-55" class="example" data-section="Indented code blocks">
 <div class="examplenum">
 Example 55
@@ -1238,7 +1238,7 @@ Example 88
   *hello*
          &lt;foo&gt;&lt;a&gt;</code></pre>
 </div>
-<p>Here we have two code blocks with a markdown paragraph between them:</p>
+<p>Here we have two code blocks with a Markdown paragraph between them:</p>
 <div id="example-89" class="example" data-section="HTML blocks">
 <div class="examplenum">
 Example 89
@@ -1252,7 +1252,7 @@ Example 89
 &lt;p&gt;&lt;em&gt;Markdown&lt;/em&gt;&lt;/p&gt;
 &lt;/DIV&gt;</code></pre>
 </div>
-<p>In the following example, what looks like a markdown code block is actually part of the HTML block, which continues until a blank line or the end of the document is reached:</p>
+<p>In the following example, what looks like a Markdown code block is actually part of the HTML block, which continues until a blank line or the end of the document is reached:</p>
 <div id="example-90" class="example" data-section="HTML blocks">
 <div class="examplenum">
 Example 90
@@ -1372,7 +1372,7 @@ foo</code></pre>
 <pre class="html"><code>&lt;div class
 foo</code></pre>
 </div>
-<p>This rule differs from John Gruber’s original markdown syntax specification, which says:</p>
+<p>This rule differs from John Gruber’s original Markdown syntax specification, which says:</p>
 <blockquote>
 <p>The only restrictions are that block-level HTML elements — e.g. <code>&lt;div&gt;</code>, <code>&lt;table&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;p&gt;</code>, etc. — must be separated from surrounding content by blank lines, and the start and end tags of the block should not be indented with tabs or spaces.</p>
 </blockquote>
@@ -1382,8 +1382,8 @@ foo</code></pre>
 <li>It does not allow the start tag to be indented.</li>
 <li>It requires a matching end tag, which it also does not allow to be indented.</li>
 </ul>
-<p>Indeed, most markdown implementations, including some of Gruber’s own perl implementations, do not impose these restrictions.</p>
-<p>There is one respect, however, in which Gruber’s rule is more liberal than the one given here, since it allows blank lines to occur inside an HTML block. There are two reasons for disallowing them here. First, it removes the need to parse balanced tags, which is expensive and can require backtracking from the end of the document if no matching end tag is found. Second, it provides a very simple and flexible way of including markdown content inside HTML tags: simply separate the markdown from the HTML using blank lines:</p>
+<p>Indeed, most Markdown implementations, including some of Gruber’s own perl implementations, do not impose these restrictions.</p>
+<p>There is one respect, however, in which Gruber’s rule is more liberal than the one given here, since it allows blank lines to occur inside an HTML block. There are two reasons for disallowing them here. First, it removes the need to parse balanced tags, which is expensive and can require backtracking from the end of the document if no matching end tag is found. Second, it provides a very simple and flexible way of including Markdown content inside HTML tags: simply separate the Markdown from the HTML using blank lines:</p>
 <div id="example-98" class="example" data-section="HTML blocks">
 <div class="examplenum">
 Example 98
@@ -1409,8 +1409,8 @@ Example 99
 *Emphasized* text.
 &lt;/div&gt;</code></pre>
 </div>
-<p>Some markdown implementations have adopted a convention of interpreting content inside tags as text if the open tag has the attribute <code>markdown=1</code>. The rule given above seems a simpler and more elegant way of achieving the same expressive power, which is also much simpler to parse.</p>
-<p>The main potential drawback is that one can no longer paste HTML blocks into markdown documents with 100% reliability. However, <em>in most cases</em> this will work fine, because the blank lines in HTML are usually followed by HTML block tags. For example:</p>
+<p>Some Markdown implementations have adopted a convention of interpreting content inside tags as text if the open tag has the attribute <code>markdown=1</code>. The rule given above seems a simpler and more elegant way of achieving the same expressive power, which is also much simpler to parse.</p>
+<p>The main potential drawback is that one can no longer paste HTML blocks into Markdown documents with 100% reliability. However, <em>in most cases</em> this will work fine, because the blank lines in HTML are usually followed by HTML block tags. For example:</p>
 <div id="example-100" class="example" data-section="HTML blocks">
 <div class="examplenum">
 Example 100
@@ -1946,7 +1946,7 @@ Example 141
 &lt;p&gt;bar&lt;/p&gt;
 &lt;/blockquote&gt;</code></pre>
 </div>
-<p>(Most current markdown implementations, including John Gruber’s original <code>Markdown.pl</code>, will parse this example as a single block quote with two paragraphs. But it seems better to allow the author to decide whether two block quotes or one are wanted.)</p>
+<p>(Most current Markdown implementations, including John Gruber’s original <code>Markdown.pl</code>, will parse this example as a single block quote with two paragraphs. But it seems better to allow the author to decide whether two block quotes or one are wanted.)</p>
 <p>Consecutiveness means that if we put these block quotes together, we get a single block quote:</p>
 <div id="example-142" class="example" data-section="Block quotes">
 <div class="examplenum">
@@ -2660,7 +2660,7 @@ Example 185
 &lt;/ul&gt;</code></pre>
 </div>
 <h3 id="motivation"><span class="header-section-number">5.2.1</span> Motivation</h3>
-<p>John Gruber’s markdown spec says the following about list items:</p>
+<p>John Gruber’s Markdown spec says the following about list items:</p>
 <ol style="list-style-type: decimal">
 <li><p>“List markers typically start at the left margin, but may be indented by up to three spaces. List markers must be followed by one or more spaces or a tab.”</p></li>
 <li><p>“To make lists look nice, you can wrap items with hanging indents…. But if you don’t want to, you don’t have to.”</p></li>
@@ -2670,7 +2670,7 @@ Example 185
 <li><p>“To put a code block within a list item, the code block needs to be indented twice — 8 spaces or two tabs.”</p></li>
 </ol>
 <p>These rules specify that a paragraph under a list item must be indented four spaces (presumably, from the left margin, rather than the start of the list marker, but this is not said), and that code under a list item must be indented eight spaces instead of the usual four. They also say that a block quote must be indented, but not by how much; however, the example given has four spaces indentation. Although nothing is said about other kinds of block-level content, it is certainly reasonable to infer that <em>all</em> block elements under a list item, including other lists, must be indented four spaces. This principle has been called the <em>four-space rule</em>.</p>
-<p>The four-space rule is clear and principled, and if the reference implementation <code>Markdown.pl</code> had followed it, it probably would have become the standard. However, <code>Markdown.pl</code> allowed paragraphs and sublists to start with only two spaces indentation, at least on the outer level. Worse, its behavior was inconsistent: a sublist of an outer-level list needed two spaces indentation, but a sublist of this sublist needed three spaces. It is not surprising, then, that different implementations of markdown have developed very different rules for determining what comes under a list item. (Pandoc and python-markdown, for example, stuck with Gruber’s syntax description and the four-space rule, while discount, redcarpet, marked, PHP markdown, and others followed <code>Markdown.pl</code>’s behavior more closely.)</p>
+<p>The four-space rule is clear and principled, and if the reference implementation <code>Markdown.pl</code> had followed it, it probably would have become the standard. However, <code>Markdown.pl</code> allowed paragraphs and sublists to start with only two spaces indentation, at least on the outer level. Worse, its behavior was inconsistent: a sublist of an outer-level list needed two spaces indentation, but a sublist of this sublist needed three spaces. It is not surprising, then, that different implementations of Markdown have developed very different rules for determining what comes under a list item. (Pandoc and python-Markdown, for example, stuck with Gruber’s syntax description and the four-space rule, while discount, redcarpet, marked, PHP Markdown, and others followed <code>Markdown.pl</code>’s behavior more closely.)</p>
 <p>Unfortunately, given the divergences between implementations, there is no way to give a spec for list items that will be guaranteed not to break any existing documents. However, the spec given here should correctly handle lists formatted with either the four-space rule or the more forgiving <code>Markdown.pl</code> behavior, provided they are laid out in a way that is natural for a human to read.</p>
 <p>The strategy here is to let the width and indentation of the list marker determine the indentation necessary for blocks to fall under the list item, rather than having a fixed and arbitrary number. The writer can think of the body of the list item as a unit which gets indented to the right enough to fit the list marker (and any indentation on the list marker). (The laziness rule, #4, then allows continuation lines to be unindented if needed.)</p>
 <p>This rule is superior, we claim, to any rule requiring a fixed level of indentation from the margin. The four-space rule is clear but unnatural. It is quite unintuitive that</p>
@@ -2721,7 +2721,7 @@ Example 185
 <pre class="markdown"><code> 10. foo
 
    bar  </code></pre>
-<p>Arguably this text does read like a list item with <code>bar</code> as a subparagraph, which may count in favor of the proposal. However, on this proposal indented code would have to be indented six spaces after the list marker. And this would break a lot of existing markdown, which has the pattern:</p>
+<p>Arguably this text does read like a list item with <code>bar</code> as a subparagraph, which may count in favor of the proposal. However, on this proposal indented code would have to be indented six spaces after the list marker. And this would break a lot of existing Markdown, which has the pattern:</p>
 <pre class="markdown"><code>1.  foo
 
         indented code</code></pre>
@@ -3117,7 +3117,7 @@ Example 208
 <pre class="markdown"><code>\→\A\a\ \3\φ\«</code></pre>
 <pre class="html"><code>&lt;p&gt;\   \A\a\ \3\φ\«&lt;/p&gt;</code></pre>
 </div>
-<p>Escaped characters are treated as regular characters and do not have their usual markdown meanings:</p>
+<p>Escaped characters are treated as regular characters and do not have their usual Markdown meanings:</p>
 <div id="example-209" class="example" data-section="Backslash escapes">
 <div class="examplenum">
 Example 209
@@ -3436,7 +3436,7 @@ Example 244
 <pre class="html"><code>&lt;p&gt;`foo&lt;/p&gt;</code></pre>
 </div>
 <h2 id="emphasis-and-strong-emphasis"><span class="header-section-number">6.4</span> Emphasis and strong emphasis</h2>
-<p>John Gruber’s original <a href="http://daringfireball.net/projects/markdown/syntax#em">markdown syntax description</a> says:</p>
+<p>John Gruber’s original <a href="http://daringfireball.net/projects/markdown/syntax#em">Markdown syntax description</a> says:</p>
 <blockquote>
 <p>Markdown treats asterisks (<code>*</code>) and underscores (<code>_</code>) as indicators of emphasis. Text wrapped with one <code>*</code> or <code>_</code> will be wrapped with an HTML <code>&lt;em&gt;</code> tag; double <code>*</code>’s or <code>_</code>’s will be wrapped with an HTML <code>&lt;strong&gt;</code> tag.</p>
 </blockquote>
@@ -4101,7 +4101,7 @@ Example 324
 <pre class="html"><code>&lt;p&gt;***foo &lt;em&gt;bar&lt;/em&gt;&lt;/p&gt;</code></pre>
 </div>
 <h2 id="links"><span class="header-section-number">6.5</span> Links</h2>
-<p>A link contains a <a href="#link-label">link label</a> (the visible text), a <a href="#destination">destination</a> (the URI that is the link destination), and optionally a <a href="#link-title">link title</a>. There are two basic kinds of links in markdown. In <a href="#inline-links">inline links</a> the destination and title are given immediately after the label. In <a href="#reference-links">reference links</a> the destination and title are defined elsewhere in the document.</p>
+<p>A link contains a <a href="#link-label">link label</a> (the visible text), a <a href="#destination">destination</a> (the URI that is the link destination), and optionally a <a href="#link-title">link title</a>. There are two basic kinds of links in Markdown. In <a href="#inline-links">inline links</a> the destination and title are given immediately after the label. In <a href="#reference-links">reference links</a> the destination and title are defined elsewhere in the document.</p>
 <p>A <a href="#link-label">link label</a> <a id="link-label"/> consists of</p>
 <ul>
 <li>an opening <code>[</code>, followed by</li>
@@ -4212,7 +4212,7 @@ Example 335
 <pre class="markdown"><code>[link](&lt;foo(and(bar))&gt;)</code></pre>
 <pre class="html"><code>&lt;p&gt;&lt;a href=&quot;foo(and(bar))&quot;&gt;link&lt;/a&gt;&lt;/p&gt;</code></pre>
 </div>
-<p>Parentheses and other symbols can also be escaped, as usual in markdown:</p>
+<p>Parentheses and other symbols can also be escaped, as usual in Markdown:</p>
 <div id="example-336" class="example" data-section="Links">
 <div class="examplenum">
 Example 336
@@ -5205,7 +5205,7 @@ Example 441
 <p>Parsing has two phases:</p>
 <ol style="list-style-type: decimal">
 <li><p>In the first phase, lines of input are consumed and the block structure of the document—its division into paragraphs, block quotes, list items, and so on—is constructed. Text is assigned to these blocks but not parsed. Link reference definitions are parsed and a map of links is constructed.</p></li>
-<li><p>In the second phase, the raw text contents of paragraphs and headers are parsed into sequences of markdown inline elements (strings, code spans, links, emphasis, and so on), using the map of link references constructed in phase 1.</p></li>
+<li><p>In the second phase, the raw text contents of paragraphs and headers are parsed into sequences of Markdown inline elements (strings, code spans, links, emphasis, and so on), using the map of link references constructed in phase 1.</p></li>
 </ol>
 <h2 id="the-document-tree" class="unnumbered">The document tree</h2>
 <p>At each point in processing, the document is represented as a tree of <strong>blocks</strong>. The root of the tree is a <code>document</code> block. The <code>document</code> may have any number of other blocks as <strong>children</strong>. These children may, in turn, have other blocks a children. The last child of a block is normally considered <strong>open</strong>, meaning that subsequent lines of input can alter its contents. (Blocks that are not open are <strong>closed</strong>.) Here, for example, is a possible document tree, with the open blocks marked by arrows:</p>
@@ -5228,7 +5228,7 @@ Example 441
 <li>Text may be added to the last (deepest) open block remaining on the tree.</li>
 </ol>
 <p>Once a line has been incorporated into the tree in this way, it can be discarded, so input can be read in a stream.</p>
-<p>We can see how this works by considering how the tree above is generated by four lines of markdown:</p>
+<p>We can see how this works by considering how the tree above is generated by four lines of Markdown:</p>
 <pre class="markdown"><code>&gt; Lorem ipsum dolor
 sit amet.
 &gt; - Qui *quodsi iracundia*
