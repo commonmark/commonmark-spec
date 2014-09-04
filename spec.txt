@@ -269,7 +269,7 @@ Markdown document.
 
 A line consisting of 0-3 spaces of indentation, followed by a sequence
 of three or more matching `-`, `_`, or `*` characters, each followed
-optionally any number of spaces, forms a [horizontal
+optionally by any number of spaces, forms a [horizontal
 rule](#horizontal-rule). <a id="horizontal-rule"/>
 
 .
