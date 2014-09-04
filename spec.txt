@@ -1682,7 +1682,7 @@ them.
 
 [Foo bar]
 .
-<p><a href="my url" title="title">Foo bar</a></p>
+<p><a href="my%20url" title="title">Foo bar</a></p>
 .
 
 The title may be omitted:
@@ -1745,7 +1745,7 @@ case-insensitive (see [matches](#matches)).
 
 [αγω]
 .
-<p><a href="/φου">αγω</a></p>
+<p><a href="/%CF%86%CE%BF%CF%85">αγω</a></p>
 .
 
 Here is a link reference definition with no corresponding link.
@@ -3688,7 +3688,7 @@ raw HTML:
 .
 <http://google.com?find=\*>
 .
-<p><a href="http://google.com?find=\*">http://google.com?find=\*</a></p>
+<p><a href="http://google.com?find=%5C*">http://google.com?find=\*</a></p>
 .
 
 .

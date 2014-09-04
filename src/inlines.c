@@ -1,8 +1,8 @@
 #include <stdlib.h>
+#include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include <string.h>
 
 #include "stmd.h"
 #include "uthash.h"
@@ -18,7 +18,7 @@ typedef struct Subject {
 reference* lookup_reference(reference** refmap, chunk *label);
 reference* make_reference(chunk *label, chunk *url, chunk *title);
 
-static unsigned char *clean_url(chunk *url);
+static unsigned char *clean_url(chunk *url, int is_email);
 static unsigned char *clean_title(chunk *title);
 
 inline static unsigned char *chunk_to_cstr(chunk *c);
@@ -97,7 +97,7 @@ extern reference* make_reference(chunk *label, chunk *url, chunk *title)
 	reference *ref;
 	ref = malloc(sizeof(reference));
 	ref->label = normalize_reference(label);
-	ref->url = clean_url(url);
+	ref->url = clean_url(url, 0);
 	ref->title = clean_title(title);
 	return ref;
 }
@@ -116,14 +116,25 @@ extern void add_reference(reference** refmap, reference* ref)
 	}
 }
 
-// Create an inline with a linkable string value.
-inline static inl* make_linkable(int t, inl* label, chunk url, chunk title)
+inline static inl* make_link_from_reference(inl* label, reference *ref)
 {
 	inl* e = (inl*) malloc(sizeof(inl));
-	e->tag = t;
+	e->tag = INL_LINK;
 	e->content.linkable.label = label;
-	e->content.linkable.url   = chunk_to_cstr(&url);
-	e->content.linkable.title = title.len ? chunk_to_cstr(&title) : NULL;
+	e->content.linkable.url   = strdup(ref->url);
+	e->content.linkable.title = ref->title ? strdup(ref->title) : NULL;
+	e->next = NULL;
+	return e;
+}
+
+// Create an inline with a linkable string value.
+inline static inl* make_link(inl* label, chunk url, chunk title, int is_email)
+{
+	inl* e = (inl*) malloc(sizeof(inl));
+	e->tag = INL_LINK;
+	e->content.linkable.label = label;
+	e->content.linkable.url   = clean_url(&url, is_email);
+	e->content.linkable.title = clean_title(&title);
 	e->next = NULL;
 	return e;
 }
@@ -163,7 +174,6 @@ inline static inl* make_simple(int t)
 #define make_entity(s) make_literal(INL_ENTITY, s)
 #define make_linebreak() make_simple(INL_LINEBREAK)
 #define make_softbreak() make_simple(INL_SOFTBREAK)
-#define make_link(label, url, title) make_linkable(INL_LINK, label, url, title)
 #define make_emph(contents) make_inlines(INL_EMPH, contents)
 #define make_strong(contents) make_inlines(INL_STRONG, contents)
 
@@ -309,37 +319,27 @@ static int scan_to_closing_backticks(subject* subj, int openticklength)
 // space and newline characters into a single space.
 static void normalize_whitespace(gh_buf *s)
 {
-	/* TODO */
-#if 0
 	bool last_char_was_space = false;
-	int pos = 0;
-	char c;
-	while ((c = gh_buf_at(s, pos))) {
-		switch (c) {
-			case ' ':
-				if (last_char_was_space) {
-					bdelete(s, pos, 1);
-				} else {
-					pos++;
-				}
-				last_char_was_space = true;
+	int r, w;
+
+	for (r = 0, w = 0; r < s->size; ++r) {
+		switch (s->ptr[r]) {
+		case ' ':
+		case '\n':
+			if (last_char_was_space)
 				break;
-			case '\n':
-				if (last_char_was_space) {
-					bdelete(s, pos, 1);
-				} else {
-					bdelete(s, pos, 1);
-					binsertch(s, pos, 1, ' ');
-					pos++;
-				}
-				last_char_was_space = true;
-				break;
-			default:
-				pos++;
-				last_char_was_space = false;
+
+			s->ptr[w++] = ' ';
+			last_char_was_space = true;
+			break;
+
+		default:
+			s->ptr[w++] = s->ptr[r];
+			last_char_was_space = false;
 		}
 	}
-#endif
+
+	gh_buf_truncate(s, w);
 }
 
 // Parse backtick code section or raw backticks, return an inline.
@@ -593,16 +593,19 @@ extern void unescape_buffer(gh_buf *buf)
 
 // Clean a URL: remove surrounding whitespace and surrounding <>,
 // and remove \ that escape punctuation.
-static unsigned char *clean_url(chunk *url)
+static unsigned char *clean_url(chunk *url, int is_email)
 {
 	gh_buf buf = GH_BUF_INIT;
 
 	chunk_trim(url);
 
+	if (is_email)
+		gh_buf_puts(&buf, "mailto:");
+
 	if (url->data[0] == '<' && url->data[url->len - 1] == '>') {
-		gh_buf_set(&buf, url->data + 1, url->len - 2);
+		gh_buf_put(&buf, url->data + 1, url->len - 2);
 	} else {
-		gh_buf_set(&buf, url->data, url->len);
+		gh_buf_put(&buf, url->data, url->len);
 	}
 
 	unescape_buffer(&buf);
@@ -613,8 +616,13 @@ static unsigned char *clean_url(chunk *url)
 static unsigned char *clean_title(chunk *title)
 {
 	gh_buf buf = GH_BUF_INIT;
-	unsigned char first = title->data[0];
-	unsigned char last = title->data[title->len - 1];
+	unsigned char first, last;
+
+	if (title->len == 0)
+		return NULL;
+
+	first = title->data[0];
+	last = title->data[title->len - 1];
 
 	// remove surrounding quotes if any:
 	if ((first == '\'' && last == '\'') ||
@@ -647,25 +655,22 @@ static inl* handle_pointy_brace(subject* subj)
 		return make_link(
 			make_str_with_entities(&contents),
 			contents,
-			chunk_literal("")
+			chunk_literal(""),
+			0
 		);
 	}
 
 	// next try to match an email autolink
 	matchlen = scan_autolink_email(&subj->input, subj->pos);
 	if (matchlen > 0) {
-		gh_buf mail_url = GH_BUF_INIT;
-
 		contents = chunk_dup(&subj->input, subj->pos, matchlen - 1);
 		subj->pos += matchlen;
 
-		gh_buf_puts(&mail_url, "mailto:");
-		gh_buf_put(&mail_url, contents.data, contents.len);
-
 		return make_link(
 				make_str_with_entities(&contents),
-				chunk_buf_detach(&mail_url),
-				chunk_literal("")
+				contents,
+				chunk_literal(""),
+				1
 		);
 	}
 
@@ -790,7 +795,7 @@ static inl* handle_left_bracket(subject* subj)
 				title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
 				lab = parse_chunk_inlines(&rawlabel, NULL);
 
-				return make_link(lab, url, title);
+				return make_link(lab, url, title, 0);
 			} else {
 				// if we get here, we matched a label but didn't get further:
 				subj->pos = endlabel;
@@ -821,7 +826,7 @@ static inl* handle_left_bracket(subject* subj)
 			ref = lookup_reference(subj->reference_map, &reflabel);
 			if (ref != NULL) { // found
 				lab = parse_chunk_inlines(&rawlabel, NULL);
-				result = make_link(lab, chunk_literal(ref->url), chunk_literal(ref->title));
+				result = make_link_from_reference(lab, ref);
 			} else {
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->reference_map);

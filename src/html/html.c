@@ -50,17 +50,15 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 					cr(html);
 					gh_buf_puts(html, "<p>");
 					inlines_to_html(html, b->inline_content);
-					gh_buf_puts(html, "</p>");
-					cr(html);
+					gh_buf_puts(html, "</p>\n");
 				}
 				break;
 
 			case block_quote:
 				cr(html);
-				gh_buf_puts(html, "<blockquote>");
+				gh_buf_puts(html, "<blockquote>\n");
 				blocks_to_html(html, b->children, false);
-				gh_buf_puts(html, "</blockquote>");
-				cr(html);
+				gh_buf_puts(html, "</blockquote>\n");
 				break;
 
 			case list_item:
@@ -68,8 +66,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				gh_buf_puts(html, "<li>");
 				blocks_to_html(html, b->children, tight);
 				gh_buf_trim(html); /* TODO: rtrim */
-				gh_buf_puts(html, "</li>");
-				cr(html);
+				gh_buf_puts(html, "</li>\n");
 				break;
 
 			case list:
@@ -87,7 +84,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 
 				blocks_to_html(html, b->children, data->tight);
 				gh_buf_puts(html, data->list_type == bullet ? "</ul>" : "</ol>");
-				cr(html);
+				gh_buf_putc(html, '\n');
 				break;
 
 			case atx_header:
@@ -95,8 +92,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				cr(html);
 				gh_buf_printf(html, "<h%d>", b->attributes.header_level);
 				inlines_to_html(html, b->inline_content);
-				gh_buf_printf(html, "</h%d>", b->attributes.header_level);
-				cr(html);
+				gh_buf_printf(html, "</h%d>\n", b->attributes.header_level);
 				break;
 
 			case indented_code:
@@ -122,8 +118,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 
 				gh_buf_puts(html, "><code>");
 				escape_html(html, b->string_content.ptr, b->string_content.size);
-				gh_buf_puts(html, "</code></pre>");
-				cr(html);
+				gh_buf_puts(html, "</code></pre>\n");
 				break;
 
 			case html_block:
@@ -131,8 +126,7 @@ void blocks_to_html(gh_buf *html, block *b, bool tight)
 				break;
 
 			case hrule:
-				gh_buf_puts(html, "<hr />");
-				cr(html);
+				gh_buf_puts(html, "<hr />\n");
 				break;
 
 			case reference_def:
