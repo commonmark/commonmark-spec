@@ -2889,7 +2889,7 @@ continued here.</p>
 
 
 5.  **That's all.** Nothing that is not counted as a list item by rules
-    #1--4 counts as a [list item](#block-quote).
+    #1--4 counts as a [list item](#list-item).
 
 The rules for sublists follow from the general rules above.  A sublist
 must be indented the same number of spaces a paragraph would need to be
