@@ -864,7 +864,8 @@ Setext headers cannot be empty:
 
 An [indented code block](#indented-code-block)
 <a id="indented-code-block"></a> is composed of one or more
-[indented chunks](#indented-chunk) separated by blank lines.
+[indented chunks](#indented-chunk) separated by a blank line in
+the beggining and an empty line or unindented chunk in the end.
 An [indented chunk](#indented-chunk) <a id="indented-chunk"></a>
 is a sequence of non-blank lines, each indented four or more
 spaces.  An indented code block cannot interrupt a paragraph, so
