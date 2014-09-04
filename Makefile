@@ -45,7 +45,7 @@ $(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab
 	$(CC) $(LDFLAGS) -o $@ $^
 
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
-	re2c --case-insensitive -bis $< > $@
+	re2c --case-insensitive -bis $< > $@ || rm $@
 
 $(SRCDIR)/case_fold_switch.c: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
