@@ -8,21 +8,21 @@ date: 2014-07-21
 
 # Introduction
 
-## What is markdown?
+## What is Markdown?
 
 Markdown is a plain text format for writing structured documents,
 based on conventions used for indicating formatting in email and
 usenet posts.  It was developed in 2004 by John Gruber, who wrote
-the first markdown-to-HTML converter in perl, and it soon became
+the first Markdown-to-HTML converter in perl, and it soon became
 widely used in websites.  By 2014 there were dozens of
 implementations in many languages.  Some of them extended basic
-markdown syntax with conventions for footnotes, definition lists,
+Markdown syntax with conventions for footnotes, definition lists,
 tables, and other constructs, and some allowed output not just in
 HTML but in LaTeX and many other formats.
 
 ## Why is a spec needed?
 
-John Gruber's [canonical description of markdown's
+John Gruber's [canonical description of Markdown's
 syntax](http://daringfireball.net/projects/markdown/syntax)
 does not specify the syntax unambiguously.  Here are some examples of
 questions it does not answer:
@@ -95,7 +95,7 @@ questions it does not answer:
     ```
 
 7.  When list markers change from numbers to bullets, do we have
-    two lists or one?  (The markdown syntax description suggests two,
+    two lists or one?  (The Markdown syntax description suggests two,
     but the perl scripts and many other implementations produce one.)
 
     ``` markdown
@@ -162,20 +162,20 @@ Because there is no unambiguous spec, implementations have diverged
 considerably.  As a result, users are often surprised to find that
 a document that renders one way on one system (say, a github wiki)
 renders differently on another (say, converting to docbook using
-pandoc).  To make matters worse, because nothing in markdown counts
+pandoc).  To make matters worse, because nothing in Markdown counts
 as a "syntax error," the divergence often isn't discovered right away.
 
 ## About this document
 
-This document attempts to specify markdown syntax unambiguously.
-It contains many examples with side-by-side markdown and
+This document attempts to specify Markdown syntax unambiguously.
+It contains many examples with side-by-side Markdown and
 HTML.  These are intended to double as conformance tests.  An
 accompanying script `runtests.pl` can be used to run the tests
-against any markdown program:
+against any Markdown program:
 
     perl runtests.pl PROGRAM spec.html
 
-Since this document describes how markdown is to be parsed into
+Since this document describes how Markdown is to be parsed into
 an abstract syntax tree, it would have made sense to use an abstract
 representation of the syntax tree instead of HTML.  But HTML is capable
 of representing the structural distinctions we need to make, and the
@@ -183,9 +183,9 @@ choice of HTML for the tests makes it possible to run the tests against
 an implementation without writing an abstract syntax tree renderer.
 
 This document is generated from a text file, `spec.txt`, written
-in markdown with a small extension for the side-by-side tests.
+in Markdown with a small extension for the side-by-side tests.
 The script `spec2md.pl` can be used to turn `spec.txt` into pandoc
-markdown, which can then be converted into other formats.
+Markdown, which can then be converted into other formats.
 
 In the examples, the `→` character is used to represent tabs.
 
@@ -263,7 +263,7 @@ which can contain other blocks, and [leaf blocks](#leaf-block),
 # Leaf blocks
 
 This section describes the different kinds of leaf block that make up a
-markdown document.
+Markdown document.
 
 ## Horizontal rules
 
@@ -664,7 +664,7 @@ is a sequence of `=` characters or a sequence of `-` characters, with no
 more than 3 spaces indentation and any number of trailing
 spaces.  The header is a level 1 header if `=` characters are used, and
 a level 2 header if `-` characters are used.  The contents of the header
-are the result of parsing the first line as markdown inline content.
+are the result of parsing the first line as Markdown inline content.
 
 In general, a setext header need not be preceded or followed by a
 blank line.  However, it cannot interrupt a paragraph, so when a
@@ -883,7 +883,7 @@ attributes.
 </code></pre>
 .
 
-The contents are literal text, and do not get parsed as markdown:
+The contents are literal text, and do not get parsed as Markdown:
 
 .
     <a/>
@@ -1397,7 +1397,7 @@ okay.
          <foo><a>
 .
 
-Here we have two code blocks with a markdown paragraph between them:
+Here we have two code blocks with a Markdown paragraph between them:
 
 .
 <DIV CLASS="foo">
@@ -1411,7 +1411,7 @@ Here we have two code blocks with a markdown paragraph between them:
 </DIV>
 .
 
-In the following example, what looks like a markdown code block
+In the following example, what looks like a Markdown code block
 is actually part of the HTML block, which continues until a blank
 line or the end of the document is reached:
 
@@ -1535,7 +1535,7 @@ foo
 foo
 .
 
-This rule differs from John Gruber's original markdown syntax
+This rule differs from John Gruber's original Markdown syntax
 specification, which says:
 
 > The only restrictions are that block-level HTML elements —
@@ -1551,7 +1551,7 @@ here:
 - It requires a matching end tag, which it also does not allow to
   be indented.
 
-Indeed, most markdown implementations, including some of Gruber's
+Indeed, most Markdown implementations, including some of Gruber's
 own perl implementations, do not impose these restrictions.
 
 There is one respect, however, in which Gruber's rule is more liberal
@@ -1560,8 +1560,8 @@ an HTML block.  There are two reasons for disallowing them here.
 First, it removes the need to parse balanced tags, which is
 expensive and can require backtracking from the end of the document
 if no matching end tag is found. Second, it provides a very simple
-and flexible way of including markdown content inside HTML tags:
-simply separate the markdown from the HTML using blank lines:
+and flexible way of including Markdown content inside HTML tags:
+simply separate the Markdown from the HTML using blank lines:
 
 .
 <div>
@@ -1587,14 +1587,14 @@ Compare:
 </div>
 .
 
-Some markdown implementations have adopted a convention of
+Some Markdown implementations have adopted a convention of
 interpreting content inside tags as text if the open tag has
 the attribute `markdown=1`.  The rule given above seems a simpler and
 more elegant way of achieving the same expressive power, which is also
 much simpler to parse.
 
 The main potential drawback is that one can no longer paste HTML
-blocks into markdown documents with 100% reliability.  However,
+blocks into Markdown documents with 100% reliability.  However,
 *in most cases* this will work fine, because the blank lines in
 HTML are usually followed by HTML block tags.  For example:
 
@@ -2209,7 +2209,7 @@ A blank line always separates block quotes:
 </blockquote>
 .
 
-(Most current markdown implementations, including John Gruber's
+(Most current Markdown implementations, including John Gruber's
 original `Markdown.pl`, will parse this example as a single block quote
 with two paragraphs.  But it seems better to allow the author to decide
 whether two block quotes or one are wanted.)
@@ -3003,7 +3003,7 @@ A list item may be empty:
 
 ### Motivation
 
-John Gruber's markdown spec says the following about list items:
+John Gruber's Markdown spec says the following about list items:
 
 1. "List markers typically start at the left margin, but may be indented
    by up to three spaces. List markers must be followed by one or more
@@ -3043,10 +3043,10 @@ sublists to start with only two spaces indentation, at least on the
 outer level.  Worse, its behavior was inconsistent: a sublist of an
 outer-level list needed two spaces indentation, but a sublist of this
 sublist needed three spaces.  It is not surprising, then, that different
-implementations of markdown have developed very different rules for
-determining what comes under a list item.  (Pandoc and python-markdown,
+implementations of Markdown have developed very different rules for
+determining what comes under a list item.  (Pandoc and python-Markdown,
 for example, stuck with Gruber's syntax description and the four-space
-rule, while discount, redcarpet, marked, PHP markdown, and others
+rule, while discount, redcarpet, marked, PHP Markdown, and others
 followed `Markdown.pl`'s behavior more closely.)
 
 Unfortunately, given the divergences between implementations, there
@@ -3161,7 +3161,7 @@ is not indented as far as the first paragraph `foo`:
 Arguably this text does read like a list item with `bar` as a subparagraph,
 which may count in favor of the proposal.  However, on this proposal indented
 code would have to be indented six spaces after the list marker.  And this
-would break a lot of existing markdown, which has the pattern:
+would break a lot of existing Markdown, which has the pattern:
 
 ``` markdown
 1.  foo
@@ -3616,7 +3616,7 @@ backslashes:
 .
 
 Escaped characters are treated as regular characters and do
-not have their usual markdown meanings:
+not have their usual Markdown meanings:
 
 .
 \*not emphasized*
@@ -3970,7 +3970,7 @@ we just have literal backticks:
 
 ## Emphasis and strong emphasis
 
-John Gruber's original [markdown syntax
+John Gruber's original [Markdown syntax
 description](http://daringfireball.net/projects/markdown/syntax#em) says:
 
 > Markdown treats asterisks (`*`) and underscores (`_`) as indicators of
@@ -4637,7 +4637,7 @@ More cases with mismatched delimiters:
 A link contains a [link label](#link-label) (the visible text),
 a [destination](#destination) (the URI that is the link destination),
 and optionally a [link title](#link-title).  There are two basic kinds
-of links in markdown.  In [inline links](#inline-links) the destination
+of links in Markdown.  In [inline links](#inline-links) the destination
 and title are given immediately after the label.  In [reference
 links](#reference-links) the destination and title are defined elsewhere
 in the document.
@@ -4782,7 +4782,7 @@ or use the `<...>` form:
 .
 
 Parentheses and other symbols can also be escaped, as usual
-in markdown:
+in Markdown:
 
 .
 [link](foo\)\:)
@@ -5943,7 +5943,7 @@ blocks but not parsed. Link reference definitions are parsed and a
 map of links is constructed.
 
 2. In the second phase, the raw text contents of paragraphs and headers
-are parsed into sequences of markdown inline elements (strings,
+are parsed into sequences of Markdown inline elements (strings,
 code spans, links, emphasis, and so on), using the map of link
 references constructed in phase 1.
 
@@ -5988,7 +5988,7 @@ Once a line has been incorporated into the tree in this way,
 it can be discarded, so input can be read in a stream.
 
 We can see how this works by considering how the tree above is
-generated by four lines of markdown:
+generated by four lines of Markdown:
 
 ``` markdown
 > Lorem ipsum dolor
