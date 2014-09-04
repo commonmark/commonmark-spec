@@ -5952,7 +5952,7 @@ references constructed in phase 1.
 At each point in processing, the document is represented as a tree of
 **blocks**.  The root of the tree is a `document` block.  The `document`
 may have any number of other blocks as **children**.  These children
-may, in turn, have other blocks a children.  The last child of a block
+may, in turn, have other blocks as children.  The last child of a block
 is normally considered **open**, meaning that subsequent lines of input
 can alter its contents.  (Blocks that are not open are **closed**.)
 Here, for example, is a possible document tree, with the open blocks
@@ -6045,8 +6045,8 @@ The third line,
 
 causes the `paragraph` block to be closed, and a new `list` block
 opened as a child of the `block_quote`.  A `list_item` is also
-added as a child of the `list`, and a `paragraph` as a chid of
-the `list_item`.  The text is then added to the `paragraph`:
+added as a child of the `list`, and a `paragraph` as a child of
+the `list_item`.  The text is then added to the new `paragraph`:
 
 ``` tree
 -> document
