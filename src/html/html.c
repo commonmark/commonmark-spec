@@ -6,7 +6,6 @@
 
 #include "stmd.h"
 #include "debug.h"
-#include "scanners.h"
 #include "html/houdini.h"
 
 // Functions to convert block and inline lists to HTML strings.

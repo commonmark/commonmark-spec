@@ -752,11 +752,15 @@ static void incorporate_line(gh_buf *line, int line_number, block** curptr)
 			add_line(container, &input, offset);
 
 		} else if (container->tag == fenced_code) {
+			matched = 0;
 
-			matched = (indent <= 3
-					&& peek_at(&input, first_nonspace) == container->attributes.fenced_code_data.fence_char)
-				&& scan_close_code_fence(&input, first_nonspace,
-						container->attributes.fenced_code_data.fence_length);
+			if (indent <= 3 &&
+				peek_at(&input, first_nonspace) == container->attributes.fenced_code_data.fence_char) {
+				int fence_len = scan_close_code_fence(&input, first_nonspace);
+				if (fence_len > container->attributes.fenced_code_data.fence_length)
+					matched = 1;
+			}
+
 			if (matched) {
 				// if closing fence, don't add line to container; instead, close it:
 				finalize(container, line_number);
