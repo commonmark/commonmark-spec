@@ -57,6 +57,7 @@ bool is_blank(gh_buf *s, int offset)
 				return true;
 			case ' ':
 				offset++;
+				break;
 			default:
 				return false;
 		}
