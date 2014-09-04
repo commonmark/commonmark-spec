@@ -21,7 +21,6 @@ reference* make_reference(chunk *label, chunk *url, chunk *title);
 static unsigned char *clean_url(chunk *url, int is_email);
 static unsigned char *clean_title(chunk *title);
 
-inline static unsigned char *chunk_to_cstr(chunk *c);
 inline static void chunk_free(chunk *c);
 inline static void chunk_trim(chunk *c);
 
@@ -36,6 +35,8 @@ static int parse_inline(subject* subj, inl ** last);
 static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap);
 static void subject_from_buf(subject *e, gh_buf *buffer, reference** refmap);
 static int subject_find_special_char(subject *subj);
+
+static void normalize_whitespace(gh_buf *s);
 
 extern void free_reference(reference *ref) {
 	free(ref->label);
@@ -62,19 +63,10 @@ extern void free_reference_map(reference **refmap) {
 static unsigned char *normalize_reference(chunk *ref)
 {
 	gh_buf normalized = GH_BUF_INIT;
-	int r, w;
 
 	utf8proc_case_fold(&normalized, ref->data, ref->len);
 	gh_buf_trim(&normalized);
-
-	for (r = 0, w = 0; r < normalized.size; ++r) {
-		if (r && gh_buf_at(&normalized, r - 1) == ' ') {
-			while (gh_buf_at(&normalized, r) == ' ')
-				r++;
-		}
-
-		normalized.ptr[w++] = normalized.ptr[r];
-	}
+	normalize_whitespace(&normalized);
 
 	return gh_buf_detach(&normalized);
 }

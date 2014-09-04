@@ -191,10 +191,9 @@ void inlines_to_html(gh_buf *html, inl* ils)
 				escape_href(html, ils->content.linkable.url, -1);
 
 				inlines_to_html(&scrap, ils->content.inlines);
-				if (scrap.size) {
-					gh_buf_puts(html, "\" alt=\"");
+				gh_buf_puts(html, "\" alt=\"");
+				if (scrap.size)
 					escape_html(html, scrap.ptr, scrap.size);
-				}
 				gh_buf_clear(&scrap);
 
 				if (ils->content.linkable.title) {
