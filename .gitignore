@@ -24,6 +24,7 @@
 
 *~
 *.bak
+*.swp
 *.diff
 *#
 scanners.c
