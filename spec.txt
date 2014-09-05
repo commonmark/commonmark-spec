@@ -1282,9 +1282,9 @@ bar
 .
 
 An [info string](#info-string) can be provided after the opening code fence.
-Opening and closing spaces will be stripped, and the first word
-is used here to populate the `class` attribute of the enclosing
-`pre` tag.
+Opening and closing spaces will be stripped, and the first word, prefixed
+with `language-`, is used as the value for the `class` attribute of the
+`code` element within the enclosing `pre` element.
 
 .
 ```ruby
@@ -1293,7 +1293,7 @@ def foo(x)
 end
 ```
 .
-<pre class="ruby"><code>def foo(x)
+<pre><code class="language-ruby">def foo(x)
   return 3
 end
 </code></pre>
@@ -1306,7 +1306,7 @@ def foo(x)
 end
 ~~~~~~~
 .
-<pre class="ruby"><code>def foo(x)
+<pre><code class="language-ruby">def foo(x)
   return 3
 end
 </code></pre>
@@ -1316,7 +1316,7 @@ end
 ````;
 ````
 .
-<pre class=";"><code></code></pre>
+<pre><code class="language-;"></code></pre>
 .
 
 Info strings for backtick code blocks cannot contain backticks:
@@ -3716,7 +3716,7 @@ blocks](#fenced-code-block):
 foo
 ```
 .
-<pre class="foo+bar"><code>foo
+<pre><code class="language-foo+bar">foo
 </code></pre>
 .
 
@@ -3809,7 +3809,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 foo
 ```
 .
-<pre class="f&ouml;&ouml;"><code>foo
+<pre><code class="language-f&ouml;&ouml;">foo
 </code></pre>
 .
 
