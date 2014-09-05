@@ -210,9 +210,11 @@ Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 .
 
 .
-    οὐ→χρῆν
+    a→a
+    ὐ→a
 .
-<pre><code>οὐ  χρῆν
+<pre><code>a   a
+ὐ   a
 </code></pre>
 .
 
