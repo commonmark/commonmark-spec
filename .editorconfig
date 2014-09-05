@@ -10,5 +10,5 @@ indent_style = space
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.md]
+[{*.md,spec.txt}]
 trim_trailing_whitespace = false
