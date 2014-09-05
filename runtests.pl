@@ -5,13 +5,13 @@ use Term::ANSIColor;
 use IO::Handle;
 use IPC::Open2;
 
-my $usage="runtests.pl PROGRAM SPEC\nSet ANSI_COLORS_DISABLED=1 if you redirect to a file.\nSet PATT='...' to restrict tests to sections matching a regex.\n";
+my $usage="runtests.pl SPEC PROGRAM\nSet ANSI_COLORS_DISABLED=1 if you redirect to a file.\nSet PATT='...' to restrict tests to sections matching a regex.\n";
 
-my $PROG=$ARGV[0];
-my $SPEC=$ARGV[1];
+my $SPEC = shift @ARGV;
+my @PROG = @ARGV;
 my $PATT=$ENV{'PATT'};
 
-if (!(defined $PROG && defined $SPEC)) {
+if (!(@PROG && defined $SPEC)) {
   print STDERR $usage;
   exit 1;
 }
@@ -69,7 +69,7 @@ sub dotest
   # We use → to indicate tab and ␣ space in the spec
   $markdown =~ s/→/\t/g;s/␣/ /g;
   $html =~ s/→/\t/g;s/␣/ /g;
-  open2(my $out, my $in, $PROG);
+  open2(my $out, my $in, @PROG);
   print $in $markdown;
   close $in;
   flush $out;
