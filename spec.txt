@@ -203,15 +203,17 @@ to a certain encoding.
 Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 
 .
-foo→baz→→bim
+→foo→baz→→bim
 .
-<p>foo baz     bim</p>
+<pre><code>foo baz     bim
+</code></pre>
 .
 
 .
-οὐ→χρῆν
+    οὐ→χρῆν
 .
-<p>οὐ  χρῆν</p>
+<pre><code>οὐ  χρῆν
+</code></pre>
 .
 
 Line endings are replaced by newline characters (LF).
