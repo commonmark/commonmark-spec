@@ -4,7 +4,7 @@
 
 // Basic usage:
 //
-// var stmd = require('stmd');ret
+// var stmd = require('stmd');
 // var parser = new stmd.DocParser();
 // var renderer = new stmd.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
