@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "libstmd.h"
 
-#define TEST_STRING "Testing\n\nThis is a simple Test\n\nOf the library"
+#define TEST_STRING "# Testing\n\nThis is a simple Test\n\nOf the library"
 
 int main(int argc, char *argv[]) {
   char * ret;

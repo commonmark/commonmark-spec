@@ -748,10 +748,9 @@ extern int incorporate_line(bstring ln, int line_number, block** curptr)
 int stmd_process_block(char * s, size_t n, char ** ret, size_t * ret_len) {
   size_t len;
   char * pos;
-  struct tagbstring line;
   int linenum = 0;
 
-  bstring html;
+  bstring line = bfromcstr(""), html;
   block * cur = make_document();
 
   while(n) {
@@ -761,12 +760,13 @@ int stmd_process_block(char * s, size_t n, char ** ret, size_t * ret_len) {
     } else {
       len = n;
     }
-    btfromblk(line, s, len);
-    check(incorporate_line(&line, ++linenum, &cur) == 0, "error incorporating line %d", linenum);
+    bassignblk(line, s, len);
+    check(incorporate_line(line, ++linenum, &cur) == 0, "error incorporating line %d", linenum);
 
     s = pos;
     n -= len;
   }
+  bdestroy(line);
 
   while (cur != cur->top) {
     finalize(cur, linenum);
