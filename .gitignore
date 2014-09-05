@@ -31,3 +31,4 @@ scanners.c
 bstrlib.txt
 stmd.dSYM/*
 stmd
+lib_test

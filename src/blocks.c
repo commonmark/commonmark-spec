@@ -745,3 +745,46 @@ extern int incorporate_line(bstring ln, int line_number, block** curptr)
   return -1;
 }
 
+int stmd_process_block(char * s, size_t n, char ** ret, size_t * ret_len) {
+  size_t len;
+  char * pos;
+  struct tagbstring line;
+  int linenum = 0;
+
+  bstring html;
+  block * cur = make_document();
+
+  while(n) {
+    if((pos = memchr(s, '\n', n))) {
+      pos += 1;
+      len = pos - s;
+    } else {
+      len = n;
+    }
+    btfromblk(line, s, len);
+    check(incorporate_line(&line, ++linenum, &cur) == 0, "error incorporating line %d", linenum);
+
+    s = pos;
+    n -= len;
+  }
+
+  while (cur != cur->top) {
+    finalize(cur, linenum);
+    cur = cur->parent;
+  }
+  check(cur == cur->top, "problems finalizing open containers");
+  finalize(cur, linenum);
+  process_inlines(cur, cur->attributes.refmap);
+
+  check(blocks_to_html(cur, &html, false) == 0, "could not format as HTML");
+  *ret_len = blength(html);
+  check(*ret = malloc(*ret_len), "Could not malloc");
+  memcpy(*ret, html->data, *ret_len);
+  bdestroy(html);
+
+  free_blocks(cur);
+
+  return 1;
+error:
+  return 0;
+}
