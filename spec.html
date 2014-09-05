@@ -186,15 +186,17 @@ a.footnoteRef > sup {
 <div class="examplenum">
 Example 1
 </div>
-<pre class="markdown"><code>foo→baz→→bim</code></pre>
-<pre class="html"><code>&lt;p&gt;foo baz     bim&lt;/p&gt;</code></pre>
+<pre class="markdown"><code>→foo→baz→→bim</code></pre>
+<pre class="html"><code>&lt;pre&gt;&lt;code&gt;foo baz     bim
+&lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <div id="example-2" class="example" data-section="Preprocessing">
 <div class="examplenum">
 Example 2
 </div>
-<pre class="markdown"><code>οὐ→χρῆν</code></pre>
-<pre class="html"><code>&lt;p&gt;οὐ  χρῆν&lt;/p&gt;</code></pre>
+<pre class="markdown"><code>    οὐ→χρῆν</code></pre>
+<pre class="html"><code>&lt;pre&gt;&lt;code&gt;οὐ  χρῆν
+&lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <p>Line endings are replaced by newline characters (LF).</p>
 <p>A line containing only spaces (after tab expansion) followed by a line ending is called a <a href="#blank-line">blank line</a>. <a id="blank-line"></a></p>
@@ -220,7 +222,7 @@ Example 3
 <h1 id="leaf-blocks"><span class="header-section-number">4</span> Leaf blocks</h1>
 <p>This section describes the different kinds of leaf block that make up a Markdown document.</p>
 <h2 id="horizontal-rules"><span class="header-section-number">4.1</span> Horizontal rules</h2>
-<p>A line consisting of 0-3 spaces of indentation, followed by a sequence of three or more matching <code>-</code>, <code>_</code>, or <code>*</code> characters, each followed optionally any number of spaces, forms a <a href="#horizontal-rule">horizontal rule</a>. <a id="horizontal-rule"></a></p>
+<p>A line consisting of 0-3 spaces of indentation, followed by a sequence of three or more matching <code>-</code>, <code>_</code>, or <code>*</code> characters, each followed optionally by any number of spaces, forms a <a href="#horizontal-rule">horizontal rule</a>. <a id="horizontal-rule"></a></p>
 <div id="example-4" class="example" data-section="Horizontal rules">
 <div class="examplenum">
 Example 4
