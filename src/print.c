@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "bstrlib.h"
-#include "stmd.h"
-#include "debug.h"
+#include <bstrlib.h>
+#include <cm.h>
+#include <debug.h>
 
 static bstring format_str(bstring s)
 {

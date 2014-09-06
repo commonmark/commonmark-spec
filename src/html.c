@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "bstrlib.h"
-#include "stmd.h"
-#include "debug.h"
-#include "scanners.h"
+#include <bstrlib.h>
+#include <cm.h>
+#include <debug.h>
+#include <scanners.h>
 
 // Functions to convert block and inline lists to HTML strings.
 

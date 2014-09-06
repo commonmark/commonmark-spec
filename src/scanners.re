@@ -1,4 +1,4 @@
-#include "bstrlib.h"
+#include <cm.h>
 
 /*!re2c
   re2c:define:YYCTYPE  = "unsigned char";
@@ -55,7 +55,7 @@
 */
 
 // Try to match URI autolink after first <, returning number of chars matched.
-extern int scan_autolink_uri(bstring s, int pos)
+CM_API int scan_autolink_uri(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -67,7 +67,7 @@ extern int scan_autolink_uri(bstring s, int pos)
 }
 
 // Try to match email autolink after first <, returning num of chars matched.
-extern int scan_autolink_email(bstring s, int pos)
+CM_API int scan_autolink_email(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -83,7 +83,7 @@ extern int scan_autolink_email(bstring s, int pos)
 }
 
 // Try to match an HTML tag after first <, returning num of chars matched.
-extern int scan_html_tag(bstring s, int pos)
+CM_API int scan_html_tag(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -96,7 +96,7 @@ extern int scan_html_tag(bstring s, int pos)
 
 // Try to match an HTML block tag including first <,
 // returning num of chars matched.
-extern int scan_html_block_tag(bstring s, int pos)
+CM_API int scan_html_block_tag(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -113,7 +113,7 @@ extern int scan_html_block_tag(bstring s, int pos)
 // This may optionally be contained in <..>; otherwise
 // whitespace and unbalanced right parentheses aren't allowed.
 // Newlines aren't ever allowed.
-extern int scan_link_url(bstring s, int pos)
+CM_API int scan_link_url(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -128,7 +128,7 @@ extern int scan_link_url(bstring s, int pos)
 // Try to match a link title (in single quotes, in double quotes, or
 // in parentheses), returning number of chars matched.  Allow one
 // level of internal nesting (quotes within quotes).
-extern int scan_link_title(bstring s, int pos)
+CM_API int scan_link_title(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -142,7 +142,7 @@ extern int scan_link_title(bstring s, int pos)
 }
 
 // Match space characters, including newlines.
-extern int scan_spacechars(bstring s, int pos)
+CM_API int scan_spacechars(bstring s, int pos)
 {
   unsigned char * p = &(s->data[pos]);
   unsigned char * start = p;
@@ -153,7 +153,7 @@ extern int scan_spacechars(bstring s, int pos)
 }
 
 // Match ATX header start.
-extern int scan_atx_header_start(bstring s, int pos)
+CM_API int scan_atx_header_start(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -166,7 +166,7 @@ extern int scan_atx_header_start(bstring s, int pos)
 
 // Match sexext header line.  Return 1 for level-1 header,
 // 2 for level-2, 0 for no match.
-extern int scan_setext_header_line(bstring s, int pos)
+CM_API int scan_setext_header_line(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -180,7 +180,7 @@ extern int scan_setext_header_line(bstring s, int pos)
 // Scan a horizontal rule line: "...three or more hyphens, asterisks,
 // or underscores on a line by themselves. If you wish, you may use
 // spaces between the hyphens or asterisks."
-extern int scan_hrule(bstring s, int pos)
+CM_API int scan_hrule(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -194,7 +194,7 @@ extern int scan_hrule(bstring s, int pos)
 }
 
 // Scan an opening code fence.
-extern int scan_open_code_fence(bstring s, int pos)
+CM_API int scan_open_code_fence(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -207,7 +207,7 @@ extern int scan_open_code_fence(bstring s, int pos)
 }
 
 // Scan a closing code fence with length at least len.
-extern int scan_close_code_fence(bstring s, int pos, int len)
+CM_API int scan_close_code_fence(bstring s, int pos, int len)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
@@ -225,7 +225,7 @@ extern int scan_close_code_fence(bstring s, int pos, int len)
 
 // Scans an entity.
 // Returns number of chars matched.
-extern int scan_entity(bstring s, int pos)
+CM_API int scan_entity(bstring s, int pos)
 {
   unsigned char * marker = NULL;
   unsigned char * p = &(s->data[pos]);
