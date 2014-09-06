@@ -1,4 +1,4 @@
-#include "bstrlib.h"
+#include <bstrlib.h>
 
 // UTF-8 aware detab:  assumes s has no newlines, or only a final newline.
 // Return 0 on success, BSTR_ERR if invalid UTF-8.

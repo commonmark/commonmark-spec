@@ -1,6 +1,6 @@
 #ifndef HAVE_SCANNERS_H
 #define HAVE_SCANNERS_H
-#include <stmd.h>
+#include <cm.h>
 #include <bstrlib.h>
 
 STMD_API int scan_autolink_uri(bstring s, int pos);

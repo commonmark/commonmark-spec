@@ -1,7 +1,7 @@
 SUBDIRS=src
 
 test: spec.txt
-	perl runtests.pl $< $(abs_builddir)/stmd
+	perl runtests.pl $< $(abs_srcdir)/src/cm
 	
 spec: test spec.html
 

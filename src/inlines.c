@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "bstrlib.h"
-#include "stmd.h"
-#include "uthash.h"
-#include "debug.h"
-#include "scanners.h"
-#include "utf8.h"
+#include <bstrlib.h>
+#include <cm.h>
+#include <uthash.h>
+#include <debug.h>
+#include <scanners.h>
+#include <utf8.h>
 
 extern void free_reference(reference *ref) {
   bdestroy(ref->label);

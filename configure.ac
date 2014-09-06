@@ -1,4 +1,4 @@
-AC_INIT([stmd], [0.1], [stmd@stmd.com])
+AC_INIT([cm], [0.1], [issues@commonmark.org])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
 AC_PROG_CC

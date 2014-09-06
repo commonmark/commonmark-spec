@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "bstrlib.h"
-#include "stmd.h"
-#include "uthash.h"
-#include "debug.h"
-#include "scanners.h"
+#include <cm.h>
+#include <uthash.h>
+#include <debug.h>
+#include <scanners.h>
 
 STMD_API block* make_block(int tag, int start_line, int start_column)
 {

@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "bstrlib.h"
-#include "debug.h"
+#include <bstrlib.h>
+#include <debug.h>
 
 #define advance(s) \
   s++; \
