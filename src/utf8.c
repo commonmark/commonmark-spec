@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "stmd.h"
+#include "utf8.h"
 
 static const int8_t utf8proc_utf8class[256] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -22,6 +22,12 @@ static const int8_t utf8proc_utf8class[256] = {
 	2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+static void encode_unknown(strbuf *buf)
+{
+	static const unsigned char repl[] = {239, 191, 189};
+	strbuf_put(buf, repl, 3);
+}
 
 ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
 {
@@ -44,6 +50,46 @@ ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
 	}
 
 	return length;
+}
+
+void utf8proc_detab(strbuf *ob, const unsigned char *line, size_t size)
+{
+	static const unsigned char whitespace[] = "    ";
+
+	size_t i = 0, tab = 0;
+
+	while (i < size) {
+		size_t org = i;
+
+		while (i < size && line[i] != '\t' && line[i] <= 0x80) {
+			i++; tab++;
+		}
+
+		if (i > org)
+			strbuf_put(ob, line + org, i - org);
+
+		if (i >= size)
+			break;
+
+		if (line[i] == '\t') {
+			int numspaces = 4 - (tab % 4);
+			strbuf_put(ob, whitespace, numspaces);
+			i += 1;
+			tab += numspaces;
+		} else {
+			ssize_t charlen = utf8proc_charlen(line + i, size - i);
+
+			if (charlen < 0) {
+				encode_unknown(ob);
+				i++;
+			} else {
+				strbuf_put(ob, line + i, charlen);
+				i += charlen;
+			}
+
+			tab += 1;
+		}
+	}
 }
 
 ssize_t utf8proc_iterate(const uint8_t *str, ssize_t str_len, int32_t *dst)
@@ -89,9 +135,9 @@ void utf8proc_encode_char(int32_t uc, strbuf *buf)
 	unsigned char dst[4];
 	int len = 0;
 
-	if (uc < 0x00) {
-		assert(false);
-	} else if (uc < 0x80) {
+	assert(uc >= 0);
+
+	if (uc < 0x80) {
 		dst[0] = uc;
 		len = 1;
 	} else if (uc < 0x800) {
@@ -116,7 +162,8 @@ void utf8proc_encode_char(int32_t uc, strbuf *buf)
 		dst[3] = 0x80 + (uc & 0x3F);
 		len = 4;
 	} else {
-		assert(false);
+		encode_unknown(buf);
+		return;
 	}
 
 	strbuf_put(buf, dst, len);
@@ -133,7 +180,7 @@ void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len)
 		ssize_t char_len = utf8proc_iterate(str, len, &c);
 
 		if (char_len < 0) {
-			bufpush(0xFFFD);
+			encode_unknown(dest);
 			continue;
 		}
 

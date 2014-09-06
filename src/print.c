@@ -145,11 +145,6 @@ extern void print_inlines(node_inl* ils, int indent)
 			print_str(ils->content.literal.data, ils->content.literal.len);
 			putchar('\n');
 			break;
-		case INL_ENTITY:
-			printf("entity ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
-			putchar('\n');
-			break;
 		case INL_LINK:
 		case INL_IMAGE:
 			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");

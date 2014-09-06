@@ -166,7 +166,6 @@ void inlines_to_html(strbuf *html, node_inl* ils)
 				break;
 
 			case INL_RAW_HTML:
-			case INL_ENTITY:
 				strbuf_put(html,
 						ils->content.literal.data,
 						ils->content.literal.len);

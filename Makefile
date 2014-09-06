@@ -1,5 +1,5 @@
-CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -O3 -Wall -Werror
+CFLAGS=-g -pg -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
+LDFLAGS=-g -pg -O3 -Wall -Werror
 SRCDIR=src
 DATADIR=data
 
@@ -41,17 +41,20 @@ testjs: spec.txt
 benchjs:
 	node js/bench.js ${BENCHINP}
 
-HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o
+HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o $(SRCDIR)/html/houdini_html_u.o
 STMD_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o
 
-$(PROG): $(SRCDIR)/main.c $(HTML_OBJ) $(STMD_OBJ)
-	$(CC) $(LDFLAGS) -o $@ $^
+$(PROG): $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc $(HTML_OBJ) $(STMD_OBJ) $(SRCDIR)/main.c
+	$(CC) $(LDFLAGS) -o $@ $(HTML_OBJ) $(STMD_OBJ) $(SRCDIR)/main.c
 
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -bis $< > $@ || (rm $@ && false)
 
 $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
+
+$(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
+	gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 $< > $@
 
 .PHONY: leakcheck clean fuzztest dingus upload
 

@@ -5,6 +5,8 @@
 #include <ctype.h>
 
 #include "stmd.h"
+#include "html/houdini.h"
+#include "utf8.h"
 #include "uthash.h"
 #include "scanners.h"
 
@@ -176,7 +178,6 @@ inline static node_inl* make_simple(int t)
 #define make_str(s) make_literal(INL_STRING, s)
 #define make_code(s) make_literal(INL_CODE, s)
 #define make_raw_html(s) make_literal(INL_RAW_HTML, s)
-#define make_entity(s) make_literal(INL_ENTITY, s)
 #define make_linebreak() make_simple(INL_LINEBREAK)
 #define make_softbreak() make_simple(INL_SOFTBREAK)
 #define make_emph(contents) make_inlines(INL_EMPH, contents)
@@ -191,7 +192,6 @@ extern void free_inlines(node_inl* e)
 			case INL_STRING:
 			case INL_RAW_HTML:
 			case INL_CODE:
-			case INL_ENTITY:
 				chunk_free(&e->content.literal);
 				break;
 			case INL_LINEBREAK:
@@ -540,45 +540,34 @@ static node_inl* handle_backslash(subject *subj)
 // Assumes the subject has an '&' character at the current position.
 static node_inl* handle_entity(subject* subj)
 {
-	int match;
-	node_inl *result;
-	match = scan_entity(&subj->input, subj->pos);
-	if (match) {
-		result = make_entity(chunk_dup(&subj->input, subj->pos, match));
-		subj->pos += match;
-	} else {
-		advance(subj);
-		result = make_str(chunk_literal("&"));
-	}
-	return result;
+	strbuf ent = GH_BUF_INIT;
+	size_t len;
+
+	advance(subj);
+
+	len = houdini_unescape_ent(&ent,
+		subj->input.data + subj->pos,
+		subj->input.len - subj->pos
+	);
+
+	if (len == 0)
+		return make_str(chunk_literal("&"));
+
+	subj->pos += len;
+	return make_str(chunk_buf_detach(&ent));
 }
 
 // Like make_str, but parses entities.
 // Returns an inline sequence consisting of str and entity elements.
 static node_inl *make_str_with_entities(chunk *content)
 {
-	node_inl *result = NULL;
-	node_inl *new;
-	int searchpos;
-	char c;
-	subject subj;
+	strbuf unescaped = GH_BUF_INIT;
 
-	subject_from_chunk(&subj, content, NULL);
-
-	while ((c = peek_char(&subj))) {
-		switch (c) {
-			case '&':
-				new = handle_entity(&subj);
-				break;
-			default:
-				searchpos = chunk_strchr(&subj.input, '&', subj.pos);
-				new = make_str(chunk_dup(&subj.input, subj.pos, searchpos - subj.pos));
-				subj.pos = searchpos;
-		}
-		result = append_inlines(result, new);
+	if (houdini_unescape_html(&unescaped, content->data, (size_t)content->len)) {
+		return make_str(chunk_buf_detach(&unescaped));
+	} else {
+		return make_str(*content);
 	}
-
-	return result;
 }
 
 // Destructively unescape a string: remove backslashes before punctuation chars.
@@ -611,9 +600,9 @@ static unsigned char *clean_url(chunk *url, int is_email)
 		strbuf_puts(&buf, "mailto:");
 
 	if (url->data[0] == '<' && url->data[url->len - 1] == '>') {
-		strbuf_put(&buf, url->data + 1, url->len - 2);
+		houdini_unescape_html_f(&buf, url->data + 1, url->len - 2);
 	} else {
-		strbuf_put(&buf, url->data, url->len);
+		houdini_unescape_html_f(&buf, url->data, url->len);
 	}
 
 	unescape_buffer(&buf);
@@ -636,9 +625,9 @@ static unsigned char *clean_title(chunk *title)
 	if ((first == '\'' && last == '\'') ||
 		(first == '(' && last == ')') ||
 		(first == '"' && last == '"')) {
-		strbuf_set(&buf, title->data + 1, title->len - 2);
+		houdini_unescape_html_f(&buf, title->data + 1, title->len - 2);
 	} else {
-		strbuf_set(&buf, title->data, title->len);
+		houdini_unescape_html_f(&buf, title->data, title->len);
 	}
 
 	unescape_buffer(&buf);

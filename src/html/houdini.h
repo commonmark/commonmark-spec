@@ -25,9 +25,11 @@ extern "C" {
 #define HOUDINI_ESCAPED_SIZE(x) (((x) * 12) / 10)
 #define HOUDINI_UNESCAPED_SIZE(x) (x)
 
+extern size_t houdini_unescape_ent(strbuf *ob, const uint8_t *src, size_t size);
 extern int houdini_escape_html(strbuf *ob, const uint8_t *src, size_t size);
 extern int houdini_escape_html0(strbuf *ob, const uint8_t *src, size_t size, int secure);
 extern int houdini_unescape_html(strbuf *ob, const uint8_t *src, size_t size);
+extern void houdini_unescape_html_f(strbuf *ob, const uint8_t *src, size_t size);
 extern int houdini_escape_xml(strbuf *ob, const uint8_t *src, size_t size);
 extern int houdini_escape_uri(strbuf *ob, const uint8_t *src, size_t size);
 extern int houdini_escape_url(strbuf *ob, const uint8_t *src, size_t size);

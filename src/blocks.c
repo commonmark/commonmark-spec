@@ -5,6 +5,8 @@
 #include <ctype.h>
 
 #include "stmd.h"
+#include "utf8.h"
+#include "html/houdini.h"
 #include "scanners.h"
 #include "uthash.h"
 
@@ -184,7 +186,7 @@ static void finalize(node_block* b, int line_number)
 			firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
 			strbuf_init(&b->attributes.fenced_code_data.info, 0);
-			strbuf_set(
+			houdini_unescape_html_f(
 				&b->attributes.fenced_code_data.info,
 				b->string_content.ptr,
 				firstlinelen
@@ -369,31 +371,6 @@ static int lists_match(struct ListData list_data,
 			list_data.bullet_char == item_data.bullet_char);
 }
 
-static void expand_tabs(strbuf *ob, const unsigned char *line, size_t size)
-{
-	size_t  i = 0, tab = 0;
-
-	while (i < size) {
-		size_t org = i;
-
-		while (i < size && line[i] != '\t') {
-			i++; tab++;
-		}
-
-		if (i > org)
-			strbuf_put(ob, line + org, i - org);
-
-		if (i >= size)
-			break;
-
-		do {
-			strbuf_putc(ob, ' '); tab++;
-		} while (tab % 4);
-
-		i++;
-	}
-}
-
 static node_block *finalize_document(node_block *document, int linenum)
 {
 	while (document != document->top) {
@@ -415,7 +392,7 @@ extern node_block *stmd_parse_file(FILE *f)
 	node_block *document = make_document();
 
 	while (fgets((char *)buffer, sizeof(buffer), f)) {
-		expand_tabs(&line, buffer, strlen((char *)buffer));
+		utf8proc_detab(&line, buffer, strlen((char *)buffer));
 		incorporate_line(&line, linenum, &document);
 		strbuf_clear(&line);
 		linenum++;
@@ -436,10 +413,10 @@ extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len)
 		const unsigned char *eol = memchr(buffer, '\n', end - buffer);
 
 		if (!eol) {
-			expand_tabs(&line, buffer, end - buffer);
+			utf8proc_detab(&line, buffer, end - buffer);
 			buffer = end;
 		} else {
-			expand_tabs(&line, buffer, (eol - buffer) + 1);
+			utf8proc_detab(&line, buffer, (eol - buffer) + 1);
 			buffer += (eol - buffer) + 1;
 		}
 

@@ -17,7 +17,6 @@ struct node_inl {
 		INL_LINEBREAK,
 		INL_CODE,
 		INL_RAW_HTML,
-		INL_ENTITY,
 		INL_EMPH,
 		INL_STRONG,
 		INL_LINK,
@@ -132,7 +131,5 @@ void print_blocks(node_block* blk, int indent);
 
 void blocks_to_html(strbuf *html, node_block *b, bool tight);
 void inlines_to_html(strbuf *html, node_inl *b);
-
-void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len);
 
 #endif
