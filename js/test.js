@@ -12,9 +12,9 @@ var passed = 0;
 var failed = 0;
 
 var showSpaces = function(s) {
-    var t = s;
-    return t.replace(/\t/g,'→')
-      .replace(/ /g,'␣');
+  var t = s;
+  return t.replace(/\t/g,'→')
+    .replace(/ /g,'␣');
 };
 
 fs.readFile('spec.txt', 'utf8', function(err, data) {
