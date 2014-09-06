@@ -20,8 +20,9 @@ typedef struct Subject {
 reference* lookup_reference(reference** refmap, chunk *label);
 reference* make_reference(chunk *label, chunk *url, chunk *title);
 
-static unsigned char *clean_url(chunk *url, int is_email);
+static unsigned char *clean_url(chunk *url);
 static unsigned char *clean_title(chunk *title);
+static unsigned char *clean_autolink(chunk *url, int is_email);
 
 inline static void chunk_free(chunk *c);
 inline static void chunk_trim(chunk *c);
@@ -91,7 +92,7 @@ extern reference* make_reference(chunk *label, chunk *url, chunk *title)
 	reference *ref;
 	ref = malloc(sizeof(reference));
 	ref->label = normalize_reference(label);
-	ref->url = clean_url(url, 0);
+	ref->url = clean_url(url);
 	ref->title = clean_title(title);
 	return ref;
 }
@@ -123,27 +124,31 @@ static unsigned char *bufdup(const unsigned char *buf)
 	return new;
 }
 
-inline static node_inl* make_link_from_reference(node_inl* label, reference *ref)
+static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned char *title)
 {
 	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
 	e->tag = INL_LINK;
 	e->content.linkable.label = label;
-	e->content.linkable.url   = bufdup(ref->url);
-	e->content.linkable.title = bufdup(ref->title);
+	e->content.linkable.url   = url;
+	e->content.linkable.title = title;
 	e->next = NULL;
 	return e;
 }
 
-// Create an inline with a linkable string value.
-inline static node_inl* make_link(node_inl* label, chunk url, chunk title, int is_email)
+inline static node_inl* make_ref_link(node_inl* label, reference *ref)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = INL_LINK;
-	e->content.linkable.label = label;
-	e->content.linkable.url   = clean_url(&url, is_email);
-	e->content.linkable.title = clean_title(&title);
-	e->next = NULL;
-	return e;
+	return make_link_(label, bufdup(ref->url), bufdup(ref->title));
+}
+
+inline static node_inl* make_autolink(node_inl* label, chunk url, int is_email)
+{
+	return make_link_(label, clean_autolink(&url, is_email), NULL);
+}
+
+// Create an inline with a linkable string value.
+inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
+{
+	return make_link_(label, clean_url(&url), clean_title(&title));
 }
 
 inline static node_inl* make_inlines(int t, node_inl* contents)
@@ -587,7 +592,26 @@ extern void unescape_buffer(strbuf *buf)
 
 // Clean a URL: remove surrounding whitespace and surrounding <>,
 // and remove \ that escape punctuation.
-static unsigned char *clean_url(chunk *url, int is_email)
+static unsigned char *clean_url(chunk *url)
+{
+	strbuf buf = GH_BUF_INIT;
+
+	chunk_trim(url);
+
+	if (url->len == 0)
+		return NULL;
+
+	if (url->data[0] == '<' && url->data[url->len - 1] == '>') {
+		houdini_unescape_html_f(&buf, url->data + 1, url->len - 2);
+	} else {
+		houdini_unescape_html_f(&buf, url->data, url->len);
+	}
+
+	unescape_buffer(&buf);
+	return strbuf_detach(&buf);
+}
+
+static unsigned char *clean_autolink(chunk *url, int is_email)
 {
 	strbuf buf = GH_BUF_INIT;
 
@@ -599,13 +623,7 @@ static unsigned char *clean_url(chunk *url, int is_email)
 	if (is_email)
 		strbuf_puts(&buf, "mailto:");
 
-	if (url->data[0] == '<' && url->data[url->len - 1] == '>') {
-		houdini_unescape_html_f(&buf, url->data + 1, url->len - 2);
-	} else {
-		houdini_unescape_html_f(&buf, url->data, url->len);
-	}
-
-	unescape_buffer(&buf);
+	houdini_unescape_html_f(&buf, url->data, url->len);
 	return strbuf_detach(&buf);
 }
 
@@ -649,11 +667,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		contents = chunk_dup(&subj->input, subj->pos, matchlen - 1);
 		subj->pos += matchlen;
 
-		return make_link(
+		return make_autolink(
 			make_str_with_entities(&contents),
-			contents,
-			chunk_literal(""),
-			0
+			contents, 0
 		);
 	}
 
@@ -663,11 +679,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		contents = chunk_dup(&subj->input, subj->pos, matchlen - 1);
 		subj->pos += matchlen;
 
-		return make_link(
+		return make_autolink(
 				make_str_with_entities(&contents),
-				contents,
-				chunk_literal(""),
-				1
+				contents, 1
 		);
 	}
 
@@ -792,7 +806,7 @@ static node_inl* handle_left_bracket(subject* subj)
 				title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
 				lab = parse_chunk_inlines(&rawlabel, NULL);
 
-				return make_link(lab, url, title, 0);
+				return make_link(lab, url, title);
 			} else {
 				// if we get here, we matched a label but didn't get further:
 				subj->pos = endlabel;
@@ -823,7 +837,7 @@ static node_inl* handle_left_bracket(subject* subj)
 			ref = lookup_reference(subj->reference_map, &reflabel);
 			if (ref != NULL) { // found
 				lab = parse_chunk_inlines(&rawlabel, NULL);
-				result = make_link_from_reference(lab, ref);
+				result = make_ref_link(lab, ref);
 			} else {
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->reference_map);

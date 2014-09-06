@@ -3688,7 +3688,7 @@ raw HTML:
 .
 <http://google.com?find=\*>
 .
-<p><a href="http://google.com?find=\*">http://google.com?find=\*</a></p>
+<p><a href="http://google.com?find=%5C*">http://google.com?find=\*</a></p>
 .
 
 .
@@ -3727,25 +3727,37 @@ foo
 
 ## Entities
 
-Entities are parsed as entities, not as literal text, in all contexts
-except code spans and code blocks. Three kinds of entities are recognized.
+With the goal of making this standard as HTML-agnostic as possible, all HTML valid HTML Entities in any
+context are recognized as such and converted into their actual values (i.e. the UTF8 characters representing
+the entity itself) before they are stored in the AST.
+
+This allows implementations that target HTML output to trivially escape the entities when generating HTML,
+and simplifies the job of implementations targetting other languages, as these will only need to handle the
+UTF8 chars and need not be HTML-entity aware.
 
 [Named entities](#name-entities) <a id="named-entities"></a> consist of `&`
-+ a string of 2-32 alphanumerics beginning with a letter + `;`.
++ any of the valid HTML5 entity names + `;`. The [following document](http://www.whatwg.org/specs/web-apps/current-work/multipage/entities.json)
+is used as an authoritative source of the valid entity names and their corresponding codepoints.
+
+Conforming implementations that target Markdown don't need to generate entities for all the valid
+named entities that exist, with the exception of `"` (`&quot;`), `&` (`&amp;`), `<` (`&lt;`) and `>` (`&gt;`),
+which always need to be written as entities for security reasons.
 
 .
 &nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral;
 .
-<p>&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral;</p>
+<p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
 .
 
 [Decimal entities](#decimal-entities) <a id="decimal-entities"></a>
-consist of `&#` + a string of 1--8 arabic digits + `;`.
+consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these entities need to be recognised
+and tranformed into their corresponding UTF8 codepoints. Invalid Unicode codepoints will be written
+as the "unknown codepoint" character (`0xFFFD`)
 
 .
-&#1; &#35; &#1234; &#992; &#98765432;
+&#35; &#1234; &#992; &#98765432;
 .
-<p>&#1; &#35; &#1234; &#992; &#98765432;</p>
+<p># Ӓ Ϡ �</p>
 .
 
 [Hexadecimal entities](#hexadecimal-entities) <a id="hexadecimal-entities"></a>
@@ -3767,7 +3779,7 @@ Here are some nonentities:
 .
 
 Although HTML5 does accept some entities without a trailing semicolon
-(such as `&copy`), these are not recognized as entities here:
+(such as `&copy`), these are not recognized as entities here, because it makes the grammar too ambiguous:
 
 .
 &copy
@@ -3775,13 +3787,12 @@ Although HTML5 does accept some entities without a trailing semicolon
 <p>&amp;copy</p>
 .
 
-On the other hand, many strings that are not on the list of HTML5
-named entities are recognized as entities here:
+Strings that are not on the list of HTML5 named entities are not recognized as entities either:
 
 .
 &MadeUpEntity;
 .
-<p>&MadeUpEntity;</p>
+<p>&amp;MadeUpEntity;</p>
 .
 
 Entities are recognized in any context besides code spans or
