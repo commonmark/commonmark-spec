@@ -1,8 +1,8 @@
 ---
-title: Standard markdown
+title: CommonMark
 ...
 
-Standard markdown is a [specification of markdown
+CommonMark is a [specification of markdown
 syntax](http://jgm.github.io/stmd/spec.html), together with
 BSD3-licensed implementations (`stmd`) in C and javascript. The source
 for the spec and the two implementations can be found in [this
