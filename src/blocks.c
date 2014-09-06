@@ -8,7 +8,7 @@
 #include "debug.h"
 #include "scanners.h"
 
-static block* make_block(int tag, int start_line, int start_column)
+STMD_API block* make_block(int tag, int start_line, int start_column)
 {
   block* e;
   e = (block*) malloc(sizeof(block));
@@ -31,7 +31,7 @@ static block* make_block(int tag, int start_line, int start_column)
 }
 
 // Create a root document block.
-extern block* make_document()
+STMD_API block* make_document()
 {
   block * e = make_block(document, 1, 1);
   reference * map = NULL;
@@ -145,7 +145,7 @@ static int break_out_of_lists(block ** bptr, int line_number)
 }
 
 
-extern int finalize(block* b, int line_number)
+STMD_API int finalize(block* b, int line_number)
 {
   int firstlinelen;
   int pos;
@@ -231,7 +231,7 @@ extern int finalize(block* b, int line_number)
 }
 
 // Add a block as child of another.  Return pointer to child.
-extern block* add_child(block* parent,
+STMD_API block* add_child(block* parent,
                         int block_type, int start_line, int start_column)
 {
   // if 'parent' isn't the kind of block that can accept this child,
@@ -261,7 +261,7 @@ extern block* add_child(block* parent,
 }
 
 // Free a block list and any children.
-extern void free_blocks(block* e)
+STMD_API void free_blocks(block* e)
 {
   block * next;
   while (e != NULL) {
@@ -386,7 +386,7 @@ static int lists_match(struct ListData list_data,
 // Process one line at a time, modifying a block.
 // Returns 0 if successful.  curptr is changed to point to
 // the currently open block.
-extern int incorporate_line(bstring ln, int line_number, block** curptr)
+STMD_API int incorporate_line(bstring ln, int line_number, block** curptr)
 {
   block* last_matched_container;
   int offset = 0;
