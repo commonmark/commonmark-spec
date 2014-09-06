@@ -34,7 +34,7 @@ if test $HAVE_PANDOC == "no"; then
     AC_MSG_ERROR([pandoc cannot be found in PATH, please install it])
 fi
 
-AC_CHECK_PROG(HAVE_RE2C, re2c, [found], [found])
+AC_CHECK_PROG(HAVE_RE2C, re2c, [found], [no])
 
 if test $HAVE_RE2C == "no"; then
     AC_MSG_ERROR([re2c cannot be found in PATH, please install it])
