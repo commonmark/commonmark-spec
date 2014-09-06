@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var util = require('util');
 var stmd = require('./stmd');
-var ansi = require('./ansi/ansi')
+var ansi = require('./ansi/ansi');
 var cursor = ansi(process.stdout);
 
 var writer = new stmd.HtmlRenderer();
@@ -13,21 +12,25 @@ var passed = 0;
 var failed = 0;
 
 var showSpaces = function(s) {
-  var t = s;
-  return t.replace(/\t/g,'→')
-   .replace(/ /g,'␣');
-}
+    var t = s;
+    return t.replace(/\t/g,'→')
+      .replace(/ /g,'␣');
+};
 
 fs.readFile('spec.txt', 'utf8', function(err, data) {
   if (err) {
     return console.log(err);
   }
+  var i;
   var examples = [];
   var current_section = "";
   var example_number = 0;
-  tests = data.replace(/^<!-- END TESTS -->(.|[\n])*/m,'');
+  var tests = data
+    .replace(/\r\n?/g, "\n") // Normalize newlines for platform independence
+    .replace(/^<!-- END TESTS -->(.|[\n])*/m, '');
+
   tests.replace(/^\.\n([\s\S]*?)^\.\n([\s\S]*?)^\.$|^#{1,6} *(.*)$/gm,
-        function(_,x,y,z,w){
+        function(_,x,y,z){
           if (z) {
             current_section = z;
           } else {
@@ -45,7 +48,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
 
   for (i = 0; i < examples.length; i++) {
     var example = examples[i];
-    if (example.section != current_section) {
+    if (example.section !== current_section) {
       if (current_section !== '') {
         cursor.write('\n');
       }
@@ -53,7 +56,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
       cursor.reset().write(current_section).reset().write('  ');
     }
     var actual = writer.renderBlock(reader.parse(example.markdown.replace(/→/g, '\t')));
-    if (actual == example.html) {
+    if (actual === example.html) {
       passed++;
       cursor.green().write('✓').reset();
     } else {
