@@ -7,12 +7,12 @@
 #define VERSION "0.1"
 #define CODE_INDENT 4
 
-#ifdef PHP_WIN32
-# define STMD_API __declspec(dllexport)
+#ifdef _WIN32
+# define CM_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-# define STMD_API __attribute__ ((visibility("default")))
+# define CM_API __attribute__ ((visibility("default")))
 #else
-# define STMD_API
+# define CM_API
 #endif
 
 typedef struct Inline {
@@ -99,33 +99,33 @@ typedef struct Block {
   struct Block *     prev;
 } block;
 
-STMD_API int parse_inline(subject* subj, inl ** last);
-STMD_API inl* parse_inlines(bstring input, reference** refmap);
-STMD_API inl* parse_inlines_while(subject* subj, int (*f)(subject*));
-STMD_API void free_inlines(inl* e);
-STMD_API int parse_reference(bstring input, reference** refmap);
-STMD_API void free_reference(reference *ref);
-STMD_API void free_reference_map(reference **refmap);
-STMD_API reference* make_reference(bstring label, bstring url, bstring title);
-STMD_API reference* lookup_reference(reference** refmap, bstring label);
-STMD_API void add_reference(reference** refmap, reference* ref);
-STMD_API int unescape(bstring s);
+CM_API int parse_inline(subject* subj, inl ** last);
+CM_API inl* parse_inlines(bstring input, reference** refmap);
+CM_API inl* parse_inlines_while(subject* subj, int (*f)(subject*));
+CM_API void free_inlines(inl* e);
+CM_API int parse_reference(bstring input, reference** refmap);
+CM_API void free_reference(reference *ref);
+CM_API void free_reference_map(reference **refmap);
+CM_API reference* make_reference(bstring label, bstring url, bstring title);
+CM_API reference* lookup_reference(reference** refmap, bstring label);
+CM_API void add_reference(reference** refmap, reference* ref);
+CM_API int unescape(bstring s);
 
-STMD_API block* make_document();
-STMD_API block* add_child(block* parent,
+CM_API block* make_document();
+CM_API block* add_child(block* parent,
                         int block_type, int start_line, int start_column);
-STMD_API void free_blocks(block* e);
+CM_API void free_blocks(block* e);
 
 // FOR NOW:
-STMD_API int process_inlines(block* cur, reference** refmap);
-STMD_API int incorporate_line(bstring ln, int line_number, block** curptr);
-STMD_API int finalize(block* b, int line_number);
+CM_API int process_inlines(block* cur, reference** refmap);
+CM_API int incorporate_line(bstring ln, int line_number, block** curptr);
+CM_API int finalize(block* b, int line_number);
 
-STMD_API void print_inlines(inl* ils, int indent);
-STMD_API void print_blocks(block* blk, int indent);
+CM_API void print_inlines(inl* ils, int indent);
+CM_API void print_blocks(block* blk, int indent);
 
-STMD_API int blocks_to_html(block* b, bstring* result, bool tight);
-STMD_API int inlines_to_html(inl* b, bstring* result);
+CM_API int blocks_to_html(block* b, bstring* result, bool tight);
+CM_API int inlines_to_html(inl* b, bstring* result);
 
-STMD_API int bdetab(bstring s, int utf8);
+CM_API int bdetab(bstring s, int utf8);
 #endif
