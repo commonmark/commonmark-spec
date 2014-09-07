@@ -156,15 +156,15 @@ extern int blocks_to_html(block* b, bstring* result, bool tight)
     case fenced_code:
       escaped = escape_html(b->string_content, false);
       cr(html);
-      bformata(html, "<pre");
+      bformata(html, "<pre><code");
       if (blength(b->attributes.fenced_code_data.info) > 0) {
         escaped2 = escape_html(b->attributes.fenced_code_data.info, true);
         info_words = bsplit(escaped2, ' ');
-        bformata(html, " class=\"%s\"", info_words->entry[0]->data);
+        bformata(html, " class=\"language-%s\"", info_words->entry[0]->data);
         bdestroy(escaped2);
         bstrListDestroy(info_words);
       }
-      bformata(html, "><code>%s</code></pre>", escaped->data);
+      bformata(html, ">%s</code></pre>", escaped->data);
       cr(html);
       bdestroy(escaped);
       break;

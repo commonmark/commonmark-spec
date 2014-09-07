@@ -1478,9 +1478,10 @@ var renderBlock = function(block, in_tight_list) {
     case 'FencedCode':
       info_words = block.info.split(/ +/);
       attr = info_words.length === 0 || info_words[0].length === 0 ?
-                   [] : [['class',this.escape(info_words[0],true)]];
-      return inTags('pre', attr,
-              inTags('code', [], this.escape(block.string_content)));
+                   [] : [['class','language-' +
+                                   this.escape(info_words[0],true)]];
+      return inTags('pre', [],
+              inTags('code', attr, this.escape(block.string_content)));
     case 'HtmlBlock':
       return block.string_content;
     case 'ReferenceDef':
