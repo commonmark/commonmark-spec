@@ -342,7 +342,7 @@ var parseEmphasis = function(inlines) {
       if (res.numdelims >= 1 && res.numdelims <= 3 && res.can_close &&
             res.numdelims != first_close_delims) {
         if (res.numdelims === 3) {
-          // If we opened with ***, then we interpret *** as * followed by **
+          // If we opened with ***, then we interpret *** as ** followed by *
           // giving us <strong><em>
           res.numdelims = 1;
         }
