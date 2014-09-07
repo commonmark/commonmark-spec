@@ -21,7 +21,7 @@ var IN_PARENS = '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\)';
 var REG_CHAR = '[^\\\\()\\x00-\\x20]';
 var IN_PARENS_NOSP = '\\((' + REG_CHAR + '|' + ESCAPED_CHAR + ')*\\)';
 var TAGNAME = '[A-Za-z][A-Za-z0-9]*';
-var BLOCKTAGNAME = '(?:article|header|aside|hgroup|blockquote|hr|body|li|br|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
+var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
 var ATTRIBUTENAME = '[a-zA-Z_:][a-zA-Z0-9:._-]*';
 var UNQUOTEDVALUE = "[^\"'=<>`\\x00-\\x20]+";
 var SINGLEQUOTEDVALUE = "'[^']*'";
@@ -54,10 +54,10 @@ var reLinkTitle = new RegExp(
     '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\))');
 
 var reLinkDestinationBraces = new RegExp(
-    '[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>]');
+    '^(?:[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>])');
 
 var reLinkDestination = new RegExp(
-    '(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
+    '^(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
 
 var reEscapable = new RegExp(ESCAPABLE);
 
@@ -71,7 +71,7 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.
-var reMain = /[\n`\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+/m;
+var reMain = /^(?:[\n`\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+)/m;
 
 // UTILITY FUNCTIONS
 
