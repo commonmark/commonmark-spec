@@ -1,14 +1,14 @@
 CommonMark
 ==========
 
-CommonMark is a [specification of markdown syntax][the spec],
+CommonMark is a [specification of Markdown syntax][the spec],
 together with BSD3-licensed implementations (`stmd`) in C and javascript.
 
 The implementations
 -------------------
 
 The C implementation provides both a library and a standalone program
-`stmd` that converts markdown to HTML.  It is written in standard C99
+`stmd` that converts Markdown to HTML.  It is written in standard C99
 and has no library dependencies.  (However, if you check it out from the
 repository, you'll need [`re2c`](http://re2c.org) to generate
 `scanners.c` from `scanners.re`.  This is only a build dependency for
@@ -30,7 +30,7 @@ this.)
 
 [The spec] contains over 400 embedded examples which serve as conformance
 tests.  To run the tests for `stmd`, do `make test`.  To run them for
-another markdown program, say `myprog`, do `make test PROG=myprog`.  To
+another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `stmd.js`, do `make testjs`.
 
 [The spec]:  http://jgm.github.io/stmd/spec.html
@@ -38,11 +38,11 @@ run the tests for `stmd.js`, do `make testjs`.
 The spec
 --------
 
-The source of [the spec] is `spec.txt`.  This is basically a markdown
+The source of [the spec] is `spec.txt`.  This is basically a Markdown
 file, with code examples written in a shorthand form:
 
     .
-    markdown source
+    Markdown source
     .
     expected HTML output
     .
@@ -55,7 +55,7 @@ The spec is written from the point of view of the human writer, not
 the computer reader.  It is not an algorithm---an English translation of
 a computer program---but a declarative description of what counts as a block
 quote, a code block, and each of the other structural elements that can
-make up a markdown document.
+make up a Markdown document.
 
 Because John Gruber's [canonical syntax
 description](http://daringfireball.net/projects/markdown/syntax) leaves
@@ -64,13 +64,13 @@ making a large number of decisions, many of them somewhat arbitrary.
 In making them, I have appealed to existing conventions and
 considerations of simplicity, readability, expressive power, and
 consistency.  I have tried to ensure that "normal" documents in the many
-incompatible existing implementations of markdown will render, as far as
+incompatible existing implementations of Markdown will render, as far as
 possible, as their authors intended.  And I have tried to make the rules
 for different elements work together harmoniously.  In places where
 different decisions could have been made (for example, the rules
 governing list indentation), I have explained the rationale for
 my choices.  In a few cases, I have departed slightly from the canonical
-syntax description, in ways that I think further the goals of markdown
+syntax description, in ways that I think further the goals of Markdown
 as stated in that description.
 
 For the most part, I have limited myself to the basic elements
@@ -80,17 +80,17 @@ right before considering such things. However, I have included a visible
 syntax for line breaks and fenced code blocks.
 
 In all of this, I have been guided by eight years experience writing
-markdown implementations in several languages, including the first
-markdown parser not based on regular expression substitutions
+Markdown implementations in several languages, including the first
+Markdown parser not based on regular expression substitutions
 ([pandoc](http://github.com/jgm/pandoc)) and the first markdown parsers
 based on PEG grammars
 ([peg-markdown](http://github.com/jgm/peg-markdown),
 [lunamark](http://github.com/jgm/lunamark)). Maintaining these projects
 and responding to years of user feedback have given me a good sense of
-the complexities involved in parsing markdown, and of the various design
+the complexities involved in parsing Markdown, and of the various design
 decisions that can be made.  I have also explored differences between
-markdown implementations extensively using [babelmark
+Markdown implementations extensively using [babelmark
 2](http://johnmacfarlane.net/babelmark2/).  In the early phases of
 working out the spec, I benefited greatly from collaboration with David
-Greenspan, and from feedback from several industrial users of markdown,
+Greenspan, and from feedback from several industrial users of Markdown,
 including Jeff Atwood, Vincent Marti, and Neil Williams.
