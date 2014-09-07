@@ -54,10 +54,10 @@ var reLinkTitle = new RegExp(
     '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\))');
 
 var reLinkDestinationBraces = new RegExp(
-    '[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>]');
+    '^(?:[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>])');
 
 var reLinkDestination = new RegExp(
-    '(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
+    '^(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
 
 var reEscapable = new RegExp(ESCAPABLE);
 
