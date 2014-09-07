@@ -672,6 +672,13 @@ var parseReference = function(s, refmap) {
 // Parse the next inline element in subject, advancing subject position
 // and adding the result to 'inlines'.
 var parseInline = function(inlines) {
+  var startpos = this.pos;
+  var memoized = this.memo[startpos];
+  if (memoized) {
+      inlines.push(memoized.inlines);
+      this.pos += memoized.len;
+      return memoized.len;
+  }
   var c = this.peek();
   var res;
   switch(c) {
@@ -703,7 +710,13 @@ var parseInline = function(inlines) {
     break;
   default:
   }
-  return res || this.parseString(inlines);
+  if (!res) {
+    res = this.parseString(inlines);
+  }
+  if (res > 0) {
+    this.memo[startpos] = { inlines: inlines[inlines.length - 1], len: res };
+  }
+  return res;
 };
 
 // Parse s as a list of inlines, using refmap to resolve references.
@@ -711,6 +724,7 @@ var parseInlines = function(s, refmap) {
   this.subject = s;
   this.pos = 0;
   this.refmap = refmap || {};
+  this.memo = {};
   var inlines = [];
   while (this.parseInline(inlines)) ;
   return inlines;
@@ -723,6 +737,7 @@ function InlineParser(){
     label_nest_level: 0, // used by parseLinkLabel method
     pos: 0,
     refmap: {},
+    memo: {},
     match: match,
     peek: peek,
     spnl: spnl,
