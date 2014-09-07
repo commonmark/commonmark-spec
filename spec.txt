@@ -1351,7 +1351,7 @@ An [HTML block tag](#html-block-tag) <a id="html-block-tag"></a> is
 an [open tag](#open-tag) or [closing tag](#closing-tag) whose tag
 name is one of the following (case-insensitive):
 `article`, `header`, `aside`, `hgroup`, `blockquote`, `hr`, `body`,
-`li`, `br`, `map`, `button`, `object`, `canvas`, `ol`, `caption`,
+`li`, `map`, `button`, `object`, `canvas`, `ol`, `caption`,
 `output`, `col`, `p`, `colgroup`, `pre`, `dd`, `progress`, `div`,
 `section`, `dl`, `table`, `td`, `dt`, `tbody`, `embed`, `textarea`,
 `fieldset`, `tfoot`, `figcaption`, `th`, `figure`, `thead`, `footer`,

@@ -21,7 +21,7 @@ var IN_PARENS = '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\)';
 var REG_CHAR = '[^\\\\()\\x00-\\x20]';
 var IN_PARENS_NOSP = '\\((' + REG_CHAR + '|' + ESCAPED_CHAR + ')*\\)';
 var TAGNAME = '[A-Za-z][A-Za-z0-9]*';
-var BLOCKTAGNAME = '(?:article|header|aside|hgroup|blockquote|hr|body|li|br|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
+var BLOCKTAGNAME = '(?:article|header|aside|hgroup|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
 var ATTRIBUTENAME = '[a-zA-Z_:][a-zA-Z0-9:._-]*';
 var UNQUOTEDVALUE = "[^\"'=<>`\\x00-\\x20]+";
 var SINGLEQUOTEDVALUE = "'[^']*'";
