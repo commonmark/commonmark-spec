@@ -220,8 +220,8 @@ Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 
 Line endings are replaced by newline characters (LF).
 
-A line containing only spaces (after tab expansion) followed by
-a line ending is called a [blank line](#blank-line).
+A line containing no characters, or a line containing only spaces (after
+tab expansion), is called a [blank line](#blank-line).
 <a id="blank-line"></a>
 
 # Blocks and inlines
