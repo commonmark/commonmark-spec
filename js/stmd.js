@@ -346,6 +346,13 @@ var parseEmphasis = function(inlines) {
           // giving us <strong><em>
           res.numdelims = 1;
         }
+
+        if (first_close_delims === 1) {
+          res.numdelims = 2;
+        } else if (first_close_delims === 2) {
+          res.numdelims = 1;
+        }
+
         this.pos += res.numdelims;
 
         if (first_close > 0) { // if we've already passed the first closer:
