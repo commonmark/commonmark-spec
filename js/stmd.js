@@ -1,4 +1,4 @@
-// stmd.js - "standard markdown" in javascript
+// stmd.js - CommomMark in javascript
 // Copyright (C) 2014 John MacFarlane
 // License: BSD3.
 

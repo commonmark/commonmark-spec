@@ -17,8 +17,8 @@ stmd [*options*] [file\*]
 
 `stmd` acts as a pipe, reading from stdin or from the specified
 files and writing to stdout.  It converts markdown formatted plain
-text to HTML, using the conventions described in the standard
-markdown spec.
+text to HTML, using the conventions described in the CommonMark
+spec.
 
 # OPTIONS
 

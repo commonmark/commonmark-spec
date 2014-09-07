@@ -1,7 +1,7 @@
-Standard markdown
+CommonMark
 =================
 
-Standard markdown is a [specification of markdown syntax][the spec],
+CommonMark is a [specification of markdown syntax][the spec],
 together with BSD3-licensed implementations (`stmd`) in C and javascript.
 
 The implementations
