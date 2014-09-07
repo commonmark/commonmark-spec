@@ -1,4 +1,4 @@
-// stmd.js - CommomMark in javascript
+// stmd.js - CommonMark in javascript
 // Copyright (C) 2014 John MacFarlane
 // License: BSD3.
 
