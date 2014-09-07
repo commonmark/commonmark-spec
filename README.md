@@ -1,5 +1,5 @@
 CommonMark
-=================
+==========
 
 CommonMark is a [specification of markdown syntax][the spec],
 together with BSD3-licensed implementations (`stmd`) in C and javascript.
