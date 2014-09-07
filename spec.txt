@@ -4561,6 +4561,18 @@ similarly for `_` and `__`):
 <p><strong>foo</strong>*</p>
 .
 
+.
+***foo* bar***
+.
+<p><strong><em>foo</em> bar</strong>*</p>
+.
+
+.
+***foo** bar***
+.
+<p><em><strong>foo</strong> bar</em>**</p>
+.
+
 The following contains no strong emphasis, because the opening
 delimiter is closed by the first `*` before `bar`:
 
