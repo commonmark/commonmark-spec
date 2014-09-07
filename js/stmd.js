@@ -373,7 +373,7 @@ var parseEmphasis = function(inlines) {
     return (this.pos - startpos);
 
   default:
-    return result;
+    return res;
   }
 
   return 0;
@@ -382,7 +382,7 @@ var parseEmphasis = function(inlines) {
 // Attempt to parse link title (sans quotes), returning the string
 // or null if no match.
 var parseLinkTitle = function() {
-  title = this.match(reLinkTitle);
+  var title = this.match(reLinkTitle);
   if (title) {
     // chop off quotes from title and unescape:
     return unescape(title.substr(1, title.length - 2));
@@ -861,7 +861,7 @@ var parseListMarker = function(ln, offset) {
   } else {
     return null;
   }
-  blank_item = match[0].length === rest.length;
+  var blank_item = match[0].length === rest.length;
   if (spaces_after_marker >= 5 ||
       spaces_after_marker < 1 ||
       blank_item) {
@@ -926,7 +926,7 @@ var incorporateLine = function(ln, line_number) {
 
     switch (container.t) {
       case 'BlockQuote':
-        matched = indent <= 3 && ln[first_nonspace] === '>';
+        var matched = indent <= 3 && ln[first_nonspace] === '>';
         if (matched) {
           offset = first_nonspace + 1;
           if (ln[offset] === ' ') {
@@ -1234,7 +1234,7 @@ var finalize = function(block, line_number) {
   if (line_number > block.start_line) {
     block.end_line = line_number - 1;
   } else {
-    block_end_line = line_number;
+    block.end_line = line_number;
   }
 
   switch (block.t) {
