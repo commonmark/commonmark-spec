@@ -3,7 +3,7 @@ title: CommonMark Spec
 author:
 - John MacFarlane
 version: 1
-date: 2014-07-21
+date: 2014-09-06
 ...
 
 # Introduction
