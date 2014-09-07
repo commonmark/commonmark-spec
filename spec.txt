@@ -173,7 +173,7 @@ HTML.  These are intended to double as conformance tests.  An
 accompanying script `runtests.pl` can be used to run the tests
 against any Markdown program:
 
-    perl runtests.pl PROGRAM spec.html
+    perl runtests.pl spec.txt PROGRAM
 
 Since this document describes how Markdown is to be parsed into
 an abstract syntax tree, it would have made sense to use an abstract
