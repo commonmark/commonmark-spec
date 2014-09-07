@@ -54,12 +54,11 @@ extern void print_blocks(node_block* b, int indent)
 			print_blocks(b->children, indent + 2);
 			break;
 		case BLOCK_LIST_ITEM:
-			data = &(b->attributes.list_data);
 			printf("list_item\n");
 			print_blocks(b->children, indent + 2);
 			break;
 		case BLOCK_LIST:
-			data = &(b->attributes.list_data);
+			data = &(b->as.list);
 			if (data->list_type == ordered) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
 						(data->tight ? "true" : "false"),
@@ -73,11 +72,11 @@ extern void print_blocks(node_block* b, int indent)
 			print_blocks(b->children, indent + 2);
 			break;
 		case BLOCK_ATX_HEADER:
-			printf("atx_header (level=%d)\n", b->attributes.header_level);
+			printf("atx_header (level=%d)\n", b->as.header.level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
 		case BLOCK_SETEXT_HEADER:
-			printf("setext_header (level=%d)\n", b->attributes.header_level);
+			printf("setext_header (level=%d)\n", b->as.header.level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
 		case BLOCK_PARAGRAPH:
@@ -94,8 +93,8 @@ extern void print_blocks(node_block* b, int indent)
 			break;
 		case BLOCK_FENCED_CODE:
 			printf("fenced_code length=%d info=",
-				b->attributes.fenced_code_data.fence_length);
-			print_str(b->attributes.fenced_code_data.info.ptr, -1);
+				b->as.code.fence_length);
+			print_str(b->as.code.info.ptr, -1);
 			putchar(' ');
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');

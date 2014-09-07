@@ -96,14 +96,20 @@ struct node_block {
 	struct node_block* top;
 	strbuf string_content;
 	node_inl* inline_content;
+
 	union  {
-		struct ListData list_data;
-		struct FencedCodeData fenced_code_data;
-		int header_level;
-		reference** refmap;
-	}                     attributes;
-	struct node_block *     next;
-	struct node_block *     prev;
+		struct ListData list;
+		struct FencedCodeData code;
+		struct {
+			int level;
+		} header;
+		struct {
+			reference** refmap;
+		} document;
+	} as;
+
+	struct node_block *next;
+	struct node_block *prev;
 };
 
 typedef struct node_block node_block;

@@ -18,35 +18,32 @@ static void finalize(node_block* b, int line_number);
 static node_block* make_block(int tag, int start_line, int start_column)
 {
 	node_block* e;
-	e = (node_block*) malloc(sizeof(node_block));
+
+	e = malloc(sizeof(node_block));
+	memset(e, 0x0, sizeof(*e));
+
 	e->tag = tag;
 	e->open = true;
-	e->last_line_blank = false;
 	e->start_line = start_line;
 	e->start_column = start_column;
 	e->end_line = start_line;
-	e->children = NULL;
-	e->last_child = NULL;
-	e->parent = NULL;
-	e->top = NULL;
-	e->attributes.refmap = NULL;
 	strbuf_init(&e->string_content, 32);
-	e->inline_content = NULL;
-	e->next = NULL;
-	e->prev = NULL;
+
 	return e;
 }
 
 // Create a root document node_block.
 extern node_block* make_document()
 {
-	node_block * e = make_block(BLOCK_DOCUMENT, 1, 1);
-	reference * map = NULL;
+	node_block *e = make_block(BLOCK_DOCUMENT, 1, 1);
+	reference *map = NULL;
 	reference ** refmap;
+
 	refmap = (reference**) malloc(sizeof(reference*));
 	*refmap = map;
-	e->attributes.refmap = refmap;
+	e->as.document.refmap = refmap;
 	e->top = e;
+
 	return e;
 }
 
@@ -128,8 +125,8 @@ static bool ends_with_blank_line(node_block* node_block)
 // Break out of all containing lists
 static int break_out_of_lists(node_block ** bptr, int line_number)
 {
-	node_block * container = *bptr;
-	node_block * b = container->top;
+	node_block *container = *bptr;
+	node_block *b = container->top;
 	// find first containing BLOCK_LIST:
 	while (b && b->tag != BLOCK_LIST) {
 		b = b->last_child;
@@ -167,7 +164,7 @@ static void finalize(node_block* b, int line_number)
 		case BLOCK_PARAGRAPH:
 			pos = 0;
 			while (strbuf_at(&b->string_content, 0) == '[' &&
-					(pos = parse_reference(&b->string_content, b->top->attributes.refmap))) {
+					(pos = parse_reference(&b->string_content, b->top->as.document.refmap))) {
 
 				strbuf_drop(&b->string_content, pos);
 			}
@@ -185,27 +182,27 @@ static void finalize(node_block* b, int line_number)
 			// first line of contents becomes info
 			firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
-			strbuf_init(&b->attributes.fenced_code_data.info, 0);
+			strbuf_init(&b->as.code.info, 0);
 			houdini_unescape_html_f(
-				&b->attributes.fenced_code_data.info,
+				&b->as.code.info,
 				b->string_content.ptr,
 				firstlinelen
 			);
 
 			strbuf_drop(&b->string_content, firstlinelen + 1);
 
-			strbuf_trim(&b->attributes.fenced_code_data.info);
-			unescape_buffer(&b->attributes.fenced_code_data.info);
+			strbuf_trim(&b->as.code.info);
+			unescape_buffer(&b->as.code.info);
 			break;
 
 		case BLOCK_LIST: // determine tight/loose status
-			b->attributes.list_data.tight = true; // tight by default
+			b->as.list.tight = true; // tight by default
 			item = b->children;
 
 			while (item) {
 				// check for non-final non-empty list item ending with blank line:
 				if (item->last_line_blank && item->next) {
-					b->attributes.list_data.tight = false;
+					b->as.list.tight = false;
 					break;
 				}
 				// recurse into children of list item, to see if there are
@@ -214,12 +211,12 @@ static void finalize(node_block* b, int line_number)
 				while (subitem) {
 					if (ends_with_blank_line(subitem) &&
 							(item->next || subitem->next)) {
-						b->attributes.list_data.tight = false;
+						b->as.list.tight = false;
 						break;
 					}
 					subitem = subitem->next;
 				}
-				if (!(b->attributes.list_data.tight)) {
+				if (!(b->as.list.tight)) {
 					break;
 				}
 				item = item->next;
@@ -269,9 +266,9 @@ extern void free_blocks(node_block* e)
 		free_inlines(e->inline_content);
 		strbuf_free(&e->string_content);
 		if (e->tag == BLOCK_FENCED_CODE) {
-			strbuf_free(&e->attributes.fenced_code_data.info);
+			strbuf_free(&e->as.code.info);
 		} else if (e->tag == BLOCK_DOCUMENT) {
-			free_reference_map(e->attributes.refmap);
+			free_reference_map(e->as.document.refmap);
 		}
 		free_blocks(e->children);
 		free(e);
@@ -362,13 +359,12 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 }
 
 // Return 1 if list item belongs in list, else 0.
-static int lists_match(struct ListData list_data,
-		struct ListData item_data)
+static int lists_match(struct ListData *list_data, struct ListData *item_data)
 {
-	return (list_data.list_type == item_data.list_type &&
-			list_data.delimiter == item_data.delimiter &&
-			// list_data.marker_offset == item_data.marker_offset &&
-			list_data.bullet_char == item_data.bullet_char);
+	return (list_data->list_type == item_data->list_type &&
+			list_data->delimiter == item_data->delimiter &&
+			// list_data->marker_offset == item_data.marker_offset &&
+			list_data->bullet_char == item_data->bullet_char);
 }
 
 static node_block *finalize_document(node_block *document, int linenum)
@@ -379,7 +375,7 @@ static node_block *finalize_document(node_block *document, int linenum)
 	}
 
 	finalize(document, linenum);
-	process_inlines(document, document->attributes.refmap);
+	process_inlines(document, document->as.document.refmap);
 
 	return document;
 }
@@ -496,10 +492,10 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 
 		} else if (container->tag == BLOCK_LIST_ITEM) {
 
-			if (indent >= container->attributes.list_data.marker_offset +
-					container->attributes.list_data.padding) {
-				offset += container->attributes.list_data.marker_offset +
-					container->attributes.list_data.padding;
+			if (indent >= container->as.list.marker_offset +
+					container->as.list.padding) {
+				offset += container->as.list.marker_offset +
+					container->as.list.padding;
 			} else if (blank) {
 				offset = first_nonspace;
 			} else {
@@ -525,7 +521,7 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 		} else if (container->tag == BLOCK_FENCED_CODE) {
 
 			// skip optional spaces of fence offset
-			i = container->attributes.fenced_code_data.fence_offset;
+			i = container->as.code.fence_offset;
 			while (i > 0 && peek_at(&input, offset) == ' ') {
 				offset++;
 				i--;
@@ -598,14 +594,14 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 				level++;
 				hashpos++;
 			}
-			container->attributes.header_level = level;
+			container->as.header.level = level;
 
 		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
 			container = add_child(container, BLOCK_FENCED_CODE, line_number, first_nonspace + 1);
-			container->attributes.fenced_code_data.fence_char = peek_at(&input, first_nonspace);
-			container->attributes.fenced_code_data.fence_length = matched;
-			container->attributes.fenced_code_data.fence_offset = first_nonspace - offset;
+			container->as.code.fence_char = peek_at(&input, first_nonspace);
+			container->as.code.fence_length = matched;
+			container->as.code.fence_offset = first_nonspace - offset;
 			offset = first_nonspace + matched;
 
 		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {
@@ -620,7 +616,7 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 					strbuf_len(&container->string_content) - 2) < 0) {
 
 			container->tag = BLOCK_SETEXT_HEADER;
-			container->attributes.header_level = lev;
+			container->as.header.level = lev;
 			offset = input.len - 1;
 
 		} else if (!(container->tag == BLOCK_PARAGRAPH && !all_matched) &&
@@ -657,19 +653,19 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 			data->marker_offset = indent;
 
 			if (container->tag != BLOCK_LIST ||
-					!lists_match(container->attributes.list_data, *data)) {
+					!lists_match(&container->as.list, data)) {
 				container = add_child(container, BLOCK_LIST, line_number,
 						first_nonspace + 1);
-				container->attributes.list_data = *data;
+
+				memcpy(&container->as.list, data, sizeof(*data));
 			}
 
 			// add the list item
 			container = add_child(container, BLOCK_LIST_ITEM, line_number,
 					first_nonspace + 1);
 			/* TODO: static */
-			container->attributes.list_data = *data;
+			memcpy(&container->as.list, data, sizeof(*data));
 			free(data);
-
 		} else {
 			break;
 		}
@@ -732,9 +728,9 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 			matched = 0;
 
 			if (indent <= 3 &&
-				peek_at(&input, first_nonspace) == container->attributes.fenced_code_data.fence_char) {
+				peek_at(&input, first_nonspace) == container->as.code.fence_char) {
 				int fence_len = scan_close_code_fence(&input, first_nonspace);
-				if (fence_len > container->attributes.fenced_code_data.fence_length)
+				if (fence_len > container->as.code.fence_length)
 					matched = 1;
 			}
 

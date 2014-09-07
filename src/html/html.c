@@ -72,7 +72,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 			case BLOCK_LIST:
 				// make sure a list starts at the beginning of the line:
 				cr(html);
-				data = &(b->attributes.list_data);
+				data = &(b->as.list);
 
 				if (data->start > 1) {
 					strbuf_printf(html, "<%s start=\"%d\">\n",
@@ -90,9 +90,9 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 			case BLOCK_ATX_HEADER:
 			case BLOCK_SETEXT_HEADER:
 				cr(html);
-				strbuf_printf(html, "<h%d>", b->attributes.header_level);
+				strbuf_printf(html, "<h%d>", b->as.header.level);
 				inlines_to_html(html, b->inline_content);
-				strbuf_printf(html, "</h%d>\n", b->attributes.header_level);
+				strbuf_printf(html, "</h%d>\n", b->as.header.level);
 				break;
 
 			case BLOCK_INDENTED_CODE:
@@ -102,7 +102,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				strbuf_puts(html, "<pre");
 
 				if (b->tag == BLOCK_FENCED_CODE) {
-					strbuf *info = &b->attributes.fenced_code_data.info;
+					strbuf *info = &b->as.code.info;
 
 					if (strbuf_len(info) > 0) {
 						int first_tag = strbuf_strchr(info, ' ', 0);
