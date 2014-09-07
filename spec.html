@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Standard Markdown Spec</title>
+<title>CommonMark Spec</title>
 <style type="text/css">
   body { font-family: Helvetica, arial, freesans, clean, sans-serif;
     line-height: 1.4;
@@ -59,8 +59,8 @@ a.footnoteRef > sup {
 </style>
 </head>
 <body>
-<h1 class="title">Standard Markdown Spec</h1>
-<div class="version">Version 1 (2014-07-21)</div>
+<h1 class="title">CommonMark Spec</h1>
+<div class="version">Version 1 (2014-09-06)</div>
 <div class="authors">
 <span class="author">John MacFarlane</span>
 </div>
@@ -174,7 +174,7 @@ a.footnoteRef > sup {
 <p>Because there is no unambiguous spec, implementations have diverged considerably. As a result, users are often surprised to find that a document that renders one way on one system (say, a github wiki) renders differently on another (say, converting to docbook using pandoc). To make matters worse, because nothing in Markdown counts as a “syntax error,” the divergence often isn’t discovered right away.</p>
 <h2 id="about-this-document"><span class="header-section-number">1.3</span> About this document</h2>
 <p>This document attempts to specify Markdown syntax unambiguously. It contains many examples with side-by-side Markdown and HTML. These are intended to double as conformance tests. An accompanying script <code>runtests.pl</code> can be used to run the tests against any Markdown program:</p>
-<pre><code>perl runtests.pl PROGRAM spec.html</code></pre>
+<pre><code>perl runtests.pl spec.txt PROGRAM</code></pre>
 <p>Since this document describes how Markdown is to be parsed into an abstract syntax tree, it would have made sense to use an abstract representation of the syntax tree instead of HTML. But HTML is capable of representing the structural distinctions we need to make, and the choice of HTML for the tests makes it possible to run the tests against an implementation without writing an abstract syntax tree renderer.</p>
 <p>This document is generated from a text file, <code>spec.txt</code>, written in Markdown with a small extension for the side-by-side tests. The script <code>spec2md.pl</code> can be used to turn <code>spec.txt</code> into pandoc Markdown, which can then be converted into other formats.</p>
 <p>In the examples, the <code>→</code> character is used to represent tabs.</p>
@@ -194,8 +194,10 @@ Example 1
 <div class="examplenum">
 Example 2
 </div>
-<pre class="markdown"><code>    οὐ→χρῆν</code></pre>
-<pre class="html"><code>&lt;pre&gt;&lt;code&gt;οὐ  χρῆν
+<pre class="markdown"><code>    a→a
+    ὐ→a</code></pre>
+<pre class="html"><code>&lt;pre&gt;&lt;code&gt;a   a
+ὐ   a
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <p>Line endings are replaced by newline characters (LF).</p>
@@ -1143,7 +1145,7 @@ bar
 &lt;/code&gt;&lt;/pre&gt;
 &lt;h1&gt;baz&lt;/h1&gt;</code></pre>
 </div>
-<p>An <a href="#info-string">info string</a> can be provided after the opening code fence. Opening and closing spaces will be stripped, and the first word is used here to populate the <code>class</code> attribute of the enclosing <code>pre</code> tag.</p>
+<p>An <a href="#info-string">info string</a> can be provided after the opening code fence. Opening and closing spaces will be stripped, and the first word, prefixed with <code>language-</code>, is used as the value for the <code>class</code> attribute of the <code>code</code> element within the enclosing <code>pre</code> element.</p>
 <div id="example-82" class="example" data-section="Fenced code blocks">
 <div class="examplenum">
 Example 82
@@ -1153,7 +1155,7 @@ def foo(x)
   return 3
 end
 ```</code></pre>
-<pre class="html"><code>&lt;pre class=&quot;ruby&quot;&gt;&lt;code&gt;def foo(x)
+<pre class="html"><code>&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def foo(x)
   return 3
 end
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
@@ -1167,7 +1169,7 @@ def foo(x)
   return 3
 end
 ~~~~~~~</code></pre>
-<pre class="html"><code>&lt;pre class=&quot;ruby&quot;&gt;&lt;code&gt;def foo(x)
+<pre class="html"><code>&lt;pre&gt;&lt;code class=&quot;language-ruby&quot;&gt;def foo(x)
   return 3
 end
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
@@ -1178,7 +1180,7 @@ Example 84
 </div>
 <pre class="markdown"><code>````;
 ````</code></pre>
-<pre class="html"><code>&lt;pre class=&quot;;&quot;&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;</code></pre>
+<pre class="html"><code>&lt;pre&gt;&lt;code class=&quot;language-;&quot;&gt;&lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <p>Info strings for backtick code blocks cannot contain backticks:</p>
 <div id="example-85" class="example" data-section="Fenced code blocks">
@@ -1639,7 +1641,7 @@ Example 118
 &lt;/blockquote&gt;</code></pre>
 </div>
 <h2 id="paragraphs"><span class="header-section-number">4.8</span> Paragraphs</h2>
-<p>A sequence of non-blank lines that cannot be interpreted as other kinds of blocks forms a <a href="#paragraph">paragraph</a> <a id="paragraph"></a>. The contents of the paragraph are the result of parsing the paragraph’s raw content as inlines. The paragraph’s raw content is formed by concatenating the lines and removing initial and final spaces.</p>
+<p>A sequence of non-blank lines that cannot be interpreted as other kinds of blocks forms a <a href="#paragraph">paragraph</a>.<a id="paragraph"></a> The contents of the paragraph are the result of parsing the paragraph’s raw content as inlines. The paragraph’s raw content is formed by concatenating the lines and removing initial and final spaces.</p>
 <p>A simple example with two paragraphs:</p>
 <div id="example-119" class="example" data-section="Paragraphs">
 <div class="examplenum">
@@ -3221,7 +3223,7 @@ Example 219
 <pre class="markdown"><code>``` foo\+bar
 foo
 ```</code></pre>
-<pre class="html"><code>&lt;pre class=&quot;foo+bar&quot;&gt;&lt;code&gt;foo
+<pre class="html"><code>&lt;pre&gt;&lt;code class=&quot;language-foo+bar&quot;&gt;foo
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <h2 id="entities"><span class="header-section-number">6.2</span> Entities</h2>
@@ -3305,7 +3307,7 @@ Example 229
 <pre class="markdown"><code>``` f&amp;ouml;&amp;ouml;
 foo
 ```</code></pre>
-<pre class="html"><code>&lt;pre class=&quot;f&amp;ouml;&amp;ouml;&quot;&gt;&lt;code&gt;foo
+<pre class="html"><code>&lt;pre&gt;&lt;code class=&quot;language-f&amp;ouml;&amp;ouml;&quot;&gt;foo
 &lt;/code&gt;&lt;/pre&gt;</code></pre>
 </div>
 <p>Entities are treated as literal text in code spans and code blocks:</p>
@@ -5200,6 +5202,7 @@ Example 441
 <pre class="html"><code>&lt;p&gt;Multiple     spaces&lt;/p&gt;</code></pre>
 </div>
 <!-- END TESTS -->
+
 <h1 id="appendix-a-a-parsing-strategy" class="unnumbered">Appendix A: A parsing strategy</h1>
 <h2 id="overview" class="unnumbered">Overview</h2>
 <p>Parsing has two phases:</p>

@@ -11,5 +11,5 @@ fs.readFile(file, 'utf8', function(err, data) {
   }
   var parser   = new stmd.DocParser();
   var renderer = new stmd.HtmlRenderer();
-  console.log(renderer.render(parser.parse(data)));
+  process.stdout.write(renderer.render(parser.parse(data)));
 });
