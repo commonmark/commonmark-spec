@@ -221,10 +221,9 @@ var parseAutolink = function(inlines) {
 var parseHtmlTag = function(inlines) {
   var m = this.match(reHtmlTag);
   if (m) {
-    inlines.push({ t: 'Html', c: m });
-    return m.length;
+    return { t: 'Html', c: m };
   } else {
-    return 0;
+    return null;
   }
 };
 
@@ -668,7 +667,7 @@ var parseInline = function() {
     break;
   case '<':
     res = this.parseAutolink(inlines) ||
-      this.parseHtmlTag(inlines);
+      this.parseHtmlTag();
     break;
   case '&':
     res = this.parseEntity();
