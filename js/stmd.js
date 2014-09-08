@@ -277,6 +277,11 @@ var parseEmphasis = function() {
   res = this.scanDelims(c);
   numdelims = res.numdelims;
 
+  if (numdelims >= 4) {
+      this.pos += numdelims;
+      return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
+  }
+
   if (!res.can_open || numdelims === 0) {
     this.pos = startpos;
     return null;
@@ -349,7 +354,7 @@ var parseEmphasis = function() {
     }
     break;
 
-  default:
+  default: // shouldn't happen
   }
 
     return null;
