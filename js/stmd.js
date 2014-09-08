@@ -218,7 +218,7 @@ var parseAutolink = function() {
 };
 
 // Attempt to parse a raw HTML tag.
-var parseHtmlTag = function(inlines) {
+var parseHtmlTag = function() {
   var m = this.match(reHtmlTag);
   if (m) {
     return { t: 'Html', c: m };
@@ -294,7 +294,7 @@ var parseEmphasis = function() {
       if (res.numdelims >= 1 && res.can_close) {
           this.pos += 1;
           return {t: 'Emph', c: inlines};
-      } else if (next_inline = this.parseInline(inlines)) {
+      } else if (next_inline = this.parseInline()) {
             inlines.push(next_inline);
       } else {
             // didn't find closing delimiter
@@ -310,7 +310,7 @@ var parseEmphasis = function() {
       if (res.numdelims >= 2 && res.can_close) {
           this.pos += 2;
           return {t: 'Strong', c: inlines};
-      } else if (next_inline = this.parseInline(inlines)) {
+      } else if (next_inline = this.parseInline()) {
             inlines.push(next_inline);
       } else {
             // didn't find closing delimiter
@@ -339,7 +339,7 @@ var parseEmphasis = function() {
             return {t: 'Strong', c: inlines};
         } else if (can_close && numdelims === 1 && first_delim === 2) {
             return {t: 'Emph', c: inlines};
-        } else if (next_inline = this.parseInline(inlines)) {
+        } else if (next_inline = this.parseInline()) {
             inlines.push(next_inline);
         } else {
             // didn't find closing delimiter
@@ -446,9 +446,8 @@ var parseRawLabel = function(s) {
   return new InlineParser().parse(s.substr(1, s.length - 2), {});
 };
 
-// Attempt to parse a link.  If successful, add the link to
-// inlines.
-var parseLink = function(inlines) {
+// Attempt to parse a link.  If successful, return the link.
+var parseLink = function() {
   var startpos = this.pos;
   var reflabel;
   var n;
@@ -474,11 +473,10 @@ var parseLink = function(inlines) {
          (title = this.parseLinkTitle() || '') || true) &&
         this.spnl() &&
         this.match(/^\)/)) {
-        inlines.push({ t: 'Link',
-                       destination: dest,
-                       title: title,
-                       label: parseRawLabel(rawlabel) });
-        return this.pos - startpos;
+        return { t: 'Link',
+                 destination: dest,
+                 title: title,
+                 label: parseRawLabel(rawlabel) };
      } else {
         this.pos = startpos;
         return 0;
@@ -502,18 +500,16 @@ var parseLink = function(inlines) {
   // lookup rawlabel in refmap
   var link = this.refmap[normalizeReference(reflabel)];
   if (link) {
-    inlines.push({t: 'Link',
-                  destination: link.destination,
-                  title: link.title,
-                  label: parseRawLabel(rawlabel) });
-    return this.pos - startpos;
+    return {t: 'Link',
+            destination: link.destination,
+            title: link.title,
+            label: parseRawLabel(rawlabel) };
   } else {
-    this.pos = startpos;
-    return 0;
+      return null;
   }
   // Nothing worked, rewind:
   this.pos = startpos;
-  return 0;
+  return null;
 };
 
 // Attempt to parse an entity, return Entity object if successful.
@@ -552,22 +548,18 @@ var parseNewline = function() {
 };
 
 // Attempt to parse an image.  If the opening '!' is not followed
-// by a link, add a literal '!' to inlines.
-var parseImage = function(inlines) {
+// by a link, return a literal '!'.
+var parseImage = function() {
   if (this.match(/^!/)) {
-    var n = this.parseLink(inlines);
-    if (n === 0) {
-      inlines.push({ t: 'Str', c: '!' });
-      return 1;
-    } else if (inlines[inlines.length - 1] &&
-               inlines[inlines.length - 1].t == 'Link') {
-      inlines[inlines.length - 1].t = 'Image';
-      return n+1;
+    var link = this.parseLink();
+    if (link) {
+      link.t = 'Image';
+      return link;
     } else {
-      throw "Shouldn't happen";
+      return { t: 'Str', c: '!' };
     }
   } else {
-    return 0;
+      return null;
   }
 };
 
@@ -660,10 +652,10 @@ var parseInline = function() {
     res = this.parseEmphasis();
     break;
   case '[':
-    res = this.parseLink(inlines);
+    res = this.parseLink();
     break;
   case '!':
-    res = this.parseImage(inlines);
+    res = this.parseImage();
     break;
   case '<':
     res = this.parseAutolink() || this.parseHtmlTag();
@@ -694,7 +686,7 @@ var parseInlines = function(s, refmap) {
   this.memo = {};
   var inlines = [];
   var next_inline;
-  while (next_inline = this.parseInline(inlines)) {
+  while (next_inline = this.parseInline()) {
       inlines.push(next_inline);
   }
   return inlines;
