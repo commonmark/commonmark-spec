@@ -2,7 +2,7 @@ CommonMark
 ==========
 
 CommonMark is a [specification of Markdown syntax][the spec],
-together with BSD3-licensed implementations (`stmd`) in C and javascript.
+together with BSD3-licensed implementations (`stmd`) in C and JavaScript.
 
 The implementations
 -------------------
@@ -20,7 +20,7 @@ tarball.)
              --ast         Print AST instead of HTML
              --version     Print version
 
-The javascript implementation is a single javascript file, with
+The JavaScript implementation is a single JavaScript file, with
 no dependencies, that can be linked to in an HTML page.  A standalone
 version (using `node.js`) is also provided (`js/markdown`), and there is
 a "dingus" for playing with it interactively.  (`make dingus` will start
