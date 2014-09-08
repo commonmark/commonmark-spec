@@ -71,7 +71,7 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.
-var reMain = /^(?:[\n`\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+)/m;
+var reMain = /^(?:  +(?!\n)|[\n `\[\]\\!<&*_]|[^\n `\[\]\\!<&*_]+)/m;
 
 // UTILITY FUNCTIONS
 
@@ -438,7 +438,7 @@ var parseLinkLabel = function() {
         this.parseBackticks([]);
         break;
       case '<':
-        this.parseAutolink([]) || this.parseHtmlTag([]) || this.parseString([]);
+        this.parseAutolink([]) || this.parseHtmlTag([]) || this.parseString();
         break;
       case '[':  // nested []
         nest_level++;
@@ -452,7 +452,7 @@ var parseLinkLabel = function() {
         this.parseEscaped([]);
         break;
       default:
-        this.parseString([]);
+        this.parseString();
     }
   }
   if (c === ']') {
@@ -559,34 +559,25 @@ var parseEntity = function(inlines) {
 
 // Parse a run of ordinary characters, or a single character with
 // a special meaning in markdown, as a plain string, adding to inlines.
-var parseString = function(inlines) {
+var parseString = function() {
   var m;
   if ((m = this.match(reMain))) {
-    inlines.push({ t: 'Str', c: m });
-    return m.length;
+    return { t: 'Str', c: m };
   } else {
-    return 0;
+    return null;
   }
 };
 
 // Parse a newline.  If it was preceded by two spaces, return a hard
 // line break; otherwise a soft line break.
-var parseNewline = function(inlines) {
-  if (this.peek() == '\n') {
-    this.pos++;
-    var last = inlines[inlines.length - 1];
-    if (last && last.t == 'Str' && last.c.slice(-2) == '  ') {
-      last.c = last.c.replace(/ *$/,'');
-      inlines.push({ t: 'Hardbreak' });
-    } else {
-      if (last && last.t == 'Str' && last.c.slice(-1) == ' ') {
-        last.c = last.c.slice(0, -1);
-      }
-      inlines.push({ t: 'Softbreak' });
-    }
-    return 1;
+var parseNewline = function() {
+  var m = this.match(/ *\n/);
+  if (m.length > 2) {
+    return { t: 'Hardbreak' };
+   } else if (m.length > 0) {
+    return { t: 'Softbreak' };
   } else {
-    return 0;
+    return null;
   }
 };
 
@@ -670,20 +661,20 @@ var parseReference = function(s, refmap) {
 };
 
 // Parse the next inline element in subject, advancing subject position
-// and adding the result to 'inlines'.
-var parseInline = function(inlines) {
+// and returning the inline parsed.
+var parseInline = function() {
   var startpos = this.pos;
   var memoized = this.memo[startpos];
   if (memoized) {
-      inlines.push(memoized.inlines);
-      this.pos += memoized.len;
-      return memoized.len;
+      this.pos = memoized.endpos;
+      return memoized.inline;
   }
   var c = this.peek();
   var res;
   switch(c) {
   case '\n':
-    res = this.parseNewline(inlines);
+  case ' ':
+    res = this.parseNewline();
     break;
   case '\\':
     res = this.parseEscaped(inlines);
@@ -711,10 +702,11 @@ var parseInline = function(inlines) {
   default:
   }
   if (!res) {
-    res = this.parseString(inlines);
+    res = this.parseString();
   }
-  if (res > 0) {
-    this.memo[startpos] = { inlines: inlines[inlines.length - 1], len: res };
+  if (res) {
+    this.memo[startpos] = { inline: res,
+                            endpos: this.pos - startpos };
   }
   return res;
 };
@@ -726,7 +718,10 @@ var parseInlines = function(s, refmap) {
   this.refmap = refmap || {};
   this.memo = {};
   var inlines = [];
-  while (this.parseInline(inlines)) ;
+  var next_inline;
+  while (next_inline = this.parseInline(inlines)) {
+      inlines.push(next_inline);
+  }
   return inlines;
 };
 
