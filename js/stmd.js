@@ -456,7 +456,7 @@ var parseLink = function() {
 
   n = this.parseLinkLabel();
   if (n === 0) {
-    return 0;
+    return null;
   }
   var afterlabel = this.pos;
   var rawlabel = this.subject.substr(startpos, n);
@@ -479,7 +479,7 @@ var parseLink = function() {
                  label: parseRawLabel(rawlabel) };
      } else {
         this.pos = startpos;
-        return 0;
+        return null;
      }
   }
   // If we're here, it wasn't an explicit link. Try to parse a reference link.
@@ -505,6 +505,7 @@ var parseLink = function() {
             title: link.title,
             label: parseRawLabel(rawlabel) };
   } else {
+      this.pos = startpos;
       return null;
   }
   // Nothing worked, rewind:
