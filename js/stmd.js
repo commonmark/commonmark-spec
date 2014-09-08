@@ -152,9 +152,9 @@ var spnl = function() {
 // in the subject.  If they succeed in matching anything, they
 // return the inline matched, advancing the subject.
 
-// Attempt to parse backticks, adding either a backtick code span or a
-// literal sequence of backticks to the 'inlines' list.
-var parseBackticks = function(inlines) {
+// Attempt to parse backticks, returning either a backtick code span or a
+// literal sequence of backticks.
+var parseBackticks = function() {
   var startpos = this.pos;
   var ticks = this.match(/^`+/);
   if (!ticks) {
@@ -165,17 +165,15 @@ var parseBackticks = function(inlines) {
   var match;
   while (!foundCode && (match = this.match(/`+/m))) {
     if (match == ticks) {
-      inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
+      return { t: 'Code', c: this.subject.slice(afterOpenTicks,
                                    this.pos - ticks.length)
              .replace(/[ \n]+/g,' ')
-             .trim() });
-      return (this.pos - startpos);
+             .trim() };
     }
   }
   // If we got here, we didn't match a closing backtick sequence.
-  inlines.push({ t: 'Str', c: ticks });
   this.pos = afterOpenTicks;
-  return (this.pos - startpos);
+  return { t: 'Str', c: ticks };
 };
 
 // Parse a backslash-escaped special character, adding either the escaped
@@ -657,7 +655,7 @@ var parseInline = function() {
     res = this.parseBackslash();
     break;
   case '`':
-    res = this.parseBackticks(inlines);
+    res = this.parseBackticks();
     break;
   case '*':
   case '_':
