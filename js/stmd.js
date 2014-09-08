@@ -324,21 +324,24 @@ var parseEmphasis = function() {
     break;
 
    case 3:  // We started with *** or ___
+    var first_delim = 0;
     while (true) {
         res = this.scanDelims(c);
         var numdelims = res.numdelims;
         var can_close = res.can_close;
-        var first_delim === 0;
+        this.pos += numdelims;
         if (can_close && numdelims === 3 && first_delim === 0) {
-            // TODO - return Strong Emph with inlines
+            return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
         } else if (can_close && numdelims === 2 && first_delim === 0) {
-            // TODO - set first_delim, make inlines a Strong
+            first_delim = 2;
+            inlines = [{t: 'Strong', c: inlines}];
         } else if (can_close && numdelims === 1 && first_delim === 0) {
-            // TODO - set first_delim, make inlines an Emph
+            first_delim = 1;
+            inlines = [{t: 'Emph', c: inlines}];
         } else if (can_close && numdelims === 2 && first_delim === 1) {
-            // TODO - return Strong inlines
+            return {t: 'Strong', c: inlines};
         } else if (can_close && numdelims === 1 && first_delim === 2) {
-            // TODO - return Emph inlines
+            return {t: 'Emph', c: inlines};
         } else if (next_inline = this.parseInline(inlines)) {
             inlines.push(next_inline);
         } else {
