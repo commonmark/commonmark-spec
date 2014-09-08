@@ -150,8 +150,7 @@ var spnl = function() {
 
 // All of the parsers below try to match something at the current position
 // in the subject.  If they succeed in matching anything, they
-// push an inline element onto the 'inlines' list.  They return the
-// number of characters parsed (possibly 0).
+// return the inline matched, advancing the subject.
 
 // Attempt to parse backticks, adding either a backtick code span or a
 // literal sequence of backticks to the 'inlines' list.
@@ -182,25 +181,22 @@ var parseBackticks = function(inlines) {
 // Parse a backslash-escaped special character, adding either the escaped
 // character, a hard line break (if the backslash is followed by a newline),
 // or a literal backslash to the 'inlines' list.
-var parseEscaped = function(inlines) {
+var parseBackslash = function() {
   var subj = this.subject,
       pos  = this.pos;
   if (subj[pos] === '\\') {
     if (subj[pos + 1] === '\n') {
-      inlines.push({ t: 'Hardbreak' });
       this.pos = this.pos + 2;
-      return 2;
+      return { t: 'Hardbreak' };
     } else if (reEscapable.test(subj[pos + 1])) {
-      inlines.push({ t: 'Str', c: subj[pos + 1] });
       this.pos = this.pos + 2;
-      return 2;
+      return { t: 'Str', c: subj[pos + 1] };
     } else {
       this.pos++;
-      inlines.push({t: 'Str', c: '\\'});
-      return 1;
+      return {t: 'Str', c: '\\'};
     }
   } else {
-    return 0;
+    return null;
   }
 };
 
@@ -449,7 +445,7 @@ var parseLinkLabel = function() {
         this.pos++;
         break;
       case '\\':
-        this.parseEscaped([]);
+        this.parseBackslash();
         break;
       default:
         this.parseString();
@@ -677,7 +673,7 @@ var parseInline = function() {
     res = this.parseNewline();
     break;
   case '\\':
-    res = this.parseEscaped(inlines);
+    res = this.parseBackslash();
     break;
   case '`':
     res = this.parseBackticks(inlines);
@@ -737,7 +733,7 @@ function InlineParser(){
     peek: peek,
     spnl: spnl,
     parseBackticks: parseBackticks,
-    parseEscaped: parseEscaped,
+    parseBackslash: parseBackslash,
     parseAutolink: parseAutolink,
     parseHtmlTag: parseHtmlTag,
     scanDelims: scanDelims,
