@@ -517,14 +517,13 @@ var parseLink = function(inlines) {
   return 0;
 };
 
-// Attempt to parse an entity, adding to inlines if successful.
-var parseEntity = function(inlines) {
+// Attempt to parse an entity, return Entity object if successful.
+var parseEntity = function() {
   var m;
   if ((m = this.match(/^&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});/i))) {
-      inlines.push({ t: 'Entity', c: m });
-      return m.length;
+      return { t: 'Entity', c: m };
   } else {
-      return  0;
+      return  null;
   }
 };
 
@@ -672,7 +671,7 @@ var parseInline = function() {
       this.parseHtmlTag(inlines);
     break;
   case '&':
-    res = this.parseEntity(inlines);
+    res = this.parseEntity();
     break;
   default:
     res = this.parseString();
