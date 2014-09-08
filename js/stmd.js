@@ -405,10 +405,10 @@ var parseLinkLabel = function() {
   while ((c = this.peek()) && (c != ']' || nest_level > 0)) {
     switch (c) {
       case '`':
-        this.parseBackticks([]);
+        this.parseBackticks();
         break;
       case '<':
-        this.parseAutolink([]) || this.parseHtmlTag([]) || this.parseString();
+        this.parseAutolink() || this.parseHtmlTag() || this.parseString();
         break;
       case '[':  // nested []
         nest_level++;
@@ -666,8 +666,7 @@ var parseInline = function() {
     res = this.parseImage(inlines);
     break;
   case '<':
-    res = this.parseAutolink() ||
-      this.parseHtmlTag();
+    res = this.parseAutolink() || this.parseHtmlTag();
     break;
   case '&':
     res = this.parseEntity();
