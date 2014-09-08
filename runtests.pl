@@ -69,15 +69,21 @@ sub dotest
   # We use → to indicate tab and ␣ space in the spec
   $markdown =~ s/→/\t/g;s/␣/ /g;
   $html =~ s/→/\t/g;s/␣/ /g;
-  open2(my $out, my $in, @PROG);
+  my $pid = open2(my $out, my $in, @PROG);
   print $in $markdown;
   close $in;
   flush $out;
   $actual = do { local $/; <$out>; };
   close $out;
+  waitpid($pid, 0);
   $html   = &tidy($html);
   $actual = &tidy($actual);
   $actual =~ s/\&#39;/'/;
+  
+  # remove \r to allow mixing of linux/windows newlines
+  $actual =~ s/\r//g;
+  $html =~ s/\r//g;
+  
   if ($actual eq $html) {
     print colored("✓", "green");
     return 1;
