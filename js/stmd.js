@@ -305,72 +305,54 @@ var parseEmphasis = function() {
             return null;
       }
     }
+    break;
 
-/*
   case 2:  // We started with ** or __
     while (true) {
       res = this.scanDelims(c);
       if (res.numdelims >= 2 && res.can_close) {
-        this.pos += 2;
-        inlines[delimpos].t = 'Strong';
-        inlines[delimpos].c = inlines.slice(delimpos + 1);
-        inlines.splice(delimpos + 1);
-        break;
+          this.pos += 2;
+          return {t: 'Strong', c: inlines};
+      } else if (next_inline = this.parseInline(inlines)) {
+            inlines.push(next_inline);
       } else {
-        if (this.parseInline(inlines) === 0) {
-          break;
-        }
+            // didn't find closing delimiter
+            this.pos = startpos;
+            return null;
       }
     }
-    return (this.pos - startpos);
+    break;
 
-  case 3:  // We started with *** or ___
+   case 3:  // We started with *** or ___
     while (true) {
-      res = this.scanDelims(c);
-      if (res.numdelims >= 1 && res.numdelims <= 3 && res.can_close &&
-            res.numdelims != first_close_delims) {
-
-        if (first_close_delims === 1 && numdelims > 2) {
-          res.numdelims = 2;
-        } else if (first_close_delims === 2) {
-          res.numdelims = 1;
-        } else if (res.numdelims === 3) {
-          // If we opened with ***, then we interpret *** as ** followed by *
-          // giving us <strong><em>
-          res.numdelims = 1;
+        res = this.scanDelims(c);
+        var numdelims = res.numdelims;
+        var can_close = res.can_close;
+        var first_delim === 0;
+        if (can_close && numdelims === 3 && first_delim === 0) {
+            // TODO - return Strong Emph with inlines
+        } else if (can_close && numdelims === 2 && first_delim === 0) {
+            // TODO - set first_delim, make inlines a Strong
+        } else if (can_close && numdelims === 1 && first_delim === 0) {
+            // TODO - set first_delim, make inlines an Emph
+        } else if (can_close && numdelims === 2 && first_delim === 1) {
+            // TODO - return Strong inlines
+        } else if (can_close && numdelims === 1 && first_delim === 2) {
+            // TODO - return Emph inlines
+        } else if (next_inline = this.parseInline(inlines)) {
+            inlines.push(next_inline);
+        } else {
+            // didn't find closing delimiter
+            this.pos = startpos;
+            return null;
         }
-
-        this.pos += res.numdelims;
-
-        if (first_close > 0) { // if we've already passed the first closer:
-          inlines[delimpos].t = first_close_delims === 1 ? 'Strong' : 'Emph';
-          inlines[delimpos].c = [
-             { t: first_close_delims === 1 ? 'Emph' : 'Strong',
-               c: inlines.slice(delimpos + 1, first_close)}
-            ].concat(inlines.slice(first_close + 1));
-          inlines.splice(delimpos + 1);
-          break;
-        } else {  // this is the first closer; for now, add literal string;
-                  // we'll change this when he hit the second closer
-          inlines.push({t: 'Str',
-                        c: this.subject.slice(this.pos - res.numdelims,
-                                              this.pos) });
-          first_close = inlines.length - 1;
-          first_close_delims = res.numdelims;
-        }
-      } else {  // parse another inline element, til we hit the end
-        if (this.parseInline(inlines) === 0) {
-          break;
-        }
-      }
     }
-    return (this.pos - startpos);
-*/
+    break;
+
   default:
-    return res;
   }
 
-  return 0;
+    return null;
 };
 
 // Attempt to parse link title (sans quotes), returning the string
