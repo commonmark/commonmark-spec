@@ -71,7 +71,7 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.
-var reMain = /^(?:  +(?!\n)|[\n `\[\]\\!<&*_]|[^\n `\[\]\\!<&*_]+)/m;
+var reMain = /^(?: +|[\n`\[\]\\!<&*_]|[^\n `\[\]\\!<&*_]+)/m;
 
 // UTILITY FUNCTIONS
 
@@ -262,59 +262,51 @@ var scanDelims = function(c) {
            can_close: can_close };
 };
 
-// Attempt to parse emphasis or strong emphasis in an efficient way,
-// with no backtracking.
-var parseEmphasis = function(inlines) {
+// Attempt to parse emphasis or strong emphasis.
+var parseEmphasis = function() {
   var startpos = this.pos;
   var c ;
   var first_close = 0;
-  var nxt = this.peek();
-  if (nxt == '*' || nxt == '_') {
-    c = nxt;
-  } else {
-    return 0;
+  var c = this.peek();
+  if (!(c === '*' || c === '_')) {
+    return null;
   }
 
   var numdelims;
   var delimpos;
+  var inlines = [];
 
   // Get opening delimiters.
   res = this.scanDelims(c);
   numdelims = res.numdelims;
-  this.pos += numdelims;
-  // We provisionally add a literal string.  If we match appropriate
-  // closing delimiters, we'll change this to Strong or Emph.
-  inlines.push({t: 'Str',
-               c: this.subject.substr(this.pos - numdelims, numdelims)});
-  // Record the position of this opening delimiter:
-  delimpos = inlines.length - 1;
 
   if (!res.can_open || numdelims === 0) {
-    return 0;
+    this.pos = startpos;
+    return null;
   }
 
+  this.pos += numdelims;
+
   var first_close_delims = 0;
+  var next_inline;
 
   switch (numdelims) {
   case 1:  // we started with * or _
     while (true) {
       res = this.scanDelims(c);
       if (res.numdelims >= 1 && res.can_close) {
-        this.pos += 1;
-        // Convert the inline at delimpos, currently a string with the delim,
-        // into an Emph whose contents are the succeeding inlines
-        inlines[delimpos].t = 'Emph';
-        inlines[delimpos].c = inlines.slice(delimpos + 1);
-        inlines.splice(delimpos + 1);
-        break;
+          this.pos += 1;
+          return {t: 'Emph', c: inlines};
+      } else if (next_inline = this.parseInline(inlines)) {
+            inlines.push(next_inline);
       } else {
-        if (this.parseInline(inlines) === 0) {
-          break;
-        }
+            // didn't find closing delimiter
+            this.pos = startpos;
+            return null;
       }
     }
-    return (this.pos - startpos);
 
+/*
   case 2:  // We started with ** or __
     while (true) {
       res = this.scanDelims(c);
@@ -373,7 +365,7 @@ var parseEmphasis = function(inlines) {
       }
     }
     return (this.pos - startpos);
-
+*/
   default:
     return res;
   }
@@ -557,7 +549,7 @@ var parseEntity = function(inlines) {
 // a special meaning in markdown, as a plain string, adding to inlines.
 var parseString = function() {
   var m;
-  if ((m = this.match(reMain))) {
+  if (m = this.match(reMain)) {
     return { t: 'Str', c: m };
   } else {
     return null;
@@ -567,14 +559,15 @@ var parseString = function() {
 // Parse a newline.  If it was preceded by two spaces, return a hard
 // line break; otherwise a soft line break.
 var parseNewline = function() {
-  var m = this.match(/ *\n/);
-  if (m.length > 2) {
-    return { t: 'Hardbreak' };
-   } else if (m.length > 0) {
-    return { t: 'Softbreak' };
-  } else {
-    return null;
+  var m = this.match(/^ *\n/);
+  if (m) {
+      if (m.length > 2) {
+          return { t: 'Hardbreak' };
+      } else if (m.length > 0) {
+          return { t: 'Softbreak' };
+      }
   }
+  return null;
 };
 
 // Attempt to parse an image.  If the opening '!' is not followed
@@ -666,6 +659,9 @@ var parseInline = function() {
       return memoized.inline;
   }
   var c = this.peek();
+  if (!c) {
+      return null;
+  }
   var res;
   switch(c) {
   case '\n':
@@ -680,7 +676,7 @@ var parseInline = function() {
     break;
   case '*':
   case '_':
-    res = this.parseEmphasis(inlines);
+    res = this.parseEmphasis();
     break;
   case '[':
     res = this.parseLink(inlines);
@@ -696,13 +692,16 @@ var parseInline = function() {
     res = this.parseEntity(inlines);
     break;
   default:
-  }
-  if (!res) {
     res = this.parseString();
+    break;
+  }
+  if (res === null) {
+    this.pos += 1;
+    res = {t: 'Str', c: c};
   }
   if (res) {
     this.memo[startpos] = { inline: res,
-                            endpos: this.pos - startpos };
+                            endpos: this.pos };
   }
   return res;
 };
