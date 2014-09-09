@@ -52,7 +52,7 @@ $(document).ready(function() {
       render();
     }, 0); // ms delay
   };
-  $("#text").change(parseAndRender);
+  $("#text").bind('keyup paste cut mouseup', parseAndRender);
   $(".option").change(render);
 });
   </script>
