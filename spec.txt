@@ -1058,7 +1058,7 @@ a blank line either before or after.
 The content of a code fence is treated as literal text, not parsed
 as inlines.  The first word of the info string is typically used to
 specify the language of the code sample, and rendered in the `class`
-attribute of the `pre` tag.  However, this spec does not mandate any
+attribute of the `code` tag.  However, this spec does not mandate any
 particular treatment of the info string.
 
 Here is a simple example with backticks:
