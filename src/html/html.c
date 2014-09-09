@@ -99,7 +99,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 			case BLOCK_FENCED_CODE:
 				cr(html);
 
-				strbuf_puts(html, "<pre");
+				strbuf_puts(html, "<pre><code");
 
 				if (b->tag == BLOCK_FENCED_CODE) {
 					strbuf *info = &b->as.code.info;
@@ -109,14 +109,13 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 						if (first_tag < 0)
 							first_tag = strbuf_len(info);
 
-
-						strbuf_puts(html, " class=\"");
+						strbuf_puts(html, " class=\"lang-");
 						escape_html(html, info->ptr, first_tag);
 						strbuf_putc(html, '"');
 					}
 				}
 
-				strbuf_puts(html, "><code>");
+				strbuf_putc(html, '>');
 				escape_html(html, b->string_content.ptr, b->string_content.size);
 				strbuf_puts(html, "</code></pre>\n");
 				break;
