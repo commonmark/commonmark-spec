@@ -38,7 +38,9 @@ sub tidy
     } elsif (/<\/pre/) {
       $inpre = 0;
     }
-    if ($inpre) {
+    # remove \r to allow mixing linux/windows newlines
+	  s/\r//;
+	  if ($inpre) {
       print $outfh $_;
     } else {
       # remove leading spaces
@@ -79,11 +81,7 @@ sub dotest
   $html   = &tidy($html);
   $actual = &tidy($actual);
   $actual =~ s/\&#39;/'/;
-  
-  # remove \r to allow mixing of linux/windows newlines
-  $actual =~ s/\r//g;
-  $html =~ s/\r//g;
-  
+
   if ($actual eq $html) {
     print colored("✓", "green");
     return 1;
