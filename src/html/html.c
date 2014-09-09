@@ -109,7 +109,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 						if (first_tag < 0)
 							first_tag = strbuf_len(info);
 
-						strbuf_puts(html, " class=\"lang-");
+						strbuf_puts(html, " class=\"language-");
 						escape_html(html, info->ptr, first_tag);
 						strbuf_putc(html, '"');
 					}
