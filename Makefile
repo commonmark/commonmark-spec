@@ -1,5 +1,5 @@
-CFLAGS=-g -pg -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -pg -O3 -Wall -Werror
+CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror
 SRCDIR=src
 DATADIR=data
 

@@ -3762,20 +3762,20 @@ as the "unknown codepoint" character (`0xFFFD`)
 
 [Hexadecimal entities](#hexadecimal-entities) <a id="hexadecimal-entities"></a>
 consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
-+ `;`.
++ `;`. They will also be parsed and turned into their corresponding UTF8 values in the AST.
 
 .
-&#x1; &#X22; &#XD06; &#xcab;
+&#X22; &#XD06; &#xcab;
 .
-<p>&#x1; &#X22; &#XD06; &#xcab;</p>
+<p>&quot; ആ ಫ</p>
 .
 
 Here are some nonentities:
 
 .
-&nbsp &x; &#; &#x; &#123456789; &ThisIsWayTooLongToBeAnEntityIsntIt; &hi?;
+&nbsp &x; &#; &#x; &ThisIsWayTooLongToBeAnEntityIsntIt; &hi?;
 .
-<p>&amp;nbsp &amp;x; &amp;#; &amp;#x; &amp;#123456789; &amp;ThisIsWayTooLongToBeAnEntityIsntIt; &amp;hi?;</p>
+<p>&amp;nbsp &amp;x; &amp;#; &amp;#x; &amp;ThisIsWayTooLongToBeAnEntityIsntIt; &amp;hi?;</p>
 .
 
 Although HTML5 does accept some entities without a trailing semicolon
@@ -3808,7 +3808,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 .
 [foo](/f&ouml;&ouml; "f&ouml;&ouml;")
 .
-<p><a href="/f&ouml;&ouml;" title="f&ouml;&ouml;">foo</a></p>
+<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
 .
 
 .
@@ -3816,7 +3816,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 
 [foo]: /f&ouml;&ouml; "f&ouml;&ouml;"
 .
-<p><a href="/f&ouml;&ouml;" title="f&ouml;&ouml;">foo</a></p>
+<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
 .
 
 .
@@ -3824,7 +3824,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 foo
 ```
 .
-<pre><code class="language-f&ouml;&ouml;">foo
+<pre><code class="language-föö">foo
 </code></pre>
 .
 
@@ -4817,12 +4817,14 @@ in Markdown:
 <p><a href="foo):">link</a></p>
 .
 
-URL-escaping and entities should be left alone inside the destination:
+URL-escaping and should be left alone inside the destination, as all URL-escaped characters
+are also valid URL characters. HTML entities in the destination will be parsed into their UTF8
+codepoints, as usual, and optionally URL-escaped when written as HTML.
 
 .
 [link](foo%20b&auml;)
 .
-<p><a href="foo%20b&auml;">link</a></p>
+<p><a href="foo%20b%C3%A4">link</a></p>
 .
 
 Note that, because titles can often be parsed as destinations,

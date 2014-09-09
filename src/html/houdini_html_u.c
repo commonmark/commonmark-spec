@@ -24,7 +24,7 @@ houdini_unescape_ent(strbuf *ob, const uint8_t *src, size_t size)
 				codepoint = (codepoint * 16) + ((src[i] | 32) % 39 - 9);
 		}
 
-		if (i < size && src[i] == ';') {
+		if (i < size && src[i] == ';' && codepoint) {
 			utf8proc_encode_char(codepoint, ob);
 			return i + 1;
 		}
