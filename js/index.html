@@ -52,7 +52,7 @@ $(document).ready(function() {
       render();
     }, 0); // ms delay
   };
-  $("#text").keyup(parseAndRender);
+  $("#text").change(parseAndRender);
   $(".option").change(render);
 });
   </script>
