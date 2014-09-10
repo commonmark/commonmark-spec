@@ -4392,13 +4392,13 @@ The rules are sufficient for the following nesting patterns:
 .
 ***foo bar***
 .
-<p><em><strong>foo bar</strong></em></p>
+<p><strong><em>foo bar</em></strong></p>
 .
 
 .
 ___foo bar___
 .
-<p><em><strong>foo bar</strong></em></p>
+<p><strong><em>foo bar</em></strong></p>
 .
 
 .
