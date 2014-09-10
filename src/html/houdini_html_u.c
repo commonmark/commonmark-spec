@@ -15,13 +15,25 @@ houdini_unescape_ent(strbuf *ob, const uint8_t *src, size_t size)
 		int codepoint = 0;
 
 		if (_isdigit(src[1])) {
-			for (i = 1; i < size && _isdigit(src[i]); ++i)
-				codepoint = (codepoint * 10) + (src[i] - '0');
+			for (i = 1; i < size && _isdigit(src[i]); ++i) {
+				int cp = (codepoint * 10) + (src[i] - '0');
+
+				if (cp < codepoint)
+					return 0;
+
+				codepoint = cp;
+			}
 		}
 
 		else if (src[1] == 'x' || src[1] == 'X') {
-			for (i = 2; i < size && _isxdigit(src[i]); ++i)
-				codepoint = (codepoint * 16) + ((src[i] | 32) % 39 - 9);
+			for (i = 2; i < size && _isxdigit(src[i]); ++i) {
+				int cp = (codepoint * 16) + ((src[i] | 32) % 39 - 9);
+
+				if (cp < codepoint)
+					return 0;
+
+				codepoint = cp;
+			}
 		}
 
 		if (i < size && src[i] == ';' && codepoint) {
