@@ -4612,16 +4612,10 @@ Note that there are some asymmetries here:
 **foo* bar*
 .
 <p><em>foo <em>bar</em></em></p>
-<p>**foo* bar*</p>
+<p><em><em>foo</em> bar</em></p>
 .
 
 More cases with mismatched delimiters:
-
-.
-**foo* bar*
-.
-<p>**foo* bar*</p>
-.
 
 .
 *bar***
