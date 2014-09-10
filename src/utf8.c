@@ -79,14 +79,14 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 		} else {
 			int charlen = utf8proc_charlen(line + i, size - i);
 
-			if (charlen < 0) {
-				encode_unknown(ob);
-				i++;
-			} else {
+			if (charlen >= 0) {
 				strbuf_put(ob, line + i, charlen);
-				i += charlen;
+			} else {
+				encode_unknown(ob);
+				charlen = -charlen;
 			}
 
+			i += charlen;
 			tab += 1;
 		}
 	}
