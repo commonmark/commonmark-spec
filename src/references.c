@@ -13,6 +13,14 @@ refhash(const unsigned char *link_ref)
 	return hash;
 }
 
+static void reference_free(reference *ref)
+{
+	free(ref->label);
+	free(ref->url);
+	free(ref->title);
+	free(ref);
+}
+
 // normalize reference:  collapse internal whitespace to single space,
 // remove leading/trailing whitespace, case fold
 static unsigned char *normalize_reference(chunk *ref)
@@ -28,7 +36,18 @@ static unsigned char *normalize_reference(chunk *ref)
 
 static void add_reference(reference_map *map, reference* ref)
 {
-	ref->next = map->table[ref->hash % REFMAP_SIZE];
+	reference *t = ref->next = map->table[ref->hash % REFMAP_SIZE];
+
+	while (t) {
+		if (t->hash == ref->hash &&
+			!strcmp((char *)t->label, (char *)ref->label)) {
+			reference_free(ref);
+			return;
+		}
+
+		t = t->next;
+	}
+
 	map->table[ref->hash % REFMAP_SIZE] = ref;
 }
 
@@ -63,7 +82,7 @@ reference* reference_lookup(reference_map *map, chunk *label)
 	ref = map->table[hash % REFMAP_SIZE];
 
 	while (ref) {
-		if (ref->label[0] == norm[0] &&
+		if (ref->hash == hash &&
 			!strcmp((char *)ref->label, (char *)norm))
 			break;
 		ref = ref->next;
@@ -71,14 +90,6 @@ reference* reference_lookup(reference_map *map, chunk *label)
 
 	free(norm);
 	return ref;
-}
-
-static void reference_free(reference *ref)
-{
-	free(ref->label);
-	free(ref->url);
-	free(ref->title);
-	free(ref);
 }
 
 void reference_map_free(reference_map *map)
@@ -96,7 +107,6 @@ void reference_map_free(reference_map *map)
 		}
 	}
 
-	free(map->table);
 	free(map);
 }
 
