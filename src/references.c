@@ -23,15 +23,29 @@ static void reference_free(reference *ref)
 
 // normalize reference:  collapse internal whitespace to single space,
 // remove leading/trailing whitespace, case fold
+// Return NULL if the reference name is actually empty (i.e. composed
+// solely from whitespace)
 static unsigned char *normalize_reference(chunk *ref)
 {
 	strbuf normalized = GH_BUF_INIT;
+	unsigned char *result;
+
+	if (ref->len == 0)
+		return NULL;
 
 	utf8proc_case_fold(&normalized, ref->data, ref->len);
 	strbuf_trim(&normalized);
 	strbuf_normalize_whitespace(&normalized);
 
-	return strbuf_detach(&normalized);
+	result = strbuf_detach(&normalized);
+	assert(result);
+
+	if (result[0] == '\0') {
+		free(result);
+		return NULL;
+	}
+	
+	return result;
 }
 
 static void add_reference(reference_map *map, reference* ref)
@@ -51,19 +65,23 @@ static void add_reference(reference_map *map, reference* ref)
 	map->table[ref->hash % REFMAP_SIZE] = ref;
 }
 
-extern reference *reference_create(reference_map *map, chunk *label, chunk *url, chunk *title)
+extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk *title)
 {
 	reference *ref;
+	unsigned char *reflabel = normalize_reference(label);
+
+	/* empty reference name, or composed from only whitespace */
+	if (reflabel == NULL)
+		return;
+
 	ref = malloc(sizeof(reference));
-	ref->label = normalize_reference(label);
+	ref->label = reflabel;
 	ref->hash = refhash(ref->label);
 	ref->url = clean_url(url);
 	ref->title = clean_title(title);
 	ref->next = NULL;
 
 	add_reference(map, ref);
-
-	return ref;
 }
 
 // Returns reference if refmap contains a reference with matching
@@ -78,6 +96,9 @@ reference* reference_lookup(reference_map *map, chunk *label)
 		return NULL;
 	
 	norm = normalize_reference(label);
+	if (norm == NULL)
+		return NULL;
+
 	hash = refhash(norm);
 	ref = map->table[hash % REFMAP_SIZE];
 

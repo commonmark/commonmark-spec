@@ -215,11 +215,12 @@ unsigned char *strbuf_detach(strbuf *buf)
 {
 	unsigned char *data = buf->ptr;
 
-	if (buf->asize == 0 || buf->ptr == strbuf__oom)
-		return NULL;
+	if (buf->asize == 0 || buf->ptr == strbuf__oom) {
+		/* return an empty string */
+		return calloc(1, 1);
+	}
 
 	strbuf_init(buf, 0);
-
 	return data;
 }
 
