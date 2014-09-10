@@ -473,7 +473,7 @@ An [ATX header](#atx-header) <a id="atx-header"></a>
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
-of `#` characters cannot be followed directly by a nonspace character.
+of `#` characters cannot be followed directly by a non-space character.
 The closing `#` characters may be followed by spaces only.  The opening
 `#` character may be indented 0-3 spaces.  The raw contents of the
 header are stripped of leading and trailing spaces before being parsed
@@ -599,7 +599,7 @@ Spaces are allowed after the closing sequence:
 <h3>foo</h3>
 .
 
-A sequence of `#` characters with a nonspace character following it
+A sequence of `#` characters with a non-space character following it
 is not a closing sequence, but counts as part of the contents of the
 header:
 
@@ -660,7 +660,7 @@ ATX headers can be empty:
 ## Setext headers
 
 A [setext header](#setext-header) <a id="setext-header"></a>
-consists of a line of text, containing at least one nonspace character,
+consists of a line of text, containing at least one non-space character,
 with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  A [setext header
 underline](#setext-header-underline) <a id="setext-header-underline"></a>
@@ -2434,7 +2434,7 @@ The most important thing to notice is that the position of
 the text after the list marker determines how much indentation
 is needed in subsequent blocks in the list item.  If the list
 marker takes up two spaces, and there are three spaces between
-the list marker and the next nonspace character, then blocks
+the list marker and the next non-space character, then blocks
 must be indented five spaces in order to fall under the list
 item.
 
@@ -2487,7 +2487,7 @@ put under the list item:
 .
 
 It is tempting to think of this in terms of columns:  the continuation
-blocks must be indented at least to the column of the first nonspace
+blocks must be indented at least to the column of the first non-space
 character after the list marker.  However, that is not quite right.
 The spaces after the list marker determine how much relative indentation
 is needed.  Which column this indentation reaches will depend on
@@ -2511,7 +2511,7 @@ this example:
 
 Here `two` occurs in the same column as the list marker `1.`,
 but is actually contained in the list item, because there is
-sufficent indentation after the last containing blockquote marker.
+sufficient indentation after the last containing blockquote marker.
 
 The converse is also possible.  In the following example, the word `two`
 occurs far to the right of the initial text of the list item, `one`, but
@@ -2689,7 +2689,7 @@ inside the code block:
 .
 
 Note that rules #1 and #2 only apply to two cases:  (a) cases
-in which the lines to be included in a list item begin with a nonspace
+in which the lines to be included in a list item begin with a non-space
 character, and (b) cases in which they begin with an indented code
 block.  In a case like the following, where the first block begins with
 a three-space indent, the rules do not allow us to form a list item by
@@ -4510,7 +4510,7 @@ __foo _bar_ baz__
 .
 
 Note that you cannot nest emphasis directly inside emphasis
-using the same delimeter, or strong emphasis directly inside
+using the same delimiter, or strong emphasis directly inside
 strong emphasis:
 
 .
@@ -4684,7 +4684,7 @@ consists of either
   ASCII space or control characters, and includes parentheses
   only if (a) they are backslash-escaped or (b) they are part of
   a balanced pair of unescaped parentheses that is not itself
-  inside a balanced pair of unescaped paretheses.
+  inside a balanced pair of unescaped parentheses.
 
 A [link title](#link-title) <a id="link-title"></a>  consists of either
 
