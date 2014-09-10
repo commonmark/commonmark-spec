@@ -289,73 +289,32 @@ var parseEmphasis = function() {
 
   this.pos += numdelims;
 
-  var first_close_delims = 0;
   var next_inline;
 
-  switch (numdelims) {
-  case 1:  // we started with * or _
-    while (true) {
-      res = this.scanDelims(c);
-      if (res.numdelims >= 1 && res.can_close) {
-          this.pos += 1;
-          return {t: 'Emph', c: inlines};
-      } else if (next_inline = this.parseInline()) {
-            inlines.push(next_inline);
-      } else {
-            // didn't find closing delimiter
-            this.pos = startpos;
-            return null;
-      }
-    }
-    break;
-
-  case 2:  // We started with ** or __
-    while (true) {
-      res = this.scanDelims(c);
-      if (res.numdelims >= 2 && res.can_close) {
-          this.pos += 2;
-          return {t: 'Strong', c: inlines};
-      } else if (next_inline = this.parseInline()) {
-            inlines.push(next_inline);
-      } else {
-            // didn't find closing delimiter
-            this.pos = startpos;
-            return null;
-      }
-    }
-    break;
-
-   case 3:  // We started with *** or ___
-    var first_delim = 0;
+    var delims_to_match = numdelims;
     while (true) {
         res = this.scanDelims(c);
-        var numdelims = res.numdelims;
-        var can_close = res.can_close;
-        this.pos += numdelims;
-        if (can_close && numdelims === 3 && first_delim === 0) {
-            return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
-        } else if (can_close && numdelims === 2 && first_delim === 0) {
-            first_delim = 2;
-            inlines = [{t: 'Strong', c: inlines}];
-        } else if (can_close && numdelims === 1 && first_delim === 0) {
-            first_delim = 1;
-            inlines = [{t: 'Emph', c: inlines}];
-        } else if (can_close && numdelims === 2 && first_delim === 1) {
-            return {t: 'Strong', c: inlines};
-        } else if (can_close && numdelims === 1 && first_delim === 2) {
-            return {t: 'Emph', c: inlines};
+        if (res.can_close) {
+            if (res.numdelims >= 2 && delims_to_match >= 2) {
+                delims_to_match -= 2;
+                this.pos += 2;
+                inlines = [{t: 'Strong', c: inlines}];
+            } else if (res.numdelims >= 1 && delims_to_match >= 1) {
+                delims_to_match -= 1;
+                this.pos += 1;
+                inlines = [{t: 'Emph', c: inlines}];
+            }
+            if (delims_to_match === 0) {
+                return inlines[0];
+            }
         } else if (next_inline = this.parseInline()) {
             inlines.push(next_inline);
         } else {
             // didn't find closing delimiter
-            this.pos = startpos;
-            return null;
+            this.pos = startpos + numdelims;
+            return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
         }
     }
-    break;
-
-  default: // shouldn't happen
-  }
 
     return null;
 };
