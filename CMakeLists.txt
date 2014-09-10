@@ -14,6 +14,7 @@ CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
 #option(${PROJECT_NAME}_WITH_DOCS "generate Documentation" OFF)
 #option(${PROJECT_NAME}_WITH_TESTS "enable testing" ON)
 option(CMAKE_SUPPRESS_REGENERATION "suppress rules to re-run cmake on changes (warning: no dependency checks!)?" OFF)
+set(RE2C ${CMAKE_CURRENT_SOURCE_DIR}/re2c)
 
 if (MSVC)
   option(PROJECT_LINK_MSVC_MT "link with /MT instead of /MD (use msvc runtime dlls versus static linked)" ON) 
