@@ -70,8 +70,9 @@ var reAllTab = /\t/g;
 var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // Matches a character with a special meaning in markdown,
-// or a string of non-special characters.
-var reMain = /^(?:[\n`\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
+// or a string of non-special characters.  Note:  we match
+// clumps of _ or * or `, because they need to be handled in groups.
+var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
 
 // UTILITY FUNCTIONS
 
@@ -277,14 +278,14 @@ var parseEmphasis = function() {
   res = this.scanDelims(c);
   numdelims = res.numdelims;
 
-  if (numdelims >= 4) {
-      this.pos += numdelims;
-      return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
-  }
-
-  if (!res.can_open || numdelims === 0) {
+  if (numdelims === 0) {
     this.pos = startpos;
     return null;
+  }
+
+  if (numdelims >= 4 || !res.can_open) {
+      this.pos += numdelims;
+      return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
   }
 
   this.pos += numdelims;
