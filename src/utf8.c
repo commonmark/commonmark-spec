@@ -29,9 +29,9 @@ static void encode_unknown(strbuf *buf)
 	strbuf_put(buf, repl, 3);
 }
 
-ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
+int utf8proc_charlen(const uint8_t *str, int str_len)
 {
-	ssize_t length, i;
+	int length, i;
 
 	if (!str_len)
 		return 0;
@@ -42,11 +42,11 @@ ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
 		return -1;
 
 	if (str_len >= 0 && length > str_len)
-		return -1;
+		return -str_len;
 
 	for (i = 1; i < length; i++) {
 		if ((str[i] & 0xC0) != 0x80)
-			return -1;
+			return -i;
 	}
 
 	return length;
@@ -77,7 +77,7 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 			i += 1;
 			tab += numspaces;
 		} else {
-			ssize_t charlen = utf8proc_charlen(line + i, size - i);
+			int charlen = utf8proc_charlen(line + i, size - i);
 
 			if (charlen < 0) {
 				encode_unknown(ob);
@@ -92,9 +92,9 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 	}
 }
 
-ssize_t utf8proc_iterate(const uint8_t *str, ssize_t str_len, int32_t *dst)
+int utf8proc_iterate(const uint8_t *str, int str_len, int32_t *dst)
 {
-	ssize_t length;
+	int length;
 	int32_t uc = -1;
 
 	*dst = -1;
@@ -177,14 +177,14 @@ void utf8proc_case_fold(strbuf *dest, const uint8_t *str, int len)
 	utf8proc_encode_char(x, dest)
 
 	while (len > 0) {
-		ssize_t char_len = utf8proc_iterate(str, len, &c);
+		int char_len = utf8proc_iterate(str, len, &c);
 
-		if (char_len < 0) {
-			encode_unknown(dest);
-			continue;
-		}
-
+		if (char_len >= 0) {
 #include "case_fold_switch.inc"
+		} else {
+			encode_unknown(dest);
+			char_len = -char_len;
+		}
 
 		str += char_len;
 		len -= char_len;
