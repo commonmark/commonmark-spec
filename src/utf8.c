@@ -25,7 +25,7 @@ static const int8_t utf8proc_utf8class[256] = {
 
 static void encode_unknown(strbuf *buf)
 {
-	static const unsigned char repl[] = {239, 191, 189};
+	static const uint8_t repl[] = {239, 191, 189};
 	strbuf_put(buf, repl, 3);
 }
 
@@ -52,9 +52,9 @@ ssize_t utf8proc_charlen(const uint8_t *str, ssize_t str_len)
 	return length;
 }
 
-void utf8proc_detab(strbuf *ob, const unsigned char *line, size_t size)
+void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 {
-	static const unsigned char whitespace[] = "    ";
+	static const uint8_t whitespace[] = "    ";
 
 	size_t i = 0, tab = 0;
 
@@ -132,7 +132,7 @@ ssize_t utf8proc_iterate(const uint8_t *str, ssize_t str_len, int32_t *dst)
 
 void utf8proc_encode_char(int32_t uc, strbuf *buf)
 {
-	unsigned char dst[4];
+	uint8_t dst[4];
 	int len = 0;
 
 	assert(uc >= 0);
@@ -169,7 +169,7 @@ void utf8proc_encode_char(int32_t uc, strbuf *buf)
 	strbuf_put(buf, dst, len);
 }
 
-void utf8proc_case_fold(strbuf *dest, const unsigned char *str, int len)
+void utf8proc_case_fold(strbuf *dest, const uint8_t *str, int len)
 {
 	int32_t c;
 

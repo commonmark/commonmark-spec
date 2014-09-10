@@ -8,7 +8,6 @@
 #include "utf8.h"
 #include "html/houdini.h"
 #include "scanners.h"
-#include "uthash.h"
 
 #define peek_at(i, n) (i)->data[n]
 
@@ -36,12 +35,7 @@ static node_block* make_block(int tag, int start_line, int start_column)
 extern node_block* make_document()
 {
 	node_block *e = make_block(BLOCK_DOCUMENT, 1, 1);
-	reference *map = NULL;
-	reference ** refmap;
-
-	refmap = (reference**) malloc(sizeof(reference*));
-	*refmap = map;
-	e->as.document.refmap = refmap;
+	e->as.document.refmap = reference_map_new();
 	e->top = e;
 
 	return e;
@@ -164,7 +158,7 @@ static void finalize(node_block* b, int line_number)
 		case BLOCK_PARAGRAPH:
 			pos = 0;
 			while (strbuf_at(&b->string_content, 0) == '[' &&
-					(pos = parse_reference(&b->string_content, b->top->as.document.refmap))) {
+					(pos = parse_reference_inline(&b->string_content, b->top->as.document.refmap))) {
 
 				strbuf_drop(&b->string_content, pos);
 			}
@@ -192,7 +186,7 @@ static void finalize(node_block* b, int line_number)
 			strbuf_drop(&b->string_content, firstlinelen + 1);
 
 			strbuf_trim(&b->as.code.info);
-			unescape_buffer(&b->as.code.info);
+			strbuf_unescape(&b->as.code.info);
 			break;
 
 		case BLOCK_LIST: // determine tight/loose status
@@ -268,7 +262,7 @@ extern void free_blocks(node_block* e)
 		if (e->tag == BLOCK_FENCED_CODE) {
 			strbuf_free(&e->as.code.info);
 		} else if (e->tag == BLOCK_DOCUMENT) {
-			free_reference_map(e->as.document.refmap);
+			reference_map_free(e->as.document.refmap);
 		}
 		free_blocks(e->children);
 		free(e);
@@ -278,7 +272,7 @@ extern void free_blocks(node_block* e)
 
 // Walk through node_block and all children, recursively, parsing
 // string content into inline content where appropriate.
-void process_inlines(node_block* cur, reference** refmap)
+void process_inlines(node_block* cur, reference_map *refmap)
 {
 	switch (cur->tag) {
 		case BLOCK_PARAGRAPH:

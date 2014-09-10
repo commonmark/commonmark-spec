@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "buffer.h"
 #include "chunk.h"
-#include "uthash.h"
+#include "references.h"
 
 #define VERSION "0.1"
 #define CODE_INDENT 4
@@ -36,17 +36,7 @@ struct node_inl {
 
 typedef struct node_inl node_inl;
 
-struct reference {
-  unsigned char *label;
-  unsigned char *url;
-  unsigned char *title;
-  UT_hash_handle  hh; // used by uthash
-};
-
-typedef struct reference reference;
-
 // Types for blocks
-
 struct ListData {
 	enum {
 		bullet,
@@ -104,7 +94,7 @@ struct node_block {
 			int level;
 		} header;
 		struct {
-			reference** refmap;
+			reference_map *refmap;
 		} document;
 	} as;
 
@@ -114,14 +104,10 @@ struct node_block {
 
 typedef struct node_block node_block;
 
-node_inl* parse_inlines(strbuf *input, reference** refmap);
+node_inl* parse_inlines(strbuf *input, reference_map *refmap);
 void free_inlines(node_inl* e);
 
-int parse_reference(strbuf *input, reference** refmap);
-void free_reference(reference *ref);
-void free_reference_map(reference **refmap);
-
-void add_reference(reference** refmap, reference* ref);
+int parse_reference_inline(strbuf *input, reference_map *refmap);
 void unescape_buffer(strbuf *buf);
 
 extern node_block* make_document();
@@ -137,5 +123,9 @@ void print_blocks(node_block* blk, int indent);
 
 void blocks_to_html(strbuf *html, node_block *b, bool tight);
 void inlines_to_html(strbuf *html, node_inl *b);
+
+unsigned char *clean_url(chunk *url);
+unsigned char *clean_autolink(chunk *url, int is_email);
+unsigned char *clean_title(chunk *title);
 
 #endif

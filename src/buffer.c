@@ -308,3 +308,46 @@ void strbuf_trim(strbuf *buf)
 
 	buf->ptr[buf->size] = '\0';
 }
+
+// Destructively modify string, collapsing consecutive
+// space and newline characters into a single space.
+void strbuf_normalize_whitespace(strbuf *s)
+{
+	bool last_char_was_space = false;
+	int r, w;
+
+	for (r = 0, w = 0; r < s->size; ++r) {
+		switch (s->ptr[r]) {
+		case ' ':
+		case '\n':
+			if (last_char_was_space)
+				break;
+
+			s->ptr[w++] = ' ';
+			last_char_was_space = true;
+			break;
+
+		default:
+			s->ptr[w++] = s->ptr[r];
+			last_char_was_space = false;
+		}
+	}
+
+	strbuf_truncate(s, w);
+}
+
+// Destructively unescape a string: remove backslashes before punctuation chars.
+extern void strbuf_unescape(strbuf *buf)
+{
+	int r, w;
+
+	for (r = 0, w = 0; r < buf->size; ++r) {
+		if (buf->ptr[r] == '\\' && ispunct(buf->ptr[r + 1]))
+			continue;
+
+		buf->ptr[w++] = buf->ptr[r];
+	}
+
+	strbuf_truncate(buf, w);
+}
+

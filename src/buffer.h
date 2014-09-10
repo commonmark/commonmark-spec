@@ -108,5 +108,7 @@ int strbuf_strrchr(const strbuf *buf, int c, int pos);
 void strbuf_drop(strbuf *buf, int n);
 void strbuf_truncate(strbuf *buf, int len);
 void strbuf_trim(strbuf *buf);
+void strbuf_normalize_whitespace(strbuf *s);
+void strbuf_unescape(strbuf *s);
 
 #endif

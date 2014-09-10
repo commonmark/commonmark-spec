@@ -7,109 +7,22 @@
 #include "stmd.h"
 #include "html/houdini.h"
 #include "utf8.h"
-#include "uthash.h"
 #include "scanners.h"
 
 typedef struct Subject {
 	chunk input;
 	int pos;
-	int            label_nestlevel;
-	reference**    reference_map;
+	int label_nestlevel;
+	reference_map *refmap;
 } subject;
 
-reference* lookup_reference(reference** refmap, chunk *label);
-reference* make_reference(chunk *label, chunk *url, chunk *title);
-
-static unsigned char *clean_url(chunk *url);
-static unsigned char *clean_title(chunk *title);
-static unsigned char *clean_autolink(chunk *url, int is_email);
-
-inline static void chunk_free(chunk *c);
-inline static void chunk_trim(chunk *c);
-
-inline static chunk chunk_literal(const char *data);
-inline static chunk chunk_buf_detach(strbuf *buf);
-inline static chunk chunk_dup(const chunk *ch, int pos, int len);
-
-static node_inl *parse_chunk_inlines(chunk *chunk, reference** refmap);
+static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
 static node_inl *parse_inlines_while(subject* subj, int (*f)(subject*));
 static int parse_inline(subject* subj, node_inl ** last);
 
-static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap);
-static void subject_from_buf(subject *e, strbuf *buffer, reference** refmap);
+static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
+static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
-
-static void normalize_whitespace(strbuf *s);
-
-extern void free_reference(reference *ref) {
-	free(ref->label);
-	free(ref->url);
-	free(ref->title);
-	free(ref);
-}
-
-extern void free_reference_map(reference **refmap) {
-	/* free the hash table contents */
-	reference *s;
-	reference *tmp;
-	if (refmap != NULL) {
-		HASH_ITER(hh, *refmap, s, tmp) {
-			HASH_DEL(*refmap, s);
-			free_reference(s);
-		}
-		free(refmap);
-	}
-}
-
-// normalize reference:  collapse internal whitespace to single space,
-// remove leading/trailing whitespace, case fold
-static unsigned char *normalize_reference(chunk *ref)
-{
-	strbuf normalized = GH_BUF_INIT;
-
-	utf8proc_case_fold(&normalized, ref->data, ref->len);
-	strbuf_trim(&normalized);
-	normalize_whitespace(&normalized);
-
-	return strbuf_detach(&normalized);
-}
-
-// Returns reference if refmap contains a reference with matching
-// label, otherwise NULL.
-extern reference* lookup_reference(reference** refmap, chunk *label)
-{
-	reference *ref = NULL;
-	unsigned char *norm = normalize_reference(label);
-	if (refmap != NULL) {
-		HASH_FIND_STR(*refmap, (char*)norm, ref);
-	}
-	free(norm);
-	return ref;
-}
-
-extern reference* make_reference(chunk *label, chunk *url, chunk *title)
-{
-	reference *ref;
-	ref = malloc(sizeof(reference));
-	ref->label = normalize_reference(label);
-	ref->url = clean_url(url);
-	ref->title = clean_title(title);
-	return ref;
-}
-
-extern void add_reference(reference** refmap, reference* ref)
-{
-	reference * t = NULL;
-	const char *label = (const char *)ref->label;
-
-	HASH_FIND(hh, *refmap, label, strlen(label), t);
-
-	if (t == NULL) {
-		HASH_ADD_KEYPTR(hh, *refmap, label, strlen(label), ref);
-	} else {
-		free_reference(ref);  // we free this now since it won't be in the refmap
-	}
-}
 
 static unsigned char *bufdup(const unsigned char *buf)
 {
@@ -236,26 +149,26 @@ inline static node_inl* append_inlines(node_inl* a, node_inl* b)
 	return a;
 }
 
-static void subject_from_buf(subject *e, strbuf *buffer, reference** refmap)
+static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 {
 	e->input.data = buffer->ptr;
 	e->input.len = buffer->size;
 	e->input.alloc = 0;
 	e->pos = 0;
 	e->label_nestlevel = 0;
-	e->reference_map = refmap;
+	e->refmap = refmap;
 
 	chunk_rtrim(&e->input);
 }
 
-static void subject_from_chunk(subject *e, chunk *chunk, reference** refmap)
+static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 {
 	e->input.data = chunk->data;
 	e->input.len = chunk->len;
 	e->input.alloc = 0;
 	e->pos = 0;
 	e->label_nestlevel = 0;
-	e->reference_map = refmap;
+	e->refmap = refmap;
 
 	chunk_rtrim(&e->input);
 }
@@ -325,33 +238,6 @@ static int scan_to_closing_backticks(subject* subj, int openticklength)
 	return (subj->pos);
 }
 
-// Destructively modify string, collapsing consecutive
-// space and newline characters into a single space.
-static void normalize_whitespace(strbuf *s)
-{
-	bool last_char_was_space = false;
-	int r, w;
-
-	for (r = 0, w = 0; r < s->size; ++r) {
-		switch (s->ptr[r]) {
-		case ' ':
-		case '\n':
-			if (last_char_was_space)
-				break;
-
-			s->ptr[w++] = ' ';
-			last_char_was_space = true;
-			break;
-
-		default:
-			s->ptr[w++] = s->ptr[r];
-			last_char_was_space = false;
-		}
-	}
-
-	strbuf_truncate(s, w);
-}
-
 // Parse backtick code section or raw backticks, return an inline.
 // Assumes that the subject has a backtick at the current position.
 static node_inl* handle_backticks(subject *subj)
@@ -368,7 +254,7 @@ static node_inl* handle_backticks(subject *subj)
 
 		strbuf_set(&buf, subj->input.data + startpos, endpos - startpos - openticks.len);
 		strbuf_trim(&buf);
-		normalize_whitespace(&buf);
+		strbuf_normalize_whitespace(&buf);
 
 		return make_code(chunk_buf_detach(&buf));
 	}
@@ -575,24 +461,9 @@ static node_inl *make_str_with_entities(chunk *content)
 	}
 }
 
-// Destructively unescape a string: remove backslashes before punctuation chars.
-extern void unescape_buffer(strbuf *buf)
-{
-	int r, w;
-
-	for (r = 0, w = 0; r < buf->size; ++r) {
-		if (buf->ptr[r] == '\\' && ispunct(buf->ptr[r + 1]))
-			continue;
-
-		buf->ptr[w++] = buf->ptr[r];
-	}
-
-	strbuf_truncate(buf, w);
-}
-
 // Clean a URL: remove surrounding whitespace and surrounding <>,
 // and remove \ that escape punctuation.
-static unsigned char *clean_url(chunk *url)
+unsigned char *clean_url(chunk *url)
 {
 	strbuf buf = GH_BUF_INIT;
 
@@ -607,11 +478,11 @@ static unsigned char *clean_url(chunk *url)
 		houdini_unescape_html_f(&buf, url->data, url->len);
 	}
 
-	unescape_buffer(&buf);
+	strbuf_unescape(&buf);
 	return strbuf_detach(&buf);
 }
 
-static unsigned char *clean_autolink(chunk *url, int is_email)
+unsigned char *clean_autolink(chunk *url, int is_email)
 {
 	strbuf buf = GH_BUF_INIT;
 
@@ -628,7 +499,7 @@ static unsigned char *clean_autolink(chunk *url, int is_email)
 }
 
 // Clean a title: remove surrounding quotes and remove \ that escape punctuation.
-static unsigned char *clean_title(chunk *title)
+unsigned char *clean_title(chunk *title)
 {
 	strbuf buf = GH_BUF_INIT;
 	unsigned char first, last;
@@ -648,7 +519,7 @@ static unsigned char *clean_title(chunk *title)
 		houdini_unescape_html_f(&buf, title->data, title->len);
 	}
 
-	unescape_buffer(&buf);
+	strbuf_unescape(&buf);
 	return strbuf_detach(&buf);
 }
 
@@ -810,7 +681,7 @@ static node_inl* handle_left_bracket(subject* subj)
 			} else {
 				// if we get here, we matched a label but didn't get further:
 				subj->pos = endlabel;
-				lab = parse_chunk_inlines(&rawlabel, subj->reference_map);
+				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
 						append_inlines(lab,
 							make_str(chunk_literal("]"))));
@@ -834,13 +705,13 @@ static node_inl* handle_left_bracket(subject* subj)
 			}
 
 			// lookup rawlabel in subject->reference_map:
-			ref = lookup_reference(subj->reference_map, &reflabel);
+			ref = reference_lookup(subj->refmap, &reflabel);
 			if (ref != NULL) { // found
 				lab = parse_chunk_inlines(&rawlabel, NULL);
 				result = make_ref_link(lab, ref);
 			} else {
 				subj->pos = endlabel;
-				lab = parse_chunk_inlines(&rawlabel, subj->reference_map);
+				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
 						append_inlines(lab, make_str(chunk_literal("]"))));
 			}
@@ -887,7 +758,7 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 	return result;
 }
 
-node_inl *parse_chunk_inlines(chunk *chunk, reference** refmap)
+node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
 {
 	subject subj;
 	subject_from_chunk(&subj, chunk, refmap);
@@ -987,7 +858,7 @@ static int parse_inline(subject* subj, node_inl ** last)
 	return 1;
 }
 
-extern node_inl* parse_inlines(strbuf *input, reference** refmap)
+extern node_inl* parse_inlines(strbuf *input, reference_map *refmap)
 {
 	subject subj;
 	subject_from_buf(&subj, input, refmap);
@@ -1009,7 +880,7 @@ void spnl(subject* subj)
 // Modify refmap if a reference is encountered.
 // Return 0 if no reference found, otherwise position of subject
 // after reference is parsed.
-extern int parse_reference(strbuf *input, reference** refmap)
+int parse_reference_inline(strbuf *input, reference_map *refmap)
 {
 	subject subj;
 
@@ -1019,7 +890,6 @@ extern int parse_reference(strbuf *input, reference** refmap)
 
 	int matchlen = 0;
 	int beforetitle;
-	reference *new = NULL;
 
 	subject_from_buf(&subj, input, NULL);
 
@@ -1065,9 +935,7 @@ extern int parse_reference(strbuf *input, reference** refmap)
 		return 0;
 	}
 	// insert reference into refmap
-	new = make_reference(&lab, &url, &title);
-	add_reference(refmap, new);
-
+	reference_create(refmap, &lab, &url, &title);
 	return subj.pos;
 }
 
