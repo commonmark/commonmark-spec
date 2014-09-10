@@ -4024,7 +4024,7 @@ for efficient parsing strategies that do not backtrack:
     (a) it is not part of a sequence of four or more unescaped `*`s,
     (b) it is not followed by whitespace, and
     (c) either it is not followed by a `*` character or it is
-        followed immediately by strong emphasis.
+        followed immediately by emphasis or strong emphasis.
 
 2.  A single `_` character [can open emphasis](#can-open-emphasis) iff
 
@@ -4032,7 +4032,7 @@ for efficient parsing strategies that do not backtrack:
     (b) it is not followed by whitespace,
     (c) is is not preceded by an ASCII alphanumeric character, and
     (d) either it is not followed by a `_` character or it is
-        followed immediately by strong emphasis.
+        followed immediately by emphasis or strong emphasis.
 
 3.  A single `*` character [can close emphasis](#can-close-emphasis)
     <a id="can-close-emphasis"></a> iff
@@ -4087,6 +4087,11 @@ for efficient parsing strategies that do not backtrack:
     sequentially until a delimiter that [can close strong
     emphasis](#can-close-strong-emphasis), and that uses the
     same character (`_` or `*`) as the opening delimiter, is reached.
+
+11. In case of ambiguity, strong emphasis takes precedence.  Thus,
+    `**foo**` is `<strong>foo</strong>`, not `<em><em>foo</em></em>`,
+    and `***foo***` is `<strong><em>foo</em></strong>`, not
+    `<em><strong>foo</strong></em>` or `<em><em><em>foo</em></em></em>`.
 
 These rules can be illustrated through a series of examples.
 
