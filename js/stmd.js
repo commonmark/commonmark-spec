@@ -294,12 +294,16 @@ var parseEmphasis = function() {
     var delims_to_match = numdelims;
     while (true) {
         res = this.scanDelims(c);
+        numclosedelims = res.numdelims;
         if (res.can_close) {
-            if (res.numdelims >= 2 && delims_to_match >= 2) {
+            if (numclosedelims === 3 && delims_to_match === 3) {
+                this.pos += 3;
+                return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
+            } else if (numclosedelims >= 2 && delims_to_match >= 2) {
                 delims_to_match -= 2;
                 this.pos += 2;
                 inlines = [{t: 'Strong', c: inlines}];
-            } else if (res.numdelims >= 1 && delims_to_match >= 1) {
+            } else if (numclosedelims >= 1 && delims_to_match >= 1) {
                 delims_to_match -= 1;
                 this.pos += 1;
                 inlines = [{t: 'Emph', c: inlines}];
