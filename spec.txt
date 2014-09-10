@@ -1219,6 +1219,27 @@ aaa
 </code></pre>
 .
 
+Closing fences may be indented by 0-3 spaces:
+
+.
+```
+code
+    ```
+.
+<pre><code>code
+</code></pre>
+.
+
+.
+```
+code
+    ```
+.
+<pre><code>code
+    ```
+</code></pre>
+.
+
 Four spaces indentation produces an indented code block:
 
 .
