@@ -767,10 +767,13 @@ node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
 
 static int subject_find_special_char(subject *subj)
 {
+	static const char CHARS[] = "\n\\`&_*[]<!";
+	static const size_t CHARS_SIZE = sizeof(CHARS) - 1;
+
 	int n = subj->pos + 1;
 
 	while (n < subj->input.len) {
-		if (strchr("\n\\`&_*[]<!", subj->input.data[n]))
+		if (memchr(CHARS, subj->input.data[n], CHARS_SIZE))
 			return n;
 		n++;
 	}
