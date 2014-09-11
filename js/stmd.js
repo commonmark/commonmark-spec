@@ -1401,7 +1401,7 @@
         case 'Code':
             return inTags('code', [], this.escape(inline.c));
         default:
-            console.log("Uknown inline type " + inline.t);
+            console.log("Unknown inline type " + inline.t);
             return "";
         }
     };
@@ -1465,7 +1465,7 @@
         case 'HorizontalRule':
             return inTags('hr',[],"",true);
         default:
-            console.log("Uknown block type " + block.t);
+            console.log("Unknown block type " + block.t);
             return "";
         }
     };
