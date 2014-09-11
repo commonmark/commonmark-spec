@@ -33,12 +33,12 @@ add_executable(${PROGRAM_stmd}
                 ${PROGRAM_stmd_SOURCES})
 
 if (MSVC)
-set_property(TARGET PROGRAM_stmd 
+set_property(TARGET ${PROGRAM_stmd} 
                      APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO) 
 # if sometimes libs are needed ...
 #target_link_libraries(${PROGRAM_chronolog})
 endif(MSVC)
-install(TARGETS PROGRAM_stmd
+install(TARGETS ${PROGRAM_stmd}
 RUNTIME DESTINATION bin 
 BUNDLE DESTINATION Applications)
 
