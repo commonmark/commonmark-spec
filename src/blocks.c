@@ -1,747 +1,770 @@
 #include <stdlib.h>
+#include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <ctype.h>
-#include "bstrlib.h"
-#include "stmd.h"
-#include "uthash.h"
-#include "debug.h"
-#include "scanners.h"
 
-static block* make_block(int tag, int start_line, int start_column)
+#include "stmd.h"
+#include "utf8.h"
+#include "scanners.h"
+#include "inlines.h"
+#include "html/houdini.h"
+
+#define peek_at(i, n) (i)->data[n]
+
+static void incorporate_line(strbuf *ln, int line_number, node_block** curptr);
+static void finalize(node_block* b, int line_number);
+
+static node_block* make_block(int tag, int start_line, int start_column)
 {
-  block* e;
-  e = (block*) malloc(sizeof(block));
-  e->tag = tag;
-  e->open = true;
-  e->last_line_blank = false;
-  e->start_line = start_line;
-  e->start_column = start_column;
-  e->end_line = start_line;
-  e->children = NULL;
-  e->last_child = NULL;
-  e->parent = NULL;
-  e->top = NULL;
-  e->attributes.refmap = NULL;
-  e->string_content = bfromcstr("");
-  e->inline_content = NULL;
-  e->next = NULL;
-  e->prev = NULL;
-  return e;
+	node_block* e;
+
+	e = malloc(sizeof(node_block));
+	memset(e, 0x0, sizeof(*e));
+
+	e->tag = tag;
+	e->open = true;
+	e->start_line = start_line;
+	e->start_column = start_column;
+	e->end_line = start_line;
+	strbuf_init(&e->string_content, 32);
+
+	return e;
 }
 
-// Create a root document block.
-extern block* make_document()
+// Create a root document node_block.
+extern node_block* make_document()
 {
-  block * e = make_block(document, 1, 1);
-  reference * map = NULL;
-  reference ** refmap;
-  refmap = (reference**) malloc(sizeof(reference*));
-  *refmap = map;
-  e->attributes.refmap = refmap;
-  e->top = e;
-  return e;
+	node_block *e = make_block(BLOCK_DOCUMENT, 1, 1);
+	e->as.document.refmap = reference_map_new();
+	e->top = e;
+
+	return e;
 }
 
 // Returns true if line has only space characters, else false.
-bool is_blank(bstring s, int offset)
+bool is_blank(strbuf *s, int offset)
 {
-  char c;
-  while ((c = bchar(s, offset))) {
-    if (c == '\n') {
-      return true;
-    } else if (c == ' ') {
-      offset++;
-    } else {
-      return false;
-    }
-  }
-  return true;
+	while (offset < s->size) {
+		switch (s->ptr[offset]) {
+			case '\n':
+				return true;
+			case ' ':
+				offset++;
+				break;
+			default:
+				return false;
+		}
+	}
+
+	return true;
 }
 
 static inline bool can_contain(int parent_type, int child_type)
 {
-  return ( parent_type == document ||
-           parent_type == block_quote ||
-           parent_type == list_item ||
-           (parent_type == list && child_type == list_item) );
+	return ( parent_type == BLOCK_DOCUMENT ||
+			parent_type == BLOCK_BQUOTE ||
+			parent_type == BLOCK_LIST_ITEM ||
+			(parent_type == BLOCK_LIST && child_type == BLOCK_LIST_ITEM) );
 }
 
 static inline bool accepts_lines(int block_type)
 {
-  return (block_type == paragraph ||
-          block_type == atx_header ||
-          block_type == indented_code ||
-          block_type == fenced_code);
+	return (block_type == BLOCK_PARAGRAPH ||
+			block_type == BLOCK_ATX_HEADER ||
+			block_type == BLOCK_INDENTED_CODE ||
+			block_type == BLOCK_FENCED_CODE);
 }
 
-static int add_line(block* block, bstring ln, int offset)
+static void add_line(node_block* node_block, chunk *ch, int offset)
 {
-  bstring s = bmidstr(ln, offset, blength(ln) - offset);
-  check(block->open, "attempted to add line (%s) to closed container (%d)",
-        ln->data, block->tag);
-  check(bformata(block->string_content, "%s", s->data) == 0,
-        "could not append line to string_content");
-  bdestroy(s);
-  return 0;
- error:
-  return -1;
+	assert(node_block->open);
+	strbuf_put(&node_block->string_content, ch->data + offset, ch->len - offset);
 }
 
-static int remove_trailing_blank_lines(bstring ln)
+static void remove_trailing_blank_lines(strbuf *ln)
 {
-  bstring tofind = bfromcstr(" \t\r\n");
-  int pos;
-  // find last nonspace:
-  pos = bninchrr(ln, blength(ln) - 1, tofind);
-  if (pos == BSTR_ERR) { // all spaces
-    bassigncstr(ln, "");
-  } else {
-    // find next newline after it
-    pos = bstrchrp(ln, '\n', pos);
-    if (pos != BSTR_ERR) {
-      check(bdelete(ln, pos, blength(ln) - pos) != BSTR_ERR,
-        "failed to delete trailing blank lines");
-    }
-  }
-  bdestroy(tofind);
-  return 0;
- error:
-  return -1;
+	int i;
+
+	for (i = ln->size - 1; i >= 0; --i) {
+		char c = ln->ptr[i];
+
+		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
+			break;
+	}
+
+	if (i < 0) {
+		strbuf_clear(ln);
+		return;
+	}
+
+	i = strbuf_strchr(ln, '\n', i);
+	if (i >= 0)
+		strbuf_truncate(ln, i);
 }
 
-// Check to see if a block ends with a blank line, descending
+// Check to see if a node_block ends with a blank line, descending
 // if needed into lists and sublists.
-static bool ends_with_blank_line(block* block)
+static bool ends_with_blank_line(node_block* node_block)
 {
-  if (block->last_line_blank) {
-    return true;
-  }
-  if ((block->tag == list || block->tag == list_item) && block->last_child) {
-    return ends_with_blank_line(block->last_child);
-  } else {
-    return false;
-  }
+	if (node_block->last_line_blank) {
+		return true;
+	}
+	if ((node_block->tag == BLOCK_LIST || node_block->tag == BLOCK_LIST_ITEM) && node_block->last_child) {
+		return ends_with_blank_line(node_block->last_child);
+	} else {
+		return false;
+	}
 }
 
 // Break out of all containing lists
-static int break_out_of_lists(block ** bptr, int line_number)
+static int break_out_of_lists(node_block ** bptr, int line_number)
 {
-  block * container = *bptr;
-  block * b = container->top;
-  // find first containing list:
-  while (b && b->tag != list) {
-    b = b->last_child;
-  }
-  if (b) {
-    while (container && container != b) {
-      finalize(container, line_number);
-      container = container->parent;
-    }
-    finalize(b, line_number);
-    *bptr = b->parent;
-  }
-  return 0;
+	node_block *container = *bptr;
+	node_block *b = container->top;
+	// find first containing BLOCK_LIST:
+	while (b && b->tag != BLOCK_LIST) {
+		b = b->last_child;
+	}
+	if (b) {
+		while (container && container != b) {
+			finalize(container, line_number);
+			container = container->parent;
+		}
+		finalize(b, line_number);
+		*bptr = b->parent;
+	}
+	return 0;
 }
 
 
-extern int finalize(block* b, int line_number)
+static void finalize(node_block* b, int line_number)
 {
-  int firstlinelen;
-  int pos;
-  block* item;
-  block* subitem;
+	int firstlinelen;
+	int pos;
+	node_block* item;
+	node_block* subitem;
 
-  check(b != NULL, "finalize called on null block");
-  if (!b->open) {
-    return 0; // don't do anything if the block is already closed
-  }
-  b->open = false;
-  if (line_number > b->start_line) {
-    b->end_line = line_number - 1;
-  } else {
-    b->end_line = line_number;
-  }
+	if (!b->open)
+		return; // don't do anything if the node_block is already closed
 
-  switch (b->tag) {
+	b->open = false;
+	if (line_number > b->start_line) {
+		b->end_line = line_number - 1;
+	} else {
+		b->end_line = line_number;
+	}
 
-  case paragraph:
-    pos = 0;
-    while (bchar(b->string_content, 0) == '[' &&
-           (pos = parse_reference(b->string_content,
-                                  b->top->attributes.refmap))) {
-      bdelete(b->string_content, 0, pos);
-    }
-    if (is_blank(b->string_content, 0)) {
-      b->tag = reference_def;
-    }
-    break;
+	switch (b->tag) {
+		case BLOCK_PARAGRAPH:
+			pos = 0;
+			while (strbuf_at(&b->string_content, 0) == '[' &&
+					(pos = parse_reference_inline(&b->string_content, b->top->as.document.refmap))) {
 
-  case indented_code:
-    remove_trailing_blank_lines(b->string_content);
-    bformata(b->string_content, "\n");
-    break;
+				strbuf_drop(&b->string_content, pos);
+			}
+			if (is_blank(&b->string_content, 0)) {
+				b->tag = BLOCK_REFERENCE_DEF;
+			}
+			break;
 
-  case fenced_code:
-    // first line of contents becomes info
-    firstlinelen = bstrchr(b->string_content, '\n');
-    b->attributes.fenced_code_data.info =
-      bmidstr(b->string_content, 0, firstlinelen);
-    bdelete(b->string_content, 0, firstlinelen + 1); // +1 for \n
-    btrimws(b->attributes.fenced_code_data.info);
-    unescape(b->attributes.fenced_code_data.info);
-    break;
+		case BLOCK_INDENTED_CODE:
+			remove_trailing_blank_lines(&b->string_content);
+			strbuf_putc(&b->string_content, '\n');
+			break;
 
-  case list: // determine tight/loose status
-    b->attributes.list_data.tight = true; // tight by default
-    item = b->children;
+		case BLOCK_FENCED_CODE:
+			// first line of contents becomes info
+			firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
-    while (item) {
-      // check for non-final non-empty list item ending with blank line:
-      if (item->last_line_blank && item->next) {
-        b->attributes.list_data.tight = false;
-        break;
-      }
-      // recurse into children of list item, to see if there are
-      // spaces between them:
-      subitem = item->children;
-      while (subitem) {
-        if (ends_with_blank_line(subitem) &&
-            (item->next || subitem->next)) {
-          b->attributes.list_data.tight = false;
-          break;
-        }
-        subitem = subitem->next;
-      }
-      if (!(b->attributes.list_data.tight)) {
-        break;
-      }
-      item = item->next;
-    }
+			strbuf_init(&b->as.code.info, 0);
+			houdini_unescape_html_f(
+				&b->as.code.info,
+				b->string_content.ptr,
+				firstlinelen
+			);
 
-    break;
+			strbuf_drop(&b->string_content, firstlinelen + 1);
 
-  default:
-    break;
-  }
+			strbuf_trim(&b->as.code.info);
+			strbuf_unescape(&b->as.code.info);
+			break;
 
-  return 0;
- error:
-  return -1;
+		case BLOCK_LIST: // determine tight/loose status
+			b->as.list.tight = true; // tight by default
+			item = b->children;
+
+			while (item) {
+				// check for non-final non-empty list item ending with blank line:
+				if (item->last_line_blank && item->next) {
+					b->as.list.tight = false;
+					break;
+				}
+				// recurse into children of list item, to see if there are
+				// spaces between them:
+				subitem = item->children;
+				while (subitem) {
+					if (ends_with_blank_line(subitem) &&
+							(item->next || subitem->next)) {
+						b->as.list.tight = false;
+						break;
+					}
+					subitem = subitem->next;
+				}
+				if (!(b->as.list.tight)) {
+					break;
+				}
+				item = item->next;
+			}
+
+			break;
+
+		default:
+			break;
+	}
 }
 
-// Add a block as child of another.  Return pointer to child.
-extern block* add_child(block* parent,
-                        int block_type, int start_line, int start_column)
+// Add a node_block as child of another.  Return pointer to child.
+static node_block* add_child(node_block* parent,
+		int block_type, int start_line, int start_column)
 {
-  // if 'parent' isn't the kind of block that can accept this child,
-  // then back up til we hit a block that can.
-  while (!can_contain(parent->tag, block_type)) {
-    finalize(parent, start_line);
-    parent = parent->parent;
-  }
+	assert(parent);
 
-  check(parent != NULL, "parent container cannot accept children");
+	// if 'parent' isn't the kind of node_block that can accept this child,
+	// then back up til we hit a node_block that can.
+	while (!can_contain(parent->tag, block_type)) {
+		finalize(parent, start_line);
+		parent = parent->parent;
+	}
 
-  block* child = make_block(block_type, start_line, start_column);
-  child->parent = parent;
-  child->top = parent->top;
+	node_block* child = make_block(block_type, start_line, start_column);
+	child->parent = parent;
+	child->top = parent->top;
 
-  if (parent->last_child) {
-    parent->last_child->next = child;
-    child->prev = parent->last_child;
-  } else {
-    parent->children = child;
-    child->prev = NULL;
-  }
-  parent->last_child = child;
-  return child;
- error:
-  return NULL;
+	if (parent->last_child) {
+		parent->last_child->next = child;
+		child->prev = parent->last_child;
+	} else {
+		parent->children = child;
+		child->prev = NULL;
+	}
+	parent->last_child = child;
+	return child;
 }
 
-// Free a block list and any children.
-extern void free_blocks(block* e)
+// Free a node_block list and any children.
+void stmd_free_nodes(node_block *e)
 {
-  block * next;
-  while (e != NULL) {
-    next = e->next;
-    free_inlines(e->inline_content);
-    bdestroy(e->string_content);
-    if (e->tag == fenced_code) {
-      bdestroy(e->attributes.fenced_code_data.info);
-    } else if (e->tag == document) {
-      free_reference_map(e->attributes.refmap);
-    }
-    free_blocks(e->children);
-    free(e);
-    e = next;
-  }
+	node_block * next;
+	while (e != NULL) {
+		next = e->next;
+		free_inlines(e->inline_content);
+		strbuf_free(&e->string_content);
+		if (e->tag == BLOCK_FENCED_CODE) {
+			strbuf_free(&e->as.code.info);
+		} else if (e->tag == BLOCK_DOCUMENT) {
+			reference_map_free(e->as.document.refmap);
+		}
+		stmd_free_nodes(e->children);
+		free(e);
+		e = next;
+	}
 }
 
-// Walk through block and all children, recursively, parsing
+// Walk through node_block and all children, recursively, parsing
 // string content into inline content where appropriate.
-int process_inlines(block* cur, reference** refmap)
+void process_inlines(node_block* cur, reference_map *refmap)
 {
-  switch (cur->tag) {
+	switch (cur->tag) {
+		case BLOCK_PARAGRAPH:
+		case BLOCK_ATX_HEADER:
+		case BLOCK_SETEXT_HEADER:
+			cur->inline_content = parse_inlines(&cur->string_content, refmap);
+			break;
 
-  case paragraph:
-  case atx_header:
-  case setext_header:
-    check(cur->string_content != NULL, "string_content is NULL");
-    cur->inline_content = parse_inlines(cur->string_content, refmap);
-    bdestroy(cur->string_content);
-    cur->string_content = NULL;
-    break;
+		default:
+			break;
+	}
 
-  default:
-    break;
-  }
-
-  block * child = cur->children;
-  while (child != NULL) {
-    process_inlines(child, refmap);
-    child = child->next;
-  }
-
-  return 0;
- error:
-  return -1;
+	node_block *child = cur->children;
+	while (child != NULL) {
+		process_inlines(child, refmap);
+		child = child->next;
+	}
 }
 
 // Attempts to parse a list item marker (bullet or enumerated).
 // On success, returns length of the marker, and populates
 // data with the details.  On failure, returns 0.
-static int parse_list_marker(bstring ln, int pos,
-                             struct ListData ** dataptr)
+static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 {
-  char c;
-  int startpos;
-  int start = 1;
-  struct ListData * data;
+	unsigned char c;
+	int startpos;
+	struct ListData * data;
 
-  startpos = pos;
-  c = bchar(ln, pos);
+	startpos = pos;
+	c = peek_at(input, pos);
 
-  if ((c == '*' || c == '-' || c == '+') && !scan_hrule(ln, pos)) {
-    pos++;
-    if (!isspace(bchar(ln, pos))) {
-      return 0;
-    }
-    data = malloc(sizeof(struct ListData));
-    data->marker_offset = 0; // will be adjusted later
-    data->list_type = bullet;
-    data->bullet_char = c;
-    data->start = 1;
-    data->delimiter = period;
-    data->tight = false;
+	if ((c == '*' || c == '-' || c == '+') && !scan_hrule(input, pos)) {
+		pos++;
+		if (!isspace(peek_at(input, pos))) {
+			return 0;
+		}
+		data = malloc(sizeof(struct ListData));
+		data->marker_offset = 0; // will be adjusted later
+		data->list_type = bullet;
+		data->bullet_char = c;
+		data->start = 1;
+		data->delimiter = period;
+		data->tight = false;
 
-  } else if (isdigit(c)) {
+	} else if (isdigit(c)) {
+		int start = 0;
 
-    pos++;
-    while (isdigit(bchar(ln, pos))) {
-      pos++;
-    }
+		do {
+			start = (10 * start) + (peek_at(input, pos) - '0');
+			pos++;
+		} while (isdigit(peek_at(input, pos)));
 
-    if (!sscanf((char *) ln->data + startpos, "%d", &start)) {
-      log_err("sscanf failed");
-      return 0;
-    }
+		c = peek_at(input, pos);
+		if (c == '.' || c == ')') {
+			pos++;
+			if (!isspace(peek_at(input, pos))) {
+				return 0;
+			}
+			data = malloc(sizeof(struct ListData));
+			data->marker_offset = 0; // will be adjusted later
+			data->list_type = ordered;
+			data->bullet_char = 0;
+			data->start = start;
+			data->delimiter = (c == '.' ? period : parens);
+			data->tight = false;
+		} else {
+			return 0;
+		}
 
-    c = bchar(ln, pos);
-    if (c == '.' || c == ')') {
-      pos++;
-      if (!isspace(bchar(ln, pos))) {
-        return 0;
-      }
-      data = malloc(sizeof(struct ListData));
-      data->marker_offset = 0; // will be adjusted later
-      data->list_type = ordered;
-      data->bullet_char = 0;
-      data->start = start;
-      data->delimiter = (c == '.' ? period : parens);
-      data->tight = false;
-    } else {
-      return 0;
-    }
+	} else {
+		return 0;
+	}
 
-  } else {
-    return 0;
-  }
-
-  *dataptr = data;
-  return (pos - startpos);
+	*dataptr = data;
+	return (pos - startpos);
 }
 
 // Return 1 if list item belongs in list, else 0.
-static int lists_match(struct ListData list_data,
-                       struct ListData item_data)
+static int lists_match(struct ListData *list_data, struct ListData *item_data)
 {
-  return (list_data.list_type == item_data.list_type &&
-          list_data.delimiter == item_data.delimiter &&
-          // list_data.marker_offset == item_data.marker_offset &&
-          list_data.bullet_char == item_data.bullet_char);
+	return (list_data->list_type == item_data->list_type &&
+			list_data->delimiter == item_data->delimiter &&
+			// list_data->marker_offset == item_data.marker_offset &&
+			list_data->bullet_char == item_data->bullet_char);
 }
 
-// Process one line at a time, modifying a block.
-// Returns 0 if successful.  curptr is changed to point to
-// the currently open block.
-extern int incorporate_line(bstring ln, int line_number, block** curptr)
+static node_block *finalize_document(node_block *document, int linenum)
 {
-  block* last_matched_container;
-  int offset = 0;
-  int matched = 0;
-  int lev = 0;
-  int i;
-  struct ListData * data = NULL;
-  bool all_matched = true;
-  block* container;
-  block* cur = *curptr;
-  bool blank = false;
-  int first_nonspace;
-  int indent;
-
-  // detab input line
-  check(bdetab(ln, 1) != BSTR_ERR,
-        "invalid UTF-8 sequence in line %d\n", line_number);
-
-  // container starts at the document root.
-  container = cur->top;
-
-  // for each containing block, try to parse the associated line start.
-  // bail out on failure:  container will point to the last matching block.
-
-  while (container->last_child && container->last_child->open) {
-    container = container->last_child;
-
-    first_nonspace = offset;
-    while (bchar(ln, first_nonspace) == ' ') {
-      first_nonspace++;
-    }
-
-    indent = first_nonspace - offset;
-    blank = bchar(ln, first_nonspace) == '\n';
-
-    if (container->tag == block_quote) {
-
-      matched = indent <= 3 && bchar(ln, first_nonspace) == '>';
-      if (matched) {
-        offset = first_nonspace + 1;
-        if (bchar(ln, offset) == ' ') {
-          offset++;
-        }
-      } else {
-        all_matched = false;
-      }
-
-    } else if (container->tag == list_item) {
-
-      if (indent >= container->attributes.list_data.marker_offset +
-          container->attributes.list_data.padding) {
-        offset += container->attributes.list_data.marker_offset +
-          container->attributes.list_data.padding;
-      } else if (blank) {
-        offset = first_nonspace;
-      } else {
-        all_matched = false;
-      }
-
-    } else if (container->tag == indented_code) {
-
-      if (indent >= CODE_INDENT) {
-        offset += CODE_INDENT;
-      } else if (blank) {
-        offset = first_nonspace;
-      } else {
-        all_matched = false;
-      }
-
-    } else if (container->tag == atx_header ||
-               container->tag == setext_header) {
-
-      // a header can never contain more than one line
-      all_matched = false;
-
-    } else if (container->tag == fenced_code) {
-
-      // skip optional spaces of fence offset
-      i = container->attributes.fenced_code_data.fence_offset;
-      while (i > 0 && bchar(ln, offset) == ' ') {
-        offset++;
-        i--;
-      }
-
-    } else if (container->tag == html_block) {
-
-      if (blank) {
-        all_matched = false;
-      }
-
-    } else if (container->tag == paragraph) {
-
-      if (blank) {
-        container->last_line_blank =true;
-        all_matched = false;
-      }
-
-    }
-
-    if (!all_matched) {
-      container = container->parent;  // back up to last matching block
-      break;
-    }
-  }
-
-  last_matched_container = container;
-
-  // check to see if we've hit 2nd blank line, break out of list:
-  if (blank && container->last_line_blank) {
-    break_out_of_lists(&container, line_number);
-  }
-
-  // unless last matched container is code block, try new container starts:
-  while (container->tag != fenced_code && container->tag != indented_code &&
-         container->tag != html_block) {
-
-    first_nonspace = offset;
-    while (bchar(ln, first_nonspace) == ' ') {
-      first_nonspace++;
-    }
-
-    indent = first_nonspace - offset;
-    blank = bchar(ln, first_nonspace) == '\n';
-
-    if (indent >= CODE_INDENT) {
-
-      if (cur->tag != paragraph && !blank) {
-        offset += CODE_INDENT;
-        container = add_child(container, indented_code, line_number, offset + 1);
-      } else { // indent > 4 in lazy line
-        break;
-      }
-
-    } else if (bchar(ln, first_nonspace) == '>') {
-
-      offset = first_nonspace + 1;
-      // optional following character
-      if (bchar(ln, offset) == ' ') {
-        offset++;
-      }
-      container = add_child(container, block_quote, line_number, offset + 1);
-
-    } else if ((matched = scan_atx_header_start(ln, first_nonspace))) {
-
-      offset = first_nonspace + matched;
-      container = add_child(container, atx_header, line_number, offset + 1);
-      int hashpos = bstrchrp(ln, '#', first_nonspace);
-      check(hashpos != BSTR_ERR, "no # found in atx header start");
-      int level = 0;
-      while (bchar(ln, hashpos) == '#') {
-        level++;
-        hashpos++;
-      }
-      container->attributes.header_level = level;
-
-    } else if ((matched = scan_open_code_fence(ln, first_nonspace))) {
-
-      container = add_child(container, fenced_code, line_number,
-          first_nonspace + 1);
-      container->attributes.fenced_code_data.fence_char = bchar(ln,
-          first_nonspace);
-      container->attributes.fenced_code_data.fence_length = matched;
-      container->attributes.fenced_code_data.fence_offset =
-        first_nonspace - offset;
-      offset = first_nonspace + matched;
-
-    } else if ((matched = scan_html_block_tag(ln, first_nonspace))) {
-
-      container = add_child(container, html_block, line_number,
-                            first_nonspace + 1);
-      // note, we don't adjust offset because the tag is part of the text
-
-    } else if (container->tag == paragraph &&
-              (lev = scan_setext_header_line(ln, first_nonspace)) &&
-               // check that there is only one line in the paragraph:
-               bstrrchrp(container->string_content, '\n',
-                         blength(container->string_content) - 2) == BSTR_ERR) {
-
-        container->tag = setext_header;
-        container->attributes.header_level = lev;
-        offset = blength(ln) - 1;
-
-    } else if (!(container->tag == paragraph && !all_matched) &&
-               (matched = scan_hrule(ln, first_nonspace))) {
-
-      // it's only now that we know the line is not part of a setext header:
-      container = add_child(container, hrule, line_number, first_nonspace + 1);
-      finalize(container, line_number);
-      container = container->parent;
-      offset = blength(ln) - 1;
-
-    } else if ((matched = parse_list_marker(ln, first_nonspace, &data))) {
-
-        // compute padding:
-        offset = first_nonspace + matched;
-        i = 0;
-        while (i <= 5 && bchar(ln, offset + i) == ' ') {
-          i++;
-        }
-        // i = number of spaces after marker, up to 5
-        if (i >= 5 || i < 1 || bchar(ln, offset) == '\n') {
-          data->padding = matched + 1;
-          if (i > 0) {
-            offset += 1;
-          }
-        } else {
-          data->padding = matched + i;
-          offset += i;
-        }
-
-        // check container; if it's a list, see if this list item
-        // can continue the list; otherwise, create a list container.
-
-        data->marker_offset = indent;
-
-        if (container->tag != list ||
-            !lists_match(container->attributes.list_data, *data)) {
-          container = add_child(container, list, line_number,
-              first_nonspace + 1);
-          container->attributes.list_data = *data;
-        }
-
-        // add the list item
-        container = add_child(container, list_item, line_number,
-            first_nonspace + 1);
-        container->attributes.list_data = *data;
-        free(data);
-
-    } else {
-      break;
-    }
-
-    if (accepts_lines(container->tag)) {
-      // if it's a line container, it can't contain other containers
-      break;
-    }
-  }
-
-  // what remains at offset is a text line.  add the text to the
-  // appropriate container.
-
-  first_nonspace = offset;
-  while (bchar(ln, first_nonspace) == ' ') {
-    first_nonspace++;
-  }
-
-  indent = first_nonspace - offset;
-  blank = bchar(ln, first_nonspace) == '\n';
-
-  // block quote lines are never blank as they start with >
-  // and we don't count blanks in fenced code for purposes of tight/loose
-  // lists or breaking out of lists.  we also don't set last_line_blank
-  // on an empty list item.
-  container->last_line_blank = (blank &&
-                                container->tag != block_quote &&
-                                container->tag != fenced_code &&
-                                !(container->tag == list_item &&
-                                  container->children == NULL &&
-                                  container->start_line == line_number));
-
-    block *cont = container;
-    while (cont->parent) {
-      cont->parent->last_line_blank = false;
-      cont = cont->parent;
-    }
-
-  if (cur != last_matched_container &&
-      container == last_matched_container &&
-      !blank &&
-      cur->tag == paragraph &&
-      blength(cur->string_content) > 0) {
-
-    check(add_line(cur, ln, offset) == 0, "could not add line");
-
-  } else { // not a lazy continuation
-
-    // finalize any blocks that were not matched and set cur to container:
-    while (cur != last_matched_container) {
-
-      finalize(cur, line_number);
-      cur = cur->parent;
-      check(cur != NULL, "cur is NULL, last_matched_container->tag = %d",
-            last_matched_container->tag);
-
-    }
-
-    if (container->tag == indented_code) {
-
-      check(add_line(container, ln, offset) == 0, "could not add line");
-
-    } else if (container->tag == fenced_code) {
-
-      matched = (indent <= 3
-        && bchar(ln, first_nonspace) == container->attributes.fenced_code_data.fence_char)
-        && scan_close_code_fence(ln, first_nonspace,
-                                 container->attributes.fenced_code_data.fence_length);
-      if (matched) {
-        // if closing fence, don't add line to container; instead, close it:
-        finalize(container, line_number);
-        container = container->parent; // back up to parent
-      } else {
-        check(add_line(container, ln, offset) == 0, "could not add line");
-      }
-
-    } else if (container->tag == html_block) {
-
-      check(add_line(container, ln, offset) == 0, "could not add line");
-
-    } else if (blank) {
-
-      // ??? do nothing
-
-    } else if (container->tag == atx_header) {
-
-      // chop off trailing ###s...use a scanner?
-      brtrimws(ln);
-      int p = blength(ln) - 1;
-      int numhashes = 0;
-      // if string ends in #s, remove these:
-      while (bchar(ln, p) == '#') {
-        p--;
-        numhashes++;
-      }
-      if (bchar(ln, p) == '\\') {
-        // the last # was escaped, so we include it.
-        p++;
-        numhashes--;
-      }
-      check(bdelete(ln, p + 1, numhashes) != BSTR_ERR,
-            "could not delete final hashes");
-      check(add_line(container, ln, first_nonspace) == 0, "could not add line");
-      finalize(container, line_number);
-      container = container->parent;
-
-    } else if (accepts_lines(container->tag)) {
-
-      check(add_line(container, ln, first_nonspace) == 0, "could not add line");
-
-    } else if (container->tag != hrule && container->tag != setext_header) {
-
-      // create paragraph container for line
-      container = add_child(container, paragraph, line_number, first_nonspace + 1);
-      check(add_line(container, ln, first_nonspace) == 0, "could not add line");
-
-    } else {
-
-      log_warn("Line %d with container type %d did not match any condition:\n\"%s\"",
-               line_number, container->tag, ln->data);
-
-    }
-    *curptr = container;
-  }
-
-  return 0;
- error:
-  return -1;
+	while (document != document->top) {
+		finalize(document, linenum);
+		document = document->parent;
+	}
+
+	finalize(document, linenum);
+	process_inlines(document, document->as.document.refmap);
+
+	return document;
+}
+
+extern node_block *stmd_parse_file(FILE *f)
+{
+	strbuf line = GH_BUF_INIT;
+	unsigned char buffer[4096];
+	int linenum = 1;
+	node_block *document = make_document();
+
+	while (fgets((char *)buffer, sizeof(buffer), f)) {
+		utf8proc_detab(&line, buffer, strlen((char *)buffer));
+		incorporate_line(&line, linenum, &document);
+		strbuf_clear(&line);
+		linenum++;
+	}
+
+	strbuf_free(&line);
+	return finalize_document(document, linenum);
+}
+
+extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len)
+{
+	strbuf line = GH_BUF_INIT;
+	int linenum = 1;
+	const unsigned char *end = buffer + len;
+	node_block *document = make_document();
+
+	while (buffer < end) {
+		const unsigned char *eol = memchr(buffer, '\n', end - buffer);
+
+		if (!eol) {
+			utf8proc_detab(&line, buffer, end - buffer);
+			buffer = end;
+		} else {
+			utf8proc_detab(&line, buffer, (eol - buffer) + 1);
+			buffer += (eol - buffer) + 1;
+		}
+
+		incorporate_line(&line, linenum, &document);
+		strbuf_clear(&line);
+		linenum++;
+	}
+
+	strbuf_free(&line);
+	return finalize_document(document, linenum);
+}
+
+static void chop_trailing_hashtags(chunk *ch)
+{
+	int n, orig_n;
+
+	chunk_rtrim(ch);
+	orig_n = n = ch->len - 1;
+
+	// if string ends in #s, remove these:
+	while (n >= 0 && peek_at(ch, n) == '#')
+		n--;
+
+	// the last # was escaped, so we include it.
+	if (n != orig_n && n >= 0 && peek_at(ch, n) == '\\')
+		n++;
+
+	ch->len = n + 1;
+}
+
+// Process one line at a time, modifying a node_block.
+static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
+{
+	node_block* last_matched_container;
+	int offset = 0;
+	int matched = 0;
+	int lev = 0;
+	int i;
+	struct ListData * data = NULL;
+	bool all_matched = true;
+	node_block* container;
+	node_block* cur = *curptr;
+	bool blank = false;
+	int first_nonspace;
+	int indent;
+	chunk input;
+
+	input.data = line->ptr;
+	input.len = line->size;
+
+	// container starts at the document root.
+	container = cur->top;
+
+	// for each containing node_block, try to parse the associated line start.
+	// bail out on failure:  container will point to the last matching node_block.
+
+	while (container->last_child && container->last_child->open) {
+		container = container->last_child;
+
+		first_nonspace = offset;
+		while (peek_at(&input, first_nonspace) == ' ') {
+			first_nonspace++;
+		}
+
+		indent = first_nonspace - offset;
+		blank = peek_at(&input, first_nonspace) == '\n';
+
+		if (container->tag == BLOCK_BQUOTE) {
+			matched = indent <= 3 && peek_at(&input, first_nonspace) == '>';
+			if (matched) {
+				offset = first_nonspace + 1;
+				if (peek_at(&input, offset) == ' ')
+					offset++;
+			} else {
+				all_matched = false;
+			}
+
+		} else if (container->tag == BLOCK_LIST_ITEM) {
+
+			if (indent >= container->as.list.marker_offset +
+					container->as.list.padding) {
+				offset += container->as.list.marker_offset +
+					container->as.list.padding;
+			} else if (blank) {
+				offset = first_nonspace;
+			} else {
+				all_matched = false;
+			}
+
+		} else if (container->tag == BLOCK_INDENTED_CODE) {
+
+			if (indent >= CODE_INDENT) {
+				offset += CODE_INDENT;
+			} else if (blank) {
+				offset = first_nonspace;
+			} else {
+				all_matched = false;
+			}
+
+		} else if (container->tag == BLOCK_ATX_HEADER ||
+				container->tag == BLOCK_SETEXT_HEADER) {
+
+			// a header can never contain more than one line
+			all_matched = false;
+
+		} else if (container->tag == BLOCK_FENCED_CODE) {
+
+			// skip optional spaces of fence offset
+			i = container->as.code.fence_offset;
+			while (i > 0 && peek_at(&input, offset) == ' ') {
+				offset++;
+				i--;
+			}
+
+		} else if (container->tag == BLOCK_HTML) {
+
+			if (blank) {
+				all_matched = false;
+			}
+
+		} else if (container->tag == BLOCK_PARAGRAPH) {
+
+			if (blank) {
+				container->last_line_blank = true;
+				all_matched = false;
+			}
+
+		}
+
+		if (!all_matched) {
+			container = container->parent;  // back up to last matching node_block
+			break;
+		}
+	}
+
+	last_matched_container = container;
+
+	// check to see if we've hit 2nd blank line, break out of list:
+	if (blank && container->last_line_blank) {
+		break_out_of_lists(&container, line_number);
+	}
+
+	// unless last matched container is code node_block, try new container starts:
+	while (container->tag != BLOCK_FENCED_CODE && container->tag != BLOCK_INDENTED_CODE &&
+			container->tag != BLOCK_HTML) {
+
+		first_nonspace = offset;
+		while (peek_at(&input, first_nonspace) == ' ')
+			first_nonspace++;
+
+		indent = first_nonspace - offset;
+		blank = peek_at(&input, first_nonspace) == '\n';
+
+		if (indent >= CODE_INDENT) {
+			if (cur->tag != BLOCK_PARAGRAPH && !blank) {
+				offset += CODE_INDENT;
+				container = add_child(container, BLOCK_INDENTED_CODE, line_number, offset + 1);
+			} else { // indent > 4 in lazy line
+				break;
+			}
+
+		} else if (peek_at(&input, first_nonspace) == '>') {
+
+			offset = first_nonspace + 1;
+			// optional following character
+			if (peek_at(&input, offset) == ' ')
+				offset++;
+			container = add_child(container, BLOCK_BQUOTE, line_number, offset + 1);
+
+		} else if ((matched = scan_atx_header_start(&input, first_nonspace))) {
+
+			offset = first_nonspace + matched;
+			container = add_child(container, BLOCK_ATX_HEADER, line_number, offset + 1);
+
+			int hashpos = chunk_strchr(&input, '#', first_nonspace);
+			int level = 0;
+
+			while (peek_at(&input, hashpos) == '#') {
+				level++;
+				hashpos++;
+			}
+			container->as.header.level = level;
+
+		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
+
+			container = add_child(container, BLOCK_FENCED_CODE, line_number, first_nonspace + 1);
+			container->as.code.fence_char = peek_at(&input, first_nonspace);
+			container->as.code.fence_length = matched;
+			container->as.code.fence_offset = first_nonspace - offset;
+			offset = first_nonspace + matched;
+
+		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {
+
+			container = add_child(container, BLOCK_HTML, line_number, first_nonspace + 1);
+			// note, we don't adjust offset because the tag is part of the text
+
+		} else if (container->tag == BLOCK_PARAGRAPH &&
+				(lev = scan_setext_header_line(&input, first_nonspace)) &&
+				// check that there is only one line in the paragraph:
+				strbuf_strrchr(&container->string_content, '\n',
+					strbuf_len(&container->string_content) - 2) < 0) {
+
+			container->tag = BLOCK_SETEXT_HEADER;
+			container->as.header.level = lev;
+			offset = input.len - 1;
+
+		} else if (!(container->tag == BLOCK_PARAGRAPH && !all_matched) &&
+				(matched = scan_hrule(&input, first_nonspace))) {
+
+			// it's only now that we know the line is not part of a setext header:
+			container = add_child(container, BLOCK_HRULE, line_number, first_nonspace + 1);
+			finalize(container, line_number);
+			container = container->parent;
+			offset = input.len - 1;
+
+		} else if ((matched = parse_list_marker(&input, first_nonspace, &data))) {
+
+			// compute padding:
+			offset = first_nonspace + matched;
+			i = 0;
+			while (i <= 5 && peek_at(&input, offset + i) == ' ') {
+				i++;
+			}
+			// i = number of spaces after marker, up to 5
+			if (i >= 5 || i < 1 || peek_at(&input, offset) == '\n') {
+				data->padding = matched + 1;
+				if (i > 0) {
+					offset += 1;
+				}
+			} else {
+				data->padding = matched + i;
+				offset += i;
+			}
+
+			// check container; if it's a list, see if this list item
+			// can continue the list; otherwise, create a list container.
+
+			data->marker_offset = indent;
+
+			if (container->tag != BLOCK_LIST ||
+					!lists_match(&container->as.list, data)) {
+				container = add_child(container, BLOCK_LIST, line_number,
+						first_nonspace + 1);
+
+				memcpy(&container->as.list, data, sizeof(*data));
+			}
+
+			// add the list item
+			container = add_child(container, BLOCK_LIST_ITEM, line_number,
+					first_nonspace + 1);
+			/* TODO: static */
+			memcpy(&container->as.list, data, sizeof(*data));
+			free(data);
+		} else {
+			break;
+		}
+
+		if (accepts_lines(container->tag)) {
+			// if it's a line container, it can't contain other containers
+			break;
+		}
+	}
+
+	// what remains at offset is a text line.  add the text to the
+	// appropriate container.
+
+	first_nonspace = offset;
+	while (peek_at(&input, first_nonspace) == ' ')
+		first_nonspace++;
+
+	indent = first_nonspace - offset;
+	blank = peek_at(&input, first_nonspace) == '\n';
+
+	// node_block quote lines are never blank as they start with >
+	// and we don't count blanks in fenced code for purposes of tight/loose
+	// lists or breaking out of lists.  we also don't set last_line_blank
+	// on an empty list item.
+	container->last_line_blank = (blank &&
+			container->tag != BLOCK_BQUOTE &&
+			container->tag != BLOCK_FENCED_CODE &&
+			!(container->tag == BLOCK_LIST_ITEM &&
+				container->children == NULL &&
+				container->start_line == line_number));
+
+	node_block *cont = container;
+	while (cont->parent) {
+		cont->parent->last_line_blank = false;
+		cont = cont->parent;
+	}
+
+	if (cur != last_matched_container &&
+			container == last_matched_container &&
+			!blank &&
+			cur->tag == BLOCK_PARAGRAPH &&
+			strbuf_len(&cur->string_content) > 0) {
+
+		add_line(cur, &input, offset);
+
+	} else { // not a lazy continuation
+
+		// finalize any blocks that were not matched and set cur to container:
+		while (cur != last_matched_container) {
+			finalize(cur, line_number);
+			cur = cur->parent;
+			assert(cur != NULL);
+		}
+
+		if (container->tag == BLOCK_INDENTED_CODE) {
+
+			add_line(container, &input, offset);
+
+		} else if (container->tag == BLOCK_FENCED_CODE) {
+			matched = 0;
+
+			if (indent <= 3 &&
+				peek_at(&input, first_nonspace) == container->as.code.fence_char) {
+				int fence_len = scan_close_code_fence(&input, first_nonspace);
+				if (fence_len > container->as.code.fence_length)
+					matched = 1;
+			}
+
+			if (matched) {
+				// if closing fence, don't add line to container; instead, close it:
+				finalize(container, line_number);
+				container = container->parent; // back up to parent
+			} else {
+				add_line(container, &input, offset);
+			}
+
+		} else if (container->tag == BLOCK_HTML) {
+
+			add_line(container, &input, offset);
+
+		} else if (blank) {
+
+			// ??? do nothing
+
+		} else if (container->tag == BLOCK_ATX_HEADER) {
+
+			chop_trailing_hashtags(&input);
+			add_line(container, &input, first_nonspace);
+			finalize(container, line_number);
+			container = container->parent;
+
+		} else if (accepts_lines(container->tag)) {
+
+			add_line(container, &input, first_nonspace);
+
+		} else if (container->tag != BLOCK_HRULE && container->tag != BLOCK_SETEXT_HEADER) {
+
+			// create paragraph container for line
+			container = add_child(container, BLOCK_PARAGRAPH, line_number, first_nonspace + 1);
+			add_line(container, &input, first_nonspace);
+
+		} else {
+			assert(false);
+		}
+
+		*curptr = container;
+	}
 }
 

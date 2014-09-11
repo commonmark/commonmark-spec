@@ -1,121 +1,115 @@
+#ifndef _STDMD_H_
+#define _STDMD_H_
+
 #include <stdbool.h>
-#include "bstrlib.h"
-#include "uthash.h"
+#include <stdio.h>
+#include "buffer.h"
+#include "chunk.h"
+#include "references.h"
 
 #define VERSION "0.1"
 #define CODE_INDENT 4
 
-typedef struct Inline {
-  enum { str, softbreak, linebreak, code, raw_html, entity,
-         emph, strong, link, image } tag;
-  union {
-    bstring                  literal;
-    struct Inline*           inlines;
-    struct { struct Inline*  label;
-             bstring         url;
-             bstring         title;
-           } linkable;
-  } content;
-  struct Inline*             next;
-} inl;
+struct node_inl {
+	enum {
+		INL_STRING,
+		INL_SOFTBREAK,
+		INL_LINEBREAK,
+		INL_CODE,
+		INL_RAW_HTML,
+		INL_EMPH,
+		INL_STRONG,
+		INL_LINK,
+		INL_IMAGE
+	} tag;
+	union {
+		chunk literal;
+		struct node_inl *inlines;
+		struct {
+			struct node_inl *label;
+			unsigned char *url;
+			unsigned char *title;
+		} linkable;
+	} content;
+	struct node_inl *next;
+};
 
-typedef struct Reference {
-  bstring         label;
-  bstring         url;
-  bstring         title;
-  UT_hash_handle  hh;      // used by uthash
-} reference;
-
-typedef struct Subject {
-  bstring        buffer;
-  int            pos;
-  reference**    reference_map;
-  int            label_nestlevel;
-} subject;
+typedef struct node_inl node_inl;
 
 // Types for blocks
-
 struct ListData {
-  enum { bullet,
-         ordered }  list_type;
-  int               marker_offset;
-  int               padding;
-  int               start;
-  enum { period,
-         parens }   delimiter;
-  unsigned char     bullet_char;
-  bool              tight;
+	enum {
+		bullet,
+		ordered
+	}  list_type;
+	int               marker_offset;
+	int               padding;
+	int               start;
+	enum {
+		period,
+		parens
+	} delimiter;
+	unsigned char     bullet_char;
+	bool              tight;
 };
 
 struct FencedCodeData {
-  int               fence_length;
-  int               fence_offset;
-  char              fence_char;
-  bstring           info;
+	int               fence_length;
+	int               fence_offset;
+	char              fence_char;
+	strbuf            info;
 };
 
-typedef struct Block {
-  enum { document,
-         block_quote,
-         list,
-         list_item,
-         fenced_code,
-         indented_code,
-         html_block,
-         paragraph,
-         atx_header,
-         setext_header,
-         hrule,
-         reference_def
-  }                  tag;
-  int                start_line;
-  int                start_column;
-  int                end_line;
-  bool               open;
-  bool               last_line_blank;
-  struct Block*      children;
-  struct Block*      last_child;
-  struct Block*      parent;
-  struct Block*      top;
-  bstring            string_content;
-  inl*               inline_content;
-  union  {
-    struct ListData       list_data;
-    struct FencedCodeData fenced_code_data;
-    int                   header_level;
-    reference**           refmap;
-    }                     attributes;
-  struct Block *     next;
-  struct Block *     prev;
-} block;
+struct node_block {
+	enum {
+		BLOCK_DOCUMENT,
+		BLOCK_BQUOTE,
+		BLOCK_LIST,
+		BLOCK_LIST_ITEM,
+		BLOCK_FENCED_CODE,
+		BLOCK_INDENTED_CODE,
+		BLOCK_HTML,
+		BLOCK_PARAGRAPH,
+		BLOCK_ATX_HEADER,
+		BLOCK_SETEXT_HEADER,
+		BLOCK_HRULE,
+		BLOCK_REFERENCE_DEF
+	} tag;
+	int start_line;
+	int start_column;
+	int end_line;
+	bool open;
+	bool last_line_blank;
+	struct node_block* children;
+	struct node_block* last_child;
+	struct node_block* parent;
+	struct node_block* top;
+	strbuf string_content;
+	node_inl* inline_content;
 
-int parse_inline(subject* subj, inl ** last);
-inl* parse_inlines(bstring input, reference** refmap);
-inl* parse_inlines_while(subject* subj, int (*f)(subject*));
-void free_inlines(inl* e);
-int parse_reference(bstring input, reference** refmap);
-void free_reference(reference *ref);
-void free_reference_map(reference **refmap);
-reference* make_reference(bstring label, bstring url, bstring title);
-reference* lookup_reference(reference** refmap, bstring label);
-void add_reference(reference** refmap, reference* ref);
-int unescape(bstring s);
+	union  {
+		struct ListData list;
+		struct FencedCodeData code;
+		struct {
+			int level;
+		} header;
+		struct {
+			reference_map *refmap;
+		} document;
+	} as;
 
-extern block* make_document();
-extern block* add_child(block* parent,
-                        int block_type, int start_line, int start_column);
-void free_blocks(block* e);
+	struct node_block *next;
+	struct node_block *prev;
+};
 
-// FOR NOW:
-int process_inlines(block* cur, reference** refmap);
-int incorporate_line(bstring ln, int line_number, block** curptr);
-int finalize(block* b, int line_number);
+typedef struct node_block node_block;
 
-void print_inlines(inl* ils, int indent);
-void print_blocks(block* blk, int indent);
+node_block *stmd_parse_document(const unsigned char *buffer, size_t len);
+node_block *stmd_parse_file(FILE *f);
 
-int blocks_to_html(block* b, bstring* result, bool tight);
-int inlines_to_html(inl* b, bstring* result);
+void stmd_free_nodes(node_block *e);
 
-int bdetab(bstring s, int utf8);
+void stmd_debug_print(node_block *root);
+void stmd_render_html(strbuf *html, node_block *root);
 
+#endif

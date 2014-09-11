@@ -3,20 +3,25 @@ set(PROGRAM_stmd_SOURCES    blocks.c
                             inlines.c
                             main.c
                             debug.h
-                            detab.c
-                            bstrlib.c
-                            bstrlib.h
                             getopt.c
-                            html.c
                             print.c
                             scanners.h
                             scanners.c
                             scanners.re
                             stmd.h
-                            utf8.c
-                            utf8.h
-                            uthash.h 
+                            utf8.h utf8.c
+                            buffer.h buffer.c
+							references.h references.c
+							html/html.c
+							html/html_unescape.h
+							html/html_unescape.gperf
+							html/houdini.h
+							html/houdini_href_e.c
+							html/houdini_html_e.c
+							html/houdini_html_u.c
 )
+
+include_directories(. html)
 
 if (MSVC)
     file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} DOS_CURRENT_SOURCE_DIR)
@@ -40,6 +45,6 @@ set_property(TARGET ${PROGRAM_stmd}
 endif(MSVC)
 install(TARGETS ${PROGRAM_stmd}
 RUNTIME DESTINATION bin 
-BUNDLE DESTINATION Applications)
+BUNDLE DESTINATION /Applications)
 
 
