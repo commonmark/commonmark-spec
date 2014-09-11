@@ -88,7 +88,7 @@ endif (UNIX AND NOT APPLE AND NOT WIN32)
 
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PROJECT_NAME}-src-${PROJECT_VERSION})
 set(CPACK_SOURCE_GENERATOR TGZ ZIP)
-set(CPACK_PACKAGE_CONTACT gulliver@users.sourceforge.net) 
+set(CPACK_PACKAGE_CONTACT http://talk.commonmark.org/) 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_NAME})
 set(CPACK_PACKAGE_VENDOR "${PROJECT_NAME} Development Team")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
@@ -101,13 +101,13 @@ set(CPACK_SOURCE_IGNORE_FILES "/docs/html;/autom4te.cache;/build/;/win32/;/.svn/
 if(WIN32 AND NOT UNIX)
   set(CPACK_PACKAGE_INSTALL_DIRECTORY "${PROJECT_NAME}\\\\${PROJECT_VERSION}")
   # There is a bug in NSI that does not handle full unix paths properly. Make
-  # sure there is at least one set of four (4) backlasshes.
+  # sure there is at least one set of four (4) backlashes.
   #  set(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
   set(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\${PROJECT_NAME}.exe")
   set(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ${PROJECT_NAME}")
-  set(CPACK_NSIS_HELP_LINK "http://softwareschmied.net/")
-  set(CPACK_NSIS_URL_INFO_ABOUT "http://softwareschmied.net/")
-  set(CPACK_NSIS_CONTACT "gulliver@softwareschmied.net")
+  set(CPACK_NSIS_HELP_LINK "http://commonmark.org/")
+  set(CPACK_NSIS_URL_INFO_ABOUT "http://commonmark.org/")
+  set(CPACK_NSIS_CONTACT "http://talk.commonmark.org/")
   set(CPACK_NSIS_MODIFY_PATH ON)
   set(CPACK_NSIS_MENU_LINKS "doc/html/index.html;Documentation")
 else(WIN32 AND NOT UNIX)
