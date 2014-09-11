@@ -38,7 +38,7 @@ set_property(TARGET PROGRAM_stmd
 # if sometimes libs are needed ...
 #target_link_libraries(${PROGRAM_chronolog})
 endif(MSVC)
-install(TARGETS PROGRAM_stmd
+install(TARGETS ${PROGRAM_stmd}
 RUNTIME DESTINATION bin 
 BUNDLE DESTINATION Applications)
 
