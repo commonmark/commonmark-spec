@@ -265,7 +265,7 @@
         var startpos = this.pos;
         var c ;
         var first_close = 0;
-        var c = this.peek();
+        c = this.peek();
         if (!(c === '*' || c === '_')) {
             return null;
         }
@@ -324,7 +324,7 @@
                         this.last_emphasis_closer = null;
                         return inlines[0];
                     }
-                } else if (next_inline = this.parseInline()) {
+                } else if ((next_inline = this.parseInline())) {
                     inlines.push(next_inline);
                 } else {
                     break;
@@ -396,7 +396,9 @@
                 this.parseBackticks();
                 break;
             case '<':
-                this.parseAutolink() || this.parseHtmlTag() || this.parseString();
+                if (!(this.parseAutolink())) {
+                    this.parseHtmlTag();
+                }
                 break;
             case '[':  // nested []
                 nest_level++;
@@ -515,7 +517,7 @@
     // a special meaning in markdown, as a plain string, adding to inlines.
     var parseString = function() {
         var m;
-        if (m = this.match(reMain)) {
+        if ((m = this.match(reMain))) {
             return { t: 'Str', c: m };
         } else {
             return null;
@@ -676,7 +678,7 @@
         this.last_emphasis_closer = null;
         var inlines = [];
         var next_inline;
-        while (next_inline = this.parseInline()) {
+        while ((next_inline = this.parseInline())) {
             inlines.push(next_inline);
         }
         return inlines;
