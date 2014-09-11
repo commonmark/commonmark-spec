@@ -291,19 +291,20 @@ var parseEmphasis = function() {
   this.pos += numdelims;
 
   var next_inline;
-  var last_closer = null;
+  var last_emphasis_closer = null;
 
   var delims_to_match = numdelims;
-  while (this.last_closer === null || this.last_closer >= this.pos) {
+  while (this.last_emphasis_closer === null ||
+         this.last_emphasis_closer >= this.pos) {
         res = this.scanDelims(c);
         numclosedelims = res.numdelims;
         if (res.can_close) {
-            if (last_closer < this.pos) {
-                last_closer = this.pos;
+            if (last_emphasis_closer < this.pos) {
+                last_emphasis_closer = this.pos;
             }
             if (numclosedelims === 3 && delims_to_match === 3) {
                 this.pos += 3;
-                this.last_closer = null;
+                this.last_emphasis_closer = null;
                 return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
             } else if (numclosedelims >= 2 && delims_to_match >= 2) {
                 delims_to_match -= 2;
@@ -315,7 +316,7 @@ var parseEmphasis = function() {
                 inlines = [{t: 'Emph', c: inlines}];
             }
             if (delims_to_match === 0) {
-                this.last_closer = null;
+                this.last_emphasis_closer = null;
                 return inlines[0];
             }
         } else if (next_inline = this.parseInline()) {
@@ -327,10 +328,10 @@ var parseEmphasis = function() {
 
     // didn't find closing delimiter
     this.pos = startpos + numdelims;
-    if (last_closer === null) {
-        this.last_closer = startpos;
+    if (last_emphasis_closer === null) {
+        this.last_emphasis_closer = startpos;
     } else {
-        this.last_closer = last_closer;
+        this.last_emphasis_closer = last_emphasis_closer;
     }
     return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
 };
@@ -665,7 +666,7 @@ var parseInlines = function(s, refmap) {
   this.pos = 0;
   this.refmap = refmap || {};
   this.memo = {};
-  this.last_closer = null;
+  this.last_emphasis_closer = null;
   var inlines = [];
   var next_inline;
   while (next_inline = this.parseInline()) {
@@ -679,10 +680,10 @@ function InlineParser(){
   return {
     subject: '',
     label_nest_level: 0, // used by parseLinkLabel method
+    last_emphasis_closer: null,  // used by parseEmphasis method
     pos: 0,
     refmap: {},
     memo: {},
-    last_closer: null,
     match: match,
     peek: peek,
     spnl: spnl,
