@@ -297,38 +297,36 @@
 
         // We need not look for closers if we have already recorded that
         // there are no closers past this point.
-        if (this.last_emphasis_closer === null ||
-            this.last_emphasis_closer >= this.pos) {
-            while (true) {
-                res = this.scanDelims(c);
-                numclosedelims = res.numdelims;
-                if (res.can_close) {
-                    if (last_emphasis_closer === null ||
-                        last_emphasis_closer < this.pos) {
-                        last_emphasis_closer = this.pos;
-                    }
-                    if (numclosedelims === 3 && delims_to_match === 3) {
-                        this.pos += 3;
-                        this.last_emphasis_closer = null;
-                        return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
-                    } else if (numclosedelims >= 2 && delims_to_match >= 2) {
-                        delims_to_match -= 2;
-                        this.pos += 2;
-                        inlines = [{t: 'Strong', c: inlines}];
-                    } else if (numclosedelims >= 1 && delims_to_match >= 1) {
-                        delims_to_match -= 1;
-                        this.pos += 1;
-                        inlines = [{t: 'Emph', c: inlines}];
-                    }
-                    if (delims_to_match === 0) {
-                        this.last_emphasis_closer = null;
-                        return inlines[0];
-                    }
-                } else if ((next_inline = this.parseInline())) {
-                    inlines.push(next_inline);
-                } else {
-                    break;
+        while (this.last_emphasis_closer === null ||
+               this.last_emphasis_closer >= this.pos) {
+            res = this.scanDelims(c);
+            numclosedelims = res.numdelims;
+            if (res.can_close) {
+                if (last_emphasis_closer === null ||
+                    last_emphasis_closer < this.pos) {
+                    last_emphasis_closer = this.pos;
                 }
+                if (numclosedelims === 3 && delims_to_match === 3) {
+                    this.pos += 3;
+                    this.last_emphasis_closer = null;
+                    return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
+                } else if (numclosedelims >= 2 && delims_to_match >= 2) {
+                    delims_to_match -= 2;
+                    this.pos += 2;
+                    inlines = [{t: 'Strong', c: inlines}];
+                } else if (numclosedelims >= 1 && delims_to_match >= 1) {
+                    delims_to_match -= 1;
+                    this.pos += 1;
+                    inlines = [{t: 'Emph', c: inlines}];
+                }
+                if (delims_to_match === 0) {
+                    this.last_emphasis_closer = null;
+                    return inlines[0];
+                }
+            } else if ((next_inline = this.parseInline())) {
+                inlines.push(next_inline);
+            } else {
+                break;
             }
         }
 
