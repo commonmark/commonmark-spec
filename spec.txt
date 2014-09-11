@@ -1994,11 +1994,11 @@ form of the definition is:
 > transforming X in such-and-such a way is a container of type Y
 > with these blocks as its content.
 
-So, we explain what counts as a block quote or list item by
-explaining how these can be *generated* from their contents.
-This should suffice to define the syntax, although it does not
-give a recipe for *parsing* these constructions.  (A recipe is
-provided below in the section entitled [A parsing strategy].)
+So, we explain what counts as a block quote or list item by explaining
+how these can be *generated* from their contents. This should suffice
+to define the syntax, although it does not give a recipe for *parsing*
+these constructions.  (A recipe is provided below in the section entitled
+[A parsing strategy](#appendix-a-a-parsing-strategy).)
 
 ## Block quotes
 
