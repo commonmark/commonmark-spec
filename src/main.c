@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bstrlib.h"
-#include "stmd.h"
+#include "cmark.h"
 #include "debug.h"
 
 void print_usage()
 {
-  printf("Usage:   stmd [FILE*]\n");
+  printf("Usage:   cmark [FILE*]\n");
   printf("Options: --help, -h    Print usage information\n");
   printf("         --ast         Print AST instead of HTML\n");
   printf("         --version     Print version\n");
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
   for (i=1; i < argc; i++) {
     if (strcmp(argv[i], "--version") == 0) {
-      printf("stmd %s", VERSION);
+      printf("cmark %s", VERSION);
       printf(" - CommonMark converter (c) 2014 John MacFarlane\n");
       exit(0);
     } else if ((strcmp(argv[i], "--help") == 0) ||

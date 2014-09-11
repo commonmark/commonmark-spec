@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 #include "bstrlib.h"
-#include "stmd.h"
+#include "cmark.h"
 #include "uthash.h"
 #include "debug.h"
 #include "scanners.h"

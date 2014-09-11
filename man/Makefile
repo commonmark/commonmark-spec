@@ -1,4 +1,4 @@
-ALL=man1/stmd.1
+ALL=man1/cmark.1
 
 .PHONY: all
 
