@@ -291,14 +291,19 @@ var parseEmphasis = function() {
   this.pos += numdelims;
 
   var next_inline;
+  var last_closer = null;
 
-    var delims_to_match = numdelims;
-    while (true) {
+  var delims_to_match = numdelims;
+  while (this.last_closer === null || this.last_closer >= this.pos) {
         res = this.scanDelims(c);
         numclosedelims = res.numdelims;
         if (res.can_close) {
+            if (last_closer < this.pos) {
+                last_closer = this.pos;
+            }
             if (numclosedelims === 3 && delims_to_match === 3) {
                 this.pos += 3;
+                this.last_closer = null;
                 return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
             } else if (numclosedelims >= 2 && delims_to_match >= 2) {
                 delims_to_match -= 2;
@@ -310,18 +315,24 @@ var parseEmphasis = function() {
                 inlines = [{t: 'Emph', c: inlines}];
             }
             if (delims_to_match === 0) {
+                this.last_closer = null;
                 return inlines[0];
             }
         } else if (next_inline = this.parseInline()) {
             inlines.push(next_inline);
         } else {
-            // didn't find closing delimiter
-            this.pos = startpos + numdelims;
-            return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
+            break;
         }
     }
 
-    return null;
+    // didn't find closing delimiter
+    this.pos = startpos + numdelims;
+    if (last_closer === null) {
+        this.last_closer = startpos;
+    } else {
+        this.last_closer = last_closer;
+    }
+    return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
 };
 
 // Attempt to parse link title (sans quotes), returning the string
@@ -654,6 +665,7 @@ var parseInlines = function(s, refmap) {
   this.pos = 0;
   this.refmap = refmap || {};
   this.memo = {};
+  this.last_closer = null;
   var inlines = [];
   var next_inline;
   while (next_inline = this.parseInline()) {
@@ -670,6 +682,7 @@ function InlineParser(){
     pos: 0,
     refmap: {},
     memo: {},
+    last_closer: null,
     match: match,
     peek: peek,
     spnl: spnl,
