@@ -1,12 +1,12 @@
-// stmd.js - CommomMark in javascript
+// cmark.js - CommomMark in javascript
 // Copyright (C) 2014 John MacFarlane
 // License: BSD3.
 
 // Basic usage:
 //
-// var stmd = require('stmd');
-// var parser = new stmd.DocParser();
-// var renderer = new stmd.HtmlRenderer();
+// var cmark = require('cmark');
+// var parser = new cmark.DocParser();
+// var renderer = new cmark.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
 
 (function(exports) {
@@ -1544,4 +1544,4 @@ function HtmlRenderer(){
 exports.DocParser = DocParser;
 exports.HtmlRenderer = HtmlRenderer;
 
-})(typeof exports === 'undefined' ? this.stmd = {} : exports);
+})(typeof exports === 'undefined' ? this.cmark = {} : exports);

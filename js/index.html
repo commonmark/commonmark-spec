@@ -2,15 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>stmd.js demo</title>
+  <title>cmark.js demo</title>
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-  <script src="stmd.js"></script>
+  <script src="cmark.js"></script>
   <script type="text/javascript">
 
-var writer = new stmd.HtmlRenderer();
-var reader = new stmd.DocParser();
+var writer = new cmark.HtmlRenderer();
+var reader = new cmark.DocParser();
 
 $(document).ready(function() {
   $(".timing").hide();
@@ -76,7 +76,7 @@ $(document).ready(function() {
 <div class="container">
   <div class="row">
     <div class="col-md-6">
-      <h1>stmd.js dingus</h1>
+      <h1>cmark.js dingus</h1>
     </div>
     <div class="col-md-3">
       <ul class="nav nav-tabs" role="tablist">

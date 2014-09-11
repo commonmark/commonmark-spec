@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var stmd = require('./stmd');
+var cmark = require('./cmark');
 var ansi = require('./ansi/ansi');
 var cursor = ansi(process.stdout);
 
-var writer = new stmd.HtmlRenderer();
-var reader = new stmd.DocParser();
+var writer = new cmark.HtmlRenderer();
+var reader = new cmark.DocParser();
 
 var passed = 0;
 var failed = 0;

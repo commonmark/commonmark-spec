@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var fs = require('fs');
 var util = require('util');
-var stmd = require('./stmd');
+var cmark = require('./cmark');
 
 file = process.argv[2] || '/dev/stdin';
 
@@ -9,7 +9,7 @@ fs.readFile(file, 'utf8', function(err, data) {
   if (err) {
     return console.log(err);
   }
-  var parser   = new stmd.DocParser();
-  var renderer = new stmd.HtmlRenderer();
+  var parser   = new cmark.DocParser();
+  var renderer = new cmark.HtmlRenderer();
   process.stdout.write(renderer.render(parser.parse(data)));
 });

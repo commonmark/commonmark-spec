@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "bstrlib.h"
-#include "stmd.h"
+#include "cmark.h"
 #include "debug.h"
 
 static bstring format_str(bstring s)

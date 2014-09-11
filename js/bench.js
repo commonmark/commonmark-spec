@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark').Benchmark;
 var suite = new Benchmark.Suite;
 var fs = require('fs');
-var sm = require('./stmd');
+var cmark = require('./cmark');
 // https://github.com/coreyti/showdown
 var showdown = require('../../showdown/src/showdown');
 // https://github.com/chjj/marked
@@ -13,9 +13,9 @@ var contents = fs.readFileSync(benchfile, 'utf8');
 
 // var converter = new showdown.converter();
 
-suite.add('stmd markdown->html', function() {
-  var doc = new sm.DocParser().parse(contents);
-  var renderer = new sm.HtmlRenderer();
+suite.add('cmark markdown->html', function() {
+  var doc = new cmark.DocParser().parse(contents);
+  var renderer = new cmark.HtmlRenderer();
   renderer.renderBlock(doc);
 })
 
