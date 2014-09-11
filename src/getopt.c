@@ -30,9 +30,10 @@
  */
 
 #include <config.h>
-#include <portable/system.h>
-#include <portable/getopt.h>
 
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 /*
  * If we're running the test suite, rename getopt and the global variables to
  * avoid conflicts with the system version.
