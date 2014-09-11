@@ -294,8 +294,12 @@ var parseEmphasis = function() {
   var last_emphasis_closer = null;
 
   var delims_to_match = numdelims;
-  while (this.last_emphasis_closer === null ||
-         this.last_emphasis_closer >= this.pos) {
+
+  // We need not look for closers if we have already recorded that
+  // there are no closers past this point.
+  if (this.last_emphasis_closer === null ||
+      this.last_emphasis_closer >= this.pos) {
+    while (true) {
         res = this.scanDelims(c);
         numclosedelims = res.numdelims;
         if (res.can_close) {
@@ -325,11 +329,13 @@ var parseEmphasis = function() {
         } else {
             break;
         }
+      }
     }
 
     // didn't find closing delimiter
     this.pos = startpos + numdelims;
     if (last_emphasis_closer === null) {
+        // we know there are no closers after startpos, so:
         this.last_emphasis_closer = startpos;
     } else {
         this.last_emphasis_closer = last_emphasis_closer;
