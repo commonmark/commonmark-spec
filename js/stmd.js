@@ -299,7 +299,8 @@ var parseEmphasis = function() {
         res = this.scanDelims(c);
         numclosedelims = res.numdelims;
         if (res.can_close) {
-            if (last_emphasis_closer < this.pos) {
+            if (last_emphasis_closer === null ||
+                last_emphasis_closer < this.pos) {
                 last_emphasis_closer = this.pos;
             }
             if (numclosedelims === 3 && delims_to_match === 3) {
