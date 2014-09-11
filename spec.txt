@@ -2010,9 +2010,9 @@ The following rules define [block quotes](#block-quote):
 <a id="block-quote"></a>
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
-    of blocks *Bs*, then the result of appending a [block quote marker]
-    to the beginning of each line in *Ls* is a [block quote](#block-quote)
-    containing *Bs*.
+    of blocks *Bs*, then the result of appending a [block quote
+    marker](#block-quote-marker) to the beginning of each line in *Ls*
+    is a [block quote](#block-quote) containing *Bs*.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quote) with contents *Bs*, then the result of deleting
