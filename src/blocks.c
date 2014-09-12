@@ -420,17 +420,17 @@ extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len)
 
 static void chop_trailing_hashtags(chunk *ch)
 {
-	int n;
+	int n, orig_n;
 
 	chunk_rtrim(ch);
-	n = ch->len - 1;
+	orig_n = n = ch->len - 1;
 
 	// if string ends in #s, remove these:
 	while (n >= 0 && peek_at(ch, n) == '#')
 		n--;
 
 	// the last # was escaped, so we include it.
-	if (n >= 0 && peek_at(ch, n) == '\\')
+	if (n != orig_n && n >= 0 && peek_at(ch, n) == '\\')
 		n++;
 
 	ch->len = n + 1;
