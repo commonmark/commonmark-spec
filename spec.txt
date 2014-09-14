@@ -1,9 +1,9 @@
 ---
-title: Standard Markdown Spec
+title: CommonMark Spec
 author:
 - John MacFarlane
 version: 1
-date: 2014-07-21
+date: 2014-09-06
 ...
 
 # Introduction
@@ -173,7 +173,7 @@ HTML.  These are intended to double as conformance tests.  An
 accompanying script `runtests.pl` can be used to run the tests
 against any Markdown program:
 
-    perl runtests.pl PROGRAM spec.html
+    perl runtests.pl spec.txt PROGRAM
 
 Since this document describes how Markdown is to be parsed into
 an abstract syntax tree, it would have made sense to use an abstract
@@ -220,8 +220,8 @@ Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 
 Line endings are replaced by newline characters (LF).
 
-A line containing only spaces (after tab expansion) followed by
-a line ending is called a [blank line](#blank-line).
+A line containing no characters, or a line containing only spaces (after
+tab expansion), is called a [blank line](#blank-line).
 <a id="blank-line"></a>
 
 # Blocks and inlines
@@ -1058,7 +1058,7 @@ a blank line either before or after.
 The content of a code fence is treated as literal text, not parsed
 as inlines.  The first word of the info string is typically used to
 specify the language of the code sample, and rendered in the `class`
-attribute of the `pre` tag.  However, this spec does not mandate any
+attribute of the `code` tag.  However, this spec does not mandate any
 particular treatment of the info string.
 
 Here is a simple example with backticks:
@@ -1286,9 +1286,9 @@ bar
 .
 
 An [info string](#info-string) can be provided after the opening code fence.
-Opening and closing spaces will be stripped, and the first word
-is used here to populate the `class` attribute of the enclosing
-`pre` tag.
+Opening and closing spaces will be stripped, and the first word, prefixed
+with `language-`, is used as the value for the `class` attribute of the
+`code` element within the enclosing `pre` element.
 
 .
 ```ruby
@@ -1297,7 +1297,7 @@ def foo(x)
 end
 ```
 .
-<pre class="ruby"><code>def foo(x)
+<pre><code class="language-ruby">def foo(x)
   return 3
 end
 </code></pre>
@@ -1310,7 +1310,7 @@ def foo(x)
 end
 ~~~~~~~
 .
-<pre class="ruby"><code>def foo(x)
+<pre><code class="language-ruby">def foo(x)
   return 3
 end
 </code></pre>
@@ -1320,7 +1320,7 @@ end
 ````;
 ````
 .
-<pre class=";"><code></code></pre>
+<pre><code class="language-;"></code></pre>
 .
 
 Info strings for backtick code blocks cannot contain backticks:
@@ -1350,8 +1350,8 @@ Closing code fences cannot have info strings:
 An [HTML block tag](#html-block-tag) <a id="html-block-tag"></a> is
 an [open tag](#open-tag) or [closing tag](#closing-tag) whose tag
 name is one of the following (case-insensitive):
-`article`, `header`, `aside`, `hgroup`, `blockquote`, `hr`, `body`,
-`li`, `br`, `map`, `button`, `object`, `canvas`, `ol`, `caption`,
+`article`, `header`, `aside`, `hgroup`, `blockquote`, `hr`, `iframe`,
+`body`, `li`, `map`, `button`, `object`, `canvas`, `ol`, `caption`,
 `output`, `col`, `p`, `colgroup`, `pre`, `dd`, `progress`, `div`,
 `section`, `dl`, `table`, `td`, `dt`, `tbody`, `embed`, `textarea`,
 `fieldset`, `tfoot`, `figcaption`, `th`, `figure`, `thead`, `footer`,
@@ -1858,7 +1858,7 @@ are defined:
 ## Paragraphs
 
 A sequence of non-blank lines that cannot be interpreted as other
-kinds of blocks forms a [paragraph](#paragraph) <a id="paragraph"></a>.
+kinds of blocks forms a [paragraph](#paragraph).<a id="paragraph"></a>
 The contents of the paragraph are the result of parsing the
 paragraph's raw content as inlines.  The paragraph's raw content
 is formed by concatenating the lines and removing initial and final
@@ -1994,11 +1994,11 @@ form of the definition is:
 > transforming X in such-and-such a way is a container of type Y
 > with these blocks as its content.
 
-So, we explain what counts as a block quote or list item by
-explaining how these can be *generated* from their contents.
-This should suffice to define the syntax, although it does not
-give a recipe for *parsing* these constructions.  (A recipe is
-provided below in the section entitled [A parsing strategy].)
+So, we explain what counts as a block quote or list item by explaining
+how these can be *generated* from their contents. This should suffice
+to define the syntax, although it does not give a recipe for *parsing*
+these constructions.  (A recipe is provided below in the section entitled
+[A parsing strategy](#appendix-a-a-parsing-strategy).)
 
 ## Block quotes
 
@@ -2010,9 +2010,9 @@ The following rules define [block quotes](#block-quote):
 <a id="block-quote"></a>
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
-    of blocks *Bs*, then the result of appending a [block quote marker]
-    to the beginning of each line in *Ls* is a [block quote](#block-quote)
-    containing *Bs*.
+    of blocks *Bs*, then the result of appending a [block quote
+    marker](#block-quote-marker) to the beginning of each line in *Ls*
+    is a [block quote](#block-quote) containing *Bs*.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quote) with contents *Bs*, then the result of deleting
@@ -3720,7 +3720,7 @@ blocks](#fenced-code-block):
 foo
 ```
 .
-<pre class="foo+bar"><code>foo
+<pre><code class="language-foo+bar">foo
 </code></pre>
 .
 
@@ -3813,7 +3813,7 @@ code blocks, including raw HTML, URLs, [link titles](#link-title), and
 foo
 ```
 .
-<pre class="f&ouml;&ouml;"><code>foo
+<pre><code class="language-f&ouml;&ouml;">foo
 </code></pre>
 .
 
@@ -4559,6 +4559,18 @@ similarly for `_` and `__`):
 **foo***
 .
 <p><strong>foo</strong>*</p>
+.
+
+.
+***foo* bar***
+.
+<p><strong><em>foo</em> bar</strong>*</p>
+.
+
+.
+***foo** bar***
+.
+<p><em><strong>foo</strong> bar</em>**</p>
 .
 
 The following contains no strong emphasis, because the opening

@@ -425,9 +425,17 @@ static inl* handle_strong_emph(subject* subj, char c)
         new = make_str(bmidstr(subj->buffer, subj->pos, numdelims));
         append_inlines(*last, new);
         *last = new;
-        if (numdelims == 3) {
+
+        if (first_close_delims == 1 && numdelims > 2) {
+          numdelims = 2;
+        } else if (first_close_delims == 2) {
+          numdelims = 1;
+        } else if (numdelims == 3) {
+          // If we opened with ***, we interpret it as ** followed by *
+          // giving us <strong><em>
           numdelims = 1;
         }
+
         subj->pos += numdelims;
         if (first_close) {
           first_head->tag = first_close_delims == 1 ? strong : emph;

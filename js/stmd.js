@@ -1,4 +1,4 @@
-// stmd.js - "standard markdown" in javascript
+// stmd.js - CommomMark in javascript
 // Copyright (C) 2014 John MacFarlane
 // License: BSD3.
 
@@ -21,7 +21,7 @@ var IN_PARENS = '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\)';
 var REG_CHAR = '[^\\\\()\\x00-\\x20]';
 var IN_PARENS_NOSP = '\\((' + REG_CHAR + '|' + ESCAPED_CHAR + ')*\\)';
 var TAGNAME = '[A-Za-z][A-Za-z0-9]*';
-var BLOCKTAGNAME = '(?:article|header|aside|hgroup|blockquote|hr|body|li|br|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
+var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
 var ATTRIBUTENAME = '[a-zA-Z_:][a-zA-Z0-9:._-]*';
 var UNQUOTEDVALUE = "[^\"'=<>`\\x00-\\x20]+";
 var SINGLEQUOTEDVALUE = "'[^']*'";
@@ -54,10 +54,10 @@ var reLinkTitle = new RegExp(
     '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\))');
 
 var reLinkDestinationBraces = new RegExp(
-    '[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>]');
+    '^(?:[<](?:[^<>\\n\\\\\\x00]' + '|' + ESCAPED_CHAR + '|' + '\\\\)*[>])');
 
 var reLinkDestination = new RegExp(
-    '(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
+    '^(?:' + REG_CHAR + '+|' + ESCAPED_CHAR + '|' + IN_PARENS_NOSP + ')*');
 
 var reEscapable = new RegExp(ESCAPABLE);
 
@@ -71,7 +71,7 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.
-var reMain = /[\n`\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+/m;
+var reMain = /^(?:[\n`\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+)/m;
 
 // UTILITY FUNCTIONS
 
@@ -341,11 +341,17 @@ var parseEmphasis = function(inlines) {
       res = this.scanDelims(c);
       if (res.numdelims >= 1 && res.numdelims <= 3 && res.can_close &&
             res.numdelims != first_close_delims) {
-        if (res.numdelims === 3) {
-          // If we opened with ***, then we interpret *** as * followed by **
+
+        if (first_close_delims === 1 && numdelims > 2) {
+          res.numdelims = 2;
+        } else if (first_close_delims === 2) {
+          res.numdelims = 1;
+        } else if (res.numdelims === 3) {
+          // If we opened with ***, then we interpret *** as ** followed by *
           // giving us <strong><em>
           res.numdelims = 1;
         }
+
         this.pos += res.numdelims;
 
         if (first_close > 0) { // if we've already passed the first closer:
@@ -373,7 +379,7 @@ var parseEmphasis = function(inlines) {
     return (this.pos - startpos);
 
   default:
-    return result;
+    return res;
   }
 
   return 0;
@@ -382,7 +388,7 @@ var parseEmphasis = function(inlines) {
 // Attempt to parse link title (sans quotes), returning the string
 // or null if no match.
 var parseLinkTitle = function() {
-  title = this.match(reLinkTitle);
+  var title = this.match(reLinkTitle);
   if (title) {
     // chop off quotes from title and unescape:
     return unescape(title.substr(1, title.length - 2));
@@ -861,7 +867,7 @@ var parseListMarker = function(ln, offset) {
   } else {
     return null;
   }
-  blank_item = match[0].length === rest.length;
+  var blank_item = match[0].length === rest.length;
   if (spaces_after_marker >= 5 ||
       spaces_after_marker < 1 ||
       blank_item) {
@@ -926,7 +932,7 @@ var incorporateLine = function(ln, line_number) {
 
     switch (container.t) {
       case 'BlockQuote':
-        matched = indent <= 3 && ln[first_nonspace] === '>';
+        var matched = indent <= 3 && ln[first_nonspace] === '>';
         if (matched) {
           offset = first_nonspace + 1;
           if (ln[offset] === ' ') {
@@ -1234,7 +1240,7 @@ var finalize = function(block, line_number) {
   if (line_number > block.start_line) {
     block.end_line = line_number - 1;
   } else {
-    block_end_line = line_number;
+    block.end_line = line_number;
   }
 
   switch (block.t) {
@@ -1478,9 +1484,10 @@ var renderBlock = function(block, in_tight_list) {
     case 'FencedCode':
       info_words = block.info.split(/ +/);
       attr = info_words.length === 0 || info_words[0].length === 0 ?
-                   [] : [['class',this.escape(info_words[0],true)]];
-      return inTags('pre', attr,
-              inTags('code', [], this.escape(block.string_content)));
+                   [] : [['class','language-' +
+                                   this.escape(info_words[0],true)]];
+      return inTags('pre', [],
+              inTags('code', attr, this.escape(block.string_content)));
     case 'HtmlBlock':
       return block.string_content;
     case 'ReferenceDef':
