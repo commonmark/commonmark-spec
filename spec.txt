@@ -4030,7 +4030,7 @@ for efficient parsing strategies that do not backtrack:
 
     (a) it is not part of a sequence of four or more unescaped `_`s,
     (b) it is not followed by whitespace,
-    (c) is is not preceded by an ASCII alphanumeric character, and
+    (c) it is not preceded by an ASCII alphanumeric character, and
     (d) either it is not followed by a `_` character or it is
         followed immediately by strong emphasis.
 
