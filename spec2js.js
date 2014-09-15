@@ -6,8 +6,9 @@ var util = require('util');
 fs.readFile('spec.txt', 'utf8', function(err, data) {
   if (err) {
     return console.log(err);
-  }
+    }
   var examples = [];
+  data = data.replace(/\r\n?/gm, "\n");  // Normalize to newlines
   data.replace(/^\.\n([\s\S]*?)^\.\n([\s\S]*?)^\.$/gm,
         function(_,x,y){
           examples.push({markdown: x, html: y});
