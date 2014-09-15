@@ -3,8 +3,11 @@ title: CommonMark Spec
 author:
 - John MacFarlane
 version: 1.0.0-BurtHarris.stmd 
-# From https://github.com/BurtHarris/stmd
 date: 2014-09-15
+#
+# Note: prerelease string indicates this is 
+# an unreleased version from https://github.com/BurtHarris/stmd
+# and that the version-number is, well, not normative.
 ...
 
 # Introduction
