@@ -4,10 +4,12 @@ author:
 - John MacFarlane
 version: 1.0.0-BurtHarris.stmd 
 date: 2014-09-15
-#
-# Note: prerelease string indicates this is 
-# an unreleased version from https://github.com/BurtHarris/stmd
-# and that the version-number is, well, not normative.
+    #
+    # Note: prerelease string indicates this is 
+    # an unreleased version from https://github.com/BurtHarris/stmd
+    # and that the version-number is, well, not normative.
+    # Keep this comment indented, so test.js doesn't get confused.
+    #
 ...
 
 # Introduction
@@ -1501,8 +1503,69 @@ expensive and can require backtracking from the end of the document
 if no matching end tag is found. Second, it provides a very simple
 and flexible way of including Markdown content inside HTML tags:
 simply separate the Markdown from the HTML using blank lines:
+.
+<div>
+
+*Emphasized* text.
+
+</div>
+.
+<div>
+<p><em>Emphasized</em> text.</p>
+</div>
+.
+
+Compare:
 
 .
+<div>
+*Emphasized* text.
+</div>
+.
+<div>
+*Emphasized* text.
+</div>
+.
+
+Some Markdown implementations have adopted a convention of
+interpreting content inside tags as text if the open tag has
+the attribute `markdown=1`.  The rule given above seems a simpler and
+more elegant way of achieving the same expressive power, which is also
+much simpler to parse.
+
+The main potential drawback is that one can no longer paste HTML
+blocks into Markdown documents with 100% reliability.  However,
+*in most cases* this will work fine, because the blank lines in
+HTML are usually followed by HTML block tags.  For example:
+
+.
+<table>
+
+<tr>
+
+<td>
+Hi
+</td>
+
+</tr>
+
+</table>
+.
+<table>
+<tr>
+<td>
+Hi
+</td>
+</tr>
+</table>
+.
+
+Moreover, blank lines are usually not necessary and can be
+deleted.  The exception is inside `<pre>` tags; here, one can
+replace the blank lines with `&#10;` entities.
+
+So there is no important loss of expressive power with the new rule.
+
 <div>
 
 Non-element blocks.
@@ -1618,66 +1681,6 @@ The opening tag of a non-element block can be indented 1-3 spaces, but not 4:
 <pre><code>&lt;!-- foo --&gt;
 </code></pre>
 .
-
-*Emphasized* text.
-
-</div>
-.
-<div>
-<p><em>Emphasized</em> text.</p>
-</div>
-.
-
-Compare:
-
-.
-<div>
-*Emphasized* text.
-</div>
-.
-<div>
-*Emphasized* text.
-</div>
-.
-
-Some Markdown implementations have adopted a convention of
-interpreting content inside tags as text if the open tag has
-the attribute `markdown=1`.  The rule given above seems a simpler and
-more elegant way of achieving the same expressive power, which is also
-much simpler to parse.
-
-The main potential drawback is that one can no longer paste HTML
-blocks into Markdown documents with 100% reliability.  However,
-*in most cases* this will work fine, because the blank lines in
-HTML are usually followed by HTML block tags.  For example:
-
-.
-<table>
-
-<tr>
-
-<td>
-Hi
-</td>
-
-</tr>
-
-</table>
-.
-<table>
-<tr>
-<td>
-Hi
-</td>
-</tr>
-</table>
-.
-
-Moreover, blank lines are usually not necessary and can be
-deleted.  The exception is inside `<pre>` tags; here, one can
-replace the blank lines with `&#10;` entities.
-
-So there is no important loss of expressive power with the new rule.
 
 ## Link reference definitions
 
