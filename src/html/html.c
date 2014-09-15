@@ -32,8 +32,89 @@ static inline void cr(strbuf *html)
 		strbuf_putc(html, '\n');
 }
 
+// Convert an inline list to HTML.  Returns 0 on success, and sets result.
+static void inlines_to_html(strbuf *html, node_inl* ils)
+{
+	strbuf scrap = GH_BUF_INIT;
+
+	while(ils != NULL) {
+		switch(ils->tag) {
+			case INL_STRING:
+				escape_html(html, ils->content.literal.data, ils->content.literal.len);
+				break;
+
+			case INL_LINEBREAK:
+				strbuf_puts(html, "<br />\n");
+				break;
+
+			case INL_SOFTBREAK:
+				strbuf_putc(html, '\n');
+				break;
+
+			case INL_CODE:
+				strbuf_puts(html, "<code>");
+				escape_html(html, ils->content.literal.data, ils->content.literal.len);
+				strbuf_puts(html, "</code>");
+				break;
+
+			case INL_RAW_HTML:
+				strbuf_put(html,
+						ils->content.literal.data,
+						ils->content.literal.len);
+				break;
+
+			case INL_LINK:
+				strbuf_puts(html, "<a href=\"");
+				if (ils->content.linkable.url)
+					escape_href(html, ils->content.linkable.url, -1);
+
+				if (ils->content.linkable.title) {
+					strbuf_puts(html, "\" title=\"");
+					escape_html(html, ils->content.linkable.title, -1);
+				}
+
+				strbuf_puts(html, "\">");
+				inlines_to_html(html, ils->content.inlines);
+				strbuf_puts(html, "</a>");
+				break;
+
+			case INL_IMAGE:
+				strbuf_puts(html, "<img src=\"");
+				if (ils->content.linkable.url)
+					escape_href(html, ils->content.linkable.url, -1);
+
+				inlines_to_html(&scrap, ils->content.inlines);
+				strbuf_puts(html, "\" alt=\"");
+				if (scrap.size)
+					escape_html(html, scrap.ptr, scrap.size);
+				strbuf_clear(&scrap);
+
+				if (ils->content.linkable.title) {
+					strbuf_puts(html, "\" title=\"");
+					escape_html(html, ils->content.linkable.title, -1);
+				}
+
+				strbuf_puts(html, "\"/>");
+				break;
+
+			case INL_STRONG:
+				strbuf_puts(html, "<strong>");
+				inlines_to_html(html, ils->content.inlines);
+				strbuf_puts(html, "</strong>");
+				break;
+
+			case INL_EMPH:
+				strbuf_puts(html, "<em>");
+				inlines_to_html(html, ils->content.inlines);
+				strbuf_puts(html, "</em>");
+				break;
+		}
+		ils = ils->next;
+	}
+}
+
 // Convert a node_block list to HTML.  Returns 0 on success, and sets result.
-void blocks_to_html(strbuf *html, node_block *b, bool tight)
+static void blocks_to_html(strbuf *html, node_block *b, bool tight)
 {
 	struct ListData *data;
 
@@ -139,83 +220,7 @@ void blocks_to_html(strbuf *html, node_block *b, bool tight)
 	}
 }
 
-// Convert an inline list to HTML.  Returns 0 on success, and sets result.
-void inlines_to_html(strbuf *html, node_inl* ils)
+void stmd_render_html(strbuf *html, node_block *root)
 {
-	strbuf scrap = GH_BUF_INIT;
-
-	while(ils != NULL) {
-		switch(ils->tag) {
-			case INL_STRING:
-				escape_html(html, ils->content.literal.data, ils->content.literal.len);
-				break;
-
-			case INL_LINEBREAK:
-				strbuf_puts(html, "<br />\n");
-				break;
-
-			case INL_SOFTBREAK:
-				strbuf_putc(html, '\n');
-				break;
-
-			case INL_CODE:
-				strbuf_puts(html, "<code>");
-				escape_html(html, ils->content.literal.data, ils->content.literal.len);
-				strbuf_puts(html, "</code>");
-				break;
-
-			case INL_RAW_HTML:
-				strbuf_put(html,
-						ils->content.literal.data,
-						ils->content.literal.len);
-				break;
-
-			case INL_LINK:
-				strbuf_puts(html, "<a href=\"");
-				if (ils->content.linkable.url)
-					escape_href(html, ils->content.linkable.url, -1);
-
-				if (ils->content.linkable.title) {
-					strbuf_puts(html, "\" title=\"");
-					escape_html(html, ils->content.linkable.title, -1);
-				}
-
-				strbuf_puts(html, "\">");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</a>");
-				break;
-
-			case INL_IMAGE:
-				strbuf_puts(html, "<img src=\"");
-				if (ils->content.linkable.url)
-					escape_href(html, ils->content.linkable.url, -1);
-
-				inlines_to_html(&scrap, ils->content.inlines);
-				strbuf_puts(html, "\" alt=\"");
-				if (scrap.size)
-					escape_html(html, scrap.ptr, scrap.size);
-				strbuf_clear(&scrap);
-
-				if (ils->content.linkable.title) {
-					strbuf_puts(html, "\" title=\"");
-					escape_html(html, ils->content.linkable.title, -1);
-				}
-
-				strbuf_puts(html, "\"/>");
-				break;
-
-			case INL_STRONG:
-				strbuf_puts(html, "<strong>");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</strong>");
-				break;
-
-			case INL_EMPH:
-				strbuf_puts(html, "<em>");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</em>");
-				break;
-		}
-		ils = ils->next;
-	}
+	blocks_to_html(html, root, false);
 }

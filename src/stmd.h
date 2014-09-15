@@ -104,28 +104,12 @@ struct node_block {
 
 typedef struct node_block node_block;
 
-node_inl* parse_inlines(strbuf *input, reference_map *refmap);
-void free_inlines(node_inl* e);
+node_block *stmd_parse_document(const unsigned char *buffer, size_t len);
+node_block *stmd_parse_file(FILE *f);
 
-int parse_reference_inline(strbuf *input, reference_map *refmap);
-void unescape_buffer(strbuf *buf);
+void stmd_free_nodes(node_block *e);
 
-extern node_block* make_document();
-extern node_block* add_child(node_block* parent,
-                        int block_type, int start_line, int start_column);
-void free_blocks(node_block* e);
-
-extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len);
-extern node_block *stmd_parse_file(FILE *f);
-
-void print_inlines(node_inl* ils, int indent);
-void print_blocks(node_block* blk, int indent);
-
-void blocks_to_html(strbuf *html, node_block *b, bool tight);
-void inlines_to_html(strbuf *html, node_inl *b);
-
-unsigned char *clean_url(chunk *url);
-unsigned char *clean_autolink(chunk *url, int is_email);
-unsigned char *clean_title(chunk *title);
+void stmd_debug_print(node_block *root);
+void stmd_render_html(strbuf *html, node_block *root);
 
 #endif

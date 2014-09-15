@@ -17,9 +17,9 @@ static void print_document(node_block *document, bool ast)
 	strbuf html = GH_BUF_INIT;
 
 	if (ast) {
-		print_blocks(document, 0);
+		stmd_debug_print(document);
 	} else {
-		blocks_to_html(&html, document, false);
+		stmd_render_html(&html, document);
 		printf("%s", html.ptr);
 		strbuf_free(&html);
 	}
@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	if (numfps == 0) {
 		document = stmd_parse_file(stdin);
 		print_document(document, ast);
-		free_blocks(document);
+		stmd_free_nodes(document);
 	} else {
 		for (i = 0; i < numfps; i++) {
 			FILE *fp = fopen(argv[files[i]], "r");
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 			document = stmd_parse_file(fp);
 			print_document(document, ast);
-			free_blocks(document);
+			stmd_free_nodes(document);
 			fclose(fp);
 		}
 	}

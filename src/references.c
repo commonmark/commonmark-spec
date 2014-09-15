@@ -1,6 +1,7 @@
 #include "stmd.h"
 #include "utf8.h"
 #include "references.h"
+#include "inlines.h"
 
 static unsigned int
 refhash(const unsigned char *link_ref)

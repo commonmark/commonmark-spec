@@ -8,6 +8,7 @@
 #include "html/houdini.h"
 #include "utf8.h"
 #include "scanners.h"
+#include "inlines.h"
 
 typedef struct Subject {
 	chunk input;

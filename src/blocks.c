@@ -6,8 +6,9 @@
 
 #include "stmd.h"
 #include "utf8.h"
-#include "html/houdini.h"
 #include "scanners.h"
+#include "inlines.h"
+#include "html/houdini.h"
 
 #define peek_at(i, n) (i)->data[n]
 
@@ -224,7 +225,7 @@ static void finalize(node_block* b, int line_number)
 }
 
 // Add a node_block as child of another.  Return pointer to child.
-extern node_block* add_child(node_block* parent,
+static node_block* add_child(node_block* parent,
 		int block_type, int start_line, int start_column)
 {
 	assert(parent);
@@ -252,7 +253,7 @@ extern node_block* add_child(node_block* parent,
 }
 
 // Free a node_block list and any children.
-extern void free_blocks(node_block* e)
+void stmd_free_nodes(node_block *e)
 {
 	node_block * next;
 	while (e != NULL) {
@@ -264,7 +265,7 @@ extern void free_blocks(node_block* e)
 		} else if (e->tag == BLOCK_DOCUMENT) {
 			reference_map_free(e->as.document.refmap);
 		}
-		free_blocks(e->children);
+		stmd_free_nodes(e->children);
 		free(e);
 		e = next;
 	}
@@ -279,8 +280,6 @@ void process_inlines(node_block* cur, reference_map *refmap)
 		case BLOCK_ATX_HEADER:
 		case BLOCK_SETEXT_HEADER:
 			cur->inline_content = parse_inlines(&cur->string_content, refmap);
-			// MEM
-			// strbuf_free(&cur->string_content);
 			break;
 
 		default:

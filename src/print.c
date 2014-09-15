@@ -32,14 +32,69 @@ static void print_str(const unsigned char *s, int len)
 	putchar('"');
 }
 
+// Prettyprint an inline list, for debugging.
+static void print_inlines(node_inl* ils, int indent)
+{
+	while(ils != NULL) {
+		for (int i=0; i < indent; i++) {
+			putchar(' ');
+		}
+		switch(ils->tag) {
+		case INL_STRING:
+			printf("str ");
+			print_str(ils->content.literal.data, ils->content.literal.len);
+			putchar('\n');
+			break;
+		case INL_LINEBREAK:
+			printf("linebreak\n");
+			break;
+		case INL_SOFTBREAK:
+			printf("softbreak\n");
+			break;
+		case INL_CODE:
+			printf("code ");
+			print_str(ils->content.literal.data, ils->content.literal.len);
+			putchar('\n');
+			break;
+		case INL_RAW_HTML:
+			printf("html ");
+			print_str(ils->content.literal.data, ils->content.literal.len);
+			putchar('\n');
+			break;
+		case INL_LINK:
+		case INL_IMAGE:
+			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");
+
+			if (ils->content.linkable.url)
+				print_str(ils->content.linkable.url, -1);
+
+			if (ils->content.linkable.title) {
+				printf(" title=");
+				print_str(ils->content.linkable.title, -1);
+			}
+			putchar('\n');
+			print_inlines(ils->content.linkable.label, indent + 2);
+			break;
+		case INL_STRONG:
+			printf("strong\n");
+			print_inlines(ils->content.linkable.label, indent + 2);
+			break;
+		case INL_EMPH:
+			printf("emph\n");
+			print_inlines(ils->content.linkable.label, indent + 2);
+			break;
+		}
+		ils = ils->next;
+	}
+}
+
 // Functions to pretty-print inline and node_block lists, for debugging.
 // Prettyprint an inline list, for debugging.
-extern void print_blocks(node_block* b, int indent)
+static void print_blocks(node_block* b, int indent)
 {
 	struct ListData *data;
 
 	while(b != NULL) {
-		// printf("%3d %3d %3d| ", b->start_line, b->start_column, b->end_line);
 		for (int i=0; i < indent; i++) {
 			putchar(' ');
 		}
@@ -115,58 +170,7 @@ extern void print_blocks(node_block* b, int indent)
 	}
 }
 
-// Prettyprint an inline list, for debugging.
-extern void print_inlines(node_inl* ils, int indent)
+void stmd_debug_print(node_block *root)
 {
-	while(ils != NULL) {
-		for (int i=0; i < indent; i++) {
-			putchar(' ');
-		}
-		switch(ils->tag) {
-		case INL_STRING:
-			printf("str ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
-			putchar('\n');
-			break;
-		case INL_LINEBREAK:
-			printf("linebreak\n");
-			break;
-		case INL_SOFTBREAK:
-			printf("softbreak\n");
-			break;
-		case INL_CODE:
-			printf("code ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
-			putchar('\n');
-			break;
-		case INL_RAW_HTML:
-			printf("html ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
-			putchar('\n');
-			break;
-		case INL_LINK:
-		case INL_IMAGE:
-			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");
-
-			if (ils->content.linkable.url)
-				print_str(ils->content.linkable.url, -1);
-
-			if (ils->content.linkable.title) {
-				printf(" title=");
-				print_str(ils->content.linkable.title, -1);
-			}
-			putchar('\n');
-			print_inlines(ils->content.linkable.label, indent + 2);
-			break;
-		case INL_STRONG:
-			printf("strong\n");
-			print_inlines(ils->content.linkable.label, indent + 2);
-			break;
-		case INL_EMPH:
-			printf("emph\n");
-			print_inlines(ils->content.linkable.label, indent + 2);
-			break;
-		}
-		ils = ils->next;
-	}
+	print_blocks(root, 0);
 }
