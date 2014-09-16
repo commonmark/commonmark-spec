@@ -295,6 +295,8 @@
         var second = [];
         var current = first;
         var state = 0;
+        var can_close = false;
+        var can_open = false;
 
         if (numdelims === 3) {
             state = 1;
@@ -307,155 +309,160 @@
         while (true) {
             res = this.scanDelims(c);
 
-            switch (state) {
-            case 1: // ***a
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong', c: [{t: 'Emph', c: first}]}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    current = second;
-                    state = res.can_open ? 4 : 6;
-                    continue;
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    current = second;
-                    state = res.can_open ? 5 : 7;
-                    continue;
-                 }
-                break;
-            case 2: // **a
-                if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    return [{t: 'Strong', c: first}];
-                } else if (res.numdelims === 1 && res.can_open) {
-                    this.pos += 1;
-                    current = second;
-                    state = 8;
-                    continue;
+            if (res) {
+                numdelims = res.numdelims;
+                can_close = res.can_close;
+                can_open = res.can_open;
+                switch (state) {
+                case 1: // ***a
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong', c: [{t: 'Emph', c: first}]}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        current = second;
+                        state = can_open ? 4 : 6;
+                        continue;
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        current = second;
+                        state = can_open ? 5 : 7;
+                        continue;
+                    }
+                    break;
+                case 2: // **a
+                    if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        return [{t: 'Strong', c: first}];
+                    } else if (numdelims === 1 && can_open) {
+                        this.pos += 1;
+                        current = second;
+                        state = 8;
+                        continue;
+                    }
+                    break;
+                case 3: // *a
+                    if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        return [{t: 'Emph', c: first}];
+                    } else if (numdelims === 2 && can_open) {
+                        this.pos += 2;
+                        current = second;
+                        state = 9;
+                        continue;
+                    }
+                    break;
+                case 4: // ***a**b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph',
+                                      c: first.concat(
+                                          [{t: 'Str', c: c+c}],
+                                          second)}]}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Str', c: c+c+c}].concat(
+                                     first,
+                                     [{t: 'Strong', c: second}])}];
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        return [{t: 'Emph',
+                                 c: [{t: 'Strong', c: first}].concat(second)}];
+                    }
+                    break;
+                case 5: // ***a*b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph',
+                                      c: first.concat(
+                                          [{t: 'Str', c: c}],
+                                          second)}]}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph', c: first}].concat(second)}];
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Str', c: c+c+c}].concat(
+                                     first,
+                                     [{t: 'Emph', c: second}])}];
+                    }
+                    break;
+                case 6: // ***a** b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph',
+                                      c: first.concat(
+                                          [{t: 'Str', c: c+c}],
+                                          second)}]}];
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        return [{t: 'Emph',
+                                 c: [{t: 'Strong', c: first}].concat(second)}];
+                    }
+                    break;
+                case 7: // ***a* b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph',
+                                      c: first.concat(
+                                          [{t: 'Str', c: c}],
+                                          second)}]}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        return [{t: 'Strong',
+                                 c: [{t: 'Emph', c: first}].concat(second)}];
+                    }
+                    break;
+                case 8: // **a *b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Strong',
+                                 c: first.concat([{t: 'Emph',
+                                                   c: second}])}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        return [{t: 'Strong',
+                                 c: first.concat(
+                                     [{t: 'Str', c: c}],
+                                     second)}];
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        first = first.concat([{t: 'Emph', c: second}]);
+                        current = first;
+                        state = 2;
+                        continue;
+                    }
+                    break;
+                case 9: // *a **b
+                    if (numdelims === 3 && can_close) {
+                        this.pos += 3;
+                        return [{t: 'Emph',
+                                 c: first.concat([{t: 'Strong',
+                                                   c: second}])}];
+                    } else if (numdelims === 2 && can_close) {
+                        this.pos += 2;
+                        first = first.concat([{t: 'Strong', c: second}]);
+                        current = first;
+                        state = 3;
+                        continue;
+                    } else if (numdelims === 1 && can_close) {
+                        this.pos += 1;
+                        return [{t: 'Emph',
+                                 c: first.concat(
+                                     [{t: 'Str', c: c+c}],
+                                     second)}];
+                    }
+                    break;
+                default:
+                    break;
                 }
-                break;
-            case 3: // *a
-                if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    return [{t: 'Emph', c: first}];
-                } else if (res.numdelims === 2 && res.can_open) {
-                    this.pos += 2;
-                    current = second;
-                    state = 9;
-                    continue;
-                }
-                break;
-            case 4: // ***a**b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph',
-                                  c: first.concat(
-                                      [{t: 'Str', c: c+c}],
-                                       second)}]}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    return [{t: 'Strong',
-                             c: [{t: 'Str', c: c+c+c}].concat(
-                                 first,
-                                 [{t: 'Strong', c: second}])}];
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    return [{t: 'Emph',
-                             c: [{t: 'Strong', c: first}].concat(second)}];
-                }
-                break;
-            case 5: // ***a*b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph',
-                                  c: first.concat(
-                                      [{t: 'Str', c: c}],
-                                       second)}]}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph', c: first}].concat(second)}];
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    return [{t: 'Strong',
-                             c: [{t: 'Str', c: c+c+c}].concat(
-                                 first,
-                                 [{t: 'Emph', c: second}])}];
-                }
-                 break;
-            case 6: // ***a** b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph',
-                                  c: first.concat(
-                                      [{t: 'Str', c: c+c}],
-                                       second)}]}];
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    return [{t: 'Emph',
-                             c: [{t: 'Strong', c: first}].concat(second)}];
-                }
-                break;
-            case 7: // ***a* b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph',
-                                  c: first.concat(
-                                      [{t: 'Str', c: c}],
-                                       second)}]}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    return [{t: 'Strong',
-                             c: [{t: 'Emph', c: first}].concat(second)}];
-                }
-                break;
-            case 8: // **a *b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Strong',
-                             c: first.concat([{t: 'Emph',
-                                               c: second}])}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    return [{t: 'Strong',
-                             c: first.concat(
-                                 [{t: 'Str', c: c}],
-                                 second)}];
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    first = first.concat([{t: 'Emph', c: second}]);
-                    current = first;
-                    state = 2;
-                    continue;
-                }
-                break;
-            case 9: // *a **b
-                if (res.numdelims === 3 && res.can_close) {
-                    this.pos += 3;
-                    return [{t: 'Emph',
-                             c: first.concat([{t: 'Strong',
-                                               c: second}])}];
-                } else if (res.numdelims === 2 && res.can_close) {
-                    this.pos += 2;
-                    first = first.concat([{t: 'Strong', c: second}]);
-                    current = first;
-                    state = 3;
-                    continue;
-                } else if (res.numdelims === 1 && res.can_close) {
-                    this.pos += 1;
-                    return [{t: 'Emph',
-                             c: first.concat(
-                                 [{t: 'Str', c: c+c}],
-                                 second)}];
-                }
-                break;
-            default:
-                break;
             }
 
             if ((next_inline = this.parseInline())) {
