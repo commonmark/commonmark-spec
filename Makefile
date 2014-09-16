@@ -6,7 +6,7 @@ DATADIR=data
 PROG=./stmd
 
 .PHONY: all oldtests test spec benchjs testjs
-all: $(SRCDIR)/case_fold_switch.c $(PROG)
+all: $(SRCDIR)/case_fold_switch.c $(PROG) lib
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -44,6 +44,14 @@ benchjs:
 $(PROG): $(SRCDIR)/main.c $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab.o $(SRCDIR)/bstrlib.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
+lib_test: $(SRCDIR)/lib_test.c libstmd.so
+	$(CC) $(LDFLAGS) -o $@ $(SRCDIR)/lib_test.c -L. -lstmd -Wl,-rpath,.
+
+lib: libstmd.so
+
+libstmd.so: $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab.o $(SRCDIR)/bstrlib.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o
+	gcc -DLIB -shared $(SRCDIR)/inlines.o $(SRCDIR)/blocks.o $(SRCDIR)/detab.o $(SRCDIR)/bstrlib.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/html.o $(SRCDIR)/utf8.o -o libstmd.so
+
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -bis $< > $@ || (rm $@ && false)
 
@@ -69,7 +77,7 @@ update-site: spec.html narrative.html
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
-	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c
+	-rm test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(PROG) lib_test libstmd.so
 	-rm -r *.dSYM
 	-rm README.html
 	-rm spec.md fuzz.txt spec.html

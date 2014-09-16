@@ -745,3 +745,52 @@ extern int incorporate_line(bstring ln, int line_number, block** curptr)
   return -1;
 }
 
+//process an entire block of Markdown and convert to HTML, splitting lines on \n
+//s is the text with length n in bytes
+//the HTML result will be in ret, with length in ret_len. ret will be allocated automatically, be sure to free() afterward
+//ret is not a C string (i.e. do not rely on a terminating \0).
+//the function returns false and writes to stderr if there is a bug, it should never happen with any input
+int stmd_process_block(char * s, size_t n, char ** ret, size_t * ret_len) {
+  size_t len;
+  char * pos;
+  int linenum = 0;
+
+  bstring line = bfromcstr(""), html;
+  block * cur = make_document();
+
+  //split input block into lines, copy to a bstring and incorporate
+  while(n) {
+    if((pos = memchr(s, '\n', n))) {
+      pos += 1; //include the \n
+      len = pos - s;
+    } else { //at the end of the block
+      len = n;
+    }
+    bassignblk(line, s, len);
+    check(incorporate_line(line, ++linenum, &cur) == 0, "error incorporating line %d", linenum);
+
+    s = pos;
+    n -= len;
+  }
+  bdestroy(line);
+
+  while (cur != cur->top) {
+    finalize(cur, linenum);
+    cur = cur->parent;
+  }
+  check(cur == cur->top, "problems finalizing open containers");
+  finalize(cur, linenum);
+  process_inlines(cur, cur->attributes.refmap);
+  check(blocks_to_html(cur, &html, false) == 0, "could not format as HTML");
+
+  *ret_len = blength(html);
+  check(*ret = malloc(*ret_len), "Could not malloc"); //copy to memory allocated with malloc because there is no way for external code to free bstrings
+  memcpy(*ret, html->data, *ret_len);
+  bdestroy(html);
+
+  free_blocks(cur);
+
+  return true;
+error:
+  return false;
+}
