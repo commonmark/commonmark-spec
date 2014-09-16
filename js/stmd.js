@@ -428,9 +428,10 @@
                                  second)}];
                 } else if (res.numdelims === 1 && res.can_close) {
                     this.pos += 1;
-                    return [{t: 'Str', c: c+c}].concat(
-                        first,
-                        [{t: 'Emph', c: second}]);
+                    first = first.concat([{t: 'Emph', c: second}]);
+                    current = first;
+                    state = 2;
+                    continue;
                 }
                 break;
             case 9: // *a **b
@@ -441,9 +442,10 @@
                                                c: second}])}];
                 } else if (res.numdelims === 2 && res.can_close) {
                     this.pos += 2;
-                    return [{t: 'Str', c: c}].concat(
-                        first,
-                        [{t: 'Strong', c: second}]);
+                    first = first.concat([{t: 'Strong', c: second}]);
+                    current = first;
+                    state = 3;
+                    continue;
                 } else if (res.numdelims === 1 && res.can_close) {
                     this.pos += 1;
                     return [{t: 'Emph',
