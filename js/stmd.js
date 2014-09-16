@@ -166,15 +166,15 @@
         var match;
         while (!foundCode && (match = this.match(/`+/m))) {
             if (match == ticks) {
-                return { t: 'Code', c: this.subject.slice(afterOpenTicks,
+                return [{ t: 'Code', c: this.subject.slice(afterOpenTicks,
                                                           this.pos - ticks.length)
                          .replace(/[ \n]+/g,' ')
-                         .trim() };
+                          .trim() }];
             }
         }
         // If we got here, we didn't match a closing backtick sequence.
         this.pos = afterOpenTicks;
-        return { t: 'Str', c: ticks };
+        return [{ t: 'Str', c: ticks }];
     };
 
     // Parse a backslash-escaped special character, adding either the escaped
@@ -186,13 +186,13 @@
         if (subj[pos] === '\\') {
             if (subj[pos + 1] === '\n') {
                 this.pos = this.pos + 2;
-                return { t: 'Hardbreak' };
+                return [{ t: 'Hardbreak' }];
             } else if (reEscapable.test(subj[pos + 1])) {
                 this.pos = this.pos + 2;
-                return { t: 'Str', c: subj[pos + 1] };
+                return [{ t: 'Str', c: subj[pos + 1] }];
             } else {
                 this.pos++;
-                return {t: 'Str', c: '\\'};
+                return [{t: 'Str', c: '\\'}];
             }
         } else {
             return null;
@@ -205,14 +205,14 @@
         var dest;
         if ((m = this.match(/^<([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)>/))) {  // email autolink
             dest = m.slice(1,-1);
-            return {t: 'Link',
-                    label: [{ t: 'Str', c: dest }],
-                    destination: 'mailto:' + dest };
+            return [{t: 'Link',
+                     label: [{ t: 'Str', c: dest }],
+                     destination: 'mailto:' + dest }];
         } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
             dest = m.slice(1,-1);
-            return { t: 'Link',
-                     label: [{ t: 'Str', c: dest }],
-                     destination: dest };
+            return [{ t: 'Link',
+                      label: [{ t: 'Str', c: dest }],
+                      destination: dest }];
         } else {
             return null;
         }
@@ -222,7 +222,7 @@
     var parseHtmlTag = function() {
         var m = this.match(reHtmlTag);
         if (m) {
-            return { t: 'Html', c: m };
+            return [{ t: 'Html', c: m }];
         } else {
             return null;
         }
@@ -285,60 +285,219 @@
 
         if (numdelims >= 4 || !res.can_open) {
             this.pos += numdelims;
-            return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
+            return [{t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)}];
         }
 
         this.pos += numdelims;
 
         var next_inline;
-        var last_emphasis_closer = null;
+        var first = [];
+        var second = [];
+        var current = first;
+        var state = 0;
 
-        var delims_to_match = numdelims;
+        if (numdelims === 3) {
+            state = 1;
+        } else if (numdelims === 2) {
+            state = 2;
+        } else if (numdelims === 1) {
+            state = 3;
+        }
 
-        // We need not look for closers if we have already recorded that
-        // there are no closers past this point.
-        while (this.last_emphasis_closer === null ||
-               this.last_emphasis_closer >= this.pos) {
+        while (true) {
             res = this.scanDelims(c);
-            numclosedelims = res.numdelims;
-            if (res.can_close) {
-                if (last_emphasis_closer === null ||
-                    last_emphasis_closer < this.pos) {
-                    last_emphasis_closer = this.pos;
-                }
-                if (numclosedelims === 3 && delims_to_match === 3) {
+
+            switch (state) {
+            case 1: // ***a
+                if (res.numdelims === 3 && res.can_close) {
                     this.pos += 3;
-                    this.last_emphasis_closer = null;
-                    return {t: 'Strong', c: [{t: 'Emph', c: inlines}]};
-                } else if (numclosedelims >= 2 && delims_to_match >= 2) {
-                    delims_to_match -= 2;
+                    return [{t: 'Strong', c: [{t: 'Emph', c: first}]}];
+                } else if (res.numdelims === 2 && res.can_close) {
                     this.pos += 2;
-                    inlines = [{t: 'Strong', c: inlines}];
-                } else if (numclosedelims >= 1 && delims_to_match >= 1) {
-                    delims_to_match -= 1;
+                    current = second;
+                    state = res.can_open ? 4 : 6;
+                    continue;
+                } else if (res.numdelims === 1 && res.can_close) {
                     this.pos += 1;
-                    inlines = [{t: 'Emph', c: inlines}];
+                    current = second;
+                    state = res.can_open ? 5 : 7;
+                    continue;
+                 }
+                break;
+            case 2: // **a
+                if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Strong', c: first}];
+                } else if (res.numdelims === 1 && res.can_open) {
+                    this.pos += 1;
+                    current = second;
+                    state = 8;
+                    continue;
                 }
-                if (delims_to_match === 0) {
-                    this.last_emphasis_closer = null;
-                    return inlines[0];
+                break;
+            case 3: // *a
+                if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Emph', c: first}];
+                } else if (res.numdelims === 2 && res.can_open) {
+                    this.pos += 2;
+                    current = second;
+                    state = 9;
+                    continue;
                 }
-            } else if ((next_inline = this.parseInline())) {
-                inlines.push(next_inline);
+                break;
+            case 4: // ***a**b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph',
+                                  c: first.concat(
+                                      [{t: 'Str', c: c+c}],
+                                       second)}]}];
+                } else if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Strong',
+                             c: [{t: 'Str', c: c+c+c}].concat(
+                                 first,
+                                 [{t: 'Strong', c: second}])}];
+                } else if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Emph',
+                             c: [{t: 'Strong', c: first}].concat(second)}];
+                }
+                break;
+            case 5: // ***a*b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph',
+                                  c: first.concat(
+                                      [{t: 'Str', c: c}],
+                                       second)}]}];
+                } else if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph', c: first}].concat(second)}];
+                } else if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Strong',
+                             c: [{t: 'Str', c: c+c+c}].concat(
+                                 first,
+                                 [{t: 'Emph', c: second}])}];
+                }
+                 break;
+            case 6: // ***a** b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph',
+                                  c: first.concat(
+                                      [{t: 'Str', c: c+c}],
+                                       second)}]}];
+                } else if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Emph',
+                             c: [{t: 'Strong', c: first}].concat(second)}];
+                }
+                break;
+            case 7: // ***a* b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph',
+                                  c: first.concat(
+                                      [{t: 'Str', c: c}],
+                                       second)}]}];
+                } else if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Strong',
+                             c: [{t: 'Emph', c: first}].concat(second)}];
+                }
+                break;
+            case 8: // **a *b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Strong',
+                             c: first.concat([{t: 'Emph',
+                                               c: second}])}];
+                } else if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Strong',
+                             c: first.concat(
+                                 [{t: 'Str', c: c}],
+                                 second)}];
+                } else if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Str', c: c+c}].concat(
+                        first,
+                        [{t: 'Emph', c: second}]);
+                }
+                break;
+            case 9: // *a **b
+                if (res.numdelims === 3 && res.can_close) {
+                    this.pos += 3;
+                    return [{t: 'Emph',
+                             c: first.concat([{t: 'Strong',
+                                               c: second}])}];
+                } else if (res.numdelims === 2 && res.can_close) {
+                    this.pos += 2;
+                    return [{t: 'Str', c: c}].concat(
+                        first,
+                        [{t: 'Strong', c: second}]);
+                } else if (res.numdelims === 1 && res.can_close) {
+                    this.pos += 1;
+                    return [{t: 'Emph',
+                             c: first.concat(
+                                 [{t: 'Str', c: c+c}],
+                                 second)}];
+                }
+                break;
+            default:
+                break;
+            }
+
+            if ((next_inline = this.parseInline())) {
+                Array.prototype.push.apply(current, next_inline);
             } else {
                 break;
             }
+
         }
 
-        // didn't find closing delimiter
-        this.pos = startpos + numdelims;
-        if (last_emphasis_closer === null) {
-            // we know there are no closers after startpos, so:
-            this.last_emphasis_closer = startpos;
-        } else {
-            this.last_emphasis_closer = last_emphasis_closer;
+        switch (state) {
+        case 1: // ***a
+            return [{t: 'Str', c: c+c+c}].concat(first);
+        case 2: // **a
+            return [{t: 'Str', c: c+c}].concat(first);
+        case 3: // *a
+            return [{t: 'Str', c: c}].concat(first);
+        case 4: // ***a**b
+        case 6: // ***a** b
+            return [{t: 'Str', c: c+c+c}]
+                .concat(first,
+                        [{t: 'Str', c: c+c}],
+                        second);
+        case 5: // ***a*b
+        case 7: // ***a* b
+            return [{t: 'Str', c: c+c+c}]
+                .concat(first,
+                        [{t: 'Str', c: c}],
+                        second);
+        case 8: // **a *b
+            return [{t: 'Str', c: c+c}]
+                .concat(first,
+                        [{t: 'Str', c: c}],
+                        second);
+        case 9: // *a **b
+            return [{t: 'Str', c: c}]
+                .concat(first,
+                        [{t: 'Str', c: c+c}],
+                        second);
+        default:
+            console.log("Unknown state, parseEmphasis");
+            // shouldn't happen
         }
-        return {t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)};
+
     };
 
     // Attempt to parse link title (sans quotes), returning the string
@@ -461,10 +620,10 @@
                  (title = this.parseLinkTitle() || '') || true) &&
                 this.spnl() &&
                 this.match(/^\)/)) {
-                return { t: 'Link',
-                         destination: dest,
-                         title: title,
-                         label: parseRawLabel(rawlabel) };
+                return [{ t: 'Link',
+                          destination: dest,
+                          title: title,
+                          label: parseRawLabel(rawlabel) }];
             } else {
                 this.pos = startpos;
                 return null;
@@ -488,10 +647,10 @@
         // lookup rawlabel in refmap
         var link = this.refmap[normalizeReference(reflabel)];
         if (link) {
-            return {t: 'Link',
-                    destination: link.destination,
-                    title: link.title,
-                    label: parseRawLabel(rawlabel) };
+            return [{t: 'Link',
+                     destination: link.destination,
+                     title: link.title,
+                     label: parseRawLabel(rawlabel) }];
         } else {
             this.pos = startpos;
             return null;
@@ -505,7 +664,7 @@
     var parseEntity = function() {
         var m;
         if ((m = this.match(/^&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});/i))) {
-            return { t: 'Entity', c: m };
+            return [{ t: 'Entity', c: m }];
         } else {
             return  null;
         }
@@ -516,7 +675,7 @@
     var parseString = function() {
         var m;
         if ((m = this.match(reMain))) {
-            return { t: 'Str', c: m };
+            return [{ t: 'Str', c: m }];
         } else {
             return null;
         }
@@ -528,9 +687,9 @@
         var m = this.match(/^ *\n/);
         if (m) {
             if (m.length > 2) {
-                return { t: 'Hardbreak' };
+                return [{ t: 'Hardbreak' }];
             } else if (m.length > 0) {
-                return { t: 'Softbreak' };
+                return [{ t: 'Softbreak' }];
             }
         }
         return null;
@@ -542,10 +701,10 @@
         if (this.match(/^!/)) {
             var link = this.parseLink();
             if (link) {
-                link.t = 'Image';
+                link[0].t = 'Image';
                 return link;
             } else {
-                return { t: 'Str', c: '!' };
+                return [{ t: 'Str', c: '!' }];
             }
         } else {
             return null;
@@ -615,11 +774,13 @@
     // and returning the inline parsed.
     var parseInline = function() {
         var startpos = this.pos;
+        /*
         var memoized = this.memo[startpos];
         if (memoized) {
             this.pos = memoized.endpos;
             return memoized.inline;
         }
+        */
         var c = this.peek();
         if (!c) {
             return null;
@@ -658,12 +819,14 @@
         }
         if (res === null) {
             this.pos += 1;
-            res = {t: 'Str', c: c};
+            res = [{t: 'Str', c: c}];
         }
+        /*
         if (res) {
             this.memo[startpos] = { inline: res,
                                     endpos: this.pos };
         }
+         */
         return res;
     };
 
@@ -672,12 +835,12 @@
         this.subject = s;
         this.pos = 0;
         this.refmap = refmap || {};
-        this.memo = {};
+        // this.memo = {};
         this.last_emphasis_closer = null;
         var inlines = [];
         var next_inline;
         while ((next_inline = this.parseInline())) {
-            inlines.push(next_inline);
+            Array.prototype.push.apply(inlines, next_inline);
         }
         return inlines;
     };
@@ -690,7 +853,7 @@
             last_emphasis_closer: null,  // used by parseEmphasis method
             pos: 0,
             refmap: {},
-            memo: {},
+            // memo: {},
             match: match,
             peek: peek,
             spnl: spnl,
