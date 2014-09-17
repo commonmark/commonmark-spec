@@ -289,7 +289,6 @@
         }
 
         this.pos += numdelims;
-        var delimpos = this.pos;
 
         var next_inline;
         var first = [];
@@ -473,31 +472,36 @@
             }
 
         }
-        this.pos = startpos;
-        return null;
 
         switch (state) {
         case 1: // ***a
-            return [{t: 'Emph', c: [{t: 'Str', c: c}]}].concat(first);
+            return [{t: 'Str', c: c+c+c}].concat(first);
         case 2: // **a
             return [{t: 'Str', c: c+c}].concat(first);
         case 3: // *a
             return [{t: 'Str', c: c}].concat(first);
         case 4: // ***a**b
         case 6: // ***a** b
-            return [{t: 'Strong', c:
-                     [{t: 'Str', c: c}].concat(first)}].concat(second);
+            return [{t: 'Str', c: c+c+c}]
+                .concat(first,
+                        [{t: 'Str', c: c+c}],
+                        second);
         case 5: // ***a*b
         case 7: // ***a* b
-            return [{t: 'Emph', c:
-                     [{t: 'Str', c: c+c}].concat(first)}].concat(second);
+            return [{t: 'Str', c: c+c+c}]
+                .concat(first,
+                        [{t: 'Str', c: c}],
+                        second);
         case 8: // **a *b
             return [{t: 'Str', c: c+c}]
                 .concat(first,
                         [{t: 'Str', c: c}],
                         second);
         case 9: // *a **b
-            return [{t: 'Emph', c: first.concat([{t: 'Str', c: c}])}].concat(second);
+            return [{t: 'Str', c: c}]
+                .concat(first,
+                        [{t: 'Str', c: c+c}],
+                        second);
         default:
             console.log("Unknown state, parseEmphasis");
             // shouldn't happen
@@ -779,11 +783,13 @@
     // and returning the inline parsed.
     var parseInline = function() {
         var startpos = this.pos;
+        /*
         var memoized = this.memo[startpos];
         if (memoized) {
             this.pos = memoized.endpos;
             return memoized.inline;
         }
+        */
         var c = this.peek();
         if (!c) {
             return null;
@@ -824,10 +830,12 @@
             this.pos += 1;
             res = [{t: 'Str', c: c}];
         }
+        /*
         if (res) {
             this.memo[startpos] = { inline: res,
                                     endpos: this.pos };
         }
+         */
         return res;
     };
 
@@ -836,7 +844,7 @@
         this.subject = s;
         this.pos = 0;
         this.refmap = refmap || {};
-        this.memo = {};
+        // this.memo = {};
         this.last_emphasis_closer = null;
         var inlines = [];
         var next_inline;
@@ -854,7 +862,7 @@
             last_emphasis_closer: null,  // used by parseEmphasis method
             pos: 0,
             refmap: {},
-            memo: {},
+            // memo: {},
             match: match,
             peek: peek,
             spnl: spnl,
