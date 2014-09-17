@@ -260,6 +260,18 @@
                  can_close: can_close };
     };
 
+    var Emph = function(ils) {
+        return {t: 'Emph', c: ils};
+    }
+
+    var Strong = function(ils) {
+        return {t: 'Strong', c: ils};
+    }
+
+    var Str = function(s) {
+        return {t: 'Str', c: s};
+    }
+
     // Attempt to parse emphasis or strong emphasis.
     var parseEmphasis = function() {
         var startpos = this.pos;
@@ -285,7 +297,7 @@
 
         if (numdelims >= 4 || !res.can_open) {
             this.pos += numdelims;
-            return [{t: 'Str', c: this.subject.slice(startpos, startpos + numdelims)}];
+            return [Str(this.subject.slice(startpos, startpos + numdelims))];
         }
 
         this.pos += numdelims;
@@ -317,7 +329,7 @@
                 case 1: // ***a
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong', c: [{t: 'Emph', c: first}]}];
+                        return [Strong([Emph(first)])];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
                         current = second;
@@ -333,7 +345,7 @@
                 case 2: // **a
                     if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [{t: 'Strong', c: first}];
+                        return [Strong(first)];
                     } else if (numdelims === 1 && can_open) {
                         this.pos += 1;
                         current = second;
@@ -344,7 +356,7 @@
                 case 3: // *a
                     if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [{t: 'Emph', c: first}];
+                        return [Emph(first)];
                     } else if (numdelims === 2 && can_open) {
                         this.pos += 2;
                         current = second;
@@ -355,86 +367,59 @@
                 case 4: // ***a**b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph',
-                                      c: first.concat(
-                                          [{t: 'Str', c: c+c}],
-                                          second)}]}];
+                        return [Strong([Emph(first.concat([Str(c+c)], second))])];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Str', c: c+c+c}].concat(
-                                     first,
-                                     [{t: 'Strong', c: second}])}];
+                        return [Strong([Str(c+c+c)].concat(
+                            first,
+                            [Strong(second)]))];
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [{t: 'Emph',
-                                 c: [{t: 'Strong', c: first}].concat(second)}];
+                        return [Emph([Strong(first)].concat(second))];
                     }
                     break;
                 case 5: // ***a*b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph',
-                                      c: first.concat(
-                                          [{t: 'Str', c: c}],
-                                          second)}]}];
+                        return [Strong([Emph(first.concat([Str(c)], second))])];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph', c: first}].concat(second)}];
+                        return [Strong([Emph(first)].concat(second))];
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Str', c: c+c+c}].concat(
-                                     first,
-                                     [{t: 'Emph', c: second}])}];
+                        return [Strong([Str(c+c+c)].concat(
+                            first,
+                            [Emph(second)]))];
                     }
                     break;
                 case 6: // ***a** b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph',
-                                      c: first.concat(
-                                          [{t: 'Str', c: c+c}],
-                                          second)}]}];
+                        return [Strong([Emph(first.concat([Str(c+c)], second))])];
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [{t: 'Emph',
-                                 c: [{t: 'Strong', c: first}].concat(second)}];
+                        return [Emph([Strong(first)].concat(second))];
                     }
                     break;
                 case 7: // ***a* b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph',
-                                      c: first.concat(
-                                          [{t: 'Str', c: c}],
-                                          second)}]}];
+                        return [Strong([Emph(first.concat([Str(c)], second))])];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [{t: 'Strong',
-                                 c: [{t: 'Emph', c: first}].concat(second)}];
+                        return [Strong([Emph(first)].concat(second))];
                     }
                     break;
                 case 8: // **a *b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Strong',
-                                 c: first.concat([{t: 'Emph',
-                                                   c: second}])}];
+                        return [Strong(first.concat([Emph(second)]))];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [{t: 'Strong',
-                                 c: first.concat(
-                                     [{t: 'Str', c: c}],
-                                     second)}];
+                        return [Strong(first.concat([Str(c)], second))];
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        first = first.concat([{t: 'Emph', c: second}]);
+                        first.push(Emph(second));
                         current = first;
                         state = 2;
                         continue;
@@ -443,21 +428,16 @@
                 case 9: // *a **b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [{t: 'Emph',
-                                 c: first.concat([{t: 'Strong',
-                                                   c: second}])}];
+                        return [(Emph(first.concat([Strong(second)])))];
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        first = first.concat([{t: 'Strong', c: second}]);
+                        first.push(Strong(second));
                         current = first;
                         state = 3;
                         continue;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [{t: 'Emph',
-                                 c: first.concat(
-                                     [{t: 'Str', c: c+c}],
-                                     second)}];
+                        return [Emph(first.concat([Str(c+c)], second))];
                     }
                     break;
                 default:
@@ -475,33 +455,25 @@
 
         switch (state) {
         case 1: // ***a
-            return [{t: 'Str', c: c+c+c}].concat(first);
+            return [Str(c+c+c)].concat(first);
         case 2: // **a
-            return [{t: 'Str', c: c+c}].concat(first);
+            return [Str(c+c)].concat(first);
         case 3: // *a
-            return [{t: 'Str', c: c}].concat(first);
+            return [Str(c)].concat(first);
         case 4: // ***a**b
         case 6: // ***a** b
-            return [{t: 'Str', c: c+c+c}]
-                .concat(first,
-                        [{t: 'Str', c: c+c}],
-                        second);
+            return [Str(c+c+c)]
+                .concat(first, [Str(c+c)], second);
         case 5: // ***a*b
         case 7: // ***a* b
-            return [{t: 'Str', c: c+c+c}]
-                .concat(first,
-                        [{t: 'Str', c: c}],
-                        second);
+            return [Str(c+c+c)]
+                .concat(first, [Str(c)], second);
         case 8: // **a *b
-            return [{t: 'Str', c: c+c}]
-                .concat(first,
-                        [{t: 'Str', c: c}],
-                        second);
+            return [Str(c+c)]
+                .concat(first, [Str(c)], second);
         case 9: // *a **b
-            return [{t: 'Str', c: c}]
-                .concat(first,
-                        [{t: 'Str', c: c+c}],
-                        second);
+            return [Str(c)]
+                .concat(first, [Str(c+c)], second);
         default:
             console.log("Unknown state, parseEmphasis");
             // shouldn't happen
