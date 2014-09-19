@@ -1,7 +1,7 @@
 AC_INIT([cm], [0.1], [issues@commonmark.org])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
-AC_PROG_CC
+AC_PROG_CC_C99
 AM_PROG_CC_C_O
 
 AC_TYPE_SIZE_T
