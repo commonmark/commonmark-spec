@@ -22,21 +22,21 @@ AC_CHECK_FUNCS([strerror])
 AC_C_INLINE
 AC_FUNC_MALLOC
 
-AC_CHECK_PROG(HAVE_PERL, perl, [found], [no])
+AC_CHECK_PROG(PERL, perl, perl, missing)
 
-if test $HAVE_PERL == "no"; then
+if test "$PERL" == missing; then
     AC_MSG_ERROR([perl cannot be found in PATH, please install it])
 fi
 
-AC_CHECK_PROG(HAVE_PANDOC, pandoc, [found], [no])
+AC_CHECK_PROG(HAVE_PANDOC, pandoc, pandoc, missing)
 
-if test $HAVE_PANDOC == "no"; then
+if test "$PANDOC" == missing; then
     AC_MSG_ERROR([pandoc cannot be found in PATH, please install it])
 fi
 
-AC_CHECK_PROG(HAVE_RE2C, re2c, [found], [no])
+AC_CHECK_PROG(RE2C, re2c, re2c, missing)
 
-if test $HAVE_RE2C == "no"; then
+if test "$RE2C" == missing; then
     AC_MSG_ERROR([re2c cannot be found in PATH, please install it])
 fi
 
