@@ -1366,9 +1366,9 @@ var outputJSON = function(ast) {
       if (ast.label) astCopy.label = ast.label;
       if (!ast.open == undefined) astCopy.open = ast.open;
       if (!ast.last_line_blank == undefined) astCopy.last_line_blank = ast.last_line_blank;
-      if (ast.start_line) astCopy.start_line = ast.start_line;
-      if (ast.start_column) astCopy.start_column = ast.start_column;
-      if (ast.end_line) astCopy.end_line = ast.end_line;
+      if (!ast.start_line == undefined) astCopy.start_line = ast.start_line;
+      if (!ast.start_column == undefined) astCopy.start_column = ast.start_column;
+      if (!ast.end_line == undefined) astCopy.end_line = ast.end_line;
       if (ast.string_content) astCopy.string_content = ast.string_content;
       if (ast.strings.length > 0) astCopy.strings = ast.strings;
       if (ast.inline_content.length > 0) astCopy.inline_content = ast.inline_content;
