@@ -534,9 +534,8 @@
                 this.parseBackticks();
                 break;
             case '<':
-                if (!(this.parseAutolink())) {
-                    this.parseHtmlTag();
-                }
+                this.parseAutolink() || this.parseHtmlTag() ||
+                    this.pos++;
                 break;
             case '[':  // nested []
                 nest_level++;
