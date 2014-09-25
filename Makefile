@@ -1,9 +1,9 @@
-CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -O3 -Wall -Werror
-SRCDIR=src
-DATADIR=data
+CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
+LDFLAGS?=-g -O3 -Wall -Werror
+SRCDIR?=src
+DATADIR?=data
 
-PROG=./stmd
+PROG?=./stmd
 
 .PHONY: all oldtests test spec benchjs testjs
 all: $(SRCDIR)/case_fold_switch.c $(PROG)
