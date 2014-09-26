@@ -312,6 +312,7 @@
         var state = 0;
         var can_close = false;
         var can_open = false;
+        var last_emphasis_closer = null;
 
         if (numdelims === 3) {
             state = 1;
@@ -322,11 +323,17 @@
         }
 
         while (true) {
+            if (this.last_emphasis_closer[c] < this.pos) {
+                break;
+            }
             res = this.scanDelims(c);
 
             if (res) {
                 numdelims = res.numdelims;
                 can_close = res.can_close;
+                if (can_close) {
+                    last_emphasis_closer = this.pos;
+                }
                 can_open = res.can_open;
                 switch (state) {
                 case 1: // ***a
@@ -458,6 +465,9 @@
 
         // we didn't match emphasis: fallback
         this.pos = fallbackpos;
+        if (last_emphasis_closer) {
+            this.last_emphasis_closer[c] = last_emphasis_closer;
+        }
         return [fallback];
 
     };
@@ -783,7 +793,7 @@
         this.subject = s;
         this.pos = 0;
         this.refmap = refmap || {};
-        this.last_emphasis_closer = null;
+        this.last_emphasis_closer = { '*': s.length, '_': s.length };
         var inlines = [];
         var next_inline;
         while ((next_inline = this.parseInline())) {
