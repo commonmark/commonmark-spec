@@ -745,6 +745,13 @@
     // and returning the inline parsed.
     var parseInline = function() {
         var startpos = this.pos;
+
+        var memoized = this.memo[startpos];
+        if (memoized) {
+            this.pos = memoized.endpos;
+            return memoized.inline;
+        }
+
         var c = this.peek();
         if (!c) {
             return null;
@@ -785,6 +792,12 @@
             this.pos += 1;
             res = [{t: 'Str', c: c}];
         }
+
+        if (res) {
+            this.memo[startpos] = { inline: res,
+                                    endpos: this.pos };
+        }
+
         return res;
     };
 
@@ -793,6 +806,7 @@
         this.subject = s;
         this.pos = 0;
         this.refmap = refmap || {};
+        this.memo = {};
         this.last_emphasis_closer = { '*': s.length, '_': s.length };
         var inlines = [];
         var next_inline;
@@ -810,6 +824,7 @@
             last_emphasis_closer: null,  // used by parseEmphasis method
             pos: 0,
             refmap: {},
+            memo: {},
             match: match,
             peek: peek,
             spnl: spnl,
