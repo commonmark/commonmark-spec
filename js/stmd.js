@@ -455,7 +455,7 @@
                 }
             }
 
-            if ((next_inline = this.parseInline())) {
+            if ((next_inline = this.parseInline(true))) {
                 Array.prototype.push.apply(current, next_inline);
             } else {
                 break;
@@ -743,10 +743,10 @@
 
     // Parse the next inline element in subject, advancing subject position
     // and returning the inline parsed.
-    var parseInline = function() {
+    var parseInline = function(memoize) {
         var startpos = this.pos;
 
-        var memoized = this.memo[startpos];
+        var memoized = memoize && this.memo[startpos];
         if (memoized) {
             this.pos = memoized.endpos;
             return memoized.inline;
@@ -793,7 +793,7 @@
             res = [{t: 'Str', c: c}];
         }
 
-        if (res) {
+        if (res && memoize) {
             this.memo[startpos] = { inline: res,
                                     endpos: this.pos };
         }
