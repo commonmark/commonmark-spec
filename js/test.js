@@ -30,13 +30,13 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
     .replace(/^<!-- END TESTS -->(.|[\n])*/m, '');
 
   tests.replace(/^\.\n([\s\S]*?)^\.\n([\s\S]*?)^\.$|^#{1,6} *(.*)$/gm,
-        function(_,firstSubmatch,secondSubmatch,thirdSubmatch){
-          if (thirdSubmatch) {
-            current_section = thirdSubmatch;
+        function(_,markdownSubmatch,htmlSubmatch,sectionSubmatch){
+          if (sectionSubmatch) {
+            current_section = sectionSubmatch;
           } else {
             example_number++;
-            examples.push({markdown: firstSubmatch,
-                           html: secondSubmatch,
+            examples.push({markdown: markdownSubmatch,
+                           html: htmlSubmatch,
                            section: current_section,
                            number: example_number});
           }
