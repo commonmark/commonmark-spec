@@ -302,6 +302,9 @@
 
         this.pos += numdelims;
 
+        var fallbackpos = this.pos;
+        var fallback = Str(this.subject.slice(startpos, fallbackpos));
+
         var next_inline;
         var first = [];
         var second = [];
@@ -453,31 +456,9 @@
 
         }
 
-        switch (state) {
-        case 1: // ***a
-            return [Str(c+c+c)].concat(first);
-        case 2: // **a
-            return [Str(c+c)].concat(first);
-        case 3: // *a
-            return [Str(c)].concat(first);
-        case 4: // ***a**b
-        case 6: // ***a** b
-            return [Str(c+c+c)]
-                .concat(first, [Str(c+c)], second);
-        case 5: // ***a*b
-        case 7: // ***a* b
-            return [Str(c+c+c)]
-                .concat(first, [Str(c)], second);
-        case 8: // **a *b
-            return [Str(c+c)]
-                .concat(first, [Str(c)], second);
-        case 9: // *a **b
-            return [Str(c)]
-                .concat(first, [Str(c+c)], second);
-        default:
-            console.log("Unknown state, parseEmphasis");
-            // shouldn't happen
-        }
+        // we didn't match emphasis: fallback
+        this.pos = fallbackpos;
+        return [fallback];
 
     };
 
