@@ -77,7 +77,7 @@
     // UTILITY FUNCTIONS
 
     // Replace backslash escapes with literal characters.
-    var unescape = function(s) {
+    var unescapeBS = function(s) {
         return s.replace(reAllEscapedChar, '$1');
     };
 
@@ -478,7 +478,7 @@
         var title = this.match(reLinkTitle);
         if (title) {
             // chop off quotes from title and unescape:
-            return unescape(title.substr(1, title.length - 2));
+            return unescapeBS(title.substr(1, title.length - 2));
         } else {
             return null;
         }
@@ -489,11 +489,11 @@
     var parseLinkDestination = function() {
         var res = this.match(reLinkDestinationBraces);
         if (res) {  // chop off surrounding <..>:
-            return encodeURI(unescape(res.substr(1, res.length - 2)));
+            return encodeURI(unescapeBS(res.substr(1, res.length - 2)));
         } else {
             res = this.match(reLinkDestination);
             if (res !== null) {
-                return encodeURI(unescape(res));
+                return encodeURI(unescapeBS(res));
             } else {
                 return null;
             }
@@ -1373,7 +1373,7 @@
 
         case 'FencedCode':
             // first line becomes info string
-            block.info = unescape(block.strings[0].trim());
+            block.info = unescapeBS(block.strings[0].trim());
             if (block.strings.length == 1) {
                 block.string_content = '';
             } else {
