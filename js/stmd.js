@@ -140,7 +140,7 @@
     // Returns the character at the current subject position, or null if
     // there are no more characters.
     var peek = function() {
-        return this.subject[this.pos] || null;
+        return this.subject.charAt(this.pos) || null;
     };
 
     // Parse zero or more space characters, including at most one newline
@@ -183,13 +183,13 @@
     var parseBackslash = function() {
         var subj = this.subject,
             pos  = this.pos;
-        if (subj[pos] === '\\') {
-            if (subj[pos + 1] === '\n') {
+        if (subj.charAt(pos) === '\\') {
+            if (subj.charAt(pos + 1) === '\n') {
                 this.pos = this.pos + 2;
                 return [{ t: 'Hardbreak' }];
-            } else if (reEscapable.test(subj[pos + 1])) {
+            } else if (reEscapable.test(subj.charAt(pos + 1))) {
                 this.pos = this.pos + 2;
-                return [{ t: 'Str', c: subj[pos + 1] }];
+                return [{ t: 'Str', c: subj.charAt(pos + 1) }];
             } else {
                 this.pos++;
                 return [{t: 'Str', c: '\\'}];
@@ -239,7 +239,7 @@
         var startpos = this.pos;
 
         char_before = this.pos === 0 ? '\n' :
-            this.subject[this.pos - 1];
+            this.subject.charAt(this.pos - 1);
 
         while (this.peek() === c) {
             numdelims++;
@@ -587,7 +587,7 @@
                 ((dest = this.parseLinkDestination()) !== null) &&
                 this.spnl() &&
                 // make sure there's a space before the title:
-                (/^\s/.test(this.subject[this.pos - 1]) &&
+                (/^\s/.test(this.subject.charAt(this.pos - 1)) &&
                  (title = this.parseLinkTitle() || '') || true) &&
                 this.spnl() &&
                 this.match(/^\)/)) {
@@ -1034,10 +1034,10 @@
 
             switch (container.t) {
             case 'BlockQuote':
-                var matched = indent <= 3 && ln[first_nonspace] === '>';
+                var matched = indent <= 3 && ln.charAt(first_nonspace) === '>';
                 if (matched) {
                     offset = first_nonspace + 1;
-                    if (ln[offset] === ' ') {
+                    if (ln.charAt(offset) === ' ') {
                         offset++;
                     }
                 } else {
@@ -1077,7 +1077,7 @@
             case 'FencedCode':
                 // skip optional spaces of fence offset
                 i = container.fence_offset;
-                while (i > 0 && ln[offset] === ' ') {
+                while (i > 0 && ln.charAt(offset) === ' ') {
                     offset++;
                     i--;
                 }
@@ -1154,11 +1154,11 @@
                     break;
                 }
 
-            } else if (ln[first_nonspace] === '>') {
+            } else if (ln.charAt(first_nonspace) === '>') {
                 // blockquote
                 offset = first_nonspace + 1;
                 // optional following space
-                if (ln[offset] === ' ') {
+                if (ln.charAt(offset) === ' ') {
                     offset++;
                 }
                 closeUnmatchedBlocks(this);
@@ -1291,7 +1291,7 @@
             case 'FencedCode':
                 // check for closing code fence:
                 match = (indent <= 3 &&
-                         ln[first_nonspace] == container.fence_char &&
+                         ln.charAt(first_nonspace) == container.fence_char &&
                          ln.slice(first_nonspace).match(/^(?:`{3,}|~{3,})(?= *$)/));
                 if (match && match[0].length >= container.fence_length) {
                     // don't add closing fence to container; instead, close it:
@@ -1350,7 +1350,7 @@
             block.string_content = block.strings.join('\n').replace(/^  */m,'');
 
             // try parsing the beginning as link reference definitions:
-            while (block.string_content[0] === '[' &&
+            while (block.string_content.charAt(0) === '[' &&
                    (pos = this.inlineParser.parseReference(block.string_content,
                                                            this.refmap))) {
                 block.string_content = block.string_content.slice(pos);
