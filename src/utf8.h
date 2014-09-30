@@ -1,6 +1,13 @@
-#include <stdlib.h>
-#include "bstrlib.h"
+#ifndef _H_STMD_UTF8_
+#define _H_STMD_UTF8_
 
-extern unsigned char * from_utf8(unsigned char * s, unsigned int *n);
-extern int to_utf8(unsigned int c, bstring dest);
-extern bstring case_fold(bstring source);
+#include <stdint.h>
+#include "buffer.h"
+
+void utf8proc_case_fold(strbuf *dest, const uint8_t *str, int len);
+void utf8proc_encode_char(int32_t uc, strbuf *buf);
+int utf8proc_iterate(const uint8_t *str, int str_len, int32_t *dst);
+int utf8proc_charlen(const uint8_t *str, int str_len);
+void utf8proc_detab(strbuf *dest, const uint8_t *line, size_t size);
+
+#endif

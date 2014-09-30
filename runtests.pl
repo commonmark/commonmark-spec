@@ -38,7 +38,9 @@ sub tidy
     } elsif (/<\/pre/) {
       $inpre = 0;
     }
-    if ($inpre) {
+    # remove \r to allow mixing linux/windows newlines
+	  s/\r//;
+	  if ($inpre) {
       print $outfh $_;
     } else {
       # remove leading spaces
@@ -49,6 +51,7 @@ sub tidy
       s/  */ /;
       # collapse space before /> in tag
       s/  *\/>/\/>/;
+	  s/>\n$/>/;
       # skip blank line
       if (/^$/) {
         next;
@@ -69,15 +72,17 @@ sub dotest
   # We use → to indicate tab and ␣ space in the spec
   $markdown =~ s/→/\t/g;s/␣/ /g;
   $html =~ s/→/\t/g;s/␣/ /g;
-  open2(my $out, my $in, @PROG);
+  my $pid = open2(my $out, my $in, @PROG);
   print $in $markdown;
   close $in;
   flush $out;
   $actual = do { local $/; <$out>; };
   close $out;
+  waitpid($pid, 0);
   $html   = &tidy($html);
   $actual = &tidy($actual);
   $actual =~ s/\&#39;/'/;
+
   if ($actual eq $html) {
     print colored("✓", "green");
     return 1;
@@ -89,8 +94,10 @@ sub dotest
     print $markdown;
     print "=== expected ===============\n";
     print $html;
+	print "\n";
     print "=== got ====================\n";
     print $actual;
+	print "\n";
     print color "black";
     return 0;
   }
