@@ -2167,6 +2167,7 @@
             PROCESSINGINSTRUCTION + "|" + DECLARATION + "|" + CDATA + ")";
     var HTMLBLOCKOPEN = "<(?:" + BLOCKTAGNAME + "[\\s/>]" + "|" +
             "/" + BLOCKTAGNAME + "[\\s>]" + "|" + "[?!])";
+    var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});"
 
     var reHtmlTag = new RegExp('^' + HTMLTAG, 'i');
 
@@ -2195,16 +2196,38 @@
 
     var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
+    var reEntityHere = new RegExp('^' + ENTITY, 'i');
+
+    var reEntity = new RegExp(ENTITY, 'gi');
+
     // Matches a character with a special meaning in markdown,
     // or a string of non-special characters.  Note:  we match
     // clumps of _ or * or `, because they need to be handled in groups.
     var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
 
     // UTILITY FUNCTIONS
+    var entityToChar = function(m) {
+        var isNumeric = /^&#/.test(m);
+        var isHex = /^&#[Xx]/.test(m);
+        var uchar;
+        if (isNumeric) {
+            var num;
+            if (isHex) {
+                num = parseInt(m.slice(3,-1), 16);
+            } else {
+                num = parseInt(m.slice(2,-1), 10);
+            }
+            uchar = String.fromCharCode(num);
+        } else {
+            uchar = entities[m.slice(1,-1)];
+        }
+        return (uchar || m);
+    }
 
-    // Replace backslash escapes with literal characters.
-    var unescapeBS = function(s) {
-        return s.replace(reAllEscapedChar, '$1');
+    // Replace entities and backslash escapes with literal characters.
+    var unescapeEntBS = function(s) {
+        return s.replace(reAllEscapedChar, '$1')
+                .replace(reEntity, entityToChar);;
     };
 
     // Returns true if string contains only space characters.
@@ -2604,7 +2627,7 @@
         var title = this.match(reLinkTitle);
         if (title) {
             // chop off quotes from title and unescape:
-            return unescapeBS(title.substr(1, title.length - 2));
+            return unescapeEntBS(title.substr(1, title.length - 2));
         } else {
             return null;
         }
@@ -2615,11 +2638,11 @@
     var parseLinkDestination = function() {
         var res = this.match(reLinkDestinationBraces);
         if (res) {  // chop off surrounding <..>:
-            return encodeURI(unescape(unescapeBS(res.substr(1, res.length - 2))));
+            return encodeURI(unescape(unescapeEntBS(res.substr(1, res.length - 2))));
         } else {
             res = this.match(reLinkDestination);
             if (res !== null) {
-                return encodeURI(unescape(unescapeBS(res)));
+                return encodeURI(unescape(unescapeEntBS(res)));
             } else {
                 return null;
             }
@@ -2760,22 +2783,8 @@
     // Attempt to parse an entity, return Entity object if successful.
     var parseEntity = function() {
         var m;
-        if ((m = this.match(/^&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});/i))) {
-            var isNumeric = /^&#/.test(m);
-            var isHex = /^&#[Xx]/.test(m);
-            var uchar;
-            if (isNumeric) {
-                var num;
-                if (isHex) {
-                    num = parseInt(m.slice(3,-1), 16);
-                } else {
-                    num = parseInt(m.slice(2,-1), 10);
-                }
-                uchar = String.fromCharCode(num);
-            } else {
-                uchar = entities[m.slice(1,-1)];
-            }
-            return [{ t: 'Str', c: uchar || m }];
+        if ((m = this.match(reEntityHere))) {
+            return [{ t: 'Str', c: entityToChar(m) }];
         } else {
             return  null;
         }
@@ -3513,7 +3522,7 @@
 
         case 'FencedCode':
             // first line becomes info string
-            block.info = unescapeBS(block.strings[0].trim());
+            block.info = unescapeEntBS(block.strings[0].trim());
             if (block.strings.length == 1) {
                 block.string_content = '';
             } else {
