@@ -2137,6 +2137,22 @@
                      zwj: '‍',
                      zwnj: '‌' };
 
+    // Constants for character codes:
+
+    var C_NEWLINE = 10;
+    var C_SPACE = 32;
+    var C_ASTERISK = 42;
+    var C_UNDERSCORE = 95;
+    var C_BACKTICK = 96;
+    var C_OPEN_BRACKET = 91;
+    var C_CLOSE_BRACKET = 93;
+    var C_LESSTHAN = 60;
+    var C_BANG = 33;
+    var C_BACKSLASH = 92;
+    var C_AMPERSAND = 38;
+    var C_OPEN_PAREN = 40;
+    var C_COLON = 58;
+
     // Some regexps used in inline parser:
 
     var ESCAPABLE = '[!"#$%&\'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]';
@@ -2286,10 +2302,14 @@
         }
     };
 
-    // Returns the character at the current subject position, or null if
+    // Returns the code for the character at the current subject position, or -1
     // there are no more characters.
     var peek = function() {
-        return this.subject.charAt(this.pos) || null;
+        if (this.pos < this.subject.length) {
+            return this.subject.charCodeAt(this.pos);
+        } else {
+            return -1;
+        }
     };
 
     // Parse zero or more space characters, including at most one newline
@@ -2377,29 +2397,34 @@
         }
     };
 
-    // Scan a sequence of characters == c, and return information about
+    // Scan a sequence of characters with code cc, and return information about
     // the number of delimiters and whether they are positioned such that
     // they can open and/or close emphasis or strong emphasis.  A utility
     // function for strong/emph parsing.
-    var scanDelims = function(c) {
+    var scanDelims = function(cc) {
         var numdelims = 0;
         var first_close_delims = 0;
-        var char_before, char_after;
+        var char_before, char_after, cc_after;
         var startpos = this.pos;
 
         char_before = this.pos === 0 ? '\n' :
             this.subject.charAt(this.pos - 1);
 
-        while (this.peek() === c) {
+        while (this.peek() === cc) {
             numdelims++;
             this.pos++;
         }
 
-        char_after = this.peek() || '\n';
+        cc_after = this.peek();
+        if (cc_after === -1) {
+            char_after = '\n';
+        } else {
+            char_after = String.fromCharCode(cc_after);
+        }
 
         var can_open = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_after));
         var can_close = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_before));
-        if (c === '_') {
+        if (cc === C_UNDERSCORE) {
             can_open = can_open && !((/[a-z0-9]/i).test(char_before));
             can_close = can_close && !((/[a-z0-9]/i).test(char_after));
         }
@@ -2422,21 +2447,18 @@
     }
 
     // Attempt to parse emphasis or strong emphasis.
-    var parseEmphasis = function() {
+    var parseEmphasis = function(cc) {
         var startpos = this.pos;
         var c ;
         var first_close = 0;
-        c = this.peek();
-        if (!(c === '*' || c === '_')) {
-            return null;
-        }
+        c = String.fromCharCode(cc);
 
         var numdelims;
         var delimpos;
         var inlines = [];
 
         // Get opening delimiters.
-        res = this.scanDelims(c);
+        res = this.scanDelims(cc);
         numdelims = res.numdelims;
 
         if (numdelims === 0) {
@@ -2472,10 +2494,10 @@
         }
 
         while (true) {
-            if (this.last_emphasis_closer[c] < this.pos) {
+            if (this.last_emphasis_closer[cc] < this.pos) {
                 break;
             }
-            res = this.scanDelims(c);
+            res = this.scanDelims(cc);
 
             if (res) {
                 numdelims = res.numdelims;
@@ -2615,7 +2637,7 @@
         // we didn't match emphasis: fallback
         this.pos = fallbackpos;
         if (last_emphasis_closer) {
-            this.last_emphasis_closer[c] = last_emphasis_closer;
+            this.last_emphasis_closer[cc] = last_emphasis_closer;
         }
         return [fallback];
 
@@ -2651,7 +2673,7 @@
 
     // Attempt to parse a link label, returning number of characters parsed.
     var parseLinkLabel = function() {
-        if (this.peek() != '[') {
+        if (this.peek() != C_OPEN_BRACKET) {
             return 0;
         }
         var startpos = this.pos;
@@ -2668,36 +2690,36 @@
         }
         this.pos++;  // advance past [
         var c;
-        while ((c = this.peek()) && (c != ']' || nest_level > 0)) {
+        while ((c = this.peek()) && c != -1 && (c != C_CLOSE_BRACKET || nest_level > 0)) {
             switch (c) {
-            case '`':
+            case C_BACKTICK:
                 this.parseBackticks();
                 break;
-            case '<':
+            case C_LESSTHAN:
                 this.parseAutolink() || this.parseHtmlTag() ||
                     this.pos++;
                 break;
-            case '[':  // nested []
+            case C_OPEN_BRACKET:  // nested []
                 nest_level++;
                 this.pos++;
                 break;
-            case ']':  // nested []
+            case C_CLOSE_BRACKET:  // nested []
                 nest_level--;
                 this.pos++;
                 break;
-            case '\\':
+            case C_BACKSLASH:
                 this.parseBackslash();
                 break;
             default:
                 this.parseString();
             }
         }
-        if (c === ']') {
+        if (c === C_CLOSE_BRACKET) {
             this.label_nest_level = 0;
             this.pos++; // advance past ]
             return this.pos - startpos;
         } else {
-            if (!c) {
+            if (c === -1) {
                 this.label_nest_level = nest_level;
             }
             this.pos = startpos;
@@ -2730,7 +2752,7 @@
 
         // if we got this far, we've parsed a label.
         // Try to parse an explicit link: [label](url "title")
-        if (this.peek() == '(') {
+        if (this.peek() == C_OPEN_PAREN) {
             this.pos++;
             if (this.spnl() &&
                 ((dest = this.parseLinkDestination()) !== null) &&
@@ -2851,7 +2873,7 @@
         }
 
         // colon:
-        if (this.peek() === ':') {
+        if (this.peek() === C_COLON) {
             this.pos++;
         } else {
             this.pos = startpos;
@@ -2902,35 +2924,35 @@
         }
 
         var c = this.peek();
-        if (!c) {
+        if (c === -1) {
             return null;
         }
         var res;
         switch(c) {
-        case '\n':
-        case ' ':
+        case C_NEWLINE:
+        case C_SPACE:
             res = this.parseNewline();
             break;
-        case '\\':
+        case C_BACKSLASH:
             res = this.parseBackslash();
             break;
-        case '`':
+        case C_BACKTICK:
             res = this.parseBackticks();
             break;
-        case '*':
-        case '_':
-            res = this.parseEmphasis();
+        case C_ASTERISK:
+        case C_UNDERSCORE:
+            res = this.parseEmphasis(c);
             break;
-        case '[':
+        case C_OPEN_BRACKET:
             res = this.parseLink();
             break;
-        case '!':
+        case C_BANG:
             res = this.parseImage();
             break;
-        case '<':
+        case C_LESSTHAN:
             res = this.parseAutolink() || this.parseHtmlTag();
             break;
-        case '&':
+        case C_AMPERSAND:
             res = this.parseEntity();
             break;
         default:
@@ -2939,7 +2961,7 @@
         }
         if (res === null) {
             this.pos += 1;
-            res = [{t: 'Str', c: c}];
+            res = [{t: 'Str', c: String.fromCharCode(c)}];
         }
 
         if (res && memoize) {
@@ -2956,7 +2978,7 @@
         this.pos = 0;
         this.refmap = refmap || {};
         this.memo = {};
-        this.last_emphasis_closer = { '*': s.length, '_': s.length };
+        this.last_emphasis_closer = { C_ASTERISK: s.length, C_UNDERSCORE: s.length };
         var inlines = [];
         var next_inline;
         while ((next_inline = this.parseInline())) {
