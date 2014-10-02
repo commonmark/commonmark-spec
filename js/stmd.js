@@ -2147,6 +2147,7 @@
     var C_OPEN_BRACKET = 91;
     var C_CLOSE_BRACKET = 93;
     var C_LESSTHAN = 60;
+    var C_GREATERTHAN = 62;
     var C_BANG = 33;
     var C_BACKSLASH = 92;
     var C_AMPERSAND = 38;
@@ -2352,7 +2353,7 @@
     var parseBackslash = function() {
         var subj = this.subject,
             pos  = this.pos;
-        if (subj.charAt(pos) === '\\') {
+        if (subj.charCodeAt(pos) === C_BACKSLASH) {
             if (subj.charAt(pos + 1) === '\n') {
                 this.pos = this.pos + 2;
                 return [{ t: 'Hardbreak' }];
@@ -3205,9 +3206,9 @@
 
             switch (container.t) {
             case 'BlockQuote':
-                if (indent <= 3 && ln.charAt(first_nonspace) === '>') {
+                if (indent <= 3 && ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
                     offset = first_nonspace + 1;
-                    if (ln.charAt(offset) === ' ') {
+                    if (ln.charCodeAt(offset) === C_SPACE) {
                         offset++;
                     }
                 } else {
@@ -3247,7 +3248,7 @@
             case 'FencedCode':
                 // skip optional spaces of fence offset
                 i = container.fence_offset;
-                while (i > 0 && ln.charAt(offset) === ' ') {
+                while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
                     offset++;
                     i--;
                 }
@@ -3324,11 +3325,11 @@
                     break;
                 }
 
-            } else if (ln.charAt(first_nonspace) === '>') {
+            } else if (ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
                 // blockquote
                 offset = first_nonspace + 1;
                 // optional following space
-                if (ln.charAt(offset) === ' ') {
+                if (ln.charCodeAt(offset) === C_SPACE) {
                     offset++;
                 }
                 closeUnmatchedBlocks(this);
@@ -3520,7 +3521,7 @@
             block.string_content = block.strings.join('\n').replace(/^  */m,'');
 
             // try parsing the beginning as link reference definitions:
-            while (block.string_content.charAt(0) === '[' &&
+            while (block.string_content.charCodeAt(0) === C_OPEN_BRACKET &&
                    (pos = this.inlineParser.parseReference(block.string_content,
                                                            this.refmap))) {
                 block.string_content = block.string_content.slice(pos);
