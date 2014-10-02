@@ -3205,8 +3205,7 @@
 
             switch (container.t) {
             case 'BlockQuote':
-                var matched = indent <= 3 && ln.charAt(first_nonspace) === '>';
-                if (matched) {
+                if (indent <= 3 && ln.charAt(first_nonspace) === '>') {
                     offset = first_nonspace + 1;
                     if (ln.charAt(offset) === ' ') {
                         offset++;
