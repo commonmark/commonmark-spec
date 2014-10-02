@@ -3735,7 +3735,7 @@
         case 'BlockQuote':
             var filling = this.renderBlocks(block.children);
             return inTags('blockquote', [], filling === '' ? this.innersep :
-                          this.innersep + this.renderBlocks(block.children) + this.innersep);
+                          this.innersep + filling + this.innersep);
         case 'ListItem':
             return inTags('li', [], this.renderBlocks(block.children, in_tight_list).trim());
         case 'List':
