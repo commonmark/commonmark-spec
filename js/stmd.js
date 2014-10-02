@@ -2325,7 +2325,7 @@
 
     // Attempt to parse backticks, returning either a backtick code span or a
     // literal sequence of backticks.
-    var parseBackticks = function() {
+    var parseBackticks = function(inlines) {
         var startpos = this.pos;
         var ticks = this.match(/^`+/);
         if (!ticks) {
@@ -2336,65 +2336,73 @@
         var match;
         while (!foundCode && (match = this.match(/`+/m))) {
             if (match == ticks) {
-                return [{ t: 'Code', c: this.subject.slice(afterOpenTicks,
+                inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
                                                           this.pos - ticks.length)
                          .replace(/[ \n]+/g,' ')
-                          .trim() }];
+                          .trim() });
+                return true;
             }
         }
         // If we got here, we didn't match a closing backtick sequence.
         this.pos = afterOpenTicks;
-        return [{ t: 'Str', c: ticks }];
+        inlines.push({ t: 'Str', c: ticks });
+        return true;
     };
 
     // Parse a backslash-escaped special character, adding either the escaped
     // character, a hard line break (if the backslash is followed by a newline),
     // or a literal backslash to the 'inlines' list.
-    var parseBackslash = function() {
+    var parseBackslash = function(inlines) {
         var subj = this.subject,
             pos  = this.pos;
         if (subj.charCodeAt(pos) === C_BACKSLASH) {
             if (subj.charAt(pos + 1) === '\n') {
                 this.pos = this.pos + 2;
-                return [{ t: 'Hardbreak' }];
+                inlines.push({ t: 'Hardbreak' });
             } else if (reEscapable.test(subj.charAt(pos + 1))) {
                 this.pos = this.pos + 2;
-                return [{ t: 'Str', c: subj.charAt(pos + 1) }];
+                inlines.push({ t: 'Str', c: subj.charAt(pos + 1) });
             } else {
                 this.pos++;
-                return [{t: 'Str', c: '\\'}];
+                inlines.push({t: 'Str', c: '\\'});
             }
+            return true;
         } else {
-            return null;
+            return false;
         }
     };
 
     // Attempt to parse an autolink (URL or email in pointy brackets).
-    var parseAutolink = function() {
+    var parseAutolink = function(inlines) {
         var m;
         var dest;
         if ((m = this.match(/^<([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)>/))) {  // email autolink
             dest = m.slice(1,-1);
-            return [{t: 'Link',
+            inlines.push(
+                    {t: 'Link',
                      label: [{ t: 'Str', c: dest }],
-                     destination: 'mailto:' + encodeURI(unescape(dest)) }];
+                     destination: 'mailto:' + encodeURI(unescape(dest)) });
+            return true;
         } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
             dest = m.slice(1,-1);
-            return [{ t: 'Link',
+            inlines.push({
+                      t: 'Link',
                       label: [{ t: 'Str', c: dest }],
-                      destination: encodeURI(unescape(dest)) }];
+                      destination: encodeURI(unescape(dest)) });
+            return true;
         } else {
-            return null;
+            return false;
         }
     };
 
     // Attempt to parse a raw HTML tag.
-    var parseHtmlTag = function() {
+    var parseHtmlTag = function(inlines) {
         var m = this.match(reHtmlTag);
         if (m) {
-            return [{ t: 'Html', c: m }];
+            inlines.push({ t: 'Html', c: m });
+            return true;
         } else {
-            return null;
+            return false;
         }
     };
 
@@ -2448,7 +2456,7 @@
     }
 
     // Attempt to parse emphasis or strong emphasis.
-    var parseEmphasis = function(cc) {
+    var parseEmphasis = function(cc,inlines) {
         var startpos = this.pos;
         var c ;
         var first_close = 0;
@@ -2456,7 +2464,6 @@
 
         var numdelims;
         var delimpos;
-        var inlines = [];
 
         // Get opening delimiters.
         res = this.scanDelims(cc);
@@ -2464,18 +2471,18 @@
 
         if (numdelims === 0) {
             this.pos = startpos;
-            return null;
+            return false;
         }
 
         if (numdelims >= 4 || !res.can_open) {
             this.pos += numdelims;
-            return [Str(this.subject.slice(startpos, startpos + numdelims))];
+            inlines.push(Str(this.subject.slice(startpos, startpos + numdelims)));
+            return true;
         }
 
         this.pos += numdelims;
 
         var fallbackpos = this.pos;
-        var fallback = Str(this.subject.slice(startpos, fallbackpos));
 
         var next_inline;
         var first = [];
@@ -2495,7 +2502,7 @@
         }
 
         while (true) {
-            if (this.last_emphasis_closer[cc] < this.pos) {
+            if (this.last_emphasis_closer[c] < this.pos) {
                 break;
             }
             res = this.scanDelims(cc);
@@ -2511,7 +2518,8 @@
                 case 1: // ***a
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong([Emph(first)])];
+                        inlines.push(Strong([Emph(first)]));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
                         current = second;
@@ -2527,7 +2535,8 @@
                 case 2: // **a
                     if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [Strong(first)];
+                        inlines.push(Strong(first));
+                        return true;
                     } else if (numdelims === 1 && can_open) {
                         this.pos += 1;
                         current = second;
@@ -2538,7 +2547,8 @@
                 case 3: // *a
                     if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [Emph(first)];
+                        inlines.push(Emph(first));
+                        return true;
                     } else if (numdelims === 2 && can_open) {
                         this.pos += 2;
                         current = second;
@@ -2549,56 +2559,68 @@
                 case 4: // ***a**b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong([Emph(first.concat([Str(c+c)], second))])];
+                        inlines.push(Strong([Emph(first.concat([Str(c+c)], second))]));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [Strong([Str(c+c+c)].concat(
+                        inlines.push(Strong([Str(c+c+c)].concat(
                             first,
-                            [Strong(second)]))];
+                            [Strong(second)])));
+                        return true;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [Emph([Strong(first)].concat(second))];
+                        inlines.push(Emph([Strong(first)].concat(second)));
+                        return true;
                     }
                     break;
                 case 5: // ***a*b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong([Emph(first.concat([Str(c)], second))])];
+                        inlines.push(Strong([Emph(first.concat([Str(c)], second))]));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [Strong([Emph(first)].concat(second))];
+                        inlines.push(Strong([Emph(first)].concat(second)));
+                        return true;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [Strong([Str(c+c+c)].concat(
+                        inlines.push(Strong([Str(c+c+c)].concat(
                             first,
-                            [Emph(second)]))];
+                            [Emph(second)])));
+                        return true;
                     }
                     break;
                 case 6: // ***a** b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong([Emph(first.concat([Str(c+c)], second))])];
+                        inlines.push(Strong([Emph(first.concat([Str(c+c)], second))]));
+                        return true;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [Emph([Strong(first)].concat(second))];
+                        inlines.push(Emph([Strong(first)].concat(second)));
+                        return true;
                     }
                     break;
                 case 7: // ***a* b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong([Emph(first.concat([Str(c)], second))])];
+                        inlines.push(Strong([Emph(first.concat([Str(c)], second))]));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [Strong([Emph(first)].concat(second))];
+                        inlines.push(Strong([Emph(first)].concat(second)));
+                        return true;
                     }
                     break;
                 case 8: // **a *b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [Strong(first.concat([Emph(second)]))];
+                        inlines.push(Strong(first.concat([Emph(second)])));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
-                        return [Strong(first.concat([Str(c)], second))];
+                        inlines.push(Strong(first.concat([Str(c)], second)));
+                        return true;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
                         first.push(Emph(second));
@@ -2610,7 +2632,8 @@
                 case 9: // *a **b
                     if (numdelims === 3 && can_close) {
                         this.pos += 3;
-                        return [(Emph(first.concat([Strong(second)])))];
+                        inlines.push(Emph(first.concat([Strong(second)])));
+                        return true;
                     } else if (numdelims === 2 && can_close) {
                         this.pos += 2;
                         first.push(Strong(second));
@@ -2619,7 +2642,8 @@
                         continue;
                     } else if (numdelims === 1 && can_close) {
                         this.pos += 1;
-                        return [Emph(first.concat([Str(c+c)], second))];
+                        inlines.push(Emph(first.concat([Str(c+c)], second)));
+                        return true;
                     }
                     break;
                 default:
@@ -2627,9 +2651,7 @@
                 }
             }
 
-            if ((next_inline = this.parseInline(true))) {
-                Array.prototype.push.apply(current, next_inline);
-            } else {
+            if (!(this.parseInline(current,true))) {
                 break;
             }
 
@@ -2638,9 +2660,10 @@
         // we didn't match emphasis: fallback
         this.pos = fallbackpos;
         if (last_emphasis_closer) {
-            this.last_emphasis_closer[cc] = last_emphasis_closer;
+            this.last_emphasis_closer[c] = last_emphasis_closer;
         }
-        return [fallback];
+        inlines.push(Str(this.subject.slice(startpos, fallbackpos)));
+        return true;
 
     };
 
@@ -2694,10 +2717,10 @@
         while ((c = this.peek()) && c != -1 && (c != C_CLOSE_BRACKET || nest_level > 0)) {
             switch (c) {
             case C_BACKTICK:
-                this.parseBackticks();
+                this.parseBackticks([]);
                 break;
             case C_LESSTHAN:
-                this.parseAutolink() || this.parseHtmlTag() ||
+                this.parseAutolink([]) || this.parseHtmlTag([]) ||
                     this.pos++;
                 break;
             case C_OPEN_BRACKET:  // nested []
@@ -2709,10 +2732,10 @@
                 this.pos++;
                 break;
             case C_BACKSLASH:
-                this.parseBackslash();
+                this.parseBackslash([]);
                 break;
             default:
-                this.parseString();
+                this.parseString([]);
             }
         }
         if (c === C_CLOSE_BRACKET) {
@@ -2737,7 +2760,7 @@
     };
 
     // Attempt to parse a link.  If successful, return the link.
-    var parseLink = function() {
+    var parseLink = function(inlines) {
         var startpos = this.pos;
         var reflabel;
         var n;
@@ -2746,7 +2769,7 @@
 
         n = this.parseLinkLabel();
         if (n === 0) {
-            return null;
+            return false;
         }
         var afterlabel = this.pos;
         var rawlabel = this.subject.substr(startpos, n);
@@ -2763,13 +2786,14 @@
                  (title = this.parseLinkTitle() || '') || true) &&
                 this.spnl() &&
                 this.match(/^\)/)) {
-                return [{ t: 'Link',
+                inlines.push({ t: 'Link',
                           destination: dest,
                           title: title,
-                          label: parseRawLabel(rawlabel) }];
+                          label: parseRawLabel(rawlabel) });
+                return true;
             } else {
                 this.pos = startpos;
-                return null;
+                return false;
             }
         }
         // If we're here, it wasn't an explicit link. Try to parse a reference link.
@@ -2790,67 +2814,72 @@
         // lookup rawlabel in refmap
         var link = this.refmap[normalizeReference(reflabel)];
         if (link) {
-            return [{t: 'Link',
+            inlines.push({t: 'Link',
                      destination: link.destination,
                      title: link.title,
-                     label: parseRawLabel(rawlabel) }];
+                     label: parseRawLabel(rawlabel) });
+            return true;
         } else {
             this.pos = startpos;
-            return null;
+            return false;
         }
         // Nothing worked, rewind:
         this.pos = startpos;
-        return null;
+        return false;
     };
 
     // Attempt to parse an entity, return Entity object if successful.
-    var parseEntity = function() {
+    var parseEntity = function(inlines) {
         var m;
         if ((m = this.match(reEntityHere))) {
-            return [{ t: 'Str', c: entityToChar(m) }];
+            inlines.push({ t: 'Str', c: entityToChar(m) });
+            return true;
         } else {
-            return  null;
+            return false;
         }
     };
 
     // Parse a run of ordinary characters, or a single character with
     // a special meaning in markdown, as a plain string, adding to inlines.
-    var parseString = function() {
+    var parseString = function(inlines) {
         var m;
         if ((m = this.match(reMain))) {
-            return [{ t: 'Str', c: m }];
+            inlines.push({ t: 'Str', c: m });
+            return true;
         } else {
-            return null;
+            return false;
         }
     };
 
     // Parse a newline.  If it was preceded by two spaces, return a hard
     // line break; otherwise a soft line break.
-    var parseNewline = function() {
+    var parseNewline = function(inlines) {
         var m = this.match(/^ *\n/);
         if (m) {
             if (m.length > 2) {
-                return [{ t: 'Hardbreak' }];
+                inlines.push({ t: 'Hardbreak' });
             } else if (m.length > 0) {
-                return [{ t: 'Softbreak' }];
+                inlines.push({ t: 'Softbreak' });
             }
+            return true;
         }
-        return null;
+        return false;
     };
 
     // Attempt to parse an image.  If the opening '!' is not followed
     // by a link, return a literal '!'.
-    var parseImage = function() {
+    var parseImage = function(inlines) {
         if (this.match(/^!/)) {
-            var link = this.parseLink();
+            var link = this.parseLink(inlines);
             if (link) {
-                link[0].t = 'Image';
-                return link;
+                inlines[inlines.length - 1].t = 'Image';
+                return true;
             } else {
-                return [{ t: 'Str', c: '!' }];
+                inlines.push({ t: 'Str', c: '!' });
+                return true;
             }
         } else {
-            return null;
+            return false;
         }
     };
 
@@ -2913,64 +2942,66 @@
         return this.pos - startpos;
     };
 
-    // Parse the next inline element in subject, advancing subject position
-    // and returning the inline parsed.
-    var parseInline = function(memoize) {
+    // Parse the next inline element in subject, advancing subject position.
+    // If memoize is set, memoize the result.
+    // On success, add the result to the inlines list, and return true.
+    // On failure, return false.
+    var parseInline = function(inlines, memoize) {
         var startpos = this.pos;
-
+        var origlen = inlines.length;
         var memoized = memoize && this.memo[startpos];
         if (memoized) {
             this.pos = memoized.endpos;
-            return memoized.inline;
+            Array.prototype.push.apply(inlines, memoized.inline);
+            return true;
         }
 
         var c = this.peek();
         if (c === -1) {
-            return null;
+            return false;
         }
         var res;
         switch(c) {
         case C_NEWLINE:
         case C_SPACE:
-            res = this.parseNewline();
+            res = this.parseNewline(inlines);
             break;
         case C_BACKSLASH:
-            res = this.parseBackslash();
+            res = this.parseBackslash(inlines);
             break;
         case C_BACKTICK:
-            res = this.parseBackticks();
+            res = this.parseBackticks(inlines);
             break;
         case C_ASTERISK:
         case C_UNDERSCORE:
-            res = this.parseEmphasis(c);
+            res = this.parseEmphasis(c, inlines);
             break;
         case C_OPEN_BRACKET:
-            res = this.parseLink();
+            res = this.parseLink(inlines);
             break;
         case C_BANG:
-            res = this.parseImage();
+            res = this.parseImage(inlines);
             break;
         case C_LESSTHAN:
-            res = this.parseAutolink() || this.parseHtmlTag();
+            res = this.parseAutolink(inlines) || this.parseHtmlTag(inlines);
             break;
         case C_AMPERSAND:
-            res = this.parseEntity();
+            res = this.parseEntity(inlines);
             break;
         default:
-            res = this.parseString();
+            res = this.parseString(inlines);
             break;
         }
-        if (res === null) {
+        if (!res) {
             this.pos += 1;
-            res = [{t: 'Str', c: String.fromCharCode(c)}];
+            inlines.push({t: 'Str', c: String.fromCharCode(c)});
         }
 
-        if (res && memoize) {
-            this.memo[startpos] = { inline: res,
+        if (memoize) {
+            this.memo[startpos] = { inline: inlines.slice(origlen),
                                     endpos: this.pos };
         }
-
-        return res;
+        return true;
     };
 
     // Parse s as a list of inlines, using refmap to resolve references.
@@ -2979,11 +3010,9 @@
         this.pos = 0;
         this.refmap = refmap || {};
         this.memo = {};
-        this.last_emphasis_closer = { C_ASTERISK: s.length, C_UNDERSCORE: s.length };
+        this.last_emphasis_closer = { '*': s.length, '_': s.length };
         var inlines = [];
-        var next_inline;
-        while ((next_inline = this.parseInline())) {
-            Array.prototype.push.apply(inlines, next_inline);
+        while (this.parseInline(inlines, false)) {
         }
         return inlines;
     };
