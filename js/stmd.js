@@ -2463,6 +2463,7 @@
         c = String.fromCharCode(cc);
 
         var numdelims;
+        var numclosedelims;
         var delimpos;
 
         // Get opening delimiters.
@@ -2482,187 +2483,54 @@
 
         this.pos += numdelims;
 
-        var fallbackpos = this.pos;
+        var delims_to_match = numdelims;
 
-        var next_inline;
-        var first = [];
-        var second = [];
-        var current = first;
+        var current = [];
         var state = 0;
         var can_close = false;
         var can_open = false;
         var last_emphasis_closer = null;
-
-        if (numdelims === 3) {
-            state = 1;
-        } else if (numdelims === 2) {
-            state = 2;
-        } else if (numdelims === 1) {
-            state = 3;
-        }
-
-        while (true) {
-            if (this.last_emphasis_closer[c] < this.pos) {
-                break;
-            }
+        while (this.last_emphasis_closer[c] >= this.pos) {
             res = this.scanDelims(cc);
+            numclosedelims = res.numdelims;
 
-            if (res) {
-                numdelims = res.numdelims;
-                can_close = res.can_close;
-                if (can_close) {
+            if (res.can_close) {
+                if (last_emphasis_closer === null ||
+                    last_emphasis_closer < this.pos) {
                     last_emphasis_closer = this.pos;
                 }
-                can_open = res.can_open;
-                switch (state) {
-                case 1: // ***a
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong([Emph(first)]));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        current = second;
-                        state = can_open ? 4 : 6;
-                        continue;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        current = second;
-                        state = can_open ? 5 : 7;
-                        continue;
+                if (numclosedelims === 3 && delims_to_match === 3) {
+                    delims_to_match -= 3;
+                    this.pos += 3;
+                    current = [{t: 'Strong', c: [{t: 'Emph', c: current}]}];
+                } else if (numclosedelims >= 2 && delims_to_match >= 2) {
+                    delims_to_match -= 2;
+                    this.pos += 2;
+                    current = [{t: 'Strong', c: current}];
+                } else if (numclosedelims >= 1 && delims_to_match >= 1) {
+                    delims_to_match -= 1;
+                    this.pos += 1;
+                    current = [{t: 'Emph', c: current}];
+                } else {
+                    if (!(this.parseInline(current,true))) {
+                        break;
                     }
-                    break;
-                case 2: // **a
-                    if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        inlines.push(Strong(first));
-                        return true;
-                    } else if (numdelims === 1 && can_open) {
-                        this.pos += 1;
-                        current = second;
-                        state = 8;
-                        continue;
-                    }
-                    break;
-                case 3: // *a
-                    if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        inlines.push(Emph(first));
-                        return true;
-                    } else if (numdelims === 2 && can_open) {
-                        this.pos += 2;
-                        current = second;
-                        state = 9;
-                        continue;
-                    }
-                    break;
-                case 4: // ***a**b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong([Emph(first.concat([Str(c+c)], second))]));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        inlines.push(Strong([Str(c+c+c)].concat(
-                            first,
-                            [Strong(second)])));
-                        return true;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        inlines.push(Emph([Strong(first)].concat(second)));
-                        return true;
-                    }
-                    break;
-                case 5: // ***a*b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong([Emph(first.concat([Str(c)], second))]));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        inlines.push(Strong([Emph(first)].concat(second)));
-                        return true;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        inlines.push(Strong([Str(c+c+c)].concat(
-                            first,
-                            [Emph(second)])));
-                        return true;
-                    }
-                    break;
-                case 6: // ***a** b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong([Emph(first.concat([Str(c+c)], second))]));
-                        return true;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        inlines.push(Emph([Strong(first)].concat(second)));
-                        return true;
-                    }
-                    break;
-                case 7: // ***a* b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong([Emph(first.concat([Str(c)], second))]));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        inlines.push(Strong([Emph(first)].concat(second)));
-                        return true;
-                    }
-                    break;
-                case 8: // **a *b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Strong(first.concat([Emph(second)])));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        inlines.push(Strong(first.concat([Str(c)], second)));
-                        return true;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        first.push(Emph(second));
-                        current = first;
-                        state = 2;
-                        continue;
-                    }
-                    break;
-                case 9: // *a **b
-                    if (numdelims === 3 && can_close) {
-                        this.pos += 3;
-                        inlines.push(Emph(first.concat([Strong(second)])));
-                        return true;
-                    } else if (numdelims === 2 && can_close) {
-                        this.pos += 2;
-                        first.push(Strong(second));
-                        current = first;
-                        state = 3;
-                        continue;
-                    } else if (numdelims === 1 && can_close) {
-                        this.pos += 1;
-                        inlines.push(Emph(first.concat([Str(c+c)], second)));
-                        return true;
-                    }
-                    break;
-                default:
-                    break;
                 }
-            }
-
-            if (!(this.parseInline(current,true))) {
+                if (delims_to_match === 0) {
+                    Array.prototype.push.apply(inlines, current);
+                    return true;
+                }
+            } else if (!(this.parseInline(current,true))) {
                 break;
             }
-
         }
 
         // we didn't match emphasis: fallback
-        this.pos = fallbackpos;
+        this.pos = startpos + 1;
         if (last_emphasis_closer) {
             this.last_emphasis_closer[c] = last_emphasis_closer;
         }
-        inlines.push(Str(this.subject.slice(startpos, fallbackpos)));
+        inlines.push(Str(c));
         return true;
 
     };
