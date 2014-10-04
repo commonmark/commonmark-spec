@@ -2184,7 +2184,7 @@
             PROCESSINGINSTRUCTION + "|" + DECLARATION + "|" + CDATA + ")";
     var HTMLBLOCKOPEN = "<(?:" + BLOCKTAGNAME + "[\\s/>]" + "|" +
             "/" + BLOCKTAGNAME + "[\\s>]" + "|" + "[?!])";
-    var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});"
+    var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
 
     var reHtmlTag = new RegExp('^' + HTMLTAG, 'i');
 
@@ -2239,12 +2239,12 @@
             uchar = entities[m.slice(1,-1)];
         }
         return (uchar || m);
-    }
+    };
 
     // Replace entities and backslash escapes with literal characters.
     var unescapeEntBS = function(s) {
         return s.replace(reAllEscapedChar, '$1')
-                .replace(reEntity, entityToChar);;
+                .replace(reEntity, entityToChar);
     };
 
     // Returns true if string contains only space characters.
@@ -2445,15 +2445,15 @@
 
     var Emph = function(ils) {
         return {t: 'Emph', c: ils};
-    }
+    };
 
     var Strong = function(ils) {
         return {t: 'Strong', c: ils};
-    }
+    };
 
     var Str = function(s) {
         return {t: 'Str', c: s};
-    }
+    };
 
     // Attempt to parse emphasis or strong emphasis.
     var parseEmphasis = function(cc,inlines) {
@@ -2588,8 +2588,9 @@
                 this.parseBackticks([]);
                 break;
             case C_LESSTHAN:
-                this.parseAutolink([]) || this.parseHtmlTag([]) ||
+                if (!(this.parseAutolink([]) || this.parseHtmlTag([]))) {
                     this.pos++;
+                }
                 break;
             case C_OPEN_BRACKET:  // nested []
                 nest_level++;
