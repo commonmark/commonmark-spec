@@ -2486,6 +2486,8 @@
         var delims_to_match = numdelims;
 
         var current = [];
+        var firstend;
+        var firstpos;
         var state = 0;
         var can_close = false;
         var can_open = false;
@@ -2506,10 +2508,14 @@
                 } else if (numclosedelims >= 2 && delims_to_match >= 2) {
                     delims_to_match -= 2;
                     this.pos += 2;
+                    firstend = current.length;
+                    firstpos = this.pos;
                     current = [{t: 'Strong', c: current}];
                 } else if (numclosedelims >= 1 && delims_to_match >= 1) {
                     delims_to_match -= 1;
                     this.pos += 1;
+                    firstend = current.length;
+                    firstpos = this.pos;
                     current = [{t: 'Emph', c: current}];
                 } else {
                     if (!(this.parseInline(current,true))) {
@@ -2526,13 +2532,19 @@
         }
 
         // we didn't match emphasis: fallback
-        this.pos = startpos + 1;
+        inlines.push(Str(this.subject.slice(startpos,
+                                            startpos + delims_to_match)));
+        if (delims_to_match < numdelims) {
+            Array.prototype.push.apply(inlines, current.slice(0,firstend));
+            this.pos = firstpos;
+        } else { // delims_to_match === numdelims
+            this.pos = startpos + delims_to_match;
+        }
+
         if (last_emphasis_closer) {
             this.last_emphasis_closer[c] = last_emphasis_closer;
         }
-        inlines.push(Str(c));
         return true;
-
     };
 
     // Attempt to parse link title (sans quotes), returning the string
