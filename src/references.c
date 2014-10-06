@@ -16,10 +16,12 @@ refhash(const unsigned char *link_ref)
 
 static void reference_free(reference *ref)
 {
-	free(ref->label);
-	free(ref->url);
-	free(ref->title);
-	free(ref);
+    if(ref != NULL) {
+	    free(ref->label);
+    	free(ref->url);
+	    free(ref->title);
+    	free(ref);
+    }
 }
 
 // normalize reference:  collapse internal whitespace to single space,
@@ -30,6 +32,9 @@ static unsigned char *normalize_reference(chunk *ref)
 {
 	strbuf normalized = GH_BUF_INIT;
 	unsigned char *result;
+
+    if(ref == NULL)
+        return NULL;
 
 	if (ref->len == 0)
 		return NULL;
@@ -75,14 +80,16 @@ extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk
 	if (reflabel == NULL)
 		return;
 
-	ref = malloc(sizeof(reference));
-	ref->label = reflabel;
-	ref->hash = refhash(ref->label);
-	ref->url = clean_url(url);
-	ref->title = clean_title(title);
-	ref->next = NULL;
+	ref = calloc(1, sizeof(*ref));
+    if(ref != NULL) {
+        ref->label = reflabel;
+        ref->hash = refhash(ref->label);
+        ref->url = clean_url(url);
+        ref->title = clean_title(title);
+        ref->next = NULL;
 
-	add_reference(map, ref);
+        add_reference(map, ref);
+    }
 }
 
 // Returns reference if refmap contains a reference with matching
@@ -118,6 +125,9 @@ void reference_map_free(reference_map *map)
 {
 	unsigned int i;
 
+    if(map == NULL)
+        return;
+
 	for (i = 0; i < REFMAP_SIZE; ++i) {
 		reference *ref = map->table[i];
 		reference *next;
@@ -134,8 +144,6 @@ void reference_map_free(reference_map *map)
 
 reference_map *reference_map_new(void)
 {
-	reference_map *map = malloc(sizeof(reference_map));
-	memset(map, 0x0, sizeof(reference_map));
-	return map;
+    return calloc(1, sizeof(reference_map));
 }
 

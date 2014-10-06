@@ -31,8 +31,10 @@ static unsigned char *bufdup(const unsigned char *buf)
 
 	if (buf) {
 		int len = strlen((char *)buf);
-		new = malloc(len + 1);
-		memcpy(new, buf, len + 1);
+		new = calloc(len + 1, sizeof(*new));
+        if(new != NULL) {
+    		memcpy(new, buf, len + 1);
+        }
 	}
 
 	return new;
@@ -40,12 +42,14 @@ static unsigned char *bufdup(const unsigned char *buf)
 
 static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned char *title)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = INL_LINK;
-	e->content.linkable.label = label;
-	e->content.linkable.url   = url;
-	e->content.linkable.title = title;
-	e->next = NULL;
+	node_inl* e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = INL_LINK;
+    	e->content.linkable.label = label;
+	    e->content.linkable.url   = url;
+    	e->content.linkable.title = title;
+	    e->next = NULL;
+    }
 	return e;
 }
 
@@ -67,29 +71,35 @@ inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
 
 inline static node_inl* make_inlines(int t, node_inl* contents)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->content.inlines = contents;
-	e->next = NULL;
+	node_inl * e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->content.inlines = contents;
+    	e->next = NULL;
+    }
 	return e;
 }
 
 // Create an inline with a literal string value.
 inline static node_inl* make_literal(int t, chunk s)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->content.literal = s;
-	e->next = NULL;
+	node_inl * e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->content.literal = s;
+    	e->next = NULL;
+    }
 	return e;
 }
 
 // Create an inline with no value.
 inline static node_inl* make_simple(int t)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->next = NULL;
+	node_inl* e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->next = NULL;
+    }
 	return e;
 }
 
@@ -291,7 +301,7 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 {
 	bool can_open, can_close;
 	node_inl * result = NULL;
-	node_inl ** last = malloc(sizeof(node_inl *));
+	node_inl * last = NULL;
 	node_inl * new;
 	node_inl * il;
 	node_inl * first_head = NULL;
@@ -299,13 +309,11 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 	int first_close_delims = 0;
 	int numdelims;
 
-	*last = NULL;
-
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
 	subj->pos += numdelims;
 
 	new = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
-	*last = new;
+	last = new;
 	first_head = new;
 	result = new;
 
@@ -325,7 +333,7 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 					first_head->next = NULL;
 					goto done;
 				} else {
-					if (!parse_inline(subj, last)) {
+					if (!parse_inline(subj, &last)) {
 						goto done;
 					}
 				}
@@ -342,7 +350,7 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 					first_head->next = NULL;
 					goto done;
 				} else {
-					if (!parse_inline(subj, last)) {
+					if (!parse_inline(subj, &last)) {
 						goto done;
 					}
 				}
@@ -354,8 +362,8 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 				if (can_close && numdelims >= 1 && numdelims <= 3 &&
 						numdelims != first_close_delims) {
 					new = make_str(chunk_dup(&subj->input, subj->pos, numdelims));
-					append_inlines(*last, new);
-					*last = new;
+					append_inlines(last, new);
+					last = new;
 					if (first_close_delims == 1 && numdelims > 2) {
 						numdelims = 2;
 					} else if (first_close_delims == 2) {
@@ -382,22 +390,22 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 						first_head->content.inlines->next = first_close->next;
 
 						il = first_head->content.inlines;
-						while (il->next && il->next != *last) {
+						while (il->next && il->next != last) {
 							il = il->next;
 						}
 						il->next = NULL;
-						free_inlines(*last);
+						free_inlines(last);
 
 						first_close->next = NULL;
 						free_inlines(first_close);
 						first_head->next = NULL;
 						goto done;
 					} else {
-						first_close = *last;
+						first_close = last;
 						first_close_delims = numdelims;
 					}
 				} else {
-					if (!parse_inline(subj, last)) {
+					if (!parse_inline(subj, &last)) {
 						goto done;
 					}
 				}
@@ -408,7 +416,6 @@ static node_inl* handle_strong_emph(subject* subj, char c)
 	}
 
 done:
-	free(last);
 	return result;
 }
 
