@@ -4816,9 +4816,10 @@ in Markdown:
 <p><a href="foo):">link</a></p>
 .
 
-URL-escaping and should be left alone inside the destination, as all URL-escaped characters
-are also valid URL characters. HTML entities in the destination will be parsed into their UTF8
-codepoints, as usual, and optionally URL-escaped when written as HTML.
+URL-escaping should be left alone inside the destination, as all
+URL-escaped characters are also valid URL characters. HTML entities in
+the destination will be parsed into their UTF8 codepoints, as usual, and
+optionally URL-escaped when written as HTML.
 
 .
 [link](foo%20b&auml;)
