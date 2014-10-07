@@ -1,12 +1,13 @@
-CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers $(OPTFLAGS)
+CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers -fPIC $(OPTFLAGS)
 LDFLAGS?=-g -O3 -Wall -Werror
 SRCDIR?=src
 DATADIR?=data
+PREFIX?=/usr/local
 
 PROG?=./stmd
 
 .PHONY: all oldtests test spec benchjs testjs
-all: $(SRCDIR)/case_fold_switch.inc $(PROG)
+all: $(SRCDIR)/case_fold_switch.inc $(PROG) libstmd.so
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -43,7 +44,14 @@ benchjs:
 
 HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o $(SRCDIR)/html/houdini_html_u.o
 
-STMD_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o $(SRCDIR)/references.c
+STMD_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.o $(SRCDIR)/print.o $(SRCDIR)/utf8.o $(SRCDIR)/references.o
+
+STMD_HDR = $(SRCDIR)/stmd.h $(SRCDIR)/buffer.h $(SRCDIR)/references.h \
+           $(SRCDIR)/chunk.h $(SRCDIR)/debug.h $(SRCDIR)/utf8.h \
+           $(SRCDIR)/scanners.h $(SRCDIR)/inlines.h
+
+HTML_HDR = $(SRCDIR)/html/html_unescape.h $(SRCDIR)/html/houdini.h
+
 
 $(PROG): $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc $(HTML_OBJ) $(STMD_OBJ) $(SRCDIR)/main.c
 	$(CC) $(LDFLAGS) -o $@ $(HTML_OBJ) $(STMD_OBJ) $(SRCDIR)/main.c
@@ -56,6 +64,15 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 
 $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 	gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 $< > $@
+
+libstmd.so: $(HTML_OBJ) $(STMD_OBJ)
+	$(CC) $(LDFLAGS) -shared -o $@ $^
+
+install: libstmd.so $(STMD_HDR) $(HTML_HDR)
+	install -d $(PREFIX)/lib $(PREFIX)/include/stmd/html
+	install libstmd.so $(PREFIX)/lib/
+	install $(STMD_HDR) $(PREFIX)/include/stmd/
+	install $(HTML_HDR) $(PREFIX)/include/stmd/html/
 
 .PHONY: leakcheck clean fuzztest dingus upload
 
@@ -79,7 +96,7 @@ update-site: spec.html narrative.html
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libstmd.so
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
