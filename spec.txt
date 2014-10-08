@@ -4532,6 +4532,18 @@ __foo _bar_ baz__
 <p><strong>foo <em>bar</em> baz</strong></p>
 .
 
+.
+**foo, *bar*, baz**
+.
+<p><strong>foo, <em>bar</em>, baz</strong></p>
+.
+
+.
+__foo, _bar_, baz__
+.
+<p><strong>foo, <em>bar</em>, baz</strong></p>
+.
+
 But note:
 
 .
