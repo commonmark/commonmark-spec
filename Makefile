@@ -5,7 +5,7 @@ DATADIR?=data
 
 PROG?=./stmd
 
-.PHONY: all oldtests test spec benchjs testjs
+.PHONY: all test spec benchjs testjs
 all: $(SRCDIR)/case_fold_switch.inc $(PROG)
 
 README.html: README.md template.html
@@ -27,9 +27,6 @@ spec.pdf: spec.md template.tex specfilter.hs
 	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
 	   --number-sections -V documentclass=report -V tocdepth=2 \
 	   -V classoption=twosides
-
-oldtests:
-	make -C oldtests --quiet clean all
 
 test: spec.txt
 	perl runtests.pl $< $(PROG)
@@ -63,7 +60,8 @@ dingus:
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
-	cat oldtests/*/*.markdown | valgrind --leak-check=full --dsymutil=yes $(PROG)
+	# TODO produce leaktest.md that tests everything
+	cat leaktest.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
 
 operf: $(PROG)
 	operf $(PROG) <bench.md >/dev/null
