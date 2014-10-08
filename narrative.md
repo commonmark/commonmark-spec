@@ -129,3 +129,12 @@ working out the spec, I benefited greatly from collaboration with David
 Greenspan, and from extensive discussions with a group of industrial
 users of Markdown, including Jeff Atwood, Vincent Marti, and Neil
 Williams.
+
+### Contributing
+
+There is a [forum for discussing
+CommonMark](http://talk.commonmark.org); you should use it instead of
+github issues for questions and possibly open-ended discussions.
+Use the [github issue tracker](http://github.com/jgm/stmd/issues)
+only for simple, clear, actionable issues.
+
