@@ -2768,6 +2768,7 @@
     var parseReference = function(s, refmap) {
         this.subject = s;
         this.pos = 0;
+        this.label_nest_level = 0;
         var rawlabel;
         var dest;
         var title;
