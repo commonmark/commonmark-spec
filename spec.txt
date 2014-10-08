@@ -1355,8 +1355,8 @@ name is one of the following (case-insensitive):
 `output`, `col`, `p`, `colgroup`, `pre`, `dd`, `progress`, `div`,
 `section`, `dl`, `table`, `td`, `dt`, `tbody`, `embed`, `textarea`,
 `fieldset`, `tfoot`, `figcaption`, `th`, `figure`, `thead`, `footer`,
-`footer`, `tr`, `form`, `ul`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`,
-`video`, `script`, `style`.
+`tr`, `form`, `ul`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `video`,
+`script`, `style`.
 
 An [HTML block](#html-block) <a id="html-block"></a> begins with an
 [HTML block tag](#html-block-tag), [HTML comment](#html-comment),
