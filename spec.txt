@@ -4525,6 +4525,24 @@ __foo _bar_ baz__
 <p><strong>foo <em>bar</em> baz</strong></p>
 .
 
+But note:
+
+.
+*foo**bar**baz*
+.
+<p><em>foo</em><em>bar</em><em>baz</em></p>
+.
+
+.
+**foo*bar*baz**
+.
+<p><em><em>foo</em>bar</em>baz**</p>
+.
+
+The difference is that in the two preceding cases,
+the internal delimiters [can close emphasis](#can-close-emphasis),
+while in the cases with spaces, they cannot.
+
 Note that you cannot nest emphasis directly inside emphasis
 using the same delimeter, or strong emphasis directly inside
 strong emphasis:
@@ -4606,7 +4624,7 @@ However, a string of four or more `****` can never close emphasis:
 <p>*foo****</p>
 .
 
-Note that there are some asymmetries here:
+We retain symmetry in these cases:
 
 .
 *foo**
@@ -4614,7 +4632,7 @@ Note that there are some asymmetries here:
 **foo*
 .
 <p><em>foo</em>*</p>
-<p>**foo*</p>
+<p>*<em>foo</em></p>
 .
 
 .
@@ -4637,7 +4655,7 @@ More cases with mismatched delimiters:
 .
 ***foo*
 .
-<p>***foo*</p>
+<p>**<em>foo</em></p>
 .
 
 .
@@ -4649,7 +4667,7 @@ More cases with mismatched delimiters:
 .
 ***foo**
 .
-<p>***foo**</p>
+<p>*<strong>foo</strong></p>
 .
 
 .
