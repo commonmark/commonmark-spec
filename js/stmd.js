@@ -139,7 +139,7 @@ var match = function(re) {
 // Returns the character at the current subject position, or null if
 // there are no more characters.
 var peek = function() {
-  return this.subject[this.pos] || null;
+  return this.subject.charAt(this.pos) || null;
 };
 
 // Parse zero or more space characters, including at most one newline
@@ -185,13 +185,13 @@ var parseBackticks = function(inlines) {
 var parseEscaped = function(inlines) {
   var subj = this.subject,
       pos  = this.pos;
-  if (subj[pos] === '\\') {
-    if (subj[pos + 1] === '\n') {
+  if (subj.charAt(pos) === '\\') {
+    if (subj.charAt(pos + 1) === '\n') {
       inlines.push({ t: 'Hardbreak' });
       this.pos = this.pos + 2;
       return 2;
-    } else if (reEscapable.test(subj[pos + 1])) {
-      inlines.push({ t: 'Str', c: subj[pos + 1] });
+    } else if (reEscapable.test(subj.charAt(pos + 1))) {
+      inlines.push({ t: 'Str', c: subj.charAt(pos + 1) });
       this.pos = this.pos + 2;
       return 2;
     } else {
@@ -245,7 +245,7 @@ var scanDelims = function(c) {
   var startpos = this.pos;
 
   char_before = this.pos === 0 ? '\n' :
-    this.subject[this.pos - 1];
+    this.subject.charAt(this.pos - 1);
 
   while (this.peek() === c) {
     numdelims++;
@@ -309,7 +309,7 @@ var parseEmphasis = function(inlines) {
         // into an Emph whose contents are the succeeding inlines
         inlines[delimpos].t = 'Emph';
         inlines[delimpos].c = inlines.slice(delimpos + 1);
-        inlines.splice(delimpos + 1);
+        inlines.splice(delimpos + 1, inlines.length - delimpos - 1);
         break;
       } else {
         if (this.parseInline(inlines) === 0) {
@@ -326,7 +326,7 @@ var parseEmphasis = function(inlines) {
         this.pos += 2;
         inlines[delimpos].t = 'Strong';
         inlines[delimpos].c = inlines.slice(delimpos + 1);
-        inlines.splice(delimpos + 1);
+        inlines.splice(delimpos + 1, inlines.length - delimpos - 1);
         break;
       } else {
         if (this.parseInline(inlines) === 0) {
@@ -500,7 +500,7 @@ var parseLink = function(inlines) {
         ((dest = this.parseLinkDestination()) !== null) &&
         this.spnl() &&
         // make sure there's a space before the title:
-        (/^\s/.test(this.subject[this.pos - 1]) &&
+        (/^\s/.test(this.subject.charAt(this.pos - 1)) &&
          (title = this.parseLinkTitle() || '') || true) &&
         this.spnl() &&
         this.match(/^\)/)) {
@@ -857,7 +857,7 @@ var parseListMarker = function(ln, offset) {
   if ((match = rest.match(/^[*+-]( +|$)/))) {
     spaces_after_marker = match[1].length;
     data.type = 'Bullet';
-    data.bullet_char = match[0][0];
+    data.bullet_char = match[0].charAt(0);
 
   } else if ((match = rest.match(/^(\d+)([.)])( +|$)/))) {
     spaces_after_marker = match[3].length;
@@ -932,10 +932,10 @@ var incorporateLine = function(ln, line_number) {
 
     switch (container.t) {
       case 'BlockQuote':
-        var matched = indent <= 3 && ln[first_nonspace] === '>';
+        var matched = indent <= 3 && ln.charAt(first_nonspace) === '>';
         if (matched) {
           offset = first_nonspace + 1;
-          if (ln[offset] === ' ') {
+          if (ln.charAt(offset) === ' ') {
             offset++;
           }
         } else {
@@ -975,7 +975,7 @@ var incorporateLine = function(ln, line_number) {
       case 'FencedCode':
         // skip optional spaces of fence offset
         i = container.fence_offset;
-        while (i > 0 && ln[offset] === ' ') {
+        while (i > 0 && ln.charAt(offset) === ' ') {
           offset++;
           i--;
         }
@@ -1052,11 +1052,11 @@ var incorporateLine = function(ln, line_number) {
         break;
       }
 
-    } else if (ln[first_nonspace] === '>') {
+    } else if (ln.charAt(first_nonspace) === '>') {
       // blockquote
       offset = first_nonspace + 1;
       // optional following space
-      if (ln[offset] === ' ') {
+      if (ln.charAt(offset) === ' ') {
         offset++;
       }
       closeUnmatchedBlocks(this);
@@ -1079,7 +1079,7 @@ var incorporateLine = function(ln, line_number) {
       closeUnmatchedBlocks(this);
       container = this.addChild('FencedCode', line_number, first_nonspace);
       container.fence_length = fence_length;
-      container.fence_char = match[0][0];
+      container.fence_char = match[0].charAt(0);
       container.fence_offset = first_nonspace - offset;
       offset = first_nonspace + fence_length;
       break;
@@ -1097,7 +1097,7 @@ var incorporateLine = function(ln, line_number) {
       // setext header line
       closeUnmatchedBlocks(this);
       container.t = 'SetextHeader'; // convert Paragraph to SetextHeader
-      container.level = match[0][0] === '=' ? 1 : 2;
+      container.level = match[0].charAt(0) === '=' ? 1 : 2;
       offset = ln.length;
 
     } else if (matchAt(reHrule, ln, first_nonspace) !== null) {
@@ -1189,7 +1189,7 @@ var incorporateLine = function(ln, line_number) {
     case 'FencedCode':
       // check for closing code fence:
       match = (indent <= 3 &&
-               ln[first_nonspace] == container.fence_char &&
+               ln.charAt(first_nonspace) == container.fence_char &&
                ln.slice(first_nonspace).match(/^(?:`{3,}|~{3,})(?= *$)/));
       if (match && match[0].length >= container.fence_length) {
         // don't add closing fence to container; instead, close it:
@@ -1248,7 +1248,7 @@ var finalize = function(block, line_number) {
     block.string_content = block.strings.join('\n').replace(/^  */m,'');
 
     // try parsing the beginning as link reference definitions:
-    while (block.string_content[0] === '[' &&
+    while (block.string_content.charAt(0) === '[' &&
            (pos = this.inlineParser.parseReference(block.string_content,
                                                    this.refmap))) {
       block.string_content = block.string_content.slice(pos);

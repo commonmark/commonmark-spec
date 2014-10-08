@@ -1,9 +1,9 @@
-CFLAGS=-g -O3 -Wall -Wextra -std=c99 -Isrc $(OPTFLAGS)
-LDFLAGS=-g -O3 -Wall -Werror
-SRCDIR=src
-DATADIR=data
+CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers $(OPTFLAGS)
+LDFLAGS?=-g -O3 -Wall -Werror
+SRCDIR?=src
+DATADIR?=data
 
-PROG=./stmd
+PROG?=./stmd
 
 .PHONY: all oldtests test spec benchjs testjs
 all: $(SRCDIR)/case_fold_switch.inc $(PROG)
@@ -42,6 +42,7 @@ benchjs:
 	node js/bench.js ${BENCHINP}
 
 HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o $(SRCDIR)/html/houdini_html_u.o
+
 STMD_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o $(SRCDIR)/references.c
 
 $(PROG): $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc $(HTML_OBJ) $(STMD_OBJ) $(SRCDIR)/main.c
