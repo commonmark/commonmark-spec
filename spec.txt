@@ -4357,6 +4357,32 @@ __this is a double underscore (`__`)__
 <p><strong>this is a double underscore (<code>__</code>)</strong></p>
 .
 
+Or use the other emphasis character:
+
+.
+*_*
+.
+<p><em>_</em></p>
+.
+
+.
+_*_
+.
+<p><em>*</em></p>
+.
+
+.
+*__*
+.
+<p><em>__</em></p>
+.
+
+.
+_**_
+.
+<p><em>**</em></p>
+.
+
 `*` delimiters allow intra-word emphasis; `_` delimiters do not:
 
 .
