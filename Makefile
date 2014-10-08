@@ -2,7 +2,7 @@ CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers $(OP
 LDFLAGS?=-g -O3 -Wall -Werror
 SRCDIR?=src
 DATADIR?=data
-
+BENCHINP?=bench.md
 PROG?=./stmd
 
 .PHONY: all test spec benchjs testjs

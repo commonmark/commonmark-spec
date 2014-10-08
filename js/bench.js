@@ -7,7 +7,7 @@ var showdown = require('../../showdown/src/showdown');
 // https://github.com/chjj/marked
 var marked = require('../../marked/marked.min.js');
 
-var benchfile = process.argv[2] || 'oldtests/Original/Markdown_Documentation_Syntax.markdown';
+var benchfile = process.argv[2];
 
 var contents = fs.readFileSync(benchfile, 'utf8');
 
