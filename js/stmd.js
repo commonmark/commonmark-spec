@@ -2223,6 +2223,71 @@
     var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
 
     // UTILITY FUNCTIONS
+    // polyfill for fromCodePoint:
+    // https://github.com/mathiasbynens/String.fromCodePoint
+    /*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
+    if (!String.fromCodePoint) {
+        (function() {
+            var defineProperty = (function() {
+                // IE 8 only supports `Object.defineProperty` on DOM elements
+                try {
+                    var object = {};
+                    var $defineProperty = Object.defineProperty;
+                    var result = $defineProperty(object, object, object) && $defineProperty;
+                } catch(error) {}
+                return result;
+            }());
+            var stringFromCharCode = String.fromCharCode;
+            var floor = Math.floor;
+            var fromCodePoint = function(_) {
+                var MAX_SIZE = 0x4000;
+                var codeUnits = [];
+                var highSurrogate;
+                var lowSurrogate;
+                var index = -1;
+                var length = arguments.length;
+                if (!length) {
+                    return '';
+                }
+                var result = '';
+                while (++index < length) {
+                    var codePoint = Number(arguments[index]);
+                    if (
+                        !isFinite(codePoint) || // `NaN`, `+Infinity`, or `-Infinity`
+                            codePoint < 0 || // not a valid Unicode code point
+                            codePoint > 0x10FFFF || // not a valid Unicode code point
+                            floor(codePoint) != codePoint // not an integer
+                    ) {
+                        return String.fromCharCode(0xFFFD);
+                    }
+                    if (codePoint <= 0xFFFF) { // BMP code point
+                        codeUnits.push(codePoint);
+                    } else { // Astral code point; split in surrogate halves
+                        // http://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
+                        codePoint -= 0x10000;
+                        highSurrogate = (codePoint >> 10) + 0xD800;
+                        lowSurrogate = (codePoint % 0x400) + 0xDC00;
+                        codeUnits.push(highSurrogate, lowSurrogate);
+                    }
+                    if (index + 1 == length || codeUnits.length > MAX_SIZE) {
+                        result += stringFromCharCode.apply(null, codeUnits);
+                        codeUnits.length = 0;
+                    }
+                }
+                return result;
+            };
+            if (defineProperty) {
+                defineProperty(String, 'fromCodePoint', {
+                    'value': fromCodePoint,
+                    'configurable': true,
+                    'writable': true
+                });
+            } else {
+                String.fromCodePoint = fromCodePoint;
+            }
+        }());
+    }
+
     var entityToChar = function(m) {
         var isNumeric = /^&#/.test(m);
         var isHex = /^&#[Xx]/.test(m);
@@ -2234,7 +2299,7 @@
             } else {
                 num = parseInt(m.slice(2,-1), 10);
             }
-            uchar = String.fromCharCode(num);
+            uchar = String.fromCodePoint(num);
         } else {
             uchar = entities[m.slice(1,-1)];
         }
@@ -2428,7 +2493,7 @@
         if (cc_after === -1) {
             char_after = '\n';
         } else {
-            char_after = String.fromCharCode(cc_after);
+            char_after = String.fromCodePoint(cc_after);
         }
 
         var can_open = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_after));
@@ -2460,7 +2525,7 @@
         var startpos = this.pos;
         var c ;
         var first_close = 0;
-        c = String.fromCharCode(cc);
+        c = String.fromCodePoint(cc);
 
         var numdelims;
         var numclosedelims;
@@ -2876,7 +2941,7 @@
         }
         if (!res) {
             this.pos += 1;
-            inlines.push({t: 'Str', c: String.fromCharCode(c)});
+            inlines.push({t: 'Str', c: String.fromCodePoint(c)});
         }
 
         if (memoize) {
