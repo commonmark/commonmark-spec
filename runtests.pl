@@ -51,6 +51,7 @@ sub tidy
       s/  */ /;
       # collapse space before /> in tag
       s/  *\/>/\/>/;
+	  s/>\n$/>/;
       # skip blank line
       if (/^$/) {
         next;
@@ -93,8 +94,10 @@ sub dotest
     print $markdown;
     print "=== expected ===============\n";
     print $html;
+	print "\n";
     print "=== got ====================\n";
     print $actual;
+	print "\n";
     print color "black";
     return 0;
   }
