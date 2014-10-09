@@ -11,7 +11,7 @@
 #include "inlines.h"
 
 typedef struct InlineStack {
-	struct InlineStack *previous;
+	inline_stack *previous;
 	node_inl *first_inline;
 	int delim_count;
 	char delim_char;
@@ -27,7 +27,7 @@ typedef struct Subject {
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
 static node_inl *parse_inlines_while(subject* subj, int (*f)(subject*));
-static int parse_inline(subject* subj, node_inl ** first, node_inl ** last);
+static int parse_inline(subject* subj, node_inl ** last);
 
 static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
@@ -720,9 +720,8 @@ inline static int not_eof(subject* subj)
 extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 {
 	node_inl* result = NULL;
-	node_inl** first = &result;
-	node_inl* last = NULL;
-	while ((*f)(subj) && parse_inline(subj, first, &last)) {
+	node_inl** last = &result;
+	while ((*f)(subj) && parse_inline(subj, last)) {
 	}
 	return result;
 }
@@ -769,7 +768,7 @@ static int subject_find_special_char(subject *subj)
 // Parse an inline, advancing subject, and add it to last element.
 // Adjust tail to point to new last element of list.
 // Return 0 if no inline can be parsed, 1 otherwise.
-static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
+static int parse_inline(subject* subj, node_inl ** last)
 {
 	node_inl* new = NULL;
 	chunk contents;
@@ -829,18 +828,11 @@ static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
 
 			new = make_str(contents);
 	}
-	if (*first == NULL) {
-                                *first = new;
+	if (*last == NULL) {
 		*last = new;
 	} else {
-		append_inlines(*first, new);
+		append_inlines(*last, new);
 	}
-        
-	while (new->next) {
-		new = new->next;
-	}
-                *last = new;
-        
 	return 1;
 }
 
