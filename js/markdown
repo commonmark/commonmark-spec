@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 var fs = require('fs');
-var util = require('util');
 var stmd = require('./stmd');
 
 file = process.argv[2] || '/dev/stdin';
