@@ -724,6 +724,15 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 	node_inl* last = NULL;
 	while ((*f)(subj) && parse_inline(subj, first, &last)) {
 	}
+	
+	inline_stack* istack = subj->last_emphasis;
+	inline_stack* temp;
+	while (istack != NULL) {
+		temp = istack->previous;
+		free(istack);
+		istack = temp;
+	}
+	
 	return result;
 }
 
