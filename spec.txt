@@ -277,8 +277,8 @@ optionally by any number of spaces, forms a [horizontal
 rule](#horizontal-rule). <a id="horizontal-rule"></a>
 
 .
-***
 ---
+***
 ___
 .
 <hr />
