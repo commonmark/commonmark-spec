@@ -9,7 +9,7 @@
 // var renderer = new stmd.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
 
-    require('./from-code-point.js');
+    var fromCodePoint = require('./from-code-point.js');
     var entityToChar = require('./html5-entities.js').entityToChar;
 
     // Constants for character codes:
@@ -284,7 +284,7 @@
         if (cc_after === -1) {
             char_after = '\n';
         } else {
-            char_after = String.fromCodePoint(cc_after);
+            char_after = fromCodePoint(cc_after);
         }
 
         var can_open = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_after));
@@ -316,7 +316,7 @@
         var startpos = this.pos;
         var c ;
         var first_close = 0;
-        c = String.fromCodePoint(cc);
+        c = fromCodePoint(cc);
 
         var numdelims;
         var numclosedelims;
@@ -732,7 +732,7 @@
         }
         if (!res) {
             this.pos += 1;
-            inlines.push({t: 'Str', c: String.fromCodePoint(c)});
+            inlines.push({t: 'Str', c: fromCodePoint(c)});
         }
 
         if (memoize) {
