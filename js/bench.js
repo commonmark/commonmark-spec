@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark').Benchmark;
 var suite = new Benchmark.Suite;
 var fs = require('fs');
-var sm = require('./stmd');
+var sm = require('./lib/index.js');
 // https://github.com/coreyti/showdown
 var showdown = require('../../showdown/src/showdown');
 // https://github.com/chjj/marked

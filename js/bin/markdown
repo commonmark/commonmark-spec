@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var fs = require('fs');
 var util = require('util');
-var stmd = require('./stmd');
+var stmd = require('../lib/index.js');
 
 file = process.argv[2] || '/dev/stdin';
 

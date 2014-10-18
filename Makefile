@@ -4,6 +4,7 @@ SRCDIR?=src
 DATADIR?=data
 BENCHINP?=bench.md
 PROG?=./stmd
+JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all test spec benchjs testjs
 all: $(SRCDIR)/case_fold_switch.inc $(PROG)
@@ -31,9 +32,11 @@ spec.pdf: spec.md template.tex specfilter.hs
 test: spec.txt
 	perl runtests.pl $< $(PROG)
 
+js/stmd.js: js/lib/index.js ${JSMODULES}
+	browserify --standalone stmd $< -o $@
+
 testjs: spec.txt
 	node js/test.js
-#	perl runtests.pl js/markdown $<
 
 benchjs:
 	node js/bench.js ${BENCHINP}
@@ -56,7 +59,7 @@ $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 
 .PHONY: leakcheck clean fuzztest dingus upload
 
-dingus:
+dingus: js/stmd.js
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
@@ -70,7 +73,7 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: spec.html narrative.html
+update-site: spec.html narrative.html js/stmd.js
 	cp spec.html _site/
 	cp narrative.html _site/index.html
 	cp -r js/* _site/js/
@@ -78,6 +81,7 @@ update-site: spec.html narrative.html
 
 clean:
 	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o
+	-rm js/stmd.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
