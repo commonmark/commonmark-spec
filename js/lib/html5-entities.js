@@ -1,3 +1,5 @@
+var fromCodePoint = require('./from-code-point');
+
 var entities = { AAacute: 'Á',
                  aacute: 'á',
                  Abreve: 'Ă',
@@ -2135,7 +2137,7 @@ var entityToChar = function(m) {
         } else {
             num = parseInt(m.slice(2,-1), 10);
         }
-        uchar = String.fromCodePoint(num);
+        uchar = fromCodePoint(num);
     } else {
         uchar = entities[m.slice(1,-1)];
     }
