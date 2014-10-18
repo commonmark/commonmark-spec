@@ -10,16 +10,24 @@
 #include "scanners.h"
 #include "inlines.h"
 
+typedef struct InlineStack {
+	struct InlineStack *previous;
+	node_inl *first_inline;
+	int delim_count;
+	char delim_char;
+} inline_stack;
+
 typedef struct Subject {
 	chunk input;
 	int pos;
 	int label_nestlevel;
 	reference_map *refmap;
+	inline_stack *last_emphasis;
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
 static node_inl *parse_inlines_while(subject* subj, int (*f)(subject*));
-static int parse_inline(subject* subj, node_inl ** last);
+static int parse_inline(subject* subj, node_inl ** first, node_inl ** last);
 
 static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
@@ -158,6 +166,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
+	e->last_emphasis = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -170,6 +179,7 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
+	e->last_emphasis = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -262,12 +272,11 @@ static node_inl* handle_backticks(subject *subj)
 }
 
 // Scan ***, **, or * and return number scanned, or 0.
-// Don't advance position.
+// Advances position.
 static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 {
 	int numdelims = 0;
 	char char_before, char_after;
-	int startpos = subj->pos;
 
 	char_before = subj->pos == 0 ? '\n' : peek_at(subj, subj->pos - 1);
 	while (peek_char(subj) == c) {
@@ -281,135 +290,93 @@ static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 		*can_open = *can_open && !isalnum(char_before);
 		*can_close = *can_close && !isalnum(char_after);
 	}
-	subj->pos = startpos;
 	return numdelims;
 }
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static node_inl* handle_strong_emph(subject* subj, char c)
+static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 {
 	bool can_open, can_close;
-	node_inl * result = NULL;
-	node_inl ** last = malloc(sizeof(node_inl *));
-	node_inl * new;
-	node_inl * il;
-	node_inl * first_head = NULL;
-	node_inl * first_close = NULL;
-	int first_close_delims = 0;
 	int numdelims;
-
-	*last = NULL;
-
+	int useDelims;
+	inline_stack * istack;
+	node_inl * inl;
+	node_inl * emph;
+	node_inl * inl_text;
+	
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
-	subj->pos += numdelims;
 
-	new = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
-	*last = new;
-	first_head = new;
-	result = new;
+	if (can_close)
+	{
+		// walk the stack and find a matching opener, if there is one
+		istack = subj->last_emphasis;
+		while (true)
+		{
+			if (istack == NULL)
+				goto cannotClose;
 
-	if (!can_open || numdelims == 0) {
-		goto done;
+			if (istack->delim_char == c)
+				break;
+
+			istack = istack->previous;
+		}
+
+		// calculate the actual number of delimeters used from this closer
+		useDelims = istack->delim_count;
+		if (useDelims == 3) useDelims = numdelims == 3 ? 1 : numdelims;
+		else if (useDelims > numdelims) useDelims = 1;
+
+		if (istack->delim_count == useDelims)
+		{
+			// the opener is completely used up - remove the stack entry and reuse the inline element
+			inl = istack->first_inline;
+			inl->tag = useDelims == 1 ? INL_EMPH : INL_STRONG;
+			chunk_free(&inl->content.literal);
+			inl->content.inlines = inl->next;
+			inl->next = NULL;
+
+			subj->last_emphasis = istack->previous;
+			istack->previous = NULL;
+			*last = inl;
+			free(istack);
+		}
+		else
+		{
+			// the opener will only partially be used - stack entry remains (truncated) and a new inline is added.
+			inl = istack->first_inline;
+			istack->delim_count -= useDelims;
+			inl->content.literal.len = istack->delim_count;
+
+			emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+			inl->next = emph;
+			*last = emph;
+		}
+
+		// if the closer was not fully used, move back a char or two and try again.
+		if (useDelims < numdelims)
+		{
+			subj->pos = subj->pos - numdelims + useDelims;
+			return handle_strong_emph(subj, c, last);
+		}
+
+		return make_str(chunk_literal(""));
 	}
 
-	switch (numdelims) {
-		case 1:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (numdelims >= 1 && can_close) {
-					subj->pos += 1;
-					first_head->tag = INL_EMPH;
-					chunk_free(&first_head->content.literal);
-					first_head->content.inlines = first_head->next;
-					first_head->next = NULL;
-					goto done;
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		case 2:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (numdelims >= 2 && can_close) {
-					subj->pos += 2;
-					first_head->tag = INL_STRONG;
-					chunk_free(&first_head->content.literal);
-					first_head->content.inlines = first_head->next;
-					first_head->next = NULL;
-					goto done;
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		case 3:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (can_close && numdelims >= 1 && numdelims <= 3 &&
-						numdelims != first_close_delims) {
-					new = make_str(chunk_dup(&subj->input, subj->pos, numdelims));
-					append_inlines(*last, new);
-					*last = new;
-					if (first_close_delims == 1 && numdelims > 2) {
-						numdelims = 2;
-					} else if (first_close_delims == 2) {
-						numdelims = 1;
-					} else if (numdelims == 3) {
-						// If we opened with ***, we interpret it as ** followed by *
-						// giving us <strong><em>
-						numdelims = 1;
-					}
-					subj->pos += numdelims;
-					if (first_close) {
-						first_head->tag = first_close_delims == 1 ? INL_STRONG : INL_EMPH;
-						chunk_free(&first_head->content.literal);
-						first_head->content.inlines =
-							make_inlines(first_close_delims == 1 ? INL_EMPH : INL_STRONG,
-									first_head->next);
+cannotClose:
+	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-						il = first_head->next;
-						while (il->next && il->next != first_close) {
-							il = il->next;
-						}
-						il->next = NULL;
-
-						first_head->content.inlines->next = first_close->next;
-
-						il = first_head->content.inlines;
-						while (il->next && il->next != *last) {
-							il = il->next;
-						}
-						il->next = NULL;
-						free_inlines(*last);
-
-						first_close->next = NULL;
-						free_inlines(first_close);
-						first_head->next = NULL;
-						goto done;
-					} else {
-						first_close = *last;
-						first_close_delims = numdelims;
-					}
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		default:
-			goto done;
+	if (can_open)
+	{
+		istack = (inline_stack*)malloc(sizeof(inline_stack));
+		istack->delim_count = numdelims;
+		istack->delim_char = c;
+		istack->first_inline = inl_text;
+		istack->previous = subj->last_emphasis;
+		subj->last_emphasis = istack;
 	}
 
-done:
-	free(last);
-	return result;
+	return inl_text;
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
@@ -753,9 +720,19 @@ inline static int not_eof(subject* subj)
 extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 {
 	node_inl* result = NULL;
-	node_inl** last = &result;
-	while ((*f)(subj) && parse_inline(subj, last)) {
+	node_inl** first = &result;
+	node_inl* last = NULL;
+	while ((*f)(subj) && parse_inline(subj, first, &last)) {
 	}
+	
+	inline_stack* istack = subj->last_emphasis;
+	inline_stack* temp;
+	while (istack != NULL) {
+		temp = istack->previous;
+		free(istack);
+		istack = temp;
+	}
+	
 	return result;
 }
 
@@ -801,7 +778,7 @@ static int subject_find_special_char(subject *subj)
 // Parse an inline, advancing subject, and add it to last element.
 // Adjust tail to point to new last element of list.
 // Return 0 if no inline can be parsed, 1 otherwise.
-static int parse_inline(subject* subj, node_inl ** last)
+static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
 {
 	node_inl* new = NULL;
 	chunk contents;
@@ -828,19 +805,10 @@ static int parse_inline(subject* subj, node_inl ** last)
 			new = handle_pointy_brace(subj);
 			break;
 		case '_':
-			if (subj->pos > 0) {
-				unsigned char prev = peek_at(subj, subj->pos - 1);
-				if (isalnum(prev) || prev == '_') {
-					new = make_str(chunk_literal("_"));
-					advance(subj);
-					break;
-				}
-			}
-
-			new = handle_strong_emph(subj, '_');
+			new = handle_strong_emph(subj, '_', last);
 			break;
 		case '*':
-			new = handle_strong_emph(subj, '*');
+			new = handle_strong_emph(subj, '*', last);
 			break;
 		case '[':
 			new = handle_left_bracket(subj);
@@ -870,11 +838,18 @@ static int parse_inline(subject* subj, node_inl ** last)
 
 			new = make_str(contents);
 	}
-	if (*last == NULL) {
+	if (*first == NULL) {
+                                *first = new;
 		*last = new;
 	} else {
-		append_inlines(*last, new);
+		append_inlines(*first, new);
 	}
+        
+	while (new->next) {
+		new = new->next;
+	}
+                *last = new;
+        
 	return 1;
 }
 
