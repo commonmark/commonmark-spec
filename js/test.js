@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var stmd = require('./stmd');
+var stmd = require('./lib/index.js');
 var ansi = require('./ansi/ansi');
 var cursor = ansi(process.stdout);
 
