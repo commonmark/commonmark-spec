@@ -76,7 +76,7 @@ var reEntity = new RegExp(ENTITY, 'gi');
 var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
 
 // Replace entities and backslash escapes with literal characters.
-var unescapeEntBS = function(s) {
+var unescapeString = function(s) {
     return s.replace(reAllEscapedChar, '$1')
             .replace(reEntity, entityToChar);
 };
@@ -357,7 +357,7 @@ var parseLinkTitle = function() {
     var title = this.match(reLinkTitle);
     if (title) {
         // chop off quotes from title and unescape:
-        return unescapeEntBS(title.substr(1, title.length - 2));
+        return unescapeString(title.substr(1, title.length - 2));
     } else {
         return null;
     }
@@ -368,11 +368,11 @@ var parseLinkTitle = function() {
 var parseLinkDestination = function() {
     var res = this.match(reLinkDestinationBraces);
     if (res) {  // chop off surrounding <..>:
-        return encodeURI(unescape(unescapeEntBS(res.substr(1, res.length - 2))));
+        return encodeURI(unescape(unescapeString(res.substr(1, res.length - 2))));
     } else {
         res = this.match(reLinkDestination);
         if (res !== null) {
-            return encodeURI(unescape(unescapeEntBS(res)));
+            return encodeURI(unescape(unescapeString(res)));
         } else {
             return null;
         }
@@ -715,6 +715,7 @@ function InlineParser(){
         match: match,
         peek: peek,
         spnl: spnl,
+        unescapeString: unescapeString,
         parseBackticks: parseBackticks,
         parseBackslash: parseBackslash,
         parseAutolink: parseAutolink,
@@ -735,5 +736,4 @@ function InlineParser(){
     };
 }
 
-module.exports.unescapeEntBS = unescapeEntBS;
-module.exports.InlineParser = InlineParser;
+module.exports = InlineParser;

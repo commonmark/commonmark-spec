@@ -2,7 +2,8 @@ var C_GREATERTHAN = 62;
 var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
 
-var _inlines = require('./inlines');
+var InlineParser = require('./inlines');
+var unescapeString = new InlineParser().unescapeString;
 
 // Returns true if string contains only space characters.
 var isBlank = function(s) {
@@ -566,7 +567,7 @@ var finalize = function(block, line_number) {
 
     case 'FencedCode':
         // first line becomes info string
-        block.info = _inlines.unescapeEntBS(block.strings[0].trim());
+        block.info = unescapeString(block.strings[0].trim());
         if (block.strings.length == 1) {
             block.string_content = '';
         } else {
@@ -658,7 +659,7 @@ function DocParser(){
         doc: makeBlock('Document', 1, 1),
         tip: this.doc,
         refmap: {},
-        inlineParser: new _inlines.InlineParser(),
+        inlineParser: new InlineParser(),
         breakOutOfLists: breakOutOfLists,
         addLine: addLine,
         addChild: addChild,
