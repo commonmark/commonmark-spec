@@ -55,7 +55,7 @@ static void add_reference(reference_map *map, reference* ref)
 
 	while (t) {
 		if (t->hash == ref->hash &&
-			!strcmp((char *)t->label, (char *)ref->label)) {
+		    !strcmp((char *)t->label, (char *)ref->label)) {
 			reference_free(ref);
 			return;
 		}
@@ -105,7 +105,7 @@ reference* reference_lookup(reference_map *map, chunk *label)
 
 	while (ref) {
 		if (ref->hash == hash &&
-			!strcmp((char *)ref->label, (char *)norm))
+		    !strcmp((char *)ref->label, (char *)norm))
 			break;
 		ref = ref->next;
 	}
@@ -138,4 +138,3 @@ reference_map *reference_map_new(void)
 	memset(map, 0x0, sizeof(reference_map));
 	return map;
 }
-

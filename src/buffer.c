@@ -15,8 +15,8 @@
 unsigned char strbuf__initbuf[1];
 unsigned char strbuf__oom[1];
 
-#define ENSURE_SIZE(b, d) \
-	if ((d) > buf->asize && strbuf_grow(b, (d)) < 0)\
+#define ENSURE_SIZE(b, d)					\
+	if ((d) > buf->asize && strbuf_grow(b, (d)) < 0)	\
 		return -1;
 
 void strbuf_init(strbuf *buf, int initial_size)
@@ -111,8 +111,8 @@ int strbuf_set(strbuf *buf, const unsigned char *data, int len)
 int strbuf_sets(strbuf *buf, const char *string)
 {
 	return strbuf_set(buf,
-		(const unsigned char *)string,
-		string ? strlen(string) : 0);
+			  (const unsigned char *)string,
+			  string ? strlen(string) : 0);
 }
 
 int strbuf_putc(strbuf *buf, int c)
@@ -155,7 +155,7 @@ int strbuf_vprintf(strbuf *buf, const char *format, va_list ap)
 			(char *)buf->ptr + buf->size,
 			buf->asize - buf->size,
 			format, args
-		);
+			);
 
 		if (len < 0) {
 			free(buf->ptr);
@@ -351,4 +351,3 @@ extern void strbuf_unescape(strbuf *buf)
 
 	strbuf_truncate(buf, w);
 }
-

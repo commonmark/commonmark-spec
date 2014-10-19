@@ -16,17 +16,17 @@ static void print_str(const unsigned char *s, int len)
 		unsigned char c = s[i];
 
 		switch (c) {
-			case '\n':
-				printf("\\n");
-				break;
-			case '"':
-				printf("\\\"");
-				break;
-			case '\\':
-				printf("\\\\");
-				break;
-			default:
-				putchar((int)c);
+		case '\n':
+			printf("\\n");
+			break;
+		case '"':
+			printf("\\\"");
+			break;
+		case '\\':
+			printf("\\\\");
+			break;
+		default:
+			putchar((int)c);
 		}
 	}
 	putchar('"');
@@ -116,13 +116,13 @@ static void print_blocks(node_block* b, int indent)
 			data = &(b->as.list);
 			if (data->list_type == ordered) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
-						(data->tight ? "true" : "false"),
-						data->start,
-						(data->delimiter == parens ? "parens" : "period"));
+				       (data->tight ? "true" : "false"),
+				       data->start,
+				       (data->delimiter == parens ? "parens" : "period"));
 			} else {
 				printf("list (type=bullet tight=%s bullet_char=%c)\n",
-						(data->tight ? "true" : "false"),
-						data->bullet_char);
+				       (data->tight ? "true" : "false"),
+				       data->bullet_char);
 			}
 			print_blocks(b->children, indent + 2);
 			break;
@@ -148,7 +148,7 @@ static void print_blocks(node_block* b, int indent)
 			break;
 		case BLOCK_FENCED_CODE:
 			printf("fenced_code length=%d info=",
-				b->as.code.fence_length);
+			       b->as.code.fence_length);
 			print_str(b->as.code.info.ptr, -1);
 			putchar(' ');
 			print_str(b->string_content.ptr, -1);

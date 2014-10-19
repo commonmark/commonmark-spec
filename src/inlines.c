@@ -116,26 +116,26 @@ extern void free_inlines(node_inl* e)
 	node_inl * next;
 	while (e != NULL) {
 		switch (e->tag){
-			case INL_STRING:
-			case INL_RAW_HTML:
-			case INL_CODE:
-				chunk_free(&e->content.literal);
-				break;
-			case INL_LINEBREAK:
-			case INL_SOFTBREAK:
-				break;
-			case INL_LINK:
-			case INL_IMAGE:
-				free(e->content.linkable.url);
-				free(e->content.linkable.title);
-				free_inlines(e->content.linkable.label);
-				break;
-			case INL_EMPH:
-			case INL_STRONG:
-				free_inlines(e->content.inlines);
-				break;
-			default:
-				break;
+		case INL_STRING:
+		case INL_RAW_HTML:
+		case INL_CODE:
+			chunk_free(&e->content.literal);
+			break;
+		case INL_LINEBREAK:
+		case INL_SOFTBREAK:
+			break;
+		case INL_LINK:
+		case INL_IMAGE:
+			free(e->content.linkable.url);
+			free(e->content.linkable.title);
+			free_inlines(e->content.linkable.label);
+			break;
+		case INL_EMPH:
+		case INL_STRONG:
+			free_inlines(e->content.inlines);
+			break;
+		default:
+			break;
 		}
 		next = e->next;
 		free(e);
@@ -405,9 +405,9 @@ static node_inl* handle_entity(subject* subj)
 	advance(subj);
 
 	len = houdini_unescape_ent(&ent,
-		subj->input.data + subj->pos,
-		subj->input.len - subj->pos
-	);
+				   subj->input.data + subj->pos,
+				   subj->input.len - subj->pos
+		);
 
 	if (len == 0)
 		return make_str(chunk_literal("&"));
@@ -480,8 +480,8 @@ unsigned char *clean_title(chunk *title)
 
 	// remove surrounding quotes if any:
 	if ((first == '\'' && last == '\'') ||
-		(first == '(' && last == ')') ||
-		(first == '"' && last == '"')) {
+	    (first == '(' && last == ')') ||
+	    (first == '"' && last == '"')) {
 		houdini_unescape_html_f(&buf, title->data + 1, title->len - 2);
 	} else {
 		houdini_unescape_html_f(&buf, title->data, title->len);
@@ -509,7 +509,7 @@ static node_inl* handle_pointy_brace(subject* subj)
 		return make_autolink(
 			make_str_with_entities(&contents),
 			contents, 0
-		);
+			);
 	}
 
 	// next try to match an email autolink
@@ -519,9 +519,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		subj->pos += matchlen;
 
 		return make_autolink(
-				make_str_with_entities(&contents),
-				contents, 1
-		);
+			make_str_with_entities(&contents),
+			contents, 1
+			);
 	}
 
 	// finally, try to match an html tag
@@ -565,30 +565,30 @@ static int link_label(subject* subj, chunk *raw_label)
 	char c;
 	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
 		switch (c) {
-			case '`':
-				tmp = handle_backticks(subj);
-				free_inlines(tmp);
-				break;
-			case '<':
-				tmp = handle_pointy_brace(subj);
-				free_inlines(tmp);
-				break;
-			case '[':  // nested []
-				nestlevel++;
+		case '`':
+			tmp = handle_backticks(subj);
+			free_inlines(tmp);
+			break;
+		case '<':
+			tmp = handle_pointy_brace(subj);
+			free_inlines(tmp);
+			break;
+		case '[':  // nested []
+			nestlevel++;
+			advance(subj);
+			break;
+		case ']':  // nested []
+			nestlevel--;
+			advance(subj);
+			break;
+		case '\\':
+			advance(subj);
+			if (ispunct(peek_char(subj))) {
 				advance(subj);
-				break;
-			case ']':  // nested []
-				nestlevel--;
-				advance(subj);
-				break;
-			case '\\':
-				advance(subj);
-				if (ispunct(peek_char(subj))) {
-					advance(subj);
-				}
-				break;
-			default:
-				advance(subj);
+			}
+			break;
+		default:
+			advance(subj);
 		}
 	}
 	if (c == ']') {
@@ -624,8 +624,8 @@ static node_inl* handle_left_bracket(subject* subj)
 
 	if (found_label) {
 		if (peek_char(subj) == '(' &&
-				((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
-				((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
+		    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
+		    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
 
 			// try to parse an explicit link:
 			starturl = subj->pos + 1 + sps; // after (
@@ -651,8 +651,8 @@ static node_inl* handle_left_bracket(subject* subj)
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
-						append_inlines(lab,
-							make_str(chunk_literal("]"))));
+							append_inlines(lab,
+								       make_str(chunk_literal("]"))));
 				return result;
 			}
 		} else {
@@ -681,7 +681,7 @@ static node_inl* handle_left_bracket(subject* subj)
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
-						append_inlines(lab, make_str(chunk_literal("]"))));
+							append_inlines(lab, make_str(chunk_literal("]"))));
 			}
 			return result;
 		}
@@ -703,8 +703,8 @@ static node_inl* handle_newline(subject *subj)
 		advance(subj);
 	}
 	if (nlpos > 1 &&
-			peek_at(subj, nlpos - 1) == ' ' &&
-			peek_at(subj, nlpos - 2) == ' ') {
+	    peek_at(subj, nlpos - 1) == ' ' &&
+	    peek_at(subj, nlpos - 2) == ' ') {
 		return make_linebreak();
 	} else {
 		return make_softbreak();
@@ -789,67 +789,67 @@ static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
 		return 0;
 	}
 	switch(c){
-		case '\n':
-			new = handle_newline(subj);
-			break;
-		case '`':
-			new = handle_backticks(subj);
-			break;
-		case '\\':
-			new = handle_backslash(subj);
-			break;
-		case '&':
-			new = handle_entity(subj);
-			break;
-		case '<':
-			new = handle_pointy_brace(subj);
-			break;
-		case '_':
-			new = handle_strong_emph(subj, '_', last);
-			break;
-		case '*':
-			new = handle_strong_emph(subj, '*', last);
-			break;
-		case '[':
+	case '\n':
+		new = handle_newline(subj);
+		break;
+	case '`':
+		new = handle_backticks(subj);
+		break;
+	case '\\':
+		new = handle_backslash(subj);
+		break;
+	case '&':
+		new = handle_entity(subj);
+		break;
+	case '<':
+		new = handle_pointy_brace(subj);
+		break;
+	case '_':
+		new = handle_strong_emph(subj, '_', last);
+		break;
+	case '*':
+		new = handle_strong_emph(subj, '*', last);
+		break;
+	case '[':
+		new = handle_left_bracket(subj);
+		break;
+	case '!':
+		advance(subj);
+		if (peek_char(subj) == '[') {
 			new = handle_left_bracket(subj);
-			break;
-		case '!':
-			advance(subj);
-			if (peek_char(subj) == '[') {
-				new = handle_left_bracket(subj);
-				if (new != NULL && new->tag == INL_LINK) {
-					new->tag = INL_IMAGE;
-				} else {
-					new = append_inlines(make_str(chunk_literal("!")), new);
-				}
+			if (new != NULL && new->tag == INL_LINK) {
+				new->tag = INL_IMAGE;
 			} else {
-				new = make_str(chunk_literal("!"));
+				new = append_inlines(make_str(chunk_literal("!")), new);
 			}
-			break;
-		default:
-			endpos = subject_find_special_char(subj);
-			contents = chunk_dup(&subj->input, subj->pos, endpos - subj->pos);
-			subj->pos = endpos;
+		} else {
+			new = make_str(chunk_literal("!"));
+		}
+		break;
+	default:
+		endpos = subject_find_special_char(subj);
+		contents = chunk_dup(&subj->input, subj->pos, endpos - subj->pos);
+		subj->pos = endpos;
 
-			// if we're at a newline, strip trailing spaces.
-			if (peek_char(subj) == '\n') {
-				chunk_rtrim(&contents);
-			}
+		// if we're at a newline, strip trailing spaces.
+		if (peek_char(subj) == '\n') {
+			chunk_rtrim(&contents);
+		}
 
-			new = make_str(contents);
+		new = make_str(contents);
 	}
 	if (*first == NULL) {
-                                *first = new;
+		*first = new;
 		*last = new;
 	} else {
 		append_inlines(*first, new);
 	}
-        
+
 	while (new->next) {
 		new = new->next;
 	}
-                *last = new;
-        
+	*last = new;
+
 	return 1;
 }
 
@@ -865,8 +865,8 @@ void spnl(subject* subj)
 {
 	bool seen_newline = false;
 	while (peek_char(subj) == ' ' ||
-			(!seen_newline &&
-			 (seen_newline = peek_char(subj) == '\n'))) {
+	       (!seen_newline &&
+		(seen_newline = peek_char(subj) == '\n'))) {
 		advance(subj);
 	}
 }
@@ -933,4 +933,3 @@ int parse_reference_inline(strbuf *input, reference_map *refmap)
 	reference_create(refmap, &lab, &url, &title);
 	return subj.pos;
 }
-
