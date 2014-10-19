@@ -841,16 +841,10 @@ static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
 	if (*first == NULL) {
 		*first = new;
 		*last = new;
-	} else {
-		append_inlines(*first, new);
+	} else if (new) {
+		append_inlines(*last, new);
+		*last = new;
 	}
-
-	if (new) {
-		while (new->next) {
-			new = new->next;
-		}
-	}
-	*last = new;
 
 	return 1;
 }
