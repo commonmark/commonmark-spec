@@ -542,6 +542,7 @@ var finalize = function(block, line_number) {
     switch (block.t) {
     case 'Paragraph':
         block.string_content = block.strings.join('\n').replace(/^  */m,'');
+        // delete block.strings;
 
         // try parsing the beginning as link reference definitions:
         while (block.string_content.charCodeAt(0) === C_OPEN_BRACKET &&
@@ -613,26 +614,49 @@ var finalize = function(block, line_number) {
 };
 
 // Walk through a block & children recursively, parsing string content
-// into inline content where appropriate.
+// into inline content where appropriate.  Returns new object.
 var processInlines = function(block) {
+    var newblock = {};
+    newblock.t = block.t;
+    newblock.start_line = block.start_line;
+    newblock.start_column = block.start_column;
+    newblock.end_line = block.end_line;
+
     switch(block.t) {
     case 'Paragraph':
+        newblock.inline_content =
+            this.inlineParser.parse(block.string_content.trim(), this.refmap);
+        break;
     case 'SetextHeader':
     case 'ATXHeader':
-        block.inline_content =
+        newblock.inline_content =
             this.inlineParser.parse(block.string_content.trim(), this.refmap);
-        block.string_content = "";
+        newblock.level = block.level;
+        break;
+    case 'List':
+        newblock.list_data = block.list_data;
+        newblock.tight = block.tight;
+        break;
+    case 'FencedCode':
+        newblock.string_content = block.string_content;
+        newblock.info = block.info;
+        break;
+    case 'IndentedCode':
+    case 'HtmlBlock':
+        newblock.string_content = block.string_content;
         break;
     default:
         break;
     }
 
     if (block.children) {
+        var newchildren = [];
         for (var i = 0; i < block.children.length; i++) {
-            this.processInlines(block.children[i]);
+            newchildren.push(this.processInlines(block.children[i]));
         }
+        newblock.children = newchildren;
     }
-
+    return newblock;
 };
 
 // The main parsing function.  Returns a parsed document AST.
@@ -648,8 +672,7 @@ var parse = function(input) {
     while (this.tip) {
         this.finalize(this.tip, len - 1);
     }
-    this.processInlines(this.doc);
-    return this.doc;
+    return this.processInlines(this.doc);
 };
 
 
