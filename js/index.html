@@ -28,6 +28,7 @@ $(document).ready(function() {
       // $("#html").text(result);
       $("#preview").html(result);
       $("#html").text(result);
+      $("#ast").text(stmd.ASTRenderer(parsed));
       $("#rendertime").text(renderTime);
   };
   var parseAndRender = function () {
@@ -78,15 +79,16 @@ $(document).ready(function() {
     <div class="col-md-6">
       <h1>stmd.js dingus</h1>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-4">
       <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
         <li><a href="#result" role="tab" data-toggle="tab">HTML</a></li>
+        <li><a href="#result-ast" role="tab" data-toggle="tab">AST</a></li>
       </ul>
     </div>
-    <div class="col-md-3">
-      <p class="timing">Parsed in <span class="timing" id="parsetime"></span> milliseconds.<br/>
-      Rendered in <span class="timing" id="rendertime"></span> milliseconds.</p>
+    <div class="col-md-2">
+      <p class="timing">Parsed in <span class="timing" id="parsetime"></span> ms.<br>
+        Rendered in <span class="timing" id="rendertime"></span> ms.</p>
     </div>
   </div>
   <div class="row">
@@ -100,6 +102,9 @@ $(document).ready(function() {
         </div>
         <div id="result" class="tab-pane">
           <pre id="htmlpre"><code id="html"></code></pre>
+        </div>
+        <div id="result-ast" class="tab-pane">
+          <pre id="astpre"><code id="ast"></code></pre>
         </div>
     </div>
     </div>
