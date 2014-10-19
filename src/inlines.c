@@ -360,7 +360,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 			return handle_strong_emph(subj, c, last);
 		}
 
-		return make_str(chunk_literal(""));
+		return NULL; // make_str(chunk_literal(""));
 	}
 
 cannotClose:
@@ -845,8 +845,10 @@ static int parse_inline(subject* subj, node_inl ** first, node_inl ** last)
 		append_inlines(*first, new);
 	}
 
-	while (new->next) {
-		new = new->next;
+	if (new) {
+		while (new->next) {
+			new = new->next;
+		}
 	}
 	*last = new;
 
