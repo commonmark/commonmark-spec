@@ -304,7 +304,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 	node_inl * inl;
 	node_inl * emph;
 	node_inl * inl_text;
-	
+
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
 
 	if (can_close)
@@ -724,7 +724,7 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 	node_inl* last = NULL;
 	while ((*f)(subj) && parse_inline(subj, first, &last)) {
 	}
-	
+
 	inline_stack* istack = subj->last_emphasis;
 	inline_stack* temp;
 	while (istack != NULL) {
@@ -732,7 +732,7 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 		free(istack);
 		istack = temp;
 	}
-	
+
 	return result;
 }
 
