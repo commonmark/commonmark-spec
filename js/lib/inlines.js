@@ -274,10 +274,10 @@ var parseEmphasis = function(cc,inlines) {
     if (res.can_close) {
 
       // Walk the stack and find a matching opener, if possible
-      var i = this.emph_stack.length - 1;
+      var i = this.emphasis_openers.length - 1;
       while (i >= 0) {
 
-        var opener = this.emph_stack[i];
+        var opener = this.emphasis_openers[i];
         if (opener.cc === cc) { // we have a match!
 
           if (opener.numdelims <= numdelims) { // all openers used
@@ -299,7 +299,7 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emph_stack.splice(i, this.emph_stack.length - i);
+            this.emphasis_openers.splice(i, this.emphasis_openers.length - i);
             return true;
 
           } else if (opener.numdelims > numdelims) { // only some openers used
@@ -312,7 +312,7 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emph_stack.splice(i + 1, this.emph_stack.length - (i + 1));
+            this.emphasis_openers.splice(i + 1, this.emphasis_openers.length - (i + 1));
             return true;
 
           }
@@ -330,7 +330,7 @@ var parseEmphasis = function(cc,inlines) {
     if (res.can_open) {
 
       // Add entry to stack for this opener
-      this.emph_stack.push({ cc: cc,
+      this.emphasis_openers.push({ cc: cc,
                              numdelims: numdelims,
                              pos: inlines.length - 1 });
 
@@ -685,7 +685,7 @@ var parseInlines = function(s, refmap) {
     this.pos = 0;
     this.refmap = refmap || {};
     this.memo = {};
-    this.emph_stack = [];
+    this.emphasis_openers = [];
     var inlines = [];
     while (this.parseInline(inlines, false)) {
     }
@@ -697,7 +697,7 @@ function InlineParser(){
     return {
         subject: '',
         label_nest_level: 0, // used by parseLinkLabel method
-        emph_stack: [],  // used by parseEmphasis method
+        emphasis_openers: [],  // used by parseEmphasis method
         pos: 0,
         refmap: {},
         memo: {},
