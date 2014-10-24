@@ -30,7 +30,13 @@ will start this.)
 
 [Try it now!](http://jgm.github.io/stmd/js/)
 
-[The spec] contains over 400 embedded examples which serve as conformance
+Note that neither implementation attempts to sanitize link attributes or
+raw HTML.  If you use these libraries in applications that accept
+untrusted user input, you must run the output through an HTML
+sanitizer to protect against
+[XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
+
+[The spec] contains over 450 embedded examples which serve as conformance
 tests.  To run the tests for `stmd`, do `make test`.  To run them for
 another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `stmd.js`, do `make testjs`.
