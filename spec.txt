@@ -4095,21 +4095,39 @@ for efficient parsing strategies that do not backtrack:
     (c) it is not followed by an ASCII alphanumeric character.
 
 9.  Emphasis begins with a delimiter that [can open
-    emphasis](#can-open-emphasis) and includes inlines parsed
-    sequentially until a delimiter that [can close
+    emphasis](#can-open-emphasis) and ends with a delimiter that [can close
     emphasis](#can-close-emphasis), and that uses the same
-    character (`_` or `*`) as the opening delimiter, is reached.
+    character (`_` or `*`) as the opening delimiter.  The inlines
+    between the open delimiter and the closing delimiter are the
+    contents of the emphasis inline.
 
 10. Strong emphasis begins with a delimiter that [can open strong
-    emphasis](#can-open-strong-emphasis) and includes inlines parsed
-    sequentially until a delimiter that [can close strong
-    emphasis](#can-close-strong-emphasis), and that uses the
-    same character (`_` or `*`) as the opening delimiter, is reached.
+    emphasis](#can-open-strong-emphasis) and ends with a delimiter that
+    [can close strong emphasis](#can-close-strong-emphasis), and that uses the
+    same character (`_` or `*`) as the opening delimiter.  The inlines
+    between the open delimiter and the closing delimiter are the
+    contents of the strong emphasis inline.
 
-11. In case of ambiguity, strong emphasis takes precedence.  Thus,
-    `**foo**` is `<strong>foo</strong>`, not `<em><em>foo</em></em>`,
-    and `***foo***` is `<strong><em>foo</em></strong>`, not
-    `<em><strong>foo</strong></em>` or `<em><em><em>foo</em></em></em>`.
+Where rules 1--10 above are compatible with multiple parsings,
+the following principles resolve ambiguity:
+
+11. An interpretation `<strong>...</strong>` is always preferred to
+    `<em><em>...</em></em>`.
+
+12. An interpretation `<strong><em>...</em></strong>` is always
+    preferred to `<em><strong>..</strong></em>`.
+
+13. When two potential emphasis or strong emphasis spans overlap,
+    the first takes precedence.  Thus, for example, `*foo _bar* baz_`
+    is parsed as `<em>foo _bar</em> baz_` rather than
+    `*foo <em>bar* baz</em>`.
+
+14. Inline code spans, links, images, and HTML tags group more tightly
+    than emphasis.  So, when there is a choice between an interpretation
+    that contains one of these elements and one that does not, the
+    former always wins.  Thus, for example, `*[foo*](bar)` is
+    parsed as `*<a href="bar">foo*</a>` rather than as
+    `<em>[foo</em>](bar)`.
 
 These rules can be illustrated through a series of examples.
 
@@ -4689,6 +4707,15 @@ We retain symmetry in these cases:
 <p><em><em>foo</em> bar</em></p>
 .
 
+Note that this is not a case of strong emphasis,
+since the interior `*` closes regular emphasis:
+
+.
+**foo bar* baz**
+.
+<p><em><em>foo bar</em> baz</em>*</p>
+.
+
 More cases with mismatched delimiters:
 
 .
@@ -4719,6 +4746,67 @@ More cases with mismatched delimiters:
 ***foo *bar*
 .
 <p>***foo <em>bar</em></p>
+.
+
+The following case illustrates rule 13:
+
+.
+*foo _bar* baz_
+.
+<p><em>foo _bar</em> baz_</p>
+.
+
+The following cases illustrate rule 14:
+
+.
+*[foo*](bar)
+.
+<p>*<a href="bar">foo*</a></p>
+.
+
+.
+*![foo*](bar)
+.
+<p>*<img src="bar" alt="foo*" /></p>
+.
+
+.
+*<img src="foo" title="*"/>
+.
+<p>*<img src="foo" title="*"/></p>
+.
+
+.
+*a`a*`
+.
+<p>*a<code>a*</code></p>
+.
+
+Here is a tricky case that can be a performance problem with some
+parsers:
+
+.
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+.
+<p>*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a</p>
 .
 
 ## Links

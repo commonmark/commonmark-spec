@@ -10,11 +10,19 @@
 #include "scanners.h"
 #include "inlines.h"
 
+typedef struct InlineStack {
+	struct InlineStack *previous;
+	node_inl *first_inline;
+	int delim_count;
+	char delim_char;
+} inline_stack;
+
 typedef struct Subject {
 	chunk input;
 	int pos;
 	int label_nestlevel;
 	reference_map *refmap;
+	inline_stack *emphasis_openers;
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
@@ -108,26 +116,26 @@ extern void free_inlines(node_inl* e)
 	node_inl * next;
 	while (e != NULL) {
 		switch (e->tag){
-			case INL_STRING:
-			case INL_RAW_HTML:
-			case INL_CODE:
-				chunk_free(&e->content.literal);
-				break;
-			case INL_LINEBREAK:
-			case INL_SOFTBREAK:
-				break;
-			case INL_LINK:
-			case INL_IMAGE:
-				free(e->content.linkable.url);
-				free(e->content.linkable.title);
-				free_inlines(e->content.linkable.label);
-				break;
-			case INL_EMPH:
-			case INL_STRONG:
-				free_inlines(e->content.inlines);
-				break;
-			default:
-				break;
+		case INL_STRING:
+		case INL_RAW_HTML:
+		case INL_CODE:
+			chunk_free(&e->content.literal);
+			break;
+		case INL_LINEBREAK:
+		case INL_SOFTBREAK:
+			break;
+		case INL_LINK:
+		case INL_IMAGE:
+			free(e->content.linkable.url);
+			free(e->content.linkable.title);
+			free_inlines(e->content.linkable.label);
+			break;
+		case INL_EMPH:
+		case INL_STRONG:
+			free_inlines(e->content.inlines);
+			break;
+		default:
+			break;
 		}
 		next = e->next;
 		free(e);
@@ -158,6 +166,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
+	e->emphasis_openers = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -170,6 +179,7 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
+	e->emphasis_openers = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -262,12 +272,11 @@ static node_inl* handle_backticks(subject *subj)
 }
 
 // Scan ***, **, or * and return number scanned, or 0.
-// Don't advance position.
+// Advances position.
 static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 {
 	int numdelims = 0;
 	char char_before, char_after;
-	int startpos = subj->pos;
 
 	char_before = subj->pos == 0 ? '\n' : peek_at(subj, subj->pos - 1);
 	while (peek_char(subj) == c) {
@@ -281,135 +290,106 @@ static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 		*can_open = *can_open && !isalnum(char_before);
 		*can_close = *can_close && !isalnum(char_after);
 	}
-	subj->pos = startpos;
 	return numdelims;
+}
+
+static void free_openers(subject* subj, inline_stack* istack)
+{
+    inline_stack * tempstack;
+    while (subj->emphasis_openers != istack) {
+	tempstack = subj->emphasis_openers;
+	subj->emphasis_openers = subj->emphasis_openers->previous;
+	free(tempstack);
+    }
 }
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static node_inl* handle_strong_emph(subject* subj, char c)
+static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 {
 	bool can_open, can_close;
-	node_inl * result = NULL;
-	node_inl ** last = malloc(sizeof(node_inl *));
-	node_inl * new;
-	node_inl * il;
-	node_inl * first_head = NULL;
-	node_inl * first_close = NULL;
-	int first_close_delims = 0;
 	int numdelims;
-
-	*last = NULL;
+	int useDelims;
+	inline_stack * istack;
+	node_inl * inl;
+	node_inl * emph;
+	node_inl * inl_text;
 
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
-	subj->pos += numdelims;
 
-	new = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
-	*last = new;
-	first_head = new;
-	result = new;
+	if (can_close)
+	{
+		// walk the stack and find a matching opener, if there is one
+		istack = subj->emphasis_openers;
+		while (true)
+		{
+			if (istack == NULL)
+				goto cannotClose;
 
-	if (!can_open || numdelims == 0) {
-		goto done;
+			if (istack->delim_char == c)
+				break;
+
+			istack = istack->previous;
+		}
+
+		// calculate the actual number of delimeters used from this closer
+		useDelims = istack->delim_count;
+		if (useDelims == 3) useDelims = numdelims == 3 ? 1 : numdelims;
+		else if (useDelims > numdelims) useDelims = 1;
+
+		if (istack->delim_count == useDelims)
+		{
+			// the opener is completely used up - remove the stack entry and reuse the inline element
+			inl = istack->first_inline;
+			inl->tag = useDelims == 1 ? INL_EMPH : INL_STRONG;
+			chunk_free(&inl->content.literal);
+			inl->content.inlines = inl->next;
+			inl->next = NULL;
+
+			// remove this opener and all later ones from stack:
+                        free_openers(subj, istack->previous);
+			*last = inl;
+		}
+		else
+		{
+			// the opener will only partially be used - stack entry remains (truncated) and a new inline is added.
+			inl = istack->first_inline;
+			istack->delim_count -= useDelims;
+			inl->content.literal.len = istack->delim_count;
+
+			emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+			inl->next = emph;
+
+			// remove all later openers from stack:
+                        free_openers(subj, istack);
+
+			*last = emph;
+		}
+
+		// if the closer was not fully used, move back a char or two and try again.
+		if (useDelims < numdelims)
+		{
+			subj->pos = subj->pos - numdelims + useDelims;
+			return handle_strong_emph(subj, c, last);
+		}
+
+		return NULL; // make_str(chunk_literal(""));
 	}
 
-	switch (numdelims) {
-		case 1:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (numdelims >= 1 && can_close) {
-					subj->pos += 1;
-					first_head->tag = INL_EMPH;
-					chunk_free(&first_head->content.literal);
-					first_head->content.inlines = first_head->next;
-					first_head->next = NULL;
-					goto done;
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		case 2:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (numdelims >= 2 && can_close) {
-					subj->pos += 2;
-					first_head->tag = INL_STRONG;
-					chunk_free(&first_head->content.literal);
-					first_head->content.inlines = first_head->next;
-					first_head->next = NULL;
-					goto done;
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		case 3:
-			while (true) {
-				numdelims = scan_delims(subj, c, &can_open, &can_close);
-				if (can_close && numdelims >= 1 && numdelims <= 3 &&
-						numdelims != first_close_delims) {
-					new = make_str(chunk_dup(&subj->input, subj->pos, numdelims));
-					append_inlines(*last, new);
-					*last = new;
-					if (first_close_delims == 1 && numdelims > 2) {
-						numdelims = 2;
-					} else if (first_close_delims == 2) {
-						numdelims = 1;
-					} else if (numdelims == 3) {
-						// If we opened with ***, we interpret it as ** followed by *
-						// giving us <strong><em>
-						numdelims = 1;
-					}
-					subj->pos += numdelims;
-					if (first_close) {
-						first_head->tag = first_close_delims == 1 ? INL_STRONG : INL_EMPH;
-						chunk_free(&first_head->content.literal);
-						first_head->content.inlines =
-							make_inlines(first_close_delims == 1 ? INL_EMPH : INL_STRONG,
-									first_head->next);
+cannotClose:
+	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-						il = first_head->next;
-						while (il->next && il->next != first_close) {
-							il = il->next;
-						}
-						il->next = NULL;
-
-						first_head->content.inlines->next = first_close->next;
-
-						il = first_head->content.inlines;
-						while (il->next && il->next != *last) {
-							il = il->next;
-						}
-						il->next = NULL;
-						free_inlines(*last);
-
-						first_close->next = NULL;
-						free_inlines(first_close);
-						first_head->next = NULL;
-						goto done;
-					} else {
-						first_close = *last;
-						first_close_delims = numdelims;
-					}
-				} else {
-					if (!parse_inline(subj, last)) {
-						goto done;
-					}
-				}
-			}
-			break;
-		default:
-			goto done;
+	if (can_open)
+	{
+		istack = (inline_stack*)malloc(sizeof(inline_stack));
+		istack->delim_count = numdelims;
+		istack->delim_char = c;
+		istack->first_inline = inl_text;
+		istack->previous = subj->emphasis_openers;
+		subj->emphasis_openers = istack;
 	}
 
-done:
-	free(last);
-	return result;
+	return inl_text;
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
@@ -438,9 +418,9 @@ static node_inl* handle_entity(subject* subj)
 	advance(subj);
 
 	len = houdini_unescape_ent(&ent,
-		subj->input.data + subj->pos,
-		subj->input.len - subj->pos
-	);
+				   subj->input.data + subj->pos,
+				   subj->input.len - subj->pos
+		);
 
 	if (len == 0)
 		return make_str(chunk_literal("&"));
@@ -513,8 +493,8 @@ unsigned char *clean_title(chunk *title)
 
 	// remove surrounding quotes if any:
 	if ((first == '\'' && last == '\'') ||
-		(first == '(' && last == ')') ||
-		(first == '"' && last == '"')) {
+	    (first == '(' && last == ')') ||
+	    (first == '"' && last == '"')) {
 		houdini_unescape_html_f(&buf, title->data + 1, title->len - 2);
 	} else {
 		houdini_unescape_html_f(&buf, title->data, title->len);
@@ -542,7 +522,7 @@ static node_inl* handle_pointy_brace(subject* subj)
 		return make_autolink(
 			make_str_with_entities(&contents),
 			contents, 0
-		);
+			);
 	}
 
 	// next try to match an email autolink
@@ -552,9 +532,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		subj->pos += matchlen;
 
 		return make_autolink(
-				make_str_with_entities(&contents),
-				contents, 1
-		);
+			make_str_with_entities(&contents),
+			contents, 1
+			);
 	}
 
 	// finally, try to match an html tag
@@ -598,30 +578,30 @@ static int link_label(subject* subj, chunk *raw_label)
 	char c;
 	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
 		switch (c) {
-			case '`':
-				tmp = handle_backticks(subj);
-				free_inlines(tmp);
-				break;
-			case '<':
-				tmp = handle_pointy_brace(subj);
-				free_inlines(tmp);
-				break;
-			case '[':  // nested []
-				nestlevel++;
+		case '`':
+			tmp = handle_backticks(subj);
+			free_inlines(tmp);
+			break;
+		case '<':
+			tmp = handle_pointy_brace(subj);
+			free_inlines(tmp);
+			break;
+		case '[':  // nested []
+			nestlevel++;
+			advance(subj);
+			break;
+		case ']':  // nested []
+			nestlevel--;
+			advance(subj);
+			break;
+		case '\\':
+			advance(subj);
+			if (ispunct(peek_char(subj))) {
 				advance(subj);
-				break;
-			case ']':  // nested []
-				nestlevel--;
-				advance(subj);
-				break;
-			case '\\':
-				advance(subj);
-				if (ispunct(peek_char(subj))) {
-					advance(subj);
-				}
-				break;
-			default:
-				advance(subj);
+			}
+			break;
+		default:
+			advance(subj);
 		}
 	}
 	if (c == ']') {
@@ -657,8 +637,8 @@ static node_inl* handle_left_bracket(subject* subj)
 
 	if (found_label) {
 		if (peek_char(subj) == '(' &&
-				((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
-				((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
+		    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
+		    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
 
 			// try to parse an explicit link:
 			starturl = subj->pos + 1 + sps; // after (
@@ -684,8 +664,8 @@ static node_inl* handle_left_bracket(subject* subj)
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
-						append_inlines(lab,
-							make_str(chunk_literal("]"))));
+							append_inlines(lab,
+								       make_str(chunk_literal("]"))));
 				return result;
 			}
 		} else {
@@ -714,7 +694,7 @@ static node_inl* handle_left_bracket(subject* subj)
 				subj->pos = endlabel;
 				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
 				result = append_inlines(make_str(chunk_literal("[")),
-						append_inlines(lab, make_str(chunk_literal("]"))));
+							append_inlines(lab, make_str(chunk_literal("]"))));
 			}
 			return result;
 		}
@@ -736,8 +716,8 @@ static node_inl* handle_newline(subject *subj)
 		advance(subj);
 	}
 	if (nlpos > 1 &&
-			peek_at(subj, nlpos - 1) == ' ' &&
-			peek_at(subj, nlpos - 2) == ' ') {
+	    peek_at(subj, nlpos - 1) == ' ' &&
+	    peek_at(subj, nlpos - 2) == ' ') {
 		return make_linebreak();
 	} else {
 		return make_softbreak();
@@ -754,9 +734,22 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 {
 	node_inl* result = NULL;
 	node_inl** last = &result;
+	node_inl* first = NULL;
 	while ((*f)(subj) && parse_inline(subj, last)) {
+	    if (!first) {
+		first = *last;
+	    }
 	}
-	return result;
+
+	inline_stack* istack = subj->emphasis_openers;
+	inline_stack* temp;
+	while (istack != NULL) {
+		temp = istack->previous;
+		free(istack);
+		istack = temp;
+	}
+
+	return first;
 }
 
 node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
@@ -812,69 +805,62 @@ static int parse_inline(subject* subj, node_inl ** last)
 		return 0;
 	}
 	switch(c){
-		case '\n':
-			new = handle_newline(subj);
-			break;
-		case '`':
-			new = handle_backticks(subj);
-			break;
-		case '\\':
-			new = handle_backslash(subj);
-			break;
-		case '&':
-			new = handle_entity(subj);
-			break;
-		case '<':
-			new = handle_pointy_brace(subj);
-			break;
-		case '_':
-			if (subj->pos > 0) {
-				unsigned char prev = peek_at(subj, subj->pos - 1);
-				if (isalnum(prev) || prev == '_') {
-					new = make_str(chunk_literal("_"));
-					advance(subj);
-					break;
-				}
-			}
-
-			new = handle_strong_emph(subj, '_');
-			break;
-		case '*':
-			new = handle_strong_emph(subj, '*');
-			break;
-		case '[':
+	case '\n':
+		new = handle_newline(subj);
+		break;
+	case '`':
+		new = handle_backticks(subj);
+		break;
+	case '\\':
+		new = handle_backslash(subj);
+		break;
+	case '&':
+		new = handle_entity(subj);
+		break;
+	case '<':
+		new = handle_pointy_brace(subj);
+		break;
+	case '_':
+		new = handle_strong_emph(subj, '_', last);
+		break;
+	case '*':
+		new = handle_strong_emph(subj, '*', last);
+		break;
+	case '[':
+		new = handle_left_bracket(subj);
+		break;
+	case '!':
+		advance(subj);
+		if (peek_char(subj) == '[') {
 			new = handle_left_bracket(subj);
-			break;
-		case '!':
-			advance(subj);
-			if (peek_char(subj) == '[') {
-				new = handle_left_bracket(subj);
-				if (new != NULL && new->tag == INL_LINK) {
-					new->tag = INL_IMAGE;
-				} else {
-					new = append_inlines(make_str(chunk_literal("!")), new);
-				}
+			if (new != NULL && new->tag == INL_LINK) {
+				new->tag = INL_IMAGE;
 			} else {
-				new = make_str(chunk_literal("!"));
+				new = append_inlines(make_str(chunk_literal("!")), new);
 			}
-			break;
-		default:
-			endpos = subject_find_special_char(subj);
-			contents = chunk_dup(&subj->input, subj->pos, endpos - subj->pos);
-			subj->pos = endpos;
+		} else {
+			new = make_str(chunk_literal("!"));
+		}
+		break;
+	default:
+		endpos = subject_find_special_char(subj);
+		contents = chunk_dup(&subj->input, subj->pos, endpos - subj->pos);
+		subj->pos = endpos;
 
-			// if we're at a newline, strip trailing spaces.
-			if (peek_char(subj) == '\n') {
-				chunk_rtrim(&contents);
-			}
+		// if we're at a newline, strip trailing spaces.
+		if (peek_char(subj) == '\n') {
+			chunk_rtrim(&contents);
+		}
 
-			new = make_str(contents);
+		new = make_str(contents);
 	}
 	if (*last == NULL) {
 		*last = new;
-	} else {
+	} else if (new) {
 		append_inlines(*last, new);
+		*last = new;
 	}
+
 	return 1;
 }
 
@@ -890,8 +876,8 @@ void spnl(subject* subj)
 {
 	bool seen_newline = false;
 	while (peek_char(subj) == ' ' ||
-			(!seen_newline &&
-			 (seen_newline = peek_char(subj) == '\n'))) {
+	       (!seen_newline &&
+		(seen_newline = peek_char(subj) == '\n'))) {
 		advance(subj);
 	}
 }
@@ -958,4 +944,3 @@ int parse_reference_inline(strbuf *input, reference_map *refmap)
 	reference_create(refmap, &lab, &url, &title);
 	return subj.pos;
 }
-

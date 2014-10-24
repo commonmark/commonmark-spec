@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 			printf(" - CommonMark converter (c) 2014 John MacFarlane\n");
 			exit(0);
 		} else if ((strcmp(argv[i], "--help") == 0) ||
-				(strcmp(argv[i], "-h") == 0)) {
+			   (strcmp(argv[i], "-h") == 0)) {
 			print_usage();
 			exit(0);
 		} else if (strcmp(argv[i], "--ast") == 0) {
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
 			if (fp == NULL) {
 				fprintf(stderr, "Error opening file %s: %s\n",
-						argv[files[i]], strerror(errno));
+					argv[files[i]], strerror(errno));
 				exit(1);
 			}
 
@@ -74,4 +74,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-

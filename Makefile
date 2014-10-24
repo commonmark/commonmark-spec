@@ -38,6 +38,9 @@ js/stmd.js: js/lib/index.js ${JSMODULES}
 testjs: spec.txt
 	node js/test.js
 
+jshint:
+	jshint ${JSMODULES}
+
 benchjs:
 	node js/bench.js ${BENCHINP}
 
@@ -57,14 +60,13 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 	gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 $< > $@
 
-.PHONY: leakcheck clean fuzztest dingus upload
+.PHONY: leakcheck clean fuzztest dingus upload jshint test testjs benchjs
 
 dingus: js/stmd.js
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
-	# TODO produce leaktest.md that tests everything
-	cat leaktest.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
+	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
 
 operf: $(PROG)
 	operf $(PROG) <bench.md >/dev/null
