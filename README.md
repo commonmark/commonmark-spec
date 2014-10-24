@@ -21,10 +21,12 @@ tarball.)
              --version     Print version
 
 The JavaScript implementation is a single JavaScript file, with
-no dependencies, that can be linked to in an HTML page.  A standalone
-version (using `node.js`) is also provided (`js/markdown`), and there is
-a "dingus" for playing with it interactively.  (`make dingus` will start
-this.)
+no dependencies, that can be linked to in an HTML page.  (To build,
+it, do `make js/stmd.js`---this requires `browserify`, which you can
+get using `npm install -g browserify`.) A command-line
+version (using `node.js`) is also provided (`js/bin/markdown`), and
+there is a "dingus" for playing with it interactively.  (`make dingus`
+will start this.)
 
 [Try it now!](http://jgm.github.io/stmd/js/)
 
