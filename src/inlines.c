@@ -301,6 +301,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 	int numdelims;
 	int useDelims;
 	inline_stack * istack;
+	inline_stack * tempstack;
 	node_inl * inl;
 	node_inl * emph;
 	node_inl * inl_text;
@@ -336,10 +337,13 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 			inl->content.inlines = inl->next;
 			inl->next = NULL;
 
-			subj->emphasis_openers = istack->previous;
-			istack->previous = NULL;
+			// remove this opener and all later ones from stack:
+                        while (subj->emphasis_openers != istack->previous) {
+			    tempstack = subj->emphasis_openers;
+			    free(tempstack);
+			    subj->emphasis_openers = subj->emphasis_openers->previous;
+                        }
 			*last = inl;
-			free(istack);
 		}
 		else
 		{
@@ -350,6 +354,15 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 
 			emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
 			inl->next = emph;
+
+			// remove all later openers from stack:
+                        while (subj->emphasis_openers != istack) {
+			    tempstack = subj->emphasis_openers;
+			    free(tempstack);
+			    subj->emphasis_openers = subj->emphasis_openers->previous;
+                        }
+
+
 			*last = emph;
 		}
 
