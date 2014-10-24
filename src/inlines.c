@@ -293,6 +293,16 @@ static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
 	return numdelims;
 }
 
+static void free_openers(subject* subj, inline_stack* istack)
+{
+    inline_stack * tempstack;
+    while (subj->emphasis_openers != istack) {
+	tempstack = subj->emphasis_openers;
+	subj->emphasis_openers = subj->emphasis_openers->previous;
+	free(tempstack);
+    }
+}
+
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
 static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
@@ -301,7 +311,6 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 	int numdelims;
 	int useDelims;
 	inline_stack * istack;
-	inline_stack * tempstack;
 	node_inl * inl;
 	node_inl * emph;
 	node_inl * inl_text;
@@ -338,11 +347,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 			inl->next = NULL;
 
 			// remove this opener and all later ones from stack:
-                        while (subj->emphasis_openers != istack->previous) {
-			    tempstack = subj->emphasis_openers;
-			    free(tempstack);
-			    subj->emphasis_openers = subj->emphasis_openers->previous;
-                        }
+                        free_openers(subj, istack->previous);
 			*last = inl;
 		}
 		else
@@ -356,12 +361,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 			inl->next = emph;
 
 			// remove all later openers from stack:
-                        while (subj->emphasis_openers != istack) {
-			    tempstack = subj->emphasis_openers;
-			    free(tempstack);
-			    subj->emphasis_openers = subj->emphasis_openers->previous;
-                        }
-
+                        free_openers(subj, istack);
 
 			*last = emph;
 		}
