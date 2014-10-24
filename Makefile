@@ -66,8 +66,7 @@ dingus: js/stmd.js
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
-	# TODO produce leaktest.md that tests everything
-	cat leaktest.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
+	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
 
 operf: $(PROG)
 	operf $(PROG) <bench.md >/dev/null
