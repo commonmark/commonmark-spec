@@ -4782,6 +4782,32 @@ The following cases illustrate rule 14:
 <p>*a<code>a*</code></p>
 .
 
+Here is a tricky case that can be a performance problem with some
+parsers:
+
+.
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+.
+<p>*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a
+*a **a *a **a *a **a *a **a</p>
+.
 
 ## Links
 
