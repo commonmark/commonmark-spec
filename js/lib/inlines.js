@@ -274,10 +274,9 @@ var parseEmphasis = function(cc,inlines) {
     if (res.can_close) {
 
       // Walk the stack and find a matching opener, if possible
-      var i = this.emphasis_openers.length - 1;
-      while (i >= 0) {
+      var opener = this.emphasis_openers;
+      while (opener) {
 
-        var opener = this.emphasis_openers[i];
         if (opener.cc === cc) { // we have a match!
 
           if (opener.numdelims <= numdelims) { // all openers used
@@ -299,7 +298,7 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emphasis_openers.splice(i, this.emphasis_openers.length - i);
+            this.emphasis_openers = opener.previous;
             return true;
 
           } else if (opener.numdelims > numdelims) { // only some openers used
@@ -312,13 +311,13 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emphasis_openers.splice(i + 1, this.emphasis_openers.length - (i + 1));
+            this.emphasis_openers = opener;
             return true;
 
           }
 
         }
-        i--;
+        opener = opener.previous;
       }
     }
 
@@ -330,10 +329,10 @@ var parseEmphasis = function(cc,inlines) {
     if (res.can_open) {
 
       // Add entry to stack for this opener
-      this.emphasis_openers.push({ cc: cc,
-                             numdelims: numdelims,
-                             pos: inlines.length - 1 });
-
+      this.emphasis_openers = { cc: cc,
+                                numdelims: numdelims,
+                                pos: inlines.length - 1,
+                                previous: this.emphasis_openers };
     }
 
     return true;
@@ -685,7 +684,7 @@ var parseInlines = function(s, refmap) {
     this.pos = 0;
     this.refmap = refmap || {};
     this.memo = {};
-    this.emphasis_openers = [];
+    this.emphasis_openers = null;
     var inlines = [];
     while (this.parseInline(inlines, false)) {
     }
@@ -697,7 +696,7 @@ function InlineParser(){
     return {
         subject: '',
         label_nest_level: 0, // used by parseLinkLabel method
-        emphasis_openers: [],  // used by parseEmphasis method
+        emphasis_openers: null,  // used by parseEmphasis method
         pos: 0,
         refmap: {},
         memo: {},
