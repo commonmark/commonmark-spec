@@ -262,93 +262,82 @@ var Str = function(s) {
 // Attempt to parse emphasis or strong emphasis.
 var parseEmphasis = function(cc,inlines) {
     var startpos = this.pos;
-    var c ;
-    var first_close = 0;
-    c = fromCodePoint(cc);
 
-    var numdelims;
-    var numclosedelims;
-    var delimpos;
-
-    // Get opening delimiters.
-    res = this.scanDelims(cc);
-    numdelims = res.numdelims;
+    var res = this.scanDelims(cc);
+    var numdelims = res.numdelims;
 
     if (numdelims === 0) {
         this.pos = startpos;
         return false;
     }
 
-    if (numdelims >= 4 || !res.can_open) {
-        this.pos += numdelims;
-        inlines.push(Str(this.subject.slice(startpos, startpos + numdelims)));
-        return true;
+    if (res.can_close) {
+
+      // Walk the stack and find a matching opener, if possible
+      var i = this.emph_stack.length - 1;
+      while (i >= 0) {
+
+        var opener = this.emph_stack[i];
+        if (opener.cc === cc) { // we have a match!
+
+          if (opener.numdelims <= numdelims) { // all openers used
+
+            this.pos += opener.numdelims;
+            var X;
+            switch (opener.numdelims) {
+            case 3:
+                X = function(x) { return Strong([Emph(x)]); };
+                break;
+            case 2:
+                X = Strong;
+                break;
+            case 1:
+            default:
+                X = Emph;
+                break;
+            }
+            inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
+            inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
+            // Remove entries after this, to prevent overlapping nesting:
+            this.emph_stack.splice(i, this.emph_stack.length - i);
+            return true;
+
+          } else if (opener.numdelims > numdelims) { // only some openers used
+
+            this.pos += numdelims;
+            opener.numdelims -= numdelims;
+            inlines[opener.pos].c =
+              inlines[opener.pos].c.slice(0, opener.numdelims);
+            var X = numdelims === 2 ? Strong : Emph;
+            inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
+            inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
+            // Remove entries after this, to prevent overlapping nesting:
+            this.emph_stack.splice(i + 1, this.emph_stack.length - (i + 1));
+            return true;
+
+          }
+
+        }
+        i--;
+      }
     }
+
+    // If we're here, we didn't match a closer.
 
     this.pos += numdelims;
+    inlines.push(Str(this.subject.slice(startpos, startpos + numdelims)));
 
-    var delims_to_match = numdelims;
+    if (res.can_open) {
 
-    var current = [];
-    var firstend;
-    var firstpos;
-    var state = 0;
-    var can_close = false;
-    var can_open = false;
-    var last_emphasis_closer = null;
-    while (this.last_emphasis_closer[c] >= this.pos) {
-        res = this.scanDelims(cc);
-        numclosedelims = res.numdelims;
+      // Add entry to stack for this opener
+      this.emph_stack.push({ cc: cc,
+                             numdelims: numdelims,
+                             pos: inlines.length - 1 });
 
-        if (res.can_close) {
-            if (last_emphasis_closer === null ||
-                last_emphasis_closer < this.pos) {
-                last_emphasis_closer = this.pos;
-            }
-            if (numclosedelims === 3 && delims_to_match === 3) {
-                delims_to_match -= 3;
-                this.pos += 3;
-                current = [{t: 'Strong', c: [{t: 'Emph', c: current}]}];
-            } else if (numclosedelims >= 2 && delims_to_match >= 2) {
-                delims_to_match -= 2;
-                this.pos += 2;
-                firstend = current.length;
-                firstpos = this.pos;
-                current = [{t: 'Strong', c: current}];
-            } else if (numclosedelims >= 1 && delims_to_match >= 1) {
-                delims_to_match -= 1;
-                this.pos += 1;
-                firstend = current.length;
-                firstpos = this.pos;
-                current = [{t: 'Emph', c: current}];
-            } else {
-                if (!(this.parseInline(current,true))) {
-                    break;
-                }
-            }
-            if (delims_to_match === 0) {
-                Array.prototype.push.apply(inlines, current);
-                return true;
-            }
-        } else if (!(this.parseInline(current,true))) {
-            break;
-        }
     }
 
-    // we didn't match emphasis: fallback
-    inlines.push(Str(this.subject.slice(startpos,
-                                        startpos + delims_to_match)));
-    if (delims_to_match < numdelims) {
-        Array.prototype.push.apply(inlines, current.slice(0,firstend));
-        this.pos = firstpos;
-    } else { // delims_to_match === numdelims
-        this.pos = startpos + delims_to_match;
-    }
-
-    if (last_emphasis_closer) {
-        this.last_emphasis_closer[c] = last_emphasis_closer;
-    }
     return true;
+
 };
 
 // Attempt to parse link title (sans quotes), returning the string
@@ -696,7 +685,7 @@ var parseInlines = function(s, refmap) {
     this.pos = 0;
     this.refmap = refmap || {};
     this.memo = {};
-    this.last_emphasis_closer = { '*': s.length, '_': s.length };
+    this.emph_stack = [];
     var inlines = [];
     while (this.parseInline(inlines, false)) {
     }
@@ -708,7 +697,7 @@ function InlineParser(){
     return {
         subject: '',
         label_nest_level: 0, // used by parseLinkLabel method
-        last_emphasis_closer: null,  // used by parseEmphasis method
+        emph_stack: [],  // used by parseEmphasis method
         pos: 0,
         refmap: {},
         memo: {},
