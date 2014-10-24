@@ -3214,7 +3214,7 @@ A list is [loose](#loose) if it any of its constituent list items are
 separated by blank lines, or if any of its constituent list items
 directly contain two block-level elements with a blank line between
 them.  Otherwise a list is [tight](#tight).  (The difference in HTML output
-is that paragraphs in a loose with are wrapped in `<p>` tags, while
+is that paragraphs in a loose list are wrapped in `<p>` tags, while
 paragraphs in a tight list are not.)
 
 Changing the bullet or ordered list delimiter starts a new list:
