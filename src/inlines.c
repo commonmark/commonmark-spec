@@ -22,7 +22,7 @@ typedef struct Subject {
 	int pos;
 	int label_nestlevel;
 	reference_map *refmap;
-	inline_stack *last_emphasis;
+	inline_stack *emphasis_openers;
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
@@ -166,7 +166,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
-	e->last_emphasis = NULL;
+	e->emphasis_openers = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -179,7 +179,7 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
-	e->last_emphasis = NULL;
+	e->emphasis_openers = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -310,7 +310,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 	if (can_close)
 	{
 		// walk the stack and find a matching opener, if there is one
-		istack = subj->last_emphasis;
+		istack = subj->emphasis_openers;
 		while (true)
 		{
 			if (istack == NULL)
@@ -336,7 +336,7 @@ static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
 			inl->content.inlines = inl->next;
 			inl->next = NULL;
 
-			subj->last_emphasis = istack->previous;
+			subj->emphasis_openers = istack->previous;
 			istack->previous = NULL;
 			*last = inl;
 			free(istack);
@@ -372,8 +372,8 @@ cannotClose:
 		istack->delim_count = numdelims;
 		istack->delim_char = c;
 		istack->first_inline = inl_text;
-		istack->previous = subj->last_emphasis;
-		subj->last_emphasis = istack;
+		istack->previous = subj->emphasis_openers;
+		subj->emphasis_openers = istack;
 	}
 
 	return inl_text;
@@ -728,7 +728,7 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 	    }
 	}
 
-	inline_stack* istack = subj->last_emphasis;
+	inline_stack* istack = subj->emphasis_openers;
 	inline_stack* temp;
 	while (istack != NULL) {
 		temp = istack->previous;

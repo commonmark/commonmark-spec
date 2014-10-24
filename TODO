@@ -1,1 +1,8 @@
+- leakcheck reveals leak in new stmd code
+  Create a function to remove and free a stack entry
+  Use a while loop to remove and free all stack entries from top to the
+  one we're matching.
 
+- use name other than subj->last_emphasis
+
+- in js: make a proper stack (linked list) rather than using an array?
