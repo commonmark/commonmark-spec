@@ -4117,10 +4117,13 @@ the following principles resolve ambiguity:
 12. An interpretation `<strong><em>...</em></strong>` is always
     preferred to `<em><strong>..</strong></em>`.
 
-13. When two potential emphasis or strong emphasis spans overlap,
-    the first takes precedence.  Thus, for example, `*foo _bar* baz_`
+13. Earlier closings are preferred to later closings.  Thus,
+    when two potential emphasis or strong emphasis spans overlap,
+    the first takes precedence: for example, `*foo _bar* baz_`
     is parsed as `<em>foo _bar</em> baz_` rather than
-    `*foo <em>bar* baz</em>`.
+    `*foo <em>bar* baz</em>`.  For the same reason,
+    `**foo*bar**` is parsed as `<em><em>foo</em>bar</em>*`
+    rather than `<strong>foo*bar</strong>`.
 
 14. Inline code spans, links, images, and HTML tags group more tightly
     than emphasis.  So, when there is a choice between an interpretation
@@ -4707,15 +4710,6 @@ We retain symmetry in these cases:
 <p><em><em>foo</em> bar</em></p>
 .
 
-Note that this is not a case of strong emphasis,
-since the interior `*` closes regular emphasis:
-
-.
-**foo bar* baz**
-.
-<p><em><em>foo bar</em> baz</em>*</p>
-.
-
 More cases with mismatched delimiters:
 
 .
@@ -4748,12 +4742,18 @@ More cases with mismatched delimiters:
 <p>***foo <em>bar</em></p>
 .
 
-The following case illustrates rule 13:
+The following cases illustrate rule 13:
 
 .
 *foo _bar* baz_
 .
 <p><em>foo _bar</em> baz_</p>
+.
+
+.
+**foo bar* baz**
+.
+<p><em><em>foo bar</em> baz</em>*</p>
 .
 
 The following cases illustrate rule 14:
