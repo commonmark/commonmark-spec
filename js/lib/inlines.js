@@ -617,18 +617,11 @@ var parseReference = function(s, refmap) {
 };
 
 // Parse the next inline element in subject, advancing subject position.
-// If memoize is set, memoize the result.
 // On success, add the result to the inlines list, and return true.
 // On failure, return false.
-var parseInline = function(inlines, memoize) {
+var parseInline = function(inlines) {
     var startpos = this.pos;
     var origlen = inlines.length;
-    var memoized = memoize && this.memo[startpos];
-    if (memoized) {
-        this.pos = memoized.endpos;
-        Array.prototype.push.apply(inlines, memoized.inline);
-        return true;
-    }
 
     var c = this.peek();
     if (c === -1) {
@@ -671,10 +664,6 @@ var parseInline = function(inlines, memoize) {
         inlines.push({t: 'Str', c: fromCodePoint(c)});
     }
 
-    if (memoize) {
-        this.memo[startpos] = { inline: inlines.slice(origlen),
-                                endpos: this.pos };
-    }
     return true;
 };
 
@@ -683,10 +672,9 @@ var parseInlines = function(s, refmap) {
     this.subject = s;
     this.pos = 0;
     this.refmap = refmap || {};
-    this.memo = {};
     this.emphasis_openers = null;
     var inlines = [];
-    while (this.parseInline(inlines, false)) {
+    while (this.parseInline(inlines)) {
     }
     return inlines;
 };
@@ -699,7 +687,6 @@ function InlineParser(){
         emphasis_openers: null,  // used by parseEmphasis method
         pos: 0,
         refmap: {},
-        memo: {},
         match: match,
         peek: peek,
         spnl: spnl,
