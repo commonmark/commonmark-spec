@@ -1447,11 +1447,11 @@ A processing instruction:
 
 .
 <?php
-  echo 'foo'
+  echo '>';
 ?>
 .
 <?php
-  echo 'foo'
+  echo '>';
 ?>
 .
 
