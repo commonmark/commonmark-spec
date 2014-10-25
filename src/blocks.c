@@ -460,6 +460,10 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 	int indent;
 	chunk input;
 
+	// Add a newline to the end if not present:
+	if (line->ptr[line->size - 1] != '\n') {
+	    strbuf_putc(line, '\n');
+	}
 	input.data = line->ptr;
 	input.len = line->size;
 
