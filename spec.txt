@@ -3005,6 +3005,21 @@ A list item may be empty:
 </ul>
 .
 
+A list item can contain a header:
+
+.
+- # Foo
+- Bar
+  ---
+  baz
+.
+<ul>
+<li><h1>Foo</h1></li>
+<li><h2>Bar</h2>
+<p>baz</p></li>
+</ul>
+.
+
 ### Motivation
 
 John Gruber's Markdown spec says the following about list items:
