@@ -39,8 +39,10 @@ static unsigned char *bufdup(const unsigned char *buf)
 
 	if (buf) {
 		int len = strlen((char *)buf);
-		new = malloc(len + 1);
-		memcpy(new, buf, len + 1);
+		new = calloc(len + 1, sizeof(*new));
+        if(new != NULL) {
+    		memcpy(new, buf, len + 1);
+        }
 	}
 
 	return new;
@@ -48,12 +50,14 @@ static unsigned char *bufdup(const unsigned char *buf)
 
 static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned char *title)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = INL_LINK;
-	e->content.linkable.label = label;
-	e->content.linkable.url   = url;
-	e->content.linkable.title = title;
-	e->next = NULL;
+	node_inl* e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = INL_LINK;
+    	e->content.linkable.label = label;
+	    e->content.linkable.url   = url;
+    	e->content.linkable.title = title;
+	    e->next = NULL;
+    }
 	return e;
 }
 
@@ -75,29 +79,35 @@ inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
 
 inline static node_inl* make_inlines(int t, node_inl* contents)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->content.inlines = contents;
-	e->next = NULL;
+	node_inl * e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->content.inlines = contents;
+    	e->next = NULL;
+    }
 	return e;
 }
 
 // Create an inline with a literal string value.
 inline static node_inl* make_literal(int t, chunk s)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->content.literal = s;
-	e->next = NULL;
+	node_inl * e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->content.literal = s;
+    	e->next = NULL;
+    }
 	return e;
 }
 
 // Create an inline with no value.
 inline static node_inl* make_simple(int t)
 {
-	node_inl* e = (node_inl*) malloc(sizeof(node_inl));
-	e->tag = t;
-	e->next = NULL;
+	node_inl* e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = t;
+	    e->next = NULL;
+    }
 	return e;
 }
 
@@ -382,6 +392,9 @@ cannotClose:
 	if (can_open)
 	{
 		istack = (inline_stack*)malloc(sizeof(inline_stack));
+                if (istack == NULL) {
+                  return NULL;
+                }
 		istack->delim_count = numdelims;
 		istack->delim_char = c;
 		istack->first_inline = inl_text;

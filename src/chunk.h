@@ -59,10 +59,11 @@ static inline unsigned char *chunk_to_cstr(chunk *c)
 {
 	unsigned char *str;
 
-	str = malloc(c->len + 1);
-	memcpy(str, c->data, c->len);
-	str[c->len] = 0;
-
+	str = calloc(c->len + 1, sizeof(*str));
+    if(str != NULL) {
+    	memcpy(str, c->data, c->len);
+	    str[c->len] = 0;
+    }
 	return str;
 }
 
