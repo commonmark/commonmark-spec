@@ -1,4 +1,4 @@
-#include "stmd.h"
+#include "cmark.h"
 
 extern int _scan_autolink_uri(const unsigned char *p);
 extern int _scan_autolink_email(const unsigned char *p);

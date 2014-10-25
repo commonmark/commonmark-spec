@@ -104,12 +104,12 @@ struct node_block {
 
 typedef struct node_block node_block;
 
-node_block *stmd_parse_document(const unsigned char *buffer, size_t len);
-node_block *stmd_parse_file(FILE *f);
+node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
+node_block *cmark_parse_file(FILE *f);
 
-void stmd_free_nodes(node_block *e);
+void cmark_free_nodes(node_block *e);
 
-void stmd_debug_print(node_block *root);
-void stmd_render_html(strbuf *html, node_block *root);
+void cmark_debug_print(node_block *root);
+void cmark_render_html(strbuf *html, node_block *root);
 
 #endif

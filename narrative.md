@@ -4,13 +4,13 @@ title: CommonMark
 
 CommonMark is a [specification of Markdown
 syntax](http://jgm.github.io/stmd/spec.html), together with
-BSD3-licensed implementations (`stmd`) in C and JavaScript. The source
+BSD3-licensed implementations (`cmark`) in C and JavaScript. The source
 for the spec and the two implementations can be found in [this
 repository](http://github.com/jgm/stmd).
 
 The C implementation provides both a library and a standalone program
-`stmd` that converts Markdown to HTML. It is written in standard C99 and
-has no library dependencies.
+`cmark` that converts Markdown to HTML. It is written in standard C99
+and has no library dependencies.
 
 The JavaScript implementation is a single JavaScript file, with no
 dependencies. [Try it now!](http://jgm.github.io/stmd/js/)

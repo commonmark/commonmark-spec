@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "stmd.h"
+#include "cmark.h"
 #include "debug.h"
 
 static void print_str(const unsigned char *s, int len)
@@ -170,7 +170,7 @@ static void print_blocks(node_block* b, int indent)
 	}
 }
 
-void stmd_debug_print(node_block *root)
+void cmark_debug_print(node_block *root)
 {
 	print_blocks(root, 0);
 }

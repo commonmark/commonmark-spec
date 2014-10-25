@@ -1,22 +1,22 @@
 ---
-title: stmd
+title: cmark
 section: 1
-footer: stmd manual
-date: August 12, 2014
+footer: cmark manual
+date: October 22, 2014
 ...
 
 # NAME
 
-stmd - convert markdown formatted text to HTML
+cmark - convert CommonMark formatted text to HTML
 
 # SYNOPSIS
 
-stmd [*options*] [file\*]
+cmark [*options*] [file\*]
 
 # DESCRIPTION
 
-`stmd` acts as a pipe, reading from stdin or from the specified
-files and writing to stdout.  It converts markdown formatted plain
+`cmark` acts as a pipe, reading from stdin or from the specified
+files and writing to stdout.  It converts Markdown formatted plain
 text to HTML, using the conventions described in the CommonMark
 spec.
 

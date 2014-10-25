@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "stmd.h"
+#include "cmark.h"
 #include "debug.h"
 #include "html/houdini.h"
 
@@ -222,7 +222,7 @@ static void blocks_to_html(strbuf *html, node_block *b, bool tight)
 	}
 }
 
-void stmd_render_html(strbuf *html, node_block *root)
+void cmark_render_html(strbuf *html, node_block *root)
 {
 	blocks_to_html(html, root, false);
 }

@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "stmd.h"
+#include "cmark.h"
 #include "html/houdini.h"
 #include "utf8.h"
 #include "scanners.h"

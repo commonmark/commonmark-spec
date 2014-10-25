@@ -2,20 +2,21 @@ CommonMark
 ==========
 
 CommonMark is a [specification of Markdown syntax][the spec],
-together with BSD3-licensed implementations (`stmd`) in C and JavaScript.
+together with BSD3-licensed implementations (`cmark`) in C and
+JavaScript.
 
 The implementations
 -------------------
 
 The C implementation provides both a library and a standalone program
-`stmd` that converts Markdown to HTML.  It is written in standard C99
+`cmark` that converts Markdown to HTML.  It is written in standard C99
 and has no library dependencies.  (However, if you check it out from the
 repository, you'll need [`re2c`](http://re2c.org) to generate
 `scanners.c` from `scanners.re`.  This is only a build dependency for
 developers, since `scanners.c` can be provided in a released source
 tarball.)
 
-    Usage:   stmd [FILE*]
+    Usage:   cmark [FILE*]
     Options: --help, -h    Print usage information
              --ast         Print AST instead of HTML
              --version     Print version
@@ -37,7 +38,7 @@ sanitizer to protect against
 [XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
 
 [The spec] contains over 450 embedded examples which serve as conformance
-tests.  To run the tests for `stmd`, do `make test`.  To run them for
+tests.  To run the tests for `cmark`, do `make test`.  To run them for
 another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `stmd.js`, do `make testjs`.
 

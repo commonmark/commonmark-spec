@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <ctype.h>
 
-#include "stmd.h"
+#include "cmark.h"
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"
@@ -253,7 +253,7 @@ static node_block* add_child(node_block* parent,
 }
 
 // Free a node_block list and any children.
-void stmd_free_nodes(node_block *e)
+void cmark_free_nodes(node_block *e)
 {
 	node_block * next;
 	while (e != NULL) {
@@ -265,7 +265,7 @@ void stmd_free_nodes(node_block *e)
 		} else if (e->tag == BLOCK_DOCUMENT) {
 			reference_map_free(e->as.document.refmap);
 		}
-		stmd_free_nodes(e->children);
+		cmark_free_nodes(e->children);
 		free(e);
 		e = next;
 	}
@@ -380,7 +380,7 @@ static node_block *finalize_document(node_block *document, int linenum)
 	return document;
 }
 
-extern node_block *stmd_parse_file(FILE *f)
+extern node_block *cmark_parse_file(FILE *f)
 {
 	strbuf line = GH_BUF_INIT;
 	unsigned char buffer[4096];
@@ -398,7 +398,7 @@ extern node_block *stmd_parse_file(FILE *f)
 	return finalize_document(document, linenum);
 }
 
-extern node_block *stmd_parse_document(const unsigned char *buffer, size_t len)
+extern node_block *cmark_parse_document(const unsigned char *buffer, size_t len)
 {
 	strbuf line = GH_BUF_INIT;
 	int linenum = 1;

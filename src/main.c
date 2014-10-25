@@ -1,12 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "stmd.h"
+#include "cmark.h"
 #include "debug.h"
 
 void print_usage()
 {
-	printf("Usage:   stmd [FILE*]\n");
+	printf("Usage:   cmark [FILE*]\n");
 	printf("Options: --help, -h    Print usage information\n");
 	printf("         --ast         Print AST instead of HTML\n");
 	printf("         --version     Print version\n");
@@ -17,9 +17,9 @@ static void print_document(node_block *document, bool ast)
 	strbuf html = GH_BUF_INIT;
 
 	if (ast) {
-		stmd_debug_print(document);
+		cmark_debug_print(document);
 	} else {
-		stmd_render_html(&html, document);
+		cmark_render_html(&html, document);
 		printf("%s", html.ptr);
 		strbuf_free(&html);
 	}
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--version") == 0) {
-			printf("stmd %s", VERSION);
+			printf("cmark %s", VERSION);
 			printf(" - CommonMark converter (c) 2014 John MacFarlane\n");
 			exit(0);
 		} else if ((strcmp(argv[i], "--help") == 0) ||
@@ -52,9 +52,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (numfps == 0) {
-		document = stmd_parse_file(stdin);
+		document = cmark_parse_file(stdin);
 		print_document(document, ast);
-		stmd_free_nodes(document);
+		cmark_free_nodes(document);
 	} else {
 		for (i = 0; i < numfps; i++) {
 			FILE *fp = fopen(argv[files[i]], "r");
@@ -65,9 +65,9 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 
-			document = stmd_parse_file(fp);
+			document = cmark_parse_file(fp);
 			print_document(document, ast);
-			stmd_free_nodes(document);
+			cmark_free_nodes(document);
 			fclose(fp);
 		}
 	}
