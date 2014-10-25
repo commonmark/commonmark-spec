@@ -4,7 +4,7 @@ title: CommonMark
 
 CommonMark is a [specification of Markdown
 syntax](http://jgm.github.io/stmd/spec.html), together with
-BSD3-licensed implementations (`cmark`) in C and JavaScript. The source
+BSD3-licensed implementations in C and JavaScript. The source
 for the spec and the two implementations can be found in [this
 repository](http://github.com/jgm/stmd).
 

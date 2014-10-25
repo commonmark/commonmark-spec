@@ -32,8 +32,8 @@ spec.pdf: spec.md template.tex specfilter.hs
 test: spec.txt
 	perl runtests.pl $< $(PROG)
 
-js/stmd.js: js/lib/index.js ${JSMODULES}
-	browserify --standalone stmd $< -o $@
+js/commonmark.js: js/lib/index.js ${JSMODULES}
+	browserify --standalone commonmark $< -o $@
 
 testjs: spec.txt
 	node js/test.js
@@ -62,7 +62,7 @@ $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 
 .PHONY: leakcheck clean fuzztest dingus upload jshint test testjs benchjs
 
-dingus: js/stmd.js
+dingus: js/commonmark.js
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
@@ -75,7 +75,7 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: spec.html narrative.html js/stmd.js
+update-site: spec.html narrative.html js/commonmark.js
 	cp spec.html _site/
 	cp narrative.html _site/index.html
 	cp -r js/* _site/js/
@@ -83,7 +83,7 @@ update-site: spec.html narrative.html js/stmd.js
 
 clean:
 	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o
-	-rm js/stmd.js
+	-rm js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html

@@ -2,8 +2,7 @@ CommonMark
 ==========
 
 CommonMark is a [specification of Markdown syntax][the spec],
-together with BSD3-licensed implementations (`cmark`) in C and
-JavaScript.
+together with BSD3-licensed implementations in C and JavaScript.
 
 The implementations
 -------------------
@@ -23,8 +22,8 @@ tarball.)
 
 The JavaScript implementation is a single JavaScript file, with
 no dependencies, that can be linked to in an HTML page.  (To build,
-it, do `make js/stmd.js`---this requires `browserify`, which you can
-get using `npm install -g browserify`.) A command-line
+it, do `make js/commonmark.js`---this requires `browserify`, which you
+can get using `npm install -g browserify`.) A command-line
 version (using `node.js`) is also provided (`js/bin/markdown`), and
 there is a "dingus" for playing with it interactively.  (`make dingus`
 will start this.)
@@ -40,7 +39,7 @@ sanitizer to protect against
 [The spec] contains over 450 embedded examples which serve as conformance
 tests.  To run the tests for `cmark`, do `make test`.  To run them for
 another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
-run the tests for `stmd.js`, do `make testjs`.
+run the tests for `commonmark.js`, do `make testjs`.
 
 [The spec]:  http://jgm.github.io/stmd/spec.html
 
