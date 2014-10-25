@@ -3,13 +3,31 @@ var fs = require('fs');
 var util = require('util');
 var commonmark = require('../lib/index.js');
 
-file = process.argv[2] || '/dev/stdin';
+var parser   = new commonmark.DocParser();
+var renderer;
+var inps = [];
 
-fs.readFile(file, 'utf8', function(err, data) {
-  if (err) {
-    return console.log(err);
-  }
-  var parser   = new commonmark.DocParser();
-  var renderer = new commonmark.HtmlRenderer();
-  process.stdout.write(renderer.render(parser.parse(data)));
-});
+var output_ast = false;
+var files = [];
+
+if (process.argv[2] === '--ast') {
+  output_ast = true;
+  files = process.argv.slice(3);
+  renderer = { render: function(x) {
+                          return util.inspect(x, null, Infinity) + '\n';
+                        } };
+} else {
+  files = process.argv.slice(2);
+  renderer = new commonmark.HtmlRenderer();
+}
+
+if (files.length === 0) {
+  files = ['/dev/stdin'];
+}
+
+for (var i = 0; i < files.length; i++) {
+  file = files[i];
+  inps.push(fs.readFileSync(file, 'utf8'));
+}
+
+process.stdout.write(renderer.render(parser.parse(inps.join('\n'))));
