@@ -19,15 +19,15 @@ static node_block* make_block(int tag, int start_line, int start_column)
 {
 	node_block* e;
 
-	e = malloc(sizeof(node_block));
-	memset(e, 0x0, sizeof(*e));
-
-	e->tag = tag;
-	e->open = true;
-	e->start_line = start_line;
-	e->start_column = start_column;
-	e->end_line = start_line;
-	strbuf_init(&e->string_content, 32);
+	e = calloc(1, sizeof(*e));
+    if(e != NULL) {
+    	e->tag = tag;
+	    e->open = true;
+    	e->start_line = start_line;
+	    e->start_column = start_column;
+    	e->end_line = start_line;
+	    strbuf_init(&e->string_content, 32);
+    }
 
 	return e;
 }
@@ -310,14 +310,17 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 		if (!isspace(peek_at(input, pos))) {
 			return 0;
 		}
-		data = malloc(sizeof(struct ListData));
-		data->marker_offset = 0; // will be adjusted later
-		data->list_type = bullet;
-		data->bullet_char = c;
-		data->start = 1;
-		data->delimiter = period;
-		data->tight = false;
-
+		data = calloc(1, sizeof(*data));
+        if(data == NULL) {
+            return 0;
+        } else {
+    		data->marker_offset = 0; // will be adjusted later
+	    	data->list_type = bullet;
+		    data->bullet_char = c;
+    		data->start = 1;
+	    	data->delimiter = period;
+		    data->tight = false;
+        }
 	} else if (isdigit(c)) {
 		int start = 0;
 
@@ -332,13 +335,17 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 			if (!isspace(peek_at(input, pos))) {
 				return 0;
 			}
-			data = malloc(sizeof(struct ListData));
-			data->marker_offset = 0; // will be adjusted later
-			data->list_type = ordered;
-			data->bullet_char = 0;
-			data->start = start;
-			data->delimiter = (c == '.' ? period : parens);
-			data->tight = false;
+			data = calloc(1, sizeof(*data));
+            if(data == NULL) {
+                return 0;
+            } else {
+    			data->marker_offset = 0; // will be adjusted later
+	    		data->list_type = ordered;
+		    	data->bullet_char = 0;
+			    data->start = start;
+    			data->delimiter = (c == '.' ? period : parens);
+	    		data->tight = false;
+            }
 		} else {
 			return 0;
 		}
