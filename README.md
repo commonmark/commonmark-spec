@@ -1,19 +1,30 @@
 CommonMark
 ==========
 
-CommonMark is a [specification of Markdown syntax][the spec],
-together with BSD3-licensed implementations in C and JavaScript.
+CommonMark is a rationalized version of Markdown syntax,
+with a [spec][the spec] and BSD3-licensed reference
+implementations in C and JavaScript.
 
 The implementations
 -------------------
 
 The C implementation provides both a library and a standalone program
-`cmark` that converts Markdown to HTML.  It is written in standard C99
+`cmark` that converts CommonMark to HTML.  It is written in standard C99
 and has no library dependencies.  (However, if you check it out from the
 repository, you'll need [`re2c`](http://re2c.org) to generate
 `scanners.c` from `scanners.re`.  This is only a build dependency for
 developers, since `scanners.c` can be provided in a released source
 tarball.)
+
+The parser is very fast, on par with
+[sundown](https://github.com/vmg/sundown).  Some benchmarks:
+
+|Implementation | Time to parse a 500K book |
+|---------------|---------------------------|
+| Markdown.pl   | 3.99s                     |
+| discount      | 0.089s                    |
+| sundown       | 0.015s                    |
+| cmark         | 0.019s                    |
 
     Usage:   cmark [FILE*]
     Options: --help, -h    Print usage information
@@ -28,9 +39,9 @@ version (using `node.js`) is also provided (`js/bin/commonmark`), and
 there is a "dingus" for playing with it interactively.  (`make dingus`
 will start this.)
 
-[Try it now!](http://jgm.github.io/stmd/js/)
+[Try it now!](http://jgm.github.io/CommonMark/js/)
 
-Note that neither implementation attempts to sanitize link attributes or
+**Note:** neither implementation attempts to sanitize link attributes or
 raw HTML.  If you use these libraries in applications that accept
 untrusted user input, you must run the output through an HTML
 sanitizer to protect against
@@ -41,7 +52,7 @@ tests.  To run the tests for `cmark`, do `make test`.  To run them for
 another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `commonmark.js`, do `make testjs`.
 
-[The spec]:  http://jgm.github.io/stmd/spec.html
+[The spec]:  http://jgm.github.io/CommonMark/spec.html
 
 The spec
 --------
