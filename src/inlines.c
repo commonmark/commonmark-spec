@@ -14,7 +14,7 @@ typedef struct InlineStack {
 	struct InlineStack *previous;
 	node_inl *first_inline;
 	int delim_count;
-	char delim_char;
+	unsigned char delim_char;
 } inline_stack;
 
 typedef struct Subject {
@@ -231,7 +231,7 @@ inline static chunk take_while(subject* subj, int (*f)(int))
 static int scan_to_closing_backticks(subject* subj, int openticklength)
 {
 	// read non backticks
-	char c;
+	unsigned char c;
 	while ((c = peek_char(subj)) && c != '`') {
 		advance(subj);
 	}
@@ -273,10 +273,10 @@ static node_inl* handle_backticks(subject *subj)
 
 // Scan ***, **, or * and return number scanned, or 0.
 // Advances position.
-static int scan_delims(subject* subj, char c, bool * can_open, bool * can_close)
+static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 {
 	int numdelims = 0;
-	char char_before, char_after;
+	unsigned char char_before, char_after;
 
 	char_before = subj->pos == 0 ? '\n' : peek_at(subj, subj->pos - 1);
 	while (peek_char(subj) == c) {
@@ -305,7 +305,7 @@ static void free_openers(subject* subj, inline_stack* istack)
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static node_inl* handle_strong_emph(subject* subj, char c, node_inl **last)
+static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **last)
 {
 	bool can_open, can_close;
 	int numdelims;
@@ -575,7 +575,7 @@ static int link_label(subject* subj, chunk *raw_label)
 	}
 
 	advance(subj);  // advance past [
-	char c;
+	unsigned char c;
 	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
 		switch (c) {
 		case '`':

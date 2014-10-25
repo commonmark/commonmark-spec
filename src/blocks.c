@@ -87,7 +87,7 @@ static void remove_trailing_blank_lines(strbuf *ln)
 	int i;
 
 	for (i = ln->size - 1; i >= 0; --i) {
-		char c = ln->ptr[i];
+		unsigned char c = ln->ptr[i];
 
 		if (c != ' ' && c != '\t' && c != '\r' && c != '\n')
 			break;

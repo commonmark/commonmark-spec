@@ -56,7 +56,7 @@ struct ListData {
 struct FencedCodeData {
 	int               fence_length;
 	int               fence_offset;
-	char              fence_char;
+	unsigned char     fence_char;
 	strbuf            info;
 };
 

@@ -92,10 +92,10 @@ reference* reference_lookup(reference_map *map, chunk *label)
 	reference *ref = NULL;
 	unsigned char *norm;
 	unsigned int hash;
-	
+
 	if (map == NULL)
 		return NULL;
-	
+
 	norm = normalize_reference(label);
 	if (norm == NULL)
 		return NULL;
