@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 -----
 
-The polyfill for String.fromCodePoint included in stmd.js is
+The polyfill for String.fromCodePoint included in commonmark.js is
 Copyright Mathias Bynens <http://mathiasbynens.be/>
 
 Permission is hereby granted, free of charge, to any person obtaining

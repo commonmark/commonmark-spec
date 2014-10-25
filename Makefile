@@ -2,7 +2,7 @@ CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers $(OP
 LDFLAGS?=-g -O3 -Wall -Werror
 SRCDIR?=src
 DATADIR?=data
-BENCHINP?=bench.md
+BENCHINP?=narrative.md
 PROG?=./cmark
 JSMODULES=$(wildcard js/lib/*.js)
 
@@ -69,7 +69,7 @@ leakcheck: $(PROG)
 	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
 
 operf: $(PROG)
-	operf $(PROG) <bench.md >/dev/null
+	operf $(PROG) <$(BENCHINP) >/dev/null
 
 fuzztest:
 	for i in `seq 1 10`; do \

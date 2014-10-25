@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 var fs = require('fs');
-var stmd = require('./lib/index.js');
+var commonmark = require('./lib/index.js');
 var ansi = require('./ansi/ansi');
 var cursor = ansi(process.stdout);
 
-var writer = new stmd.HtmlRenderer();
-var reader = new stmd.DocParser();
+var writer = new commonmark.HtmlRenderer();
+var reader = new commonmark.DocParser();
 
 var passed = 0;
 var failed = 0;

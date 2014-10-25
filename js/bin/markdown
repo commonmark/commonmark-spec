@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 var fs = require('fs');
 var util = require('util');
-var stmd = require('../lib/index.js');
+var commonmark = require('../lib/index.js');
 
 file = process.argv[2] || '/dev/stdin';
 
@@ -9,7 +9,7 @@ fs.readFile(file, 'utf8', function(err, data) {
   if (err) {
     return console.log(err);
   }
-  var parser   = new stmd.DocParser();
-  var renderer = new stmd.HtmlRenderer();
+  var parser   = new commonmark.DocParser();
+  var renderer = new commonmark.HtmlRenderer();
   process.stdout.write(renderer.render(parser.parse(data)));
 });

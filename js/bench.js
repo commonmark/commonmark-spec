@@ -13,7 +13,7 @@ var contents = fs.readFileSync(benchfile, 'utf8');
 
 // var converter = new showdown.converter();
 
-suite.add('stmd markdown->html', function() {
+suite.add('commonmark.js markdown->html', function() {
   var doc = new sm.DocParser().parse(contents);
   var renderer = new sm.HtmlRenderer();
   renderer.renderBlock(doc);
