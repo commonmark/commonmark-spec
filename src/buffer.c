@@ -19,6 +19,10 @@ unsigned char strbuf__oom[1];
 	if ((d) > buf->asize && strbuf_grow(b, (d)) < 0)	\
 		return -1;
 
+#ifndef MIN
+#define MIN(x,y)  ((x<y) ? x : y)
+#endif
+
 void strbuf_init(strbuf *buf, int initial_size)
 {
 	buf->asize = 0;
