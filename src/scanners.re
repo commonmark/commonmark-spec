@@ -36,7 +36,7 @@
 
   htmlcomment = "!--" ([^-\x00]+ | [-][^-\x00]+)* "-->";
 
-  processinginstruction = "?" ([^?>\x00]+ | [?][^>\x00])* "?>";
+  processinginstruction = "?" ([^?>\x00]+ | [?][^>\x00] | [>])* "?>";
 
   declaration = "!" [A-Z]+ spacechar+ [^>\x00]* ">";
 
