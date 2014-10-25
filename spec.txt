@@ -377,16 +377,18 @@ Spaces are allowed at the end:
 <hr />
 .
 
-However, no other characters may occur at the end or the
-beginning:
+However, no other characters may occur in the line:
 
 .
 _ _ _ _ a
 
 a------
+
+---a---
 .
 <p>_ _ _ _ a</p>
 <p>a------</p>
+<p>---a---</p>
 .
 
 It is required that all of the non-space characters be the same.
