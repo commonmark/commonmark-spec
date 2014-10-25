@@ -662,7 +662,10 @@ ATX headers can be empty:
 A [setext header](#setext-header) <a id="setext-header"></a>
 consists of a line of text, containing at least one nonspace character,
 with no more than 3 spaces indentation, followed by a [setext header
-underline](#setext-header-underline).  A [setext header
+underline](#setext-header-underline).  The line of text must be
+one that, were it not followed by the setext header underline,
+would be interpreted as part of a paragraph:  it cannot be a code
+block, header, blockquote, horizontal rule, or list.  A [setext header
 underline](#setext-header-underline) <a id="setext-header-underline"></a>
 is a sequence of `=` characters or a sequence of `-` characters, with no
 more than 3 spaces indentation and any number of trailing
@@ -863,6 +866,56 @@ Setext headers cannot be empty:
 <p>====</p>
 .
 
+Setext header text lines must not be interpretable as block
+constructs other than paragraphs.  So, the line of dashes
+in these examples gets interpreted as a horizontal rule:
+
+.
+---
+---
+.
+<hr />
+<hr />
+.
+
+.
+- foo
+-----
+.
+<ul>
+<li>foo</li>
+</ul>
+<hr />
+.
+
+.
+    foo
+---
+.
+<pre><code>foo
+</code></pre>
+<hr />
+.
+
+.
+> foo
+-----
+.
+<blockquote>
+<p>foo</p>
+</blockquote>
+<hr />
+.
+
+If you want a header with `> foo` as its literal text, you can
+use backslash escapes:
+
+.
+\> foo
+------
+.
+<h2>&gt; foo</h2>
+.
 
 ## Indented code blocks
 
