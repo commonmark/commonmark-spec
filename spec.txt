@@ -815,7 +815,8 @@ of dashes"/>
 <p>of dashes&quot;/&gt;</p>
 .
 
-The setext header underline cannot be a lazy line:
+The setext header underline cannot be a [lazy continuation
+line](#lazy-continuation-line) in a list item or block quote:
 
 .
 > Foo
@@ -824,6 +825,16 @@ The setext header underline cannot be a lazy line:
 <blockquote>
 <p>Foo</p>
 </blockquote>
+<hr />
+.
+
+.
+- Foo
+---
+.
+<ul>
+<li>Foo</li>
+</ul>
 <hr />
 .
 
@@ -2885,9 +2896,11 @@ Four spaces indent gives a code block:
     some or all of the indentation from one or more lines in which the
     next non-space character after the indentation is
     [paragraph continuation text](#paragraph-continuation-text) is a
-    list item with the same contents and attributes.
+    list item with the same contents and attributes.<a
+    id="lazy-continuation-line"></a>
 
-Here is an example with lazy continuation lines:
+Here is an example with [lazy continuation
+lines](#lazy-continuation-line):
 
 .
   1.  A paragraph
