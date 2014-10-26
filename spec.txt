@@ -1470,7 +1470,7 @@ okay.
          <foo><a>
 .
 
-Here we have two code blocks with a Markdown paragraph between them:
+Here we have two HTML blocks with a Markdown paragraph between them:
 
 .
 <DIV CLASS="foo">
