@@ -3297,12 +3297,12 @@ of an [ordered list](#ordered-list) is determined by the list number of
 its initial list item.  The numbers of subsequent list items are
 disregarded.
 
-A list is [loose](#loose) if it any of its constituent list items are
-separated by blank lines, or if any of its constituent list items
-directly contain two block-level elements with a blank line between
-them.  Otherwise a list is [tight](#tight).  (The difference in HTML output
-is that paragraphs in a loose list are wrapped in `<p>` tags, while
-paragraphs in a tight list are not.)
+A list is [loose](#loose)<a id="loose"></a> if it any of its constituent
+list items are separated by blank lines, or if any of its constituent
+list items directly contain two block-level elements with a blank line
+between them.  Otherwise a list is [tight](#tight).<a id="tight"></a>
+(The difference in HTML output is that paragraphs in a loose list are
+wrapped in `<p>` tags, while paragraphs in a tight list are not.)
 
 Changing the bullet or ordered list delimiter starts a new list:
 
