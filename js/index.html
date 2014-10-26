@@ -13,7 +13,6 @@ var writer = new commonmark.HtmlRenderer();
 var reader = new commonmark.DocParser();
 
 $(document).ready(function() {
-  $(".timing").hide();
   var timer;
   var x;
   var parsed;
@@ -40,7 +39,7 @@ $(document).ready(function() {
       var endTime = new Date().getTime();
       var parseTime = endTime - startTime;
       $("#parsetime").text(parseTime);
-      $(".timing").show();
+      $(".timing").css('visibility','visible');
       /*
       var warnings = parsed.warnings;
       $("#warnings").html('');
@@ -58,6 +57,8 @@ $(document).ready(function() {
 });
   </script>
   <style type="text/css">
+    h1.title { font-family: monospace; font-size: 120%; font-weight: bold;
+          margin-top: 0.5em; margin-bottom: 0; }
     textarea#text { height: 400px; width: 95%; font-family: monospace; font-size: 92%; }
     pre code#html { font-size: 92%; font-family: monospace; }
     pre#htmlpre { height: 400px; width: 95%; overflow: scroll; }
@@ -68,7 +69,7 @@ $(document).ready(function() {
     pre { display: block; padding: 0.5em; color: #333; background: #f8f8ff }
     #warnings li { color: red; font-weight: bold; }
     label { padding-left: 1em; padding-top: 0; padding-bottom: 0; }
-    p.timing { color: red; }
+    div.timing { color: red; visibility: hidden; height: 3em; }
     span.timing { font-weight: bold; }
     span.timing { font-weight: bold; }
   </style>
@@ -76,27 +77,21 @@ $(document).ready(function() {
 <body>
 <div class="container">
   <div class="row">
+      <h1 class="title">commonmark.js dingus</h1>
+  </div>
+  <div class="row">
     <div class="col-md-6">
-      <h1>commonmark.js dingus</h1>
+      <div class="timing">Parsed in <span class="timing" id="parsetime"></span> 
+      ms.  Rendered in <span class="timing" id="rendertime"></span> ms.</div>
+      <textarea id="text"></textarea>
+      <ul id="warnings"></ul>
     </div>
-    <div class="col-md-4">
+    <div class="col-md-6">
       <ul class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
         <li><a href="#result" role="tab" data-toggle="tab">HTML</a></li>
         <li><a href="#result-ast" role="tab" data-toggle="tab">AST</a></li>
       </ul>
-    </div>
-    <div class="col-md-2">
-      <p class="timing">Parsed in <span class="timing" id="parsetime"></span> ms.<br>
-        Rendered in <span class="timing" id="rendertime"></span> ms.</p>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-6">
-      <textarea id="text"></textarea>
-      <ul id="warnings"></ul>
-    </div>
-    <div class="col-md-6">
       <div class="tab-content">
         <div id="preview" class="tab-pane active">
         </div>
@@ -106,7 +101,6 @@ $(document).ready(function() {
         <div id="result-ast" class="tab-pane">
           <pre id="astpre"><code id="ast"></code></pre>
         </div>
-    </div>
     </div>
   </div>
 </div>
