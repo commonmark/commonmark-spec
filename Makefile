@@ -90,7 +90,7 @@ fuzztest:
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
 index.md: _site/$(SPECVERSION)/index.html
-	echo "" > $@
+	echo "% CommonMark Spec\n" > $@
 	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
 	  echo "- [Version $$vers](/$$vers/)" >> $@ ; done
 
