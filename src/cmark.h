@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include "config.h"
 #include "buffer.h"
 #include "chunk.h"
 #include "references.h"

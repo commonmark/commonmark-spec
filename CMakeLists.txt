@@ -55,8 +55,8 @@ else(MSVC)
 endif(MSVC)
 
 # create config.h
-configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
-        ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+# configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
+#        ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # set include directories
 get_filename_component(CONFIG_INCLUDE ${CMAKE_CURRENT_BINARY_DIR}/config.h PATH)
