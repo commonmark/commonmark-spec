@@ -3631,8 +3631,8 @@ This is a tight list, because the blank lines are in a code block:
 .
 
 This is a tight list, because the blank line is between two
-paragraphs of a sublist.  So the inner list is loose while
-the other list is tight:
+paragraphs of a sublist.  So the sublist is loose while
+the outer list is tight:
 
 .
 - a
