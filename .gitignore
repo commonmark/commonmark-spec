@@ -31,3 +31,4 @@ scanners.c
 bstrlib.txt
 commonmark.dSYM/*
 commonmark
+build
