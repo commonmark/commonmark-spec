@@ -478,7 +478,7 @@ An [ATX header](#atx-header) <a id="atx-header"></a>
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
-of `#` characters cannot be followed directly by a nonspace character.
+of `#` characters cannot be followed directly by a non-space character.
 The closing `#` characters may be followed by spaces only.  The opening
 `#` character may be indented 0-3 spaces.  The raw contents of the
 header are stripped of leading and trailing spaces before being parsed
@@ -604,7 +604,7 @@ Spaces are allowed after the closing sequence:
 <h3>foo</h3>
 .
 
-A sequence of `#` characters with a nonspace character following it
+A sequence of `#` characters with a non-space character following it
 is not a closing sequence, but counts as part of the contents of the
 header:
 
@@ -665,7 +665,7 @@ ATX headers can be empty:
 ## Setext headers
 
 A [setext header](#setext-header) <a id="setext-header"></a>
-consists of a line of text, containing at least one nonspace character,
+consists of a line of text, containing at least one non-space character,
 with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  The line of text must be
 one that, were it not followed by the setext header underline,
@@ -2538,7 +2538,7 @@ The most important thing to notice is that the position of
 the text after the list marker determines how much indentation
 is needed in subsequent blocks in the list item.  If the list
 marker takes up two spaces, and there are three spaces between
-the list marker and the next nonspace character, then blocks
+the list marker and the next non-space character, then blocks
 must be indented five spaces in order to fall under the list
 item.
 
@@ -2591,7 +2591,7 @@ put under the list item:
 .
 
 It is tempting to think of this in terms of columns:  the continuation
-blocks must be indented at least to the column of the first nonspace
+blocks must be indented at least to the column of the first non-space
 character after the list marker.  However, that is not quite right.
 The spaces after the list marker determine how much relative indentation
 is needed.  Which column this indentation reaches will depend on
@@ -2615,7 +2615,7 @@ this example:
 
 Here `two` occurs in the same column as the list marker `1.`,
 but is actually contained in the list item, because there is
-sufficent indentation after the last containing blockquote marker.
+sufficient indentation after the last containing blockquote marker.
 
 The converse is also possible.  In the following example, the word `two`
 occurs far to the right of the initial text of the list item, `one`, but
@@ -2793,7 +2793,7 @@ inside the code block:
 .
 
 Note that rules #1 and #2 only apply to two cases:  (a) cases
-in which the lines to be included in a list item begin with a nonspace
+in which the lines to be included in a list item begin with a non-space
 character, and (b) cases in which they begin with an indented code
 block.  In a case like the following, where the first block begins with
 a three-space indent, the rules do not allow us to form a list item by
@@ -4813,7 +4813,7 @@ the internal delimiters [can close emphasis](#can-close-emphasis),
 while in the cases with spaces, they cannot.
 
 Note that you cannot nest emphasis directly inside emphasis
-using the same delimeter, or strong emphasis directly inside
+using the same delimiter, or strong emphasis directly inside
 strong emphasis:
 
 .
@@ -5021,7 +5021,7 @@ consists of either
   ASCII space or control characters, and includes parentheses
   only if (a) they are backslash-escaped or (b) they are part of
   a balanced pair of unescaped parentheses that is not itself
-  inside a balanced pair of unescaped paretheses.
+  inside a balanced pair of unescaped parentheses.
 
 A [link title](#link-title) <a id="link-title"></a>  consists of either
 
@@ -6284,6 +6284,596 @@ Multiple     spaces
 .
 <p>Multiple     spaces</p>
 .
+
+# Extensions
+
+This section contains extensions to the Core Markdown syntax described above. They don't need to be implemented to conform to this spec. However, if an implementation includes an extension with the same purpose as one of the extensions described here, this spec strongly recommends to implement the syntax described here.
+
+
+## Attributes
+
+Certain elements may carry an attribute block. The following subsections list all elements that may contain attributes, see those for examples.
+
+- For inlines, the attribute block must immediately follow the element without any characters between the end of the inline and the start of the attribute block.
+- For horizontal rules, headers, fenced code blocks and reference links, there must be one or more space characters preceding the attribute block and any trailing whitespace is non-significant.
+- For paragraphs, block quotes and tight lists, the attribute block must start on a line that immediately follows the corresponding block. (Attributes on list items are not supported.)
+- For loose lists, the attribute block must start on a line that either immediately follows the list or is separated from it by only one blank line.
+
+For the last two points in the above list the following must hold: the line(s) on which the attribute block resides must not contain any other characters except for leading spaces (i.e. indentation), which may be significant in determining to which element the attribute block belongs, but the start of the attribute block must be indented by exactly the same amount as the corresonding block itself. Trailing whitespace is non-significant.
+
+An attribute block consists of a sequence of zero or more characters, between an unescaped opening LEFT CURLY BRACKET (`{`) and an unescaped closing RIGHT CURLY BRACKET (`}`), that includes curly brackets only if they are part of a balanced pair of unescaped double-quote or single-quote characters, and that does not contain a blank line. The characters between the opening and closing brackets form zero or more attributes which are separated by one or more whitespace characters (and may contain non-significant leading and trailing whitespace). The order of the attributes is not significant. An attribute consists of (a) a key-value pair, (b) an id-identifier or (c) a class-identifier.
+
+- a) A key-value pair consists of a key, immediately followed by an EQUALS SIGN (`=`) which is immediately followed by the value. The key follows the syntax of [raw HTML attribute names](#attribute-name). The value consists of either
+
+    - a sequence of zero or more characters that does not include ASCII space or control characters, or
+    - a sequence of zero or more characters between straight double-quote characters (`"`), including a `"` character only if it is backslash-escaped, or
+    - a sequence of zero or more characters between straight single-quote characters (`'`), including a `'` character only if it is backslash-escaped.
+
+- b) An id-identifier consists of a NUMBER SIGN — also known as a hash — (`#`) immediately followed by one or more characters that does neither include ASCII space or control characters nor curly brackets. `{#myId}` is syntactic sugar for `{id=myId}`.
+
+- c) A class-identifier consists of a FULL STOP (`.`) immediately followed by one or more characters that does neither include ASCII space or control characters nor curly brackets. `{.myClass}` is syntactic sugar for `{class=myClass}`.
+
+Markdown authors shouldn't write multiple key-value pairs with the same key in an attribute block. However, to ease the burden of implementation, the behaviour in such cases is left undefined—although most implementations will probably parse the attributes sequentially and insert them into a map, which would result in a last-one-wins semantic.
+
+If there are curly brackets that contain characters which don't follow the rules outlined above and below, the curly brackets and the containing characters are not considered an attribute block but regular text and are to be interpreted accordingly.
+
+
+### Horizontal rules
+
+.
+--- {#myId .myClass key=val key2="val 2"}
+.
+<hr id="myId" class="myClass" key="val" key2="val 2" />
+.
+
+There must be one or more space characters in front of the attribute block:
+
+.
+---{.myClass}
+.
+<p>---{.myClass}</p>
+.
+
+.
+---     {#myId .myClass key=val key2="val 2"}
+.
+<hr id="myId" class="myClass" key="val" key2="val 2" />
+.
+
+Any whitespace (not only spaces) separate the attributes:
+
+.
+--- {#myId     .myClass
+key=val}
+.
+<hr id="myId" class="myClass" key="val" />
+.
+
+However, no blank lines are allowed within an attribute block:
+
+.
+--- {#myId
+
+.myClass}
+.
+<p>--- {#myId</p>
+<p>.myClass}</p>
+.
+
+Any characters (except unescaped quotes of the same kind) are allowed in quoted attributes:
+
+.
+---     {key="Hello \"World\"!" key2='Hello "World"!' key3="even new
+lines and special chars like '=' or '`' are allowed"}
+.
+<hr key="Hello &quot;World&quot;!" key2="Hello &quot;World&quot;!" key3="even new lines and special chars like '=' or '`' are allowed"/>
+.
+
+
+### ATX headers
+
+.
+### foo {#myId .myClass key=val key2="val 2"}
+.
+<h3 id="myId" class="myClass" key="val" key2="val 2">foo</h3>
+.
+
+Or with a closing header sequence:
+
+.
+### foo ### {#myId}
+.
+<h3 id="myId">foo</h3>
+.
+
+
+### Setext headers
+
+.
+Foo {#myId}
+===========
+.
+<h1 id="myId">Foo</h1>
+.
+
+
+### Fenced code blocks
+
+.
+``` {.language-ruby #code1}
+x = 1
+```
+.
+<pre><code class="language-ruby">x = 1
+</code></pre>
+.
+
+[Info strings](#info-string) are syntactic sugar for classes, i.e. the following two fenced code blocks are identical:
+
+    ```ruby
+    x = 1
+    ```
+
+    ``` {.language-ruby}
+    x = 1
+    ```
+
+As the attribute block must be preceded by a space, this may be surprising:
+
+.
+```{.foo}
+x = 1
+```
+.
+<pre><code class="language-{.foo}">x = 1
+</code></pre>
+.
+
+### Reference Links
+
+There must be one or more space characters preceding the attribute block in a reference link as well:
+
+.
+[foo][bar]
+
+[bar]: /url "title" {.myClass}
+.
+<p><a href="/url" title="title" class="myClass">foo</a></p>
+.
+
+.
+[foo][bar]
+
+[bar]: /url "title"{.no-attribute}
+.
+<p>[foo][bar]</p>
+<p>[bar]: /url "title"{.no-attribute}</p>
+.
+
+.
+[foo][bar]
+
+[bar]: /url{.no-attribute}
+.
+<p><a href="/url%7B.no-attribute%7D">foo</a></p>
+.
+
+
+### Paragraphs
+
+Attribute blocks must start on a line following the paragraph.
+
+.
+Paragraph with attributes.
+{.myPar}
+.
+<p class="myPar">Paragraph with attributes.</p>
+.
+
+.
+Paragraph with attributes.
+{.myPar
+#myId}
+.
+<p class="myPar" id="myId">Paragraph with attributes.</p>
+.
+
+.
+Paragraph {.nope}
+.
+<p>Paragraph {.nope}</p>
+.
+
+.
+Paragraph
+
+{.nope}
+.
+<p>Paragraph</p>
+<p>{.nope}</p>
+.
+
+Attribute blocks for paragraphs must be indented exactly as much as the first line of the paragraph itself:
+
+.
+Paragraph
+ {.nope}
+.
+<p>Paragraph {.nope}</p>
+.
+
+
+### Block quotes
+
+.
+> Blockquote with attributes.
+{.myBlockquote}
+.
+<blockquote class="myBlockquote">
+<p>Blockquote with attributes.</p>
+</blockquote>
+.
+
+.
+> Paragraph with attributes
+> inside a block quote.
+> {.myPar}
+.
+<blockquote>
+<p class="myPar">Paragraph with attributes inside a block quote.</p>
+</blockquote>
+.
+
+Attribute blocks for block quotes must be indented exactly as much as the `>` which is part of the [block quote marker](#block-quote-marker):
+
+.
+   > Blockquote with attributes.
+   {.myBlockquote}
+.
+<blockquote class="myBlockquote">
+<p>Blockquote with attributes.</p>
+</blockquote>
+.
+
+.
+> Blockquote without attributes.
+  {.nope}
+.
+<blockquote>
+<p>Blockquote without attributes. {.nope}</p>
+</blockquote>
+.
+
+.
+> Blockquote with
+lazy continuation
+{.myBlockquote}
+.
+<blockquote class="myBlockquote">
+<p>Blockquote with lazy continuation.</p>
+</blockquote>
+.
+
+.
+> Blockquote with
+lazy continuation
+  {.nope}
+.
+<blockquote>
+<p>Blockquote with lazy continuation {.nope}</p>
+</blockquote>
+.
+
+
+### Lists
+
+.
+- list with
+- attributes
+{.myList}
+.
+<ul class="myList">
+  <li>list with</li>
+  <li>attributes</li>
+</ul>
+.
+
+.
+- tight list without
+- attributes
+
+{.nope}
+.
+<ul>
+  <li>tight list without</li>
+  <li>attributes</li>
+</ul>
+<p>{.nope}</p>
+.
+
+Attribute blocks for lists must be indented exactly as much as the [list markers](#list-marker):
+
+.
+- a tight list
+- without attributes
+ {.nope}
+.
+<ul>
+  <li>a tight list</li>
+  <li>without attributes {.nope}</li>
+</ul>
+.
+
+.
+- a tight list
+- without attributes
+  {.nope}
+.
+<ul>
+  <li>a tight list</li>
+  <li>without attributes {.nope}</li>
+</ul>
+.
+
+.
+- one 1
+- two 2
+    - 2.1
+    {.myList}
+.
+<ul>
+  <li>one 1</li>
+  <li>two 2
+    <ul class="myList">
+      <li>2.1</li>
+    </ul>
+  </li>
+</ul>
+.
+
+.
+- a loose list
+
+- with attributes
+
+{.myList}
+.
+<ul class="myList">
+  <li><p>a loose list</p></li>
+  <li><p>with attributes</p></li>
+</ul>
+.
+
+.
+- loose list
+
+- with attributes
+{.myList}
+.
+<ul class="myList">
+  <li><p>loose list</p></li>
+  <li><p>with attributes</p></li>
+</ul>
+.
+
+.
+- a loose list
+
+- without attributes
+
+
+{.nope}
+.
+<ul>
+  <li><p>a loose list</p></li>
+  <li><p>without attributes</p></li>
+</ul>
+<p>{.nope}</p>
+.
+
+.
+- a loose list where
+
+- the last paragraph has attributes.
+  Note that the indentation of the
+  attribute block is significant.
+  {.myPar}
+.
+<ul>
+  <li><p>a loose list where</p></li>
+  <li><p class="myPar">the last paragraph has attributes</p></li>
+</ul>
+.
+
+Attribute blocks themselves do not obey the lazy continuation rules. They can be used with lazy continuation paragraphs, however it is not recommended since it gets quickly confusing.
+
+.
+- a loose list
+
+- with lazy
+continuation
+{.myList}
+.
+<ul class="myList">
+  <li><p>a loose list</p></li>
+  <li><p>with lazy continuation</p></li>
+</ul>
+.
+
+.
+- a tight list
+{.nope}
+- with lazy
+continuation
+  {.nope}
+.
+<ul>
+  <li>a tight list {.nope}</li>
+  <li>with lazy continuation {.nope}</li>
+</ul>
+.
+
+.
+- a loose list
+
+- with lazy
+continuation
+  {.myPar}
+.
+<ul>
+  <li><p>a loose list</p></li>
+  <li><p class="myPar">with lazy continuation</p></li>
+</ul>
+.
+
+A list of blockquotes:
+
+.
+- > a list where each
+  > item is a blockquote
+  > {.myPar}
+
+- > to see what is possible
+  > {.myPar}
+  {.myBlockquote}
+{.myList}
+.
+<ul class="myList">
+  <li>
+    <blockquote>
+    <p class="myPar">a list where each item is a blockquote</p>
+    </blockquote>
+  </li>
+  <li>
+    <blockquote class="myBlockquote">
+    <p class="myPar">to see what is possible</p>
+    </blockquote>
+  </li>
+</ul>
+.
+
+Note that list items themselves cannot have attributes.
+
+
+### Code span
+
+An attribute block follows the closing code span backtick immediately:
+
+.
+`foo`{.myClass}
+.
+<p><code class="myClass">foo</code></p>
+.
+
+.
+`foo` {.no-attribute}
+.
+<p><code>foo</code> {.no-attribute}</p>
+.
+
+
+### Emphasis and strong emphasis
+
+An attribute block follows any closing emphasis character immediately:
+
+.
+_foo_{.myClass}
+.
+<p><em class="myClass">foo</em></p>
+.
+
+.
+**foo**{.myClass}
+.
+<p><strong class="myClass">foo</strong></p>
+.
+
+
+### Inline Links
+
+An attribute block follows a link's right parenthesis (`)`) immediately:
+
+.
+[link](/uri){.myClass}
+.
+<p><a href="/uri" class="myClass">link</a></p>
+.
+
+
+### Images
+
+As images are defined as links preceded by an exclamation mark (`!`), the behaviour is already well-defined.
+
+.
+![foo](/url){.myClass}
+.
+<p><img src="/url" alt="foo" class="myClass" /></p>
+.
+
+
+### Spans
+
+A span consists of
+
+- an opening `[`, followed by
+- zero or more characters parsed as inline (where neither the first nor the last character is an ASCII space or control character), followed by
+- a closing `]`, immediately followed by
+- a mandatory attribute block.
+
+.
+[foo _bar_]{#myId}
+.
+<p><span id="myId">foo <em>bar</em></span></p>
+.
+
+Spaces before or after the span are not required:
+
+.
+this[foo]{#myId}works
+.
+<p>this<span id="myId">foo</span>works</p>
+.
+
+But the span content mustn't start or end with whitespace:
+
+.
+[ does not]{} work
+.
+<p>[ does not]{} work</p>
+.
+
+.
+[does not ]{} work
+.
+<p>[does not ]{} work</p>
+.
+
+Empty attribute blocks are generally allowed:
+
+.
+[foo]{}
+.
+<p><span>foo</span></p>
+.
+
+As are empty spans:
+
+.
+[]{.glyphicon}
+.
+<p><span class="glyphicon"></span></p>
+.
+
+Note that [reference links](#reference-links) have their attributes in the reference part, thus this span is not to be confused with a reference link:
+
+.
+a paragraph with [no reflink]{.myClass}
+
+[no reflink]: http://test.com
+.
+<p>a paragraph with <span class="myClass">no reflink</span></p>
+.
+
 
 <!-- END TESTS -->
 
