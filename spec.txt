@@ -2015,8 +2015,8 @@ bbb
 .
 
 Final spaces are stripped before inline parsing, so a paragraph
-that ends with two or more spaces will not end with a hard line
-break:
+that ends with two or more spaces will not end with a [hard line
+break](#hard-line-break):
 
 .
 aaa     
@@ -3818,7 +3818,8 @@ If a backslash is itself escaped, the following character is not:
 <p>\<em>emphasis</em></p>
 .
 
-A backslash at the end of the line is a hard line break:
+A backslash at the end of the line is a [hard line
+break](#hard-line-break):
 
 .
 foo\
@@ -6088,7 +6089,8 @@ Backslash escapes do not work in HTML attributes:
 ## Hard line breaks
 
 A line break (not in a code span or HTML tag) that is preceded
-by two or more spaces is parsed as a linebreak (rendered
+by two or more spaces is parsed as a [hard line
+break](#hard-line-break)<a id="hard-line-break"></a> (rendered
 in HTML as a `<br />` tag):
 
 .
