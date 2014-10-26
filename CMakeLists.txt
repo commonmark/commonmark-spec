@@ -86,6 +86,7 @@ install(DIRECTORY include DESTINATION .
 #     COMPONENT devel)
 
 add_subdirectory(src)
+add_subdirectory(man)
 
 include(InstallRequiredSystemLibraries)
 
