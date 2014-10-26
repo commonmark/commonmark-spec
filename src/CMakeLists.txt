@@ -36,17 +36,15 @@ else(MSVC)
                         COMMAND ${RE2C} --case-insensitive -b -i ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re >${CMAKE_CURRENT_SOURCE_DIR}/scanners.c)
 endif(MSVC)
 
-add_executable(${PROGRAM_cmark} 
+add_executable(${PROGRAM_cmark}
                 ${PROGRAM_cmark_SOURCES})
 
 if (MSVC)
-set_property(TARGET ${PROGRAM_cmark} 
-                     APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO) 
+set_property(TARGET ${PROGRAM_cmark}
+                     APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO)
 # if sometimes libs are needed ...
 #target_link_libraries(${PROGRAM_chronolog})
 endif(MSVC)
 install(TARGETS ${PROGRAM_cmark}
-RUNTIME DESTINATION bin 
+RUNTIME DESTINATION bin
 BUNDLE DESTINATION /Applications)
-
-

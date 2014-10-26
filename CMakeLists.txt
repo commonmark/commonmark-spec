@@ -11,6 +11,20 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 include (CheckIncludeFile)
 CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
 
+set(CMAKE_BUILD_TYPE Release)
+
+if(MSVC)
+  # Force to always compile with W4
+  if(CMAKE_CXX_FLAGS MATCHES "/W[0-4]")
+    string(REGEX REPLACE "/W[0-4]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+  endif()
+elseif(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+  # Update if necessary
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long -pedantic")
+endif()
+
 #option(${PROJECT_NAME}_WITH_DOCS "generate Documentation" OFF)
 #option(${PROJECT_NAME}_WITH_TESTS "enable testing" ON)
 option(CMAKE_SUPPRESS_REGENERATION "suppress rules to re-run cmake on changes (warning: no dependency checks!)?" OFF)
@@ -21,8 +35,8 @@ else(MSVC)
 endif(MSVC)
 
 if (MSVC)
-  option(PROJECT_LINK_MSVC_MT "link with /MT instead of /MD (use msvc runtime dlls versus static linked)" ON) 
-  # see http://msdn.microsoft.com/en-us/library/2kzt1wy3%28VS.71%29.aspx   
+  option(PROJECT_LINK_MSVC_MT "link with /MT instead of /MD (use msvc runtime dlls versus static linked)" ON)
+  # see http://msdn.microsoft.com/en-us/library/2kzt1wy3%28VS.71%29.aspx
   if (PROJECT_LINK_MSVC_MT)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
@@ -46,30 +60,30 @@ if (MSVC)
     set(CMAKE_EXECUTABLE_SUFFIX ".exe")          # .exe
     set(CMAKE_LINK_LIBRARY_SUFFIX ".lib")
     set(CMAKE_DL_LIBS "")
-    set(CMAKE_DEBUG_POSTFIX "d") 
+    set(CMAKE_DEBUG_POSTFIX "d")
     add_definitions(-DUNICODE -D_UNICODE)
 else(MSVC)
   list(APPEND CMAKE_CXX_FLAGS "-Wall -Wunused-variable -Wno-long-long")
-   #-pedantic 
+   #-pedantic
   list(APPEND CMAKE_C_FLAGS "-Wall -Wunused-variable -Wno-long-long")
 endif(MSVC)
 
 # create config.h
-# configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake 
+# configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
 #        ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # set include directories
 get_filename_component(CONFIG_INCLUDE ${CMAKE_CURRENT_BINARY_DIR}/config.h PATH)
 include_directories(include ${CONFIG_INCLUDE})
 
-install(DIRECTORY include DESTINATION . 
-    COMPONENT devel 
+install(DIRECTORY include DESTINATION .
+    COMPONENT devel
     FILES_MATCHING PATTERN "*.h"
-    PATTERN .svn EXCLUDE 
+    PATTERN .svn EXCLUDE
     )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h 
-    DESTINATION include/${PROJECT_NAME} 
-    COMPONENT devel)
+# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h
+#     DESTINATION include/${PROJECT_NAME}
+#     COMPONENT devel)
 
 add_subdirectory(src)
 
@@ -88,7 +102,7 @@ endif (UNIX AND NOT APPLE AND NOT WIN32)
 
 set(CPACK_SOURCE_PACKAGE_FILE_NAME ${PROJECT_NAME}-src-${PROJECT_VERSION})
 set(CPACK_SOURCE_GENERATOR TGZ ZIP)
-set(CPACK_PACKAGE_CONTACT http://talk.commonmark.org/) 
+set(CPACK_PACKAGE_CONTACT http://talk.commonmark.org/)
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ${PROJECT_NAME})
 set(CPACK_PACKAGE_VENDOR "${PROJECT_NAME} Development Team")
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
