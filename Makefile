@@ -6,6 +6,8 @@ BENCHINP?=README.md
 PROG?=./cmark
 JSMODULES=$(wildcard js/lib/*.js)
 PREFIX?=/usr/local
+SPEC=spec.txt
+SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs
 
@@ -16,7 +18,7 @@ README.html: README.md template.html
 
 spec: test spec.html
 
-spec.md: spec.txt
+spec.md: $(SPEC)
 	perl spec2md.pl < $< > $@
 
 spec.html: spec.md template.html
@@ -28,13 +30,13 @@ spec.pdf: spec.md template.tex specfilter.hs
 	   --number-sections -V documentclass=report -V tocdepth=2 \
 	   -V classoption=twosides
 
-test: spec.txt
+test: $(SPEC)
 	perl runtests.pl $< $(PROG)
 
 js/commonmark.js: js/lib/index.js ${JSMODULES}
 	browserify --standalone commonmark $< -o $@
 
-testjs: spec.txt
+testjs: $(SPEC)
 	node js/test.js
 
 jshint:
@@ -87,16 +89,27 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: spec.html js/commonmark.js
-	cp spec.html _site/
-	echo "TODO" > _site/index.html
+index.md: _site/$(SPECVERSION)/index.html
+	echo "" > $@
+	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
+	  echo "- [Version $$vers](/$$vers/)" >> $@ ; done
+
+_site/index.html: index.md
+	pandoc --template template.html -S -s -t html5 -o $@ $<
+
+_site/$(SPECVERSION)/index.html: spec.html
+	mkdir -p _site/$(SPECVERSION)
+	cp $< $@
+	cd _site; git add $(SPECVERSION)/index.html; git commit -a -m "Added version $(SPECVERSION) of spec"; cd ..
+
+update-site: spec.html js/commonmark.js _site/index.html _site/$(SPECVERSION)/index.html
 	cp js/index.html _site/js/
 	cp js/commonmark.js _site/js/
 	cp js/LICENSE _site/js/
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..)
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so index.md
 	-rm js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
