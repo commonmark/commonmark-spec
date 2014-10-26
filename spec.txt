@@ -428,8 +428,11 @@ bar
 <p>bar</p>
 .
 
-Note, however, that this is a setext header, not a paragraph followed
-by a horizontal rule:
+If a line of dashes that meets the above conditions for being a
+horizontal rule could also be interpreted as the underline of a [setext
+header](#setext-header), the interpretation as a
+[setext-header](#setext-header) takes precedence. Thus, for example,
+this is a setext header, not a paragraph followed by a horizontal rule:
 
 .
 Foo
