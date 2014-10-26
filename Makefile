@@ -1,13 +1,15 @@
-CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers $(OPTFLAGS)
+CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers -fPIC $(OPTFLAGS)
 LDFLAGS?=-g -O3 -Wall -Werror
 SRCDIR?=src
 DATADIR?=data
 BENCHINP?=narrative.md
 PROG?=./cmark
 JSMODULES=$(wildcard js/lib/*.js)
+PREFIX?=/usr/local
 
-.PHONY: all test spec benchjs testjs
-all: $(SRCDIR)/case_fold_switch.inc $(PROG)
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs
+
+all: $(SRCDIR)/case_fold_switch.inc $(PROG) libcmark.so
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -46,7 +48,13 @@ benchjs:
 
 HTML_OBJ=$(SRCDIR)/html/html.o $(SRCDIR)/html/houdini_href_e.o $(SRCDIR)/html/houdini_html_e.o $(SRCDIR)/html/houdini_html_u.o
 
-CMARK_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o $(SRCDIR)/references.c
+CMARK_OBJ=$(SRCDIR)/inlines.o $(SRCDIR)/buffer.o $(SRCDIR)/blocks.o $(SRCDIR)/scanners.c $(SRCDIR)/print.o $(SRCDIR)/utf8.o $(SRCDIR)/references.o
+
+CMARK_HDR = $(SRCDIR)/cmark.h $(SRCDIR)/buffer.h $(SRCDIR)/references.h \
+           $(SRCDIR)/chunk.h $(SRCDIR)/debug.h $(SRCDIR)/utf8.h \
+           $(SRCDIR)/scanners.h $(SRCDIR)/inlines.h
+
+HTML_HDR = $(SRCDIR)/html/html_unescape.h $(SRCDIR)/html/houdini.h
 
 $(PROG): $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc $(HTML_OBJ) $(CMARK_OBJ) $(SRCDIR)/main.c
 	$(CC) $(LDFLAGS) -o $@ $(HTML_OBJ) $(CMARK_OBJ) $(SRCDIR)/main.c
@@ -60,7 +68,14 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 	gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 $< > $@
 
-.PHONY: leakcheck clean fuzztest dingus upload jshint test testjs benchjs
+libcmark.so: $(HTML_OBJ) $(CMARK_OBJ)
+	$(CC) $(LDFLAGS) -shared -o $@ $^
+
+install: libcmark.so $(cmark_HDR) $(HTML_HDR)
+	install -d $(PREFIX)/lib $(PREFIX)/include/cmark/html
+	install libcmark.so $(PREFIX)/lib/
+	install $(cmark_HDR) $(PREFIX)/include/cmark/
+	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
 
 dingus: js/commonmark.js
 	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
@@ -84,7 +99,7 @@ update-site: spec.html narrative.html js/commonmark.js
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
 	-rm js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
