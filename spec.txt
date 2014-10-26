@@ -1288,56 +1288,6 @@ aaa
 </code></pre>
 .
 
-Closing fences may be indented by 0-3 spaces:
-
-.
-```
-code
-```
-.
-<pre><code>code
-</code></pre>
-.
-
-.
-```
-code
- ```
-.
-<pre><code>code
-</code></pre>
-.
-
-.
-```
-code
-  ```
-.
-<pre><code>code
-</code></pre>
-.
-
-.
-```
-code
-   ```
-.
-<pre><code>code
-</code></pre>
-.
-
-But not by 4:
-
-.
-```
-aaa
-    ```
-.
-<pre><code>aaa
-    ```
-</code></pre>
-.
-
 Four spaces indentation produces an indented code block:
 
 .
@@ -1350,6 +1300,40 @@ aaa
 ```
 </code></pre>
 .
+
+Closing fences may be indented by 0-3 spaces, and their indentation
+need not match that of the opening fence:
+
+.
+```
+aaa
+  ```
+.
+<pre><code>aaa
+</code></pre>
+.
+
+.
+   ```
+aaa
+  ```
+.
+<pre><code>aaa
+</code></pre>
+.
+
+This is not a closing fence, because it is indented 4 spaces:
+
+.
+```
+aaa
+    ```
+.
+<pre><code>aaa
+    ```
+</code></pre>
+.
+
 
 Code fences (opening and closing) cannot contain internal spaces:
 
