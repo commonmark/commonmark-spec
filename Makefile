@@ -78,7 +78,9 @@ fuzztest:
 update-site: spec.html narrative.html js/commonmark.js
 	cp spec.html _site/
 	cp narrative.html _site/index.html
-	cp -r js/* _site/js/
+	cp js/index.html _site/js/
+	cp js/commonmark.js _site/js/
+	cp js/LICENSE _site/js/
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
 
 clean:
