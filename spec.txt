@@ -2430,7 +2430,8 @@ An [ordered list marker](#ordered-list-marker) <a id="ordered-list-marker"></a>
 is a sequence of one of more digits (`0-9`), followed by either a
 `.` character or a `)` character.
 
-The following rules define [list items](#list-item):
+The following rules define [list items](#list-item):<a
+id="list-item"></a>
 
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
     blocks *Bs* starting with a non-space character and not separated
@@ -3316,6 +3317,87 @@ Changing the bullet or ordered list delimiter starts a new list:
 <li>baz</li>
 </ol>
 .
+
+In CommonMark, a list can interrupt a paragraph. That is,
+no blank line is needed to separate a paragraph from a following
+list:
+
+.
+Foo
+- bar
+- baz
+.
+<p>Foo</p>
+<ul>
+<li>bar</li>
+<li>baz</li>
+</ul>
+.
+
+`Markdown.pl` does not allow this, through fear of triggering a list
+via a numeral in a hard-wrapped line:
+
+.
+The number of windows in my house is
+14.  The number of doors is 6.
+.
+<p>The number of windows in my house is</p>
+<ol start="14">
+<li>The number of doors is 6.</li>
+</ol>
+.
+
+Oddly, `Markdown.pl` *does* allow a blockquote to interrupt a paragraph,
+even though the same considerations might apply.  We think that the two
+cases should be treated the same.  Here are two reasons for allowing
+lists to interrupt paragraphs:
+
+First, it is natural and not uncommon for people to start lists without
+blank lines:
+
+    I need to buy
+    - new shoes
+    - a coat
+    - a plane ticket
+
+Second, we are attracted to a
+
+> [principle of uniformity](#principle-of-uniformity):<a
+> id="principle-of-uniformity"></a> if a span of text has a certain
+> meaning, it will continue to have the same meaning when put into a list
+> item.
+
+(Indeed, the spec for [list items](#list-item) presupposes this.)
+This principle implies that if
+
+      * I need to buy
+        - new shoes
+        - a coat
+        - a plane ticket
+
+is a list item containing a paragraph followed by a nested sublist,
+as all Markdown implementations agree it is (though the paragraph
+may be rendered without `<p>` tags, since the list is "tight"),
+then
+
+    I need to buy
+    - new shoes
+    - a coat
+    - a plane ticket
+
+by itself should be a paragraph followed by a nested sublist.
+
+Our adherence to the [principle of uniformity](#principle-of-uniformity)
+thus inclines us to think that there are two coherent packages:
+
+1.  Require blank lines before *all* lists and blockquotes,
+    including lists that occur as sublists inside other list items.
+
+2.  Require blank lines in none of these places.
+
+[reStructuredText](http://docutils.sourceforge.net/rst.html) takes
+the first approach, for which there is much to be said.  But the second
+seems more consistent with established practice with Markdown.
 
 There can be blank lines between items, but two blank lines end
 a list:
