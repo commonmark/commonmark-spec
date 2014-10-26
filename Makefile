@@ -2,7 +2,7 @@ CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers -fPI
 LDFLAGS?=-g -O3 -Wall -Werror
 SRCDIR?=src
 DATADIR?=data
-BENCHINP?=narrative.md
+BENCHINP?=README.md
 PROG?=./cmark
 JSMODULES=$(wildcard js/lib/*.js)
 PREFIX?=/usr/local
@@ -21,9 +21,6 @@ spec.md: spec.txt
 
 spec.html: spec.md template.html
 	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< > $@ # | perl -pe 's/␣/<span class="space"> <\/span>/g' > $@
-
-narrative.html: narrative.md template.html
-	pandoc --template template.html -s -S $< -o $@
 
 spec.pdf: spec.md template.tex specfilter.hs
 	pandoc -s $< --template template.tex \
@@ -90,13 +87,13 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-update-site: spec.html narrative.html js/commonmark.js
+update-site: spec.html js/commonmark.js
 	cp spec.html _site/
-	cp narrative.html _site/index.html
+	echo "TODO" > _site/index.html
 	cp js/index.html _site/js/
 	cp js/commonmark.js _site/js/
 	cp js/LICENSE _site/js/
-	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, narrative, js" ; git push; cd ..)
+	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..)
 
 clean:
 	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so

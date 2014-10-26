@@ -98,6 +98,75 @@ like footnotes and definition lists.  It is important to get the core
 right before considering such things. However, I have included a visible
 syntax for line breaks and fenced code blocks.
 
+There are only a few places where this spec says things that contradict
+the canonical syntax description:
+
+-   It [allows all punctuation symbols to be
+    backslash-escaped](http://jgm.github.io/stmd/spec.html#backslash-escapes),
+    not just the symbols with special meanings in Markdown. I found
+    that it was just too hard to remember which symbols could be
+    escaped.
+
+-   It introduces an [alternative syntax for hard line
+    breaks](http://jgm.github.io/stmd/spec.html#hard-line-breaks), a
+    backslash at the end of the line, supplementing the
+    two-spaces-at-the-end-of-line rule. This is motivated by persistent
+    complaints about the “invisible” nature of the two-space rule.
+
+-   Link syntax has been made a bit more predictable (in a
+    backwards-compatible way). For example, `Markdown.pl` allows single
+    quotes around a title in inline links, but not in reference links.
+    This kind of difference is really hard for users to remember, so the
+    spec [allows single quotes in both
+    contexts](http://jgm.github.io/stmd/spec.html#links).
+
+-   The rule for HTML blocks differs, though in most real cases it
+    shouldn't make a difference. (See
+    [here](http://jgm.github.io/stmd/spec.html#html-blocks) for
+    details.) The spec's proposal makes it easy to include Markdown
+    inside HTML block-level tags, if you want to, but also allows you to
+    exclude this. It is also makes parsing much easier, avoiding
+    expensive backtracking.
+
+-   It does not collapse adjacent bird-track blocks into a single
+    blockquote:
+
+        > this is two
+
+        > blockquotes
+
+        > this is a single
+        >
+        > blockquote with two paragraphs
+
+-   Rules for content in lists differ in a few respects, though (as with
+    HTML blocks), most lists in existing documents should render as
+    intended. There is some discussion of the choice points and
+    differences [here](http://jgm.github.io/stmd/spec.html#motivation).
+    I think that the spec's proposal does better than any existing
+    implementation in rendering lists the way a human writer or reader
+    would intuitively understand them. (I could give numerous examples
+    of perfectly natural looking lists that nearly every existing
+    implementation flubs up.)
+
+-   The spec stipulates that two blank lines break out of all list
+    contexts.  This is an attempt to deal with issues that often come up
+    when someone wants to have two adjacent lists, or a list followed by
+    an indented code block.
+
+-   Changing bullet characters, or changing from bullets to numbers or
+    vice versa, starts a new list. I think that is almost always going
+    to be the writer's intent.
+
+-   The number that begins an ordered list item may be followed by
+    either `.` or `)`. Changing the delimiter style starts a new
+    list.
+
+-   The start number of an ordered list is significant.
+
+-   [Fenced code blocks](http://jgm.github.io/stmd/spec.html#fenced-code-blocks) are supported, delimited by either
+    backticks (` ``` `) or tildes (` ~~~ `).
+
 In all of this, I have been guided by eight years experience writing
 Markdown implementations in several languages, including the first
 Markdown parser not based on regular expression substitutions
@@ -113,3 +182,13 @@ Markdown implementations extensively using [babelmark
 working out the spec, I benefited greatly from collaboration with David
 Greenspan, and from feedback from several industrial users of Markdown,
 including Jeff Atwood, Vincent Marti, and Neil Williams.
+
+Contributing
+------------
+
+There is a [forum for discussing
+CommonMark](http://talk.commonmark.org); you should use it instead of
+github issues for questions and possibly open-ended discussions.
+Use the [github issue tracker](http://github.com/jgm/stmd/issues)
+only for simple, clear, actionable issues.
+
