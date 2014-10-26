@@ -479,11 +479,11 @@ consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
 of `#` characters cannot be followed directly by a nonspace character.
-The closing `#` characters may be followed by spaces only.  The opening
-`#` character may be indented 0-3 spaces.  The raw contents of the
-header are stripped of leading and trailing spaces before being parsed
-as inline content.  The header level is equal to the number of `#`
-characters in the opening sequence.
+The optional closing sequence of `#`s must be preceded by a space and may be
+followed by spaces only.  The opening `#` character may be indented 0-3
+spaces.  The raw contents of the header are stripped of leading and
+trailing spaces before being parsed as inline content.  The header level
+is equal to the number of `#` characters in the opening sequence.
 
 Simple headers:
 
@@ -614,16 +614,24 @@ header:
 <h3>foo ### b</h3>
 .
 
+The closing sequence must be preceded by a space:
+
+.
+# foo#
+.
+<h1>foo#</h1>
+.
+
 Backslash-escaped `#` characters do not count as part
 of the closing sequence:
 
 .
 ### foo \###
-## foo \#\##
+## foo #\##
 # foo \#
 .
-<h3>foo #</h3>
-<h2>foo ##</h2>
+<h3>foo ###</h3>
+<h2>foo ###</h2>
 <h1>foo #</h1>
 .
 

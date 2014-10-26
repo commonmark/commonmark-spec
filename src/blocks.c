@@ -432,15 +432,15 @@ static void chop_trailing_hashtags(chunk *ch)
 	chunk_rtrim(ch);
 	orig_n = n = ch->len - 1;
 
-	// if string ends in #s, remove these:
+	// if string ends in space followed by #s, remove these:
 	while (n >= 0 && peek_at(ch, n) == '#')
 		n--;
 
-	// the last # was escaped, so we include it.
-	if (n != orig_n && n >= 0 && peek_at(ch, n) == '\\')
-		n++;
-
-	ch->len = n + 1;
+	// Check for a be a space before the final #s:
+	if (n != orig_n && n >= 0 && peek_at(ch, n) == ' ') {
+	    ch->len = n;
+	    chunk_rtrim(ch);
+	}
 }
 
 // Process one line at a time, modifying a node_block.
