@@ -12,7 +12,7 @@ while (<STDIN>) {
     if ($stage == 0) {
       $example++;
       print "\n<div class=\"example\" id=\"example-$example\" data-section=\"$section\">\n";
-      print "<div class=\"examplenum\"><a href=\"#example-$example\">Example $example</a></div>\n\n";
+      print "<div class=\"examplenum\"><a href=\"#example-$example\">Example $example</a>&nbsp;&nbsp;<a class=\"dingus\" title=\"open in interactive dingus\">(interact)</a></div>\n\n";
       print "````````````````````````````````````````````````````````` markdown\n";
     } elsif ($stage == 1) {
       print "`````````````````````````````````````````````````````````\n\n";

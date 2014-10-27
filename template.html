@@ -47,6 +47,7 @@ pre.html span.space:after {
   border: 1px solid #666;
 }
 div.examplenum { font-size: 82%; text-align: left; }
+a.dingus { color: red; }
 a.footnoteRef > sup:before {
   content: "[";
 }
@@ -58,6 +59,20 @@ a.footnoteRef > sup {
   font-size: 100%;
 }
 </style>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+$$(document).ready(function() {
+  $$("div.example").each(function(e) {
+    var t = $$(this).find('pre.markdown > code').text();
+    $$(this).find('a.dingus').click(function(f) {
+      window.open('/dingus.html?text=' + encodeURIComponent(t));
+    });
+  });
+  $$("pre.markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
+      encodeURIComponent($$(this).find('code').text()));
+  });
+});
+</script>
 </head>
 <body>
 $if(title)$
