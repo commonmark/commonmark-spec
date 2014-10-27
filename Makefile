@@ -89,27 +89,25 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-index.md: _site/$(SPECVERSION)/index.html
-	echo "% CommonMark Spec\n" > $@
-	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
-	  echo "- [Version $$vers](/$$vers/)" >> $@ ; done
+_site/spec.html: spec.redirect.in
+	perl -pe 's/VERSION/$(SPECVERSION)/g' $< > $@
 
-_site/index.html: index.md
-	pandoc --template template.html -S -s -t html5 -o $@ $<
+_site/index.html: _site/spec.html
+	cp $< $@
 
 _site/$(SPECVERSION)/index.html: spec.html
 	mkdir -p _site/$(SPECVERSION)
 	cp $< $@
 	cd _site; git add $(SPECVERSION)/index.html; git commit -a -m "Added version $(SPECVERSION) of spec"; cd ..
 
-update-site: spec.html js/commonmark.js _site/index.html _site/$(SPECVERSION)/index.html
+update-site: spec.html js/commonmark.js _site/index.html _site/$(SPECVERSION)/index.html _site/spec.html
 	cp js/index.html _site/js/
 	cp js/commonmark.js _site/js/
 	cp js/LICENSE _site/js/
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..)
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so index.md
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
 	-rm js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
