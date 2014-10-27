@@ -89,8 +89,11 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-_site/spec.html: spec.redirect.in spec.txt
-	perl -pe 's/VERSION/$(SPECVERSION)/g' $< > $@
+_site/spec.html: spec.txt
+	(echo "% CommonMark Spec\n";\
+	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
+	  echo "- [Version $$vers](/$$vers/)" ; done) | \
+	pandoc --template template.html -S -s -t html5 -o $@
 
 _site/index.html: _site/spec.html
 	cp $< $@
