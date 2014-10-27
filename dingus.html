@@ -71,7 +71,7 @@ $(document).ready(function() {
     $('#result-tabs a[href="#result"]').tab('show');
   }
   // make tab insert a tab in the text box:
-  $("#text").addEventListener('keydown', function (e) {
+  $("#text").keydown(function (e) {
     if (e.which == 9) {
         e.preventDefault();
     }
