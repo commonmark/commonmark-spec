@@ -93,7 +93,8 @@ _site/spec.html: spec.txt
 	(echo "% CommonMark Spec\n";\
 	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
 	  date=`stat -t "%Y-%m-%d" -f "%Sa" _site/$$vers/index.html`; \
-	  echo "- [Version $$vers ($$date)](/$$vers/)" ; done) | \
+	  echo "- [Version $$vers ($$date)](/$$vers/)" ; \
+	  perl -pe 's/<div id="watermark"><\/div>/<div id="watermark">This is an older version of the spec. For the most recent version, see <a href="http:\/\/spec.commonmark.org">http:\/\/spec.commonmark.org<\/a>.<\/div>/' _site/$$vers/index.html; \ done) | \
 	pandoc --template template.html -S -s -t html5 -o $@
 
 _site/index.html: _site/spec.html
