@@ -89,7 +89,7 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-_site/spec.html: spec.redirect.in
+_site/spec.html: spec.redirect.in spec.txt
 	perl -pe 's/VERSION/$(SPECVERSION)/g' $< > $@
 
 _site/index.html: _site/spec.html
