@@ -70,6 +70,12 @@ $(document).ready(function() {
     // show HTML tab if text is from query
     $('#result-tabs a[href="#result"]').tab('show');
   }
+  // make tab insert a tab in the text box:
+  $("#text").addEventListener('keydown', function (e) {
+    if (e.which == 9) {
+        e.preventDefault();
+    }
+  });
   parseAndRender();
   $("#clear-text-box").click(function(e) {
     $("#text").val('');
