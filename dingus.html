@@ -20,7 +20,7 @@ function getQueryVariable(variable)
                var pair = vars[i].split("=");
                if(pair[0] == variable){return decodeURIComponent(pair[1]);}
        }
-       return('');
+       return null;
 }
 
 
@@ -64,7 +64,12 @@ $(document).ready(function() {
       render();
     }, 0); // ms delay
   };
-  $("#text").val(getQueryVariable("text"));
+  var initial_text = getQueryVariable("text");
+  if (initial_text) {
+    $("#text").val(initial_text);
+    // show HTML tab if text is from query
+    $('#result-tabs a[href="#result"]').tab('show');
+  }
   parseAndRender();
   $("#clear-text-box").click(function(e) {
     $("#text").val('');
@@ -114,7 +119,7 @@ $(document).ready(function() {
       <ul id="warnings"></ul>
     </div>
     <div class="col-md-6">
-      <ul class="nav nav-tabs" role="tablist">
+      <ul id="result-tabs" class="nav nav-tabs" role="tablist">
         <li class="active"><a href="#preview" role="tab" data-toggle="tab">Preview</a></li>
         <li><a href="#result" role="tab" data-toggle="tab">HTML</a></li>
         <li><a href="#result-ast" role="tab" data-toggle="tab">AST</a></li>
