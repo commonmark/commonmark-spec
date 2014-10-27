@@ -74,6 +74,7 @@ $(document).ready(function() {
   $("#text").keydown(function (e) {
     if (e.which == 9) {
         e.preventDefault();
+        this.value += "\t";
     }
   });
   parseAndRender();
