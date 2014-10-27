@@ -6,7 +6,7 @@
   <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
   <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
-  <script src="commonmark.js"></script>
+  <script src="js/commonmark.js"></script>
   <script type="text/javascript">
 
 var writer = new commonmark.HtmlRenderer();
@@ -25,7 +25,6 @@ function getQueryVariable(variable)
 
 
 $(document).ready(function() {
-  $("#text").val(getQueryVariable("text"));
   var timer;
   var x;
   var parsed;
@@ -65,6 +64,8 @@ $(document).ready(function() {
       render();
     }, 0); // ms delay
   };
+  $("#text").val(getQueryVariable("text"));
+  parseAndRender();
   $("#clear-text-box").click(function(e) {
     $("#text").val('');
     window.location.search = "";

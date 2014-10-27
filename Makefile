@@ -77,7 +77,7 @@ install: libcmark.so $(cmark_HDR) $(HTML_HDR)
 	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
 
 dingus: js/commonmark.js
-	cd js && echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
+	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
 leakcheck: $(PROG)
 	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
@@ -101,7 +101,7 @@ _site/$(SPECVERSION)/index.html: spec.html
 	cd _site; git add $(SPECVERSION)/index.html; git commit -a -m "Added version $(SPECVERSION) of spec"; cd ..
 
 update-site: spec.html js/commonmark.js _site/index.html _site/$(SPECVERSION)/index.html _site/spec.html
-	cp js/index.html _site/js/
+	cp dingus.html _site/
 	cp js/commonmark.js _site/js/
 	cp js/LICENSE _site/js/
 	(cd _site ; git pull ; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..)
