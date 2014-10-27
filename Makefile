@@ -91,10 +91,11 @@ fuzztest:
 
 _site/spec.html: spec.txt
 	(echo "% CommonMark Spec\n";\
-	 for vers in $(shell cd _site; ls -d -t 0.*) ; do \
-	   perl -pie 's/<div id="watermark"><\/div>/<div id="watermark" style="background-color:black">This is an older version of the spec. For the most recent version, see <a href="http:\/\/spec.commonmark.org">http:\/\/spec.commonmark.org<\/a>.<\/div>/' _site/$$vers/index.html ; \
-	  date=`stat -t "%Y-%m-%d" -f "%Sa" _site/$$vers/index.html`; \
-	  echo "- [Version $$vers ($$date)](/$$vers/)" ; \
+	 for vers in $(shell cd _site; ls -d -1 0.* | sort -r -g) ; do \
+	   if [ "$$vers" != "$(SPECVERSION)" ]; then \
+		perl -p -i -e 's/<div id="watermark">.*?<\/div>/<div id="watermark" style="background-color:black">This is an older version of the spec. For the most recent version, see <a href="http:\/\/spec.commonmark.org">http:\/\/spec.commonmark.org<\/a>.<\/div>/' _site/$$vers/index.html ; \
+	  fi; \
+	  echo "- [Version $$vers](/$$vers/)" ; \
 	  done) | \
 	pandoc --template template.html -S -s -t html5 -o $@
 
