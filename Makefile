@@ -92,7 +92,8 @@ fuzztest:
 _site/spec.html: spec.txt
 	(echo "% CommonMark Spec\n";\
 	for vers in $(shell cd _site; ls -d -t 0.*) ; do \
-	  echo "- [Version $$vers](/$$vers/)" ; done) | \
+	  date=`stat -t "%Y-%m-%d" -f "%Sa" _site/$$vers/index.html`; \
+	  echo "- [Version $$vers ($$date)](/$$vers/)" ; done) | \
 	pandoc --template template.html -S -s -t html5 -o $@
 
 _site/index.html: _site/spec.html
