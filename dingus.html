@@ -94,18 +94,18 @@ $(document).ready(function() {
   <style type="text/css">
     h1.title { font-family: monospace; font-size: 120%; font-weight: bold;
           margin-top: 0.5em; margin-bottom: 0; }
-    textarea#text { height: 400px; width: 95%; font-family: monospace; font-size: 92%; }
+    textarea#text { min-height: 400px; width: 95%; font-family: monospace; font-size: 92%; }
     pre code#html { font-size: 92%; font-family: monospace; }
-    pre#htmlpre { height: 400px; width: 95%; overflow: scroll; }
-    div#preview { height: 400px; overflow: scroll; }
+    pre#htmlpre { min-height: 400px; resize: vertical; width: 95%; overflow: scroll; }
+    div#preview { min-height: 400px; resize: vertical; width: 95%; overflow: scroll; }
     div.row { margin-top: 1em; }
     blockquote { font-size: 100%; }
     footer { color: #555; text-align: center; margin: 1em; }
     pre { display: block; padding: 0.5em; color: #333; background: #f8f8ff }
     #warnings li { color: red; font-weight: bold; }
     label { padding-left: 1em; padding-top: 0; padding-bottom: 0; }
-    div.timing { color: red; visibility: hidden; height: 2em; }
-    p#text-controls { height: 1em; }
+    div.timing { color: gray; visibility: hidden; height: 2em; }
+    p#text-controls { height: 1em; margin-top: 1em; }
     a#permalink { margin-left: 1em; }
     span.timing { font-weight: bold; }
     span.timing { font-weight: bold; }
@@ -114,16 +114,18 @@ $(document).ready(function() {
 <body>
 <div class="container">
   <div class="row">
+    <div class="col-md-6">
       <h1 class="title">commonmark.js dingus</h1>
+    </div>
   </div>
   <div class="row">
     <div class="col-md-6">
-      <div class="timing">Parsed in <span class="timing" id="parsetime"></span> 
-      ms.  Rendered in <span class="timing" id="rendertime"></span> ms.</div>
       <p id="text-controls"><a id="clear-text-box">clear</a>&nbsp;<a
       id="permalink">permalink</a></p>
       <textarea id="text"></textarea>
       <ul id="warnings"></ul>
+      <div class="timing">Parsed in <span class="timing" id="parsetime"></span> 
+      ms.  Rendered in <span class="timing" id="rendertime"></span> ms.</div>
     </div>
     <div class="col-md-6">
       <ul id="result-tabs" class="nav nav-tabs" role="tablist">
