@@ -9,7 +9,6 @@ PREFIX?=/usr/local
 SPEC=spec.txt
 SITE=_site
 SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
-VERSIONS=$(shell cd $(SITE); ls -d -1 0.* | sort -r -g)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site
 
@@ -92,16 +91,8 @@ fuzztest:
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
 $(SITE)/index.html: spec.txt
-	(echo "% CommonMark Spec\n";\
-	 echo "[**Latest version ($(SPECVERSION))**](/$(SPECVERSION)/)\n"; \
-	 echo "Older versions:\n"; \
-	 for vers in $(VERSIONS); do \
-	   if [ "$$vers" != "$(SPECVERSION)" ]; then \
-		perl -p -i -e 's/<div id="watermark">.*?<\/div>/<div id="watermark" style="background-color:black">This is an older version of the spec. For the most recent version, see <a href="http:\/\/spec.commonmark.org">http:\/\/spec.commonmark.org<\/a>.<\/div>/' $(SITE)/$$vers/index.html ; \
-	  echo "- [$$vers](/$$vers/)" ; \
-	  fi; \
-	  done) | \
-	pandoc --template template.html -S -s -t html5 -o $@
+	./make_site_index.sh $(SPECVERSION) | \
+	  pandoc --template template.html -S -s -t html5 -o $@
 
 $(SITE)/$(SPECVERSION)/index.html: spec.html
 	mkdir -p $(SITE)/$(SPECVERSION)
@@ -111,7 +102,7 @@ $(SITE)/$(SPECVERSION)/index.html: spec.html
 $(SITE)/%: %
 	cp $< $@
 
-update-site: $(SITE)/dingus.html $(SITE)/js/commonmark.js $(SITE)/index.html $(SITE)/$(SPECVERSION)/index.html $(SITE)/spec.html $(SITE)/js/LICENSE
+update-site: $(SITE)/dingus.html $(SITE)/js/commonmark.js $(SITE)/index.html $(SITE)/$(SPECVERSION)/index.html $(SITE)/js/LICENSE
 
 upload-site:
 	cd $(SITE) ; git pull; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..
