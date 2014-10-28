@@ -91,18 +91,17 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 100000 | iconv -f latin1 -t utf-8 | $(PROG) >/dev/null; done
 
-$(SITE)/spec.html: spec.txt
+$(SITE)/index.html: spec.txt
 	(echo "% CommonMark Spec\n";\
+	 echo "[**Latest version ($(SPECVERSION))**](/$(SPECVERSION)/)\n"; \
+	 echo "Older versions:\n"; \
 	 for vers in $(VERSIONS); do \
 	   if [ "$$vers" != "$(SPECVERSION)" ]; then \
 		perl -p -i -e 's/<div id="watermark">.*?<\/div>/<div id="watermark" style="background-color:black">This is an older version of the spec. For the most recent version, see <a href="http:\/\/spec.commonmark.org">http:\/\/spec.commonmark.org<\/a>.<\/div>/' $(SITE)/$$vers/index.html ; \
+	  echo "- [$$vers](/$$vers/)" ; \
 	  fi; \
-	  echo "- [Version $$vers](/$$vers/)" ; \
 	  done) | \
 	pandoc --template template.html -S -s -t html5 -o $@
-
-$(SITE)/index.html: $(SITE)/spec.html
-	cp $< $@
 
 $(SITE)/$(SPECVERSION)/index.html: spec.html
 	mkdir -p $(SITE)/$(SPECVERSION)
