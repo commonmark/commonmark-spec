@@ -393,7 +393,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 cannotClose:
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-	if (can_open && subj->emphasis_nestlevel < EMPHASIS_STACK_LIMIT)
+	if (can_open && subj->emphasis_nestlevel < STACK_LIMIT)
 	{
 		istack = (inline_stack*)malloc(sizeof(inline_stack));
                 if (istack == NULL) {
