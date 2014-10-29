@@ -594,7 +594,8 @@ static int link_label(subject* subj, chunk *raw_label)
 
 	advance(subj);  // advance past [
 	unsigned char c;
-	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
+	while ((c = peek_char(subj)) &&
+	       (c != ']' || (nestlevel > 0 && nestlevel < STACK_LIMIT))) {
 		switch (c) {
 		case '`':
 			tmp = handle_backticks(subj);
@@ -622,7 +623,7 @@ static int link_label(subject* subj, chunk *raw_label)
 			advance(subj);
 		}
 	}
-	if (c == ']') {
+	if (nestlevel == 0 && c == ']') {
 		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
 		subj->label_nestlevel = 0;
 		advance(subj);  // advance past ]
