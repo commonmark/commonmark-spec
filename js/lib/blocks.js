@@ -25,13 +25,13 @@ var detabLine = function(text) {
 };
 
 // Attempt to match a regex in string s at offset offset.
-// Return index of match or null.
+// Return index of match or -1.
 var matchAt = function(re, s, offset) {
     var res = s.slice(offset).match(re);
     if (res) {
         return offset + res.index;
     } else {
-        return null;
+        return -1;
     }
 };
 
@@ -218,7 +218,7 @@ var incorporateLine = function(ln, line_number) {
         container = last_child;
 
         match = matchAt(/[^ ]/, ln, offset);
-        if (match === null) {
+        if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
         } else {
@@ -326,10 +326,10 @@ var incorporateLine = function(ln, line_number) {
            container.t != 'IndentedCode' &&
            container.t != 'HtmlBlock' &&
            // this is a little performance optimization:
-           matchAt(/^[ #`~*+_=<>0-9-]/,ln,offset) !== null) {
+           matchAt(/^[ #`~*+_=<>0-9-]/,ln,offset) !== -1) {
 
         match = matchAt(/[^ ]/, ln, offset);
-        if (match === null) {
+        if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
         } else {
@@ -380,7 +380,7 @@ var incorporateLine = function(ln, line_number) {
             offset = first_nonspace + fence_length;
             break;
 
-        } else if (matchAt(reHtmlBlockOpen, ln, first_nonspace) !== null) {
+        } else if (matchAt(reHtmlBlockOpen, ln, first_nonspace) !== -1) {
             // html block
             closeUnmatchedBlocks(this);
             container = this.addChild('HtmlBlock', line_number, first_nonspace);
@@ -396,7 +396,7 @@ var incorporateLine = function(ln, line_number) {
             container.level = match[0][0] === '=' ? 1 : 2;
             offset = ln.length;
 
-        } else if (matchAt(reHrule, ln, first_nonspace) !== null) {
+        } else if (matchAt(reHrule, ln, first_nonspace) !== -1) {
             // hrule
             closeUnmatchedBlocks(this);
             container = this.addChild('HorizontalRule', line_number, first_nonspace);
@@ -435,7 +435,7 @@ var incorporateLine = function(ln, line_number) {
     // appropriate container.
 
     match = matchAt(/[^ ]/, ln, offset);
-    if (match === null) {
+    if (match === -1) {
         first_nonspace = ln.length;
         blank = true;
     } else {
