@@ -81,7 +81,7 @@ sub dotest
   waitpid($pid, 0);
   $html   = &tidy($html);
   $actual = &tidy($actual);
-  $actual =~ s/\&#39;/'/;
+  $actual =~ s/\&#39;/'/g;
 
   if ($actual eq $html) {
     print colored("✓", "green");
