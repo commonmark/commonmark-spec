@@ -23,6 +23,7 @@ typedef struct Subject {
 	int label_nestlevel;
 	reference_map *refmap;
 	inline_stack *emphasis_openers;
+	int emphasis_nestlevel;
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
@@ -177,6 +178,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->emphasis_openers = NULL;
+	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
 }
@@ -190,6 +192,7 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->emphasis_openers = NULL;
+	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
 }
@@ -309,6 +312,7 @@ static void free_openers(subject* subj, inline_stack* istack)
     while (subj->emphasis_openers != istack) {
 	tempstack = subj->emphasis_openers;
 	subj->emphasis_openers = subj->emphasis_openers->previous;
+	subj->emphasis_nestlevel--;
 	free(tempstack);
     }
 }
@@ -389,7 +393,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 cannotClose:
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-	if (can_open)
+	if (can_open && subj->emphasis_nestlevel < STACK_LIMIT)
 	{
 		istack = (inline_stack*)malloc(sizeof(inline_stack));
                 if (istack == NULL) {
@@ -400,6 +404,7 @@ cannotClose:
 		istack->first_inline = inl_text;
 		istack->previous = subj->emphasis_openers;
 		subj->emphasis_openers = istack;
+		subj->emphasis_nestlevel++;
 	}
 
 	return inl_text;
@@ -589,7 +594,8 @@ static int link_label(subject* subj, chunk *raw_label)
 
 	advance(subj);  // advance past [
 	unsigned char c;
-	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
+	while ((c = peek_char(subj)) &&
+	       (c != ']' || (nestlevel > 0 && nestlevel < STACK_LIMIT))) {
 		switch (c) {
 		case '`':
 			tmp = handle_backticks(subj);
@@ -617,7 +623,7 @@ static int link_label(subject* subj, chunk *raw_label)
 			advance(subj);
 		}
 	}
-	if (c == ']') {
+	if (nestlevel == 0 && c == ']') {
 		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
 		subj->label_nestlevel = 0;
 		advance(subj);  // advance past ]

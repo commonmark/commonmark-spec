@@ -46,7 +46,20 @@ pre.html { background-color: #C9CaCE; }
 pre.html span.space:after {
   border: 1px solid #666;
 }
+#watermark {
+ position:fixed;
+ bottom:0px;
+ left:0px;
+ padding: 1em;
+ width: 100%;
+ font-size: 120%;
+ opacity:0.7;
+ z-index:99;
+ color: white;
+}
+#watermark a { color: white; }
 div.examplenum { font-size: 82%; text-align: left; }
+a.dingus { color: red; cursor: pointer; }
 a.footnoteRef > sup:before {
   content: "[";
 }
@@ -58,6 +71,21 @@ a.footnoteRef > sup {
   font-size: 100%;
 }
 </style>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript">
+$$(document).ready(function() {
+  $$("div.example").each(function(e) {
+    var t = $$(this).find('pre.markdown > code').text();
+    $$(this).find('a.dingus').click(function(f) {
+      window.open('/dingus.html?text=' +
+        encodeURIComponent(t.replace(/→/g,"\t")));
+    });
+  });
+  $$("pre.markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
+      encodeURIComponent($$(this).find('code').text()));
+  });
+});
+</script>
 </head>
 <body>
 $if(title)$
@@ -72,6 +100,7 @@ $for(author)$<span class="author">$author$</span>$sep$; $endfor$
 <div id="TOC">
 $toc$
 </div>
+<div id="watermark"></div>
 $body$
 </body>
 </html>
