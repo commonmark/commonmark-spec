@@ -1,5 +1,5 @@
 CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers -fPIC $(OPTCFLAGS)
-LDFLAGS?=-g -O3 -Wall -Werror $(OPTLDFLAGS)
+LDFLAGS?=-g -O3 -Wall -Werror -fPIC $(OPTLDFLAGS)
 SRCDIR?=src
 DATADIR?=data
 BENCHINP?=README.md
