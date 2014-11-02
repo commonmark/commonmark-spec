@@ -109,7 +109,7 @@ upload-site:
 
 clean:
 	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
-	-rm js/commonmark.js
+	-rm -f js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
