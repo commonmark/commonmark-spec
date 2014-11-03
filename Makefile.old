@@ -1,5 +1,5 @@
 CFLAGS?=-g -O3 -Wall -Wextra -std=c99 -Isrc -Wno-missing-field-initializers -fPIC $(OPTCFLAGS)
-LDFLAGS?=-g -O3 -Wall -Werror $(OPTLDFLAGS)
+LDFLAGS?=-g -O3 -Wall -Werror -fPIC $(OPTLDFLAGS)
 SRCDIR?=src
 DATADIR?=data
 BENCHINP?=README.md
@@ -109,7 +109,7 @@ upload-site:
 
 clean:
 	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
-	-rm js/commonmark.js
+	-rm -f js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html

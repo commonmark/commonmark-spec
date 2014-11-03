@@ -29,6 +29,6 @@
 scanners.c
 *.zip
 bstrlib.txt
-commonmark.dSYM/*
-commonmark
 build
+cmark.dSYM/*
+cmark
