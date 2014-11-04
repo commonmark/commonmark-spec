@@ -4,13 +4,17 @@ SPECVERSION=$1
 SITE=_site
 VERSIONS=`cd $SITE; ls -d -1 0.* | sort -r -g`
 
-echo "% CommonMark Spec\n"
+echo "% CommonMark Spec"
+echo ""
 date=`grep '<div class="version">' $SITE/$SPECVERSION/index.html | perl  -pe 's/^.*(\d\d\d\d-\d\d-\d\d).*$/\1/'`
-echo "[**Latest version ($SPECVERSION)**](/$SPECVERSION/) ($date)\n"
+echo "[**Latest version ($SPECVERSION)**](/$SPECVERSION/) ($date)"
+echo ""
 echo "[discussion forum](http://talk.commonmark.org/) | "
 echo "[interactive dingus](/dingus.html) | "
-echo "[repository](https://github.com/jgm/CommonMark/)\n"
-echo "Older versions:\n"
+echo "[repository](https://github.com/jgm/CommonMark/)"
+echo ""
+echo "Older versions:"
+echo ""
 for vers in $VERSIONS
   do
     date=`grep '<div class="version">' $SITE/$vers/index.html | perl  -pe 's/^.*(\d\d\d\d-\d\d-\d\d).*$/\1/'`
