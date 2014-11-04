@@ -235,8 +235,8 @@ var scanDelims = function(cc) {
         char_after = fromCodePoint(cc_after);
     }
 
-    var can_open = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_after));
-    var can_close = numdelims > 0 && numdelims <= 3 && !(/\s/.test(char_before));
+    var can_open = numdelims > 0 && !(/\s/.test(char_after));
+    var can_close = numdelims > 0 && !(/\s/.test(char_before));
     if (cc === C_UNDERSCORE) {
         can_open = can_open && !((/[a-z0-9]/i).test(char_before));
         can_close = can_close && !((/[a-z0-9]/i).test(char_after));
@@ -265,6 +265,7 @@ var parseEmphasis = function(cc,inlines) {
 
     var res = this.scanDelims(cc);
     var numdelims = res.numdelims;
+    var usedelims;
 
     if (numdelims === 0) {
         this.pos = startpos;
@@ -279,41 +280,36 @@ var parseEmphasis = function(cc,inlines) {
 
         if (opener.cc === cc) { // we have a match!
 
-          if (opener.numdelims <= numdelims) { // all openers used
+          if (numdelims < 3 || opener.numdelims < 3) {
+                usedelims = numdelims <= opener.numdelims ? numdelims : opener.numdelims;
+          } else { // numdelims >= 3 && opener.numdelims >= 3
+                usedelims = numdelims % 2 === 0 ? 2 : 1;
+          }
+          var X = usedelims === 1 ? Emph : Strong;
 
-            this.pos += opener.numdelims;
-            var X;
-            switch (opener.numdelims) {
-            case 3:
-                X = function(x) { return Strong([Emph(x)]); };
-                break;
-            case 2:
-                X = Strong;
-                break;
-            case 1:
-            default:
-                X = Emph;
-                break;
-            }
+          if (opener.numdelims == usedelims) { // all openers used
+
+            this.pos += usedelims;
             inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
             // Remove entries after this, to prevent overlapping nesting:
             this.emphasis_openers = opener.previous;
             return true;
 
-          } else if (opener.numdelims > numdelims) { // only some openers used
+          } else if (opener.numdelims > usedelims) { // only some openers used
 
-            this.pos += numdelims;
-            opener.numdelims -= numdelims;
+            this.pos += usedelims;
+            opener.numdelims -= usedelims;
             inlines[opener.pos].c =
               inlines[opener.pos].c.slice(0, opener.numdelims);
-            var X = numdelims === 2 ? Strong : Emph;
             inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
             // Remove entries after this, to prevent overlapping nesting:
             this.emphasis_openers = opener;
             return true;
 
+          } else { // usedelims > opener.numdelims, should never happen
+            throw new Error("Logic error: usedelims > opener.numdelims");
           }
 
         }

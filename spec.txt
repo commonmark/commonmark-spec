@@ -4250,60 +4250,52 @@ for efficient parsing strategies that do not backtrack:
 1.  A single `*` character [can open emphasis](#can-open-emphasis)
     <a id="can-open-emphasis"></a> iff
 
-    (a) it is not part of a sequence of four or more unescaped `*`s,
-    (b) it is not followed by whitespace, and
-    (c) either it is not followed by a `*` character or it is
+    (a) it is not followed by whitespace, and
+    (b) either it is not followed by a `*` character or it is
         followed immediately by emphasis or strong emphasis.
 
 2.  A single `_` character [can open emphasis](#can-open-emphasis) iff
 
-    (a) it is not part of a sequence of four or more unescaped `_`s,
-    (b) it is not followed by whitespace,
-    (c) it is not preceded by an ASCII alphanumeric character, and
-    (d) either it is not followed by a `_` character or it is
+    (a) it is not followed by whitespace,
+    (b) it is not preceded by an ASCII alphanumeric character, and
+    (c) either it is not followed by a `_` character or it is
         followed immediately by emphasis or strong emphasis.
 
 3.  A single `*` character [can close emphasis](#can-close-emphasis)
     <a id="can-close-emphasis"></a> iff
 
-    (a) it is not part of a sequence of four or more unescaped `*`s, and
     (b) it is not preceded by whitespace.
 
 4.  A single `_` character [can close emphasis](#can-close-emphasis) iff
 
-    (a) it is not part of a sequence of four or more unescaped `_`s,
-    (b) it is not preceded by whitespace, and
-    (c) it is not followed by an ASCII alphanumeric character.
+    (a) it is not preceded by whitespace, and
+    (b) it is not followed by an ASCII alphanumeric character.
 
 5.  A double `**` [can open strong emphasis](#can-open-strong-emphasis)
     <a id="can-open-strong-emphasis" ></a> iff
 
-    (a) it is not part of a sequence of four or more unescaped `*`s,
-    (b) it is not followed by whitespace, and
-    (c) either it is not followed by a `*` character or it is
+    (a) it is not followed by whitespace, and
+    (b) either it is not followed by a `*` character or it is
         followed immediately by emphasis.
 
 6.  A double `__` [can open strong emphasis](#can-open-strong-emphasis)
     iff
 
-    (a) it is not part of a sequence of four or more unescaped `_`s,
-    (b) it is not followed by whitespace, and
-    (c) it is not preceded by an ASCII alphanumeric character, and
-    (d) either it is not followed by a `_` character or it is
+    (a) it is not followed by whitespace, and
+    (b) it is not preceded by an ASCII alphanumeric character, and
+    (c) either it is not followed by a `_` character or it is
         followed immediately by emphasis.
 
 7.  A double `**` [can close strong emphasis](#can-close-strong-emphasis)
     <a id="can-close-strong-emphasis" ></a> iff
 
-    (a) it is not part of a sequence of four or more unescaped `*`s, and
-    (b) it is not preceded by whitespace.
+    (a) it is not preceded by whitespace.
 
 8.  A double `__` [can close strong emphasis](#can-close-strong-emphasis)
     iff
 
-    (a) it is not part of a sequence of four or more unescaped `_`s,
-    (b) it is not preceded by whitespace, and
-    (c) it is not followed by an ASCII alphanumeric character.
+    (a) it is not preceded by whitespace, and
+    (b) it is not followed by an ASCII alphanumeric character.
 
 9.  Emphasis begins with a delimiter that [can open
     emphasis](#can-open-emphasis) and ends with a delimiter that [can close
@@ -4544,19 +4536,13 @@ and __foo bar __
 <p>and __foo bar __</p>
 .
 
-The rules imply that a sequence of four or more unescaped `*` or
-`_` characters will always be parsed as a literal string:
+The rules imply that a sequence of `*` or `_` characters
+surrounded by whitespace will be parsed as a literal string:
 
 .
-****hi****
+foo ********
 .
-<p>****hi****</p>
-.
-
-.
-_____hi_____
-.
-<p>_____hi_____</p>
+<p>foo ********</p>
 .
 
 .
@@ -4827,8 +4813,7 @@ the internal delimiters [can close emphasis](#can-close-emphasis),
 while in the cases with spaces, they cannot.
 
 Note that you cannot nest emphasis directly inside emphasis
-using the same delimeter, or strong emphasis directly inside
-strong emphasis:
+using the same delimeter:
 
 .
 **foo**
@@ -4836,13 +4821,7 @@ strong emphasis:
 <p><strong>foo</strong></p>
 .
 
-.
-****foo****
-.
-<p>****foo****</p>
-.
-
-For these nestings, you need to switch delimiters:
+For this, you need to switch delimiters:
 
 .
 *_foo_*
@@ -4850,8 +4829,17 @@ For these nestings, you need to switch delimiters:
 <p><em><em>foo</em></em></p>
 .
 
+Strong within strong is possible without switching
+delimiters:
+
 .
-**__foo__**
+****foo****
+.
+<p><strong><strong>foo</strong></strong></p>
+.
+
+.
+____foo____
 .
 <p><strong><strong>foo</strong></strong></p>
 .
@@ -4890,6 +4878,12 @@ similarly for `_` and `__`):
 <p><em><strong>foo</strong> bar</em>**</p>
 .
 
+.
+*foo****
+.
+<p><em>foo</em>***</p>
+.
+
 The following contains no strong emphasis, because the opening
 delimiter is closed by the first `*` before `bar`:
 
@@ -4897,14 +4891,6 @@ delimiter is closed by the first `*` before `bar`:
 *foo**bar***
 .
 <p><em>foo</em><em>bar</em>**</p>
-.
-
-However, a string of four or more `****` can never close emphasis:
-
-.
-*foo****
-.
-<p>*foo****</p>
 .
 
 We retain symmetry in these cases:
@@ -4926,6 +4912,26 @@ We retain symmetry in these cases:
 <p><em>foo <em>bar</em></em></p>
 <p><em><em>foo</em> bar</em></p>
 .
+
+.
+**foo***
+
+***foo**
+.
+<p><strong>foo</strong>*</p>
+<p>*<strong>foo</strong></p>
+.
+
+.
+**foo **bar****
+
+****foo** bar**
+.
+<p><strong>foo <strong>bar</strong></strong></p>
+<p><strong><strong>foo</strong> bar</strong></p>
+.
+
+
 
 More cases with mismatched delimiters:
 

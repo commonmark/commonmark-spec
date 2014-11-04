@@ -297,8 +297,8 @@ static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * c
 		advance(subj);
 	}
 	char_after = peek_char(subj);
-	*can_open = numdelims > 0 && numdelims <= 3 && !isspace(char_after);
-	*can_close = numdelims > 0 && numdelims <= 3 && !isspace(char_before);
+	*can_open = numdelims > 0 && !isspace(char_after);
+	*can_close = numdelims > 0 && !isspace(char_before);
 	if (c == '_') {
 		*can_open = *can_open && !isalnum(char_before);
 		*can_close = *can_close && !isalnum(char_after);
@@ -324,6 +324,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 	bool can_open, can_close;
 	int numdelims;
 	int useDelims;
+	int openerDelims;
 	inline_stack * istack;
 	node_inl * inl;
 	node_inl * emph;
@@ -347,9 +348,12 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 		}
 
 		// calculate the actual number of delimeters used from this closer
-		useDelims = istack->delim_count;
-		if (useDelims == 3) useDelims = numdelims == 3 ? 1 : numdelims;
-		else if (useDelims > numdelims) useDelims = 1;
+		openerDelims = istack->delim_count;
+		if (numdelims < 3 || openerDelims < 3) {
+		    useDelims = numdelims <= openerDelims ? numdelims : openerDelims;
+		} else { // (numdelims >= 3 && openerDelims >= 3)
+		    useDelims = numdelims % 2 == 0 ? 2 : 1;
+		}
 
 		if (istack->delim_count == useDelims)
 		{
