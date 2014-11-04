@@ -4248,79 +4248,71 @@ The following rules capture all of these patterns, while allowing
 for efficient parsing strategies that do not backtrack:
 
 1.  A single `*` character [can open emphasis](#can-open-emphasis)
-    <a id="can-open-emphasis"></a> iff
-
-    (a) it is not followed by whitespace, and
-    (b) either it is not followed by a `*` character or it is
-        followed immediately by emphasis or strong emphasis.
+    <a id="can-open-emphasis"></a> iff it is not followed by
+    whitespace.
 
 2.  A single `_` character [can open emphasis](#can-open-emphasis) iff
-
-    (a) it is not followed by whitespace,
-    (b) it is not preceded by an ASCII alphanumeric character, and
-    (c) either it is not followed by a `_` character or it is
-        followed immediately by emphasis or strong emphasis.
+    it is not followed by whitespace and it is not preceded by an
+    ASCII alphanumeric character.
 
 3.  A single `*` character [can close emphasis](#can-close-emphasis)
-    <a id="can-close-emphasis"></a> iff
-
-    (b) it is not preceded by whitespace.
+    <a id="can-close-emphasis"></a> iff it is not preceded by whitespace.
 
 4.  A single `_` character [can close emphasis](#can-close-emphasis) iff
-
-    (a) it is not preceded by whitespace, and
-    (b) it is not followed by an ASCII alphanumeric character.
+    it is not preceded by whitespace and it is not followed by an
+    ASCII alphanumeric character.
 
 5.  A double `**` [can open strong emphasis](#can-open-strong-emphasis)
-    <a id="can-open-strong-emphasis" ></a> iff
-
-    (a) it is not followed by whitespace, and
-    (b) either it is not followed by a `*` character or it is
-        followed immediately by emphasis.
+    <a id="can-open-strong-emphasis" ></a> iff it is not followed by
+    whitespace.
 
 6.  A double `__` [can open strong emphasis](#can-open-strong-emphasis)
-    iff
-
-    (a) it is not followed by whitespace, and
-    (b) it is not preceded by an ASCII alphanumeric character, and
-    (c) either it is not followed by a `_` character or it is
-        followed immediately by emphasis.
+    iff it is not followed by whitespace and it is not preceded by an
+    ASCII alphanumeric character.
 
 7.  A double `**` [can close strong emphasis](#can-close-strong-emphasis)
-    <a id="can-close-strong-emphasis" ></a> iff
-
-    (a) it is not preceded by whitespace.
+    <a id="can-close-strong-emphasis" ></a> iff it is not preceded by
+    whitespace.
 
 8.  A double `__` [can close strong emphasis](#can-close-strong-emphasis)
-    iff
-
-    (a) it is not preceded by whitespace, and
-    (b) it is not followed by an ASCII alphanumeric character.
+    iff it is not preceded by whitespace and it is not followed by an
+    ASCII alphanumeric character.
 
 9.  Emphasis begins with a delimiter that [can open
     emphasis](#can-open-emphasis) and ends with a delimiter that [can close
     emphasis](#can-close-emphasis), and that uses the same
-    character (`_` or `*`) as the opening delimiter.  The inlines
-    between the open delimiter and the closing delimiter are the
-    contents of the emphasis inline.
+    character (`_` or `*`) as the opening delimiter.  There must
+    be a nonempty sequence of inlines between the open delimiter
+    and the closing delimiter; these form the contents of the emphasis
+    inline.
 
 10. Strong emphasis begins with a delimiter that [can open strong
     emphasis](#can-open-strong-emphasis) and ends with a delimiter that
-    [can close strong emphasis](#can-close-strong-emphasis), and that uses the
-    same character (`_` or `*`) as the opening delimiter.  The inlines
-    between the open delimiter and the closing delimiter are the
-    contents of the strong emphasis inline.
+    [can close strong emphasis](#can-close-strong-emphasis), and that
+    uses the same character (`_` or `*`) as the opening delimiter.
+    There must be a nonempty sequence of inlines between the open
+    delimiter and the closing delimiter; these form the contents of
+    the strong emphasis inline.
 
-Where rules 1--10 above are compatible with multiple parsings,
+11. A literal `*` character cannot occur at the beginning or end of
+    `*`-delimited emphasis or `**`-delimited strong emphasis, unless it
+    is backslash-escaped.
+
+12. A literal `_` character cannot occur at the beginning or end of
+    `_`-delimited emphasis or `__`-delimited strong emphasis, unless it
+    is backslash-escaped.
+
+Where rules 1--12 above are compatible with multiple parsings,
 the following principles resolve ambiguity:
 
-11. An interpretation `<strong>...</strong>` is always preferred to
+13. The number of nestings should be minimized. Thus, for example,
+    an interpretation `<strong>...</strong>` is always preferred to
     `<em><em>...</em></em>`.
 
-12. An interpretation `<strong><em>...</em></strong>` is always
+14. An interpretation `<strong><em>...</em></strong>` is always
     preferred to `<em><strong>..</strong></em>`.
 
-13. When two potential emphasis or strong emphasis spans overlap,
+15. When two potential emphasis or strong emphasis spans overlap,
     so that the second begins before the first ends and ends after
     the first ends, the first is preferred. Thus, for example,
     `*foo _bar* baz_` is parsed as `<em>foo _bar</em> baz_` rather
@@ -4328,13 +4320,13 @@ the following principles resolve ambiguity:
     `**foo*bar**` is parsed as `<em><em>foo</em>bar</em>*`
     rather than `<strong>foo*bar</strong>`.
 
-14. When there are two potential emphasis or strong emphasis spans
+16. When there are two potential emphasis or strong emphasis spans
     with the same closing delimiter, the shorter one (the one that
     opens later) is preferred. Thus, for example,
     `**foo **bar baz**` is parsed as `**foo <strong>bar baz</strong>`
     rather than `<strong>foo **bar baz</strong>`.
 
-15. Inline code spans, links, images, and HTML tags group more tightly
+17. Inline code spans, links, images, and HTML tags group more tightly
     than emphasis.  So, when there is a choice between an interpretation
     that contains one of these elements and one that does not, the
     former always wins.  Thus, for example, `*[foo*](bar)` is
@@ -4343,7 +4335,7 @@ the following principles resolve ambiguity:
 
 These rules can be illustrated through a series of examples.
 
-Simple emphasis:
+Rule 1:
 
 .
 *foo bar*
@@ -4351,13 +4343,120 @@ Simple emphasis:
 <p><em>foo bar</em></p>
 .
 
+This is not emphasis, because the opening `*` is followed by
+whitespace:
+
+.
+a * foo bar*
+.
+<p>a * foo bar*</p>
+.
+
+Intraword emphasis with `*` is permitted:
+
+.
+foo*bar*
+.
+<p>foo<em>bar</em></p>
+.
+
+.
+5*6*78
+.
+<p>5<em>6</em>78</p>
+.
+
+Rule 2:
+
 .
 _foo bar_
 .
 <p><em>foo bar</em></p>
 .
 
-Simple strong emphasis:
+This is not emphasis, because the opening `*` is followed by
+whitespace:
+
+.
+_ foo bar_
+.
+<p>_ foo bar_</p>
+.
+
+Emphasis with `_` is not allowed inside ASCII words:
+
+.
+foo_bar_
+.
+<p>foo_bar_</p>
+.
+
+.
+5_6_78
+.
+<p>5_6_78</p>
+.
+
+But it is permitted inside non-ASCII words:
+
+.
+пристаням_стремятся_
+.
+<p>пристаням<em>стремятся</em></p>
+.
+
+Rule 3:
+
+This is not emphasis, because the closing `*` is preceded by
+whitespace:
+
+.
+*foo bar *
+.
+<p>*foo bar *</p>
+.
+
+Intraword emphasis with `*` is allowed:
+
+.
+*foo*bar
+.
+<p><em>foo</em>bar</p>
+.
+
+
+Rule 4:
+
+This is not emphasis, because the closing `_` is preceded by
+whitespace:
+
+.
+_foo bar _
+.
+<p>_foo bar _</p>
+.
+
+Intraword emphasis:
+
+.
+_foo_bar
+.
+<p>_foo_bar</p>
+.
+
+.
+_пристаням_стремятся
+.
+<p><em>пристаням</em>стремятся</p>
+.
+
+.
+_foo_bar_baz_
+.
+<p><em>foo_bar_baz</em></p>
+.
+
+Rule 5:
 
 .
 **foo bar**
@@ -4365,13 +4464,129 @@ Simple strong emphasis:
 <p><strong>foo bar</strong></p>
 .
 
+This is not strong emphasis, because the opening delimiter is
+followed by whitespace:
+
+.
+** foo bar**
+.
+<p>** foo bar**</p>
+.
+
+Intraword strong emphasis with `**` is permitted:
+
+.
+foo**bar**
+.
+<p>foo<strong>bar</strong></p>
+.
+
+Rule 6:
+
 .
 __foo bar__
 .
 <p><strong>foo bar</strong></p>
 .
 
-Emphasis can continue over line breaks:
+This is not strong emphasis, because the opening delimiter is
+followed by whitespace:
+
+.
+__ foo bar__
+.
+<p>__ foo bar__</p>
+.
+
+Intraword emphasis examples:
+
+.
+foo__bar__
+.
+<p>foo__bar__</p>
+.
+
+.
+5__6__78
+.
+<p>5__6__78</p>
+.
+
+.
+пристаням__стремятся__
+.
+<p>пристаням<strong>стремятся</strong></p>
+.
+
+.
+__foo, __bar__, baz__
+.
+<p><strong>foo, <strong>bar</strong>, baz</strong></p>
+.
+
+Rule 7:
+
+This is not strong emphasis, because the closing delimiter is preceded
+by whitespace:
+
+.
+**foo bar **
+.
+<p>**foo bar **</p>
+.
+
+(Nor can it be interpreted as an emphasized `*foo bar *`, because of
+Rule 11.)
+
+Intraword emphasis:
+
+.
+**foo**bar
+.
+<p><strong>foo</strong>bar</p>
+.
+
+Rule 8:
+
+This is not strong emphasis, because the closing delimiter is
+preceded by whitespace:
+
+.
+__foo bar __
+.
+<p>__foo bar __</p>
+.
+
+Intraword strong emphasis examples:
+
+.
+__foo__bar
+.
+<p>__foo__bar</p>
+.
+
+.
+__пристаням__стремятся
+.
+<p><strong>пристаням</strong>стремятся</p>
+.
+
+.
+__foo__bar__baz__
+.
+<p><strong>foo__bar__baz</strong></p>
+.
+
+Rule 9:
+
+Any nonempty sequence of inline elements can be the contents of an
+emphasized span.
+
+.
+*foo [bar](/url)*
+.
+<p><em>foo <a href="/url">bar</a></em></p>
+.
 
 .
 *foo
@@ -4381,12 +4596,112 @@ bar*
 bar</em></p>
 .
 
+In particular, emphasis and strong emphasis can be nested
+inside emphasis:
+
 .
-_foo
-bar_
+_foo __bar__ baz_
 .
-<p><em>foo
-bar</em></p>
+<p><em>foo <strong>bar</strong> baz</em></p>
+.
+
+.
+_foo _bar_ baz_
+.
+<p><em>foo <em>bar</em> baz</em></p>
+.
+
+.
+__foo_ bar_
+.
+<p><em><em>foo</em> bar</em></p>
+.
+
+.
+*foo *bar**
+.
+<p><em>foo <em>bar</em></em></p>
+.
+
+.
+*foo **bar** baz*
+.
+<p><em>foo <strong>bar</strong> baz</em></p>
+.
+
+But note:
+
+.
+*foo**bar**baz*
+.
+<p><em>foo</em><em>bar</em><em>baz</em></p>
+.
+
+The difference is that in the preceding case,
+the internal delimiters [can close emphasis](#can-close-emphasis),
+while in the cases with spaces, they cannot.
+
+.
+***foo** bar*
+.
+<p><em><strong>foo</strong> bar</em></p>
+.
+
+.
+*foo **bar***
+.
+<p><em>foo <strong>bar</strong></em></p>
+.
+
+Note, however, that in the following case we get no strong
+emphasis, because the opening delimiter is closed by the first
+`*` before `bar`:
+
+.
+*foo**bar***
+.
+<p><em>foo</em><em>bar</em>**</p>
+.
+
+
+Indefinite levels of nesting are possible:
+
+.
+*foo **bar *baz* bim** bop*
+.
+<p><em>foo <strong>bar <em>baz</em> bim</strong> bop</em></p>
+.
+
+.
+*foo [*bar*](/url)*
+.
+<p><em>foo <a href="/url"><em>bar</em></a></em></p>
+.
+
+There can be no empty emphasis or strong emphasis:
+
+.
+** is not an empty emphasis
+.
+<p>** is not an empty emphasis</p>
+.
+
+.
+**** is not an empty strong emphasis
+.
+<p>**** is not an empty strong emphasis</p>
+.
+
+
+Rule 10:
+
+Any nonempty sequence of inline elements can be the contents of an
+strongly emphasized span.
+
+.
+**foo [bar](/url)**
+.
+<p><strong>foo <a href="/url">bar</a></strong></p>
 .
 
 .
@@ -4397,53 +4712,364 @@ bar**
 bar</strong></p>
 .
 
-.
-__foo
-bar__
-.
-<p><strong>foo
-bar</strong></p>
-.
-
-Emphasis can contain other inline constructs:
+In particular, emphasis and strong emphasis can be nested
+inside strong emphasis:
 
 .
-*foo [bar](/url)*
+__foo _bar_ baz__
 .
-<p><em>foo <a href="/url">bar</a></em></p>
+<p><strong>foo <em>bar</em> baz</strong></p>
 .
 
 .
-_foo [bar](/url)_
+__foo __bar__ baz__
 .
-<p><em>foo <a href="/url">bar</a></em></p>
-.
-
-.
-**foo [bar](/url)**
-.
-<p><strong>foo <a href="/url">bar</a></strong></p>
+<p><strong>foo <strong>bar</strong> baz</strong></p>
 .
 
 .
-__foo [bar](/url)__
+____foo__ bar__
 .
-<p><strong>foo <a href="/url">bar</a></strong></p>
+<p><strong><strong>foo</strong> bar</strong></p>
 .
 
-Symbols contained in other inline constructs will not
-close emphasis:
+.
+**foo **bar****
+.
+<p><strong>foo <strong>bar</strong></strong></p>
+.
 
 .
-*foo [bar*](/url)
+**foo *bar* baz**
 .
-<p>*foo <a href="/url">bar*</a></p>
+<p><strong>foo <em>bar</em> baz</strong></p>
+.
+
+But note:
+
+.
+**foo*bar*baz**
+.
+<p><em><em>foo</em>bar</em>baz**</p>
+.
+
+The difference is that in the preceding case,
+the internal delimiters [can close emphasis](#can-close-emphasis),
+while in the cases with spaces, they cannot.
+
+.
+***foo* bar**
+.
+<p><strong><em>foo</em> bar</strong></p>
+.
+
+.
+**foo *bar***
+.
+<p><strong>foo <em>bar</em></strong></p>
+.
+
+Indefinite levels of nesting are possible:
+
+.
+**foo *bar **baz**
+bim* bop**
+.
+<p><strong>foo <em>bar <strong>baz</strong>
+bim</em> bop</strong></p>
+.
+
+.
+**foo [*bar*](/url)**
+.
+<p><strong>foo <a href="/url"><em>bar</em></a></strong></p>
+.
+
+There can be no empty emphasis or strong emphasis:
+
+.
+__ is not an empty emphasis
+.
+<p>__ is not an empty emphasis</p>
+.
+
+.
+____ is not an empty strong emphasis
+.
+<p>____ is not an empty strong emphasis</p>
+.
+
+
+Rule 11:
+
+.
+foo ***
+.
+<p>foo ***</p>
+.
+
+.
+foo *\**
+.
+<p>foo <em>*</em></p>
+.
+
+.
+foo *_*
+.
+<p>foo <em>_</em></p>
+.
+
+.
+foo *****
+.
+<p>foo *****</p>
+.
+
+.
+foo **\***
+.
+<p>foo <strong>*</strong></p>
+.
+
+.
+foo **_**
+.
+<p>foo <strong>_</strong></p>
+.
+
+Note that when delimiters do not match evenly, Rule 11 determines
+that the excess literal `*` characters will appear outside of the
+emphasis, rather than inside it:
+
+.
+**foo*
+.
+<p>*<em>foo</em></p>
+.
+
+.
+*foo**
+.
+<p><em>foo</em>*</p>
+.
+
+.
+***foo**
+.
+<p>*<strong>foo</strong></p>
+.
+
+.
+****foo*
+.
+<p>***<em>foo</em></p>
+.
+
+.
+**foo***
+.
+<p><strong>foo</strong>*</p>
+.
+
+.
+*foo****
+.
+<p><em>foo</em>***</p>
+.
+
+
+Rule 12:
+
+.
+foo ___
+.
+<p>foo ___</p>
+.
+
+.
+foo _\__
+.
+<p>foo <em>_</em></p>
+.
+
+.
+foo _*_
+.
+<p>foo <em>*</em></p>
+.
+
+.
+foo _____
+.
+<p>foo _____</p>
+.
+
+.
+foo __\___
+.
+<p>foo <strong>_</strong></p>
+.
+
+.
+foo __*__
+.
+<p>foo <strong>*</strong></p>
+.
+
+.
+__foo_
+.
+<p>_<em>foo</em></p>
+.
+
+Note that when delimiters do not match evenly, Rule 12 determines
+that the excess literal `_` characters will appear outside of the
+emphasis, rather than inside it:
+
+.
+_foo__
+.
+<p><em>foo</em>_</p>
+.
+
+.
+___foo__
+.
+<p>_<strong>foo</strong></p>
+.
+
+.
+____foo_
+.
+<p>___<em>foo</em></p>
+.
+
+.
+__foo___
+.
+<p><strong>foo</strong>_</p>
+.
+
+.
+_foo____
+.
+<p><em>foo</em>___</p>
+.
+
+Rule 13 implies that if you want emphasis nested directly inside
+emphasis, you must use different delimiters:
+
+.
+**foo**
+.
+<p><strong>foo</strong></p>
+.
+
+.
+*_foo_*
+.
+<p><em><em>foo</em></em></p>
+.
+
+.
+__foo__
+.
+<p><strong>foo</strong></p>
+.
+
+.
+_*foo*_
+.
+<p><em><em>foo</em></em></p>
+.
+
+However, strong emphasis within strong emphasisis possible without
+switching delimiters:
+
+.
+****foo****
+.
+<p><strong><strong>foo</strong></strong></p>
+.
+
+.
+____foo____
+.
+<p><strong><strong>foo</strong></strong></p>
+.
+
+
+Rule 13 can be applied to arbitrarily long sequences of
+delimiters:
+
+.
+******foo******
+.
+<p><strong><strong><strong>foo</strong></strong></strong></p>
+.
+
+Rule 14:
+
+.
+***foo***
+.
+<p><strong><em>foo</em></strong></p>
+.
+
+.
+_____foo_____
+.
+<p><strong><strong><em>foo</em></strong></strong></p>
+.
+
+Rule 15:
+
+.
+*foo _bar* baz_
+.
+<p><em>foo _bar</em> baz_</p>
+.
+
+.
+**foo*bar**
+.
+<p><em><em>foo</em>bar</em>*</p>
+.
+
+
+Rule 16:
+
+.
+**foo **bar baz**
+.
+<p>**foo <strong>bar baz</strong></p>
+.
+
+.
+*foo *bar baz*
+.
+<p>*foo <em>bar baz</em></p>
+.
+
+Rule 17:
+
+.
+*[bar*](/url)
+.
+<p>*<a href="/url">bar*</a></p>
 .
 
 .
 _foo [bar_](/url)
 .
 <p>_foo <a href="/url">bar_</a></p>
+.
+
+.
+*<img src="foo" title="*"/>
+.
+<p>*<img src="foo" title="*"/></p>
 .
 
 .
@@ -4482,542 +5108,6 @@ __a<http://foo.bar?q=__>
 <p>__a<a href="http://foo.bar?q=__">http://foo.bar?q=__</a></p>
 .
 
-This is not emphasis, because the opening delimiter is
-followed by white space:
-
-.
-and * foo bar*
-.
-<p>and * foo bar*</p>
-.
-
-.
-_ foo bar_
-.
-<p>_ foo bar_</p>
-.
-
-.
-and ** foo bar**
-.
-<p>and ** foo bar**</p>
-.
-
-.
-__ foo bar__
-.
-<p>__ foo bar__</p>
-.
-
-This is not emphasis, because the closing delimiter is
-preceded by white space:
-
-.
-and *foo bar *
-.
-<p>and *foo bar *</p>
-.
-
-.
-and _foo bar _
-.
-<p>and _foo bar _</p>
-.
-
-.
-and **foo bar **
-.
-<p>and **foo bar **</p>
-.
-
-.
-and __foo bar __
-.
-<p>and __foo bar __</p>
-.
-
-The rules imply that a sequence of `*` or `_` characters
-surrounded by whitespace will be parsed as a literal string:
-
-.
-foo ********
-.
-<p>foo ********</p>
-.
-
-.
-Sign here: _________
-.
-<p>Sign here: _________</p>
-.
-
-The rules also imply that there can be no empty emphasis or strong
-emphasis:
-
-.
-** is not an empty emphasis
-.
-<p>** is not an empty emphasis</p>
-.
-
-.
-**** is not an empty strong emphasis
-.
-<p>**** is not an empty strong emphasis</p>
-.
-
-To include `*` or `_` in emphasized sections, use backslash escapes
-or code spans:
-
-.
-*here is a \**
-.
-<p><em>here is a *</em></p>
-.
-
-.
-__this is a double underscore (`__`)__
-.
-<p><strong>this is a double underscore (<code>__</code>)</strong></p>
-.
-
-Or use the other emphasis character:
-
-.
-*_*
-.
-<p><em>_</em></p>
-.
-
-.
-_*_
-.
-<p><em>*</em></p>
-.
-
-.
-*__*
-.
-<p><em>__</em></p>
-.
-
-.
-_**_
-.
-<p><em>**</em></p>
-.
-
-`*` delimiters allow intra-word emphasis; `_` delimiters do not:
-
-.
-foo*bar*baz
-.
-<p>foo<em>bar</em>baz</p>
-.
-
-.
-foo_bar_baz
-.
-<p>foo_bar_baz</p>
-.
-
-.
-foo__bar__baz
-.
-<p>foo__bar__baz</p>
-.
-
-.
-_foo_bar_baz_
-.
-<p><em>foo_bar_baz</em></p>
-.
-
-.
-11*15*32
-.
-<p>11<em>15</em>32</p>
-.
-
-.
-11_15_32
-.
-<p>11_15_32</p>
-.
-
-Internal underscores will be ignored in underscore-delimited
-emphasis:
-
-.
-_foo_bar_baz_
-.
-<p><em>foo_bar_baz</em></p>
-.
-
-.
-__foo__bar__baz__
-.
-<p><strong>foo__bar__baz</strong></p>
-.
-
-The rules are sufficient for the following nesting patterns:
-
-.
-***foo bar***
-.
-<p><strong><em>foo bar</em></strong></p>
-.
-
-.
-___foo bar___
-.
-<p><strong><em>foo bar</em></strong></p>
-.
-
-.
-***foo** bar*
-.
-<p><em><strong>foo</strong> bar</em></p>
-.
-
-.
-___foo__ bar_
-.
-<p><em><strong>foo</strong> bar</em></p>
-.
-
-.
-***foo* bar**
-.
-<p><strong><em>foo</em> bar</strong></p>
-.
-
-.
-___foo_ bar__
-.
-<p><strong><em>foo</em> bar</strong></p>
-.
-
-.
-*foo **bar***
-.
-<p><em>foo <strong>bar</strong></em></p>
-.
-
-.
-_foo __bar___
-.
-<p><em>foo <strong>bar</strong></em></p>
-.
-
-.
-**foo *bar***
-.
-<p><strong>foo <em>bar</em></strong></p>
-.
-
-.
-__foo _bar___
-.
-<p><strong>foo <em>bar</em></strong></p>
-.
-
-.
-*foo **bar***
-.
-<p><em>foo <strong>bar</strong></em></p>
-.
-
-.
-_foo __bar___
-.
-<p><em>foo <strong>bar</strong></em></p>
-.
-
-.
-*foo *bar* baz*
-.
-<p><em>foo <em>bar</em> baz</em></p>
-.
-
-.
-_foo _bar_ baz_
-.
-<p><em>foo <em>bar</em> baz</em></p>
-.
-
-.
-**foo **bar** baz**
-.
-<p><strong>foo <strong>bar</strong> baz</strong></p>
-.
-
-.
-__foo __bar__ baz__
-.
-<p><strong>foo <strong>bar</strong> baz</strong></p>
-.
-
-.
-*foo **bar** baz*
-.
-<p><em>foo <strong>bar</strong> baz</em></p>
-.
-
-.
-_foo __bar__ baz_
-.
-<p><em>foo <strong>bar</strong> baz</em></p>
-.
-
-.
-**foo *bar* baz**
-.
-<p><strong>foo <em>bar</em> baz</strong></p>
-.
-
-.
-__foo _bar_ baz__
-.
-<p><strong>foo <em>bar</em> baz</strong></p>
-.
-
-.
-**foo, *bar*, baz**
-.
-<p><strong>foo, <em>bar</em>, baz</strong></p>
-.
-
-.
-__foo, _bar_, baz__
-.
-<p><strong>foo, <em>bar</em>, baz</strong></p>
-.
-
-But note:
-
-.
-*foo**bar**baz*
-.
-<p><em>foo</em><em>bar</em><em>baz</em></p>
-.
-
-.
-**foo*bar*baz**
-.
-<p><em><em>foo</em>bar</em>baz**</p>
-.
-
-The difference is that in the two preceding cases,
-the internal delimiters [can close emphasis](#can-close-emphasis),
-while in the cases with spaces, they cannot.
-
-Note that you cannot nest emphasis directly inside emphasis
-using the same delimeter:
-
-.
-**foo**
-.
-<p><strong>foo</strong></p>
-.
-
-For this, you need to switch delimiters:
-
-.
-*_foo_*
-.
-<p><em><em>foo</em></em></p>
-.
-
-Strong within strong is possible without switching
-delimiters:
-
-.
-****foo****
-.
-<p><strong><strong>foo</strong></strong></p>
-.
-
-.
-____foo____
-.
-<p><strong><strong>foo</strong></strong></p>
-.
-
-Note that a `*` followed by a `*` can close emphasis, and
-a `**` followed by a `*` can close strong emphasis (and
-similarly for `_` and `__`):
-
-.
-*foo**
-.
-<p><em>foo</em>*</p>
-.
-
-.
-*foo *bar**
-.
-<p><em>foo <em>bar</em></em></p>
-.
-
-.
-**foo***
-.
-<p><strong>foo</strong>*</p>
-.
-
-.
-***foo* bar***
-.
-<p><strong><em>foo</em> bar</strong>*</p>
-.
-
-.
-***foo** bar***
-.
-<p><em><strong>foo</strong> bar</em>**</p>
-.
-
-.
-*foo****
-.
-<p><em>foo</em>***</p>
-.
-
-The following contains no strong emphasis, because the opening
-delimiter is closed by the first `*` before `bar`:
-
-.
-*foo**bar***
-.
-<p><em>foo</em><em>bar</em>**</p>
-.
-
-We retain symmetry in these cases:
-
-.
-*foo**
-
-**foo*
-.
-<p><em>foo</em>*</p>
-<p>*<em>foo</em></p>
-.
-
-.
-*foo *bar**
-
-**foo* bar*
-.
-<p><em>foo <em>bar</em></em></p>
-<p><em><em>foo</em> bar</em></p>
-.
-
-.
-**foo***
-
-***foo**
-.
-<p><strong>foo</strong>*</p>
-<p>*<strong>foo</strong></p>
-.
-
-.
-**foo **bar****
-
-****foo** bar**
-.
-<p><strong>foo <strong>bar</strong></strong></p>
-<p><strong><strong>foo</strong> bar</strong></p>
-.
-
-
-
-More cases with mismatched delimiters:
-
-.
-*bar***
-.
-<p><em>bar</em>**</p>
-.
-
-.
-***foo*
-.
-<p>**<em>foo</em></p>
-.
-
-.
-**bar***
-.
-<p><strong>bar</strong>*</p>
-.
-
-.
-***foo**
-.
-<p>*<strong>foo</strong></p>
-.
-
-.
-***foo *bar*
-.
-<p>***foo <em>bar</em></p>
-.
-
-The following cases illustrate rule 13:
-
-.
-*foo _bar* baz_
-.
-<p><em>foo _bar</em> baz_</p>
-.
-
-.
-**foo bar* baz**
-.
-<p><em><em>foo bar</em> baz</em>*</p>
-.
-
-The following cases illustrate rule 14:
-
-.
-**foo **bar baz**
-.
-<p>**foo <strong>bar baz</strong></p>
-.
-
-.
-*foo *bar baz*
-.
-<p>*foo <em>bar baz</em></p>
-.
-
-The following cases illustrate rule 15:
-
-.
-*[foo*](bar)
-.
-<p>*<a href="bar">foo*</a></p>
-.
-
-.
-*![foo*](bar)
-.
-<p>*<img src="bar" alt="foo*" /></p>
-.
-
-.
-*<img src="foo" title="*"/>
-.
-<p>*<img src="foo" title="*"/></p>
-.
-
-.
-*a`a*`
-.
-<p>*a<code>a*</code></p>
-.
 
 ## Links
 
