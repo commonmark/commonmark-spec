@@ -252,12 +252,13 @@ static node_block* add_child(node_block* parent,
 	return child;
 }
 
+
 // Free a node_block list and any children.
 void cmark_free_nodes(node_block *e)
 {
 	node_block * next;
+	node_block * tmp;
 	while (e != NULL) {
-		next = e->next;
 		free_inlines(e->inline_content);
 		strbuf_free(&e->string_content);
 		if (e->tag == BLOCK_FENCED_CODE) {
@@ -265,7 +266,17 @@ void cmark_free_nodes(node_block *e)
 		} else if (e->tag == BLOCK_DOCUMENT) {
 			reference_map_free(e->as.document.refmap);
 		}
-		cmark_free_nodes(e->children);
+		tmp = e->children;
+		if (tmp) {
+		    // Find last child
+		    while (tmp->next) {
+			tmp = tmp->next;
+		    }
+		    // Splice children into list
+		    tmp->next = e->next;
+		    e->next = e->children;
+		}
+		next = e->next;
 		free(e);
 		e = next;
 	}
