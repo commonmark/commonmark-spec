@@ -388,7 +388,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 		if (useDelims < numdelims)
 		{
 			subj->pos = subj->pos - numdelims + useDelims;
-			return handle_strong_emph(subj, c, last);
+			return NULL;
 		}
 
 		return NULL; // make_str(chunk_literal(""));
