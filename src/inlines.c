@@ -416,7 +416,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 cannotClose:
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-	if (can_open && subj->emphasis_nestlevel < STACK_LIMIT)
+	if (can_open)
 	{
 		istack = (inline_stack*)malloc(sizeof(inline_stack));
                 if (istack == NULL) {
@@ -617,8 +617,7 @@ static int link_label(subject* subj, chunk *raw_label)
 
 	advance(subj);  // advance past [
 	unsigned char c;
-	while ((c = peek_char(subj)) &&
-	       (c != ']' || (nestlevel > 0 && nestlevel < STACK_LIMIT))) {
+	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
 		switch (c) {
 		case '`':
 			tmp = handle_backticks(subj);

@@ -9,7 +9,6 @@
 
 #define VERSION "0.1"
 #define CODE_INDENT 4
-#define STACK_LIMIT 1000
 
 struct node_inl {
 	enum {
