@@ -9,6 +9,7 @@
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"
+#include "debug.h"
 
 typedef struct InlineStack {
 	struct InlineStack *previous;
@@ -164,6 +165,7 @@ extern void free_inlines(node_inl* e)
 		        splice_into_list(e, e->content.inlines);
 			break;
 		default:
+		        log_warn("Unknown inline tag %d", e->tag);
 			break;
 		}
 		next = e->next;
