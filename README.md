@@ -18,7 +18,7 @@ tarball.)
 
 The parser is very fast, on par with
 [sundown](https://github.com/vmg/sundown).  Some benchmarks (on
-a 1.6 GHz Intel Core i5, 4 GB RAM, mesaured using `time`, and parsing a
+a 1.6 GHz Intel Core i5, measured using `time`, and parsing a
 ~500K book, the English version of [*Pro
 Git*](https://github.com/progit/progit/tree/master/en) by
 Scott Chacon and Ben Straub):
