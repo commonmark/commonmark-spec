@@ -379,7 +379,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 			inl->next = emph;
 
 			// remove all later openers from stack:
-                        free_openers(subj, istack);
+			free_openers(subj, istack);
 
 			*last = emph;
 		}
@@ -388,7 +388,10 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 		if (useDelims < numdelims)
 		{
 			subj->pos = subj->pos - numdelims + useDelims;
-			return handle_strong_emph(subj, c, last);
+			
+			// only use recursion if the depth is small - to avoid stack overflow
+			if (numdelims < 10)
+				return handle_strong_emph(subj, c, last);
 		}
 
 		return NULL; // make_str(chunk_literal(""));
