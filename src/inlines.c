@@ -121,10 +121,29 @@ inline static node_inl* make_simple(int t)
 #define make_emph(contents) make_inlines(INL_EMPH, contents)
 #define make_strong(contents) make_inlines(INL_STRONG, contents)
 
-// Free an inline list.
+// Utility function used by free_inlines
+void splice_into_list(node_inl* e, node_inl* children) {
+	node_inl * tmp;
+	tmp = children;
+	if (!tmp) {
+	    return ;
+	}
+	// Find last child
+	while (tmp->next) {
+	    tmp = tmp->next;
+	}
+	// Splice children into list
+	tmp->next = e->next;
+	e->next = children;
+	return ;
+}
+
+// Free an inline list.  Avoid recursion to prevent stack overflows
+// on deeply nested structures.
 extern void free_inlines(node_inl* e)
 {
 	node_inl * next;
+
 	while (e != NULL) {
 		switch (e->tag){
 		case INL_STRING:
@@ -139,11 +158,11 @@ extern void free_inlines(node_inl* e)
 		case INL_IMAGE:
 			free(e->content.linkable.url);
 			free(e->content.linkable.title);
-			free_inlines(e->content.linkable.label);
+			splice_into_list(e, e->content.linkable.label);
 			break;
 		case INL_EMPH:
 		case INL_STRONG:
-			free_inlines(e->content.inlines);
+		        splice_into_list(e, e->content.inlines);
 			break;
 		default:
 			break;
