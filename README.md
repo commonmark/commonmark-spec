@@ -17,14 +17,18 @@ developers, since `scanners.c` can be provided in a released source
 tarball.)
 
 The parser is very fast, on par with
-[sundown](https://github.com/vmg/sundown).  Some benchmarks:
+[sundown](https://github.com/vmg/sundown).  Some benchmarks (on
+a 1.6 GHz Intel Core i5, 4 GB RAM, mesaured using `time`, and parsing a
+~500K book, the English version of [*Pro
+Git*](https://github.com/progit/progit/tree/master/en) by
+Scott Chacon and Ben Straub):
 
-|Implementation | Time to parse a 500K book |
-|---------------|---------------------------|
-| Markdown.pl   | 3.99s                     |
-| discount      | 0.089s                    |
-| sundown       | 0.015s                    |
-| cmark         | 0.019s                    |
+|Implementation | Time  |
+|---------------|-------|
+| Markdown.pl   | 3.990s|
+| discount      | 0.089s|
+| sundown       | 0.015s|
+| cmark         | 0.019s|
 
     Usage:   cmark [FILE*]
     Options: --help, -h    Print usage information
