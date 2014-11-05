@@ -257,7 +257,6 @@ static node_block* add_child(node_block* parent,
 void cmark_free_nodes(node_block *e)
 {
 	node_block * next;
-	node_block * tmp;
 	while (e != NULL) {
 		free_inlines(e->inline_content);
 		strbuf_free(&e->string_content);
@@ -266,14 +265,9 @@ void cmark_free_nodes(node_block *e)
 		} else if (e->tag == BLOCK_DOCUMENT) {
 			reference_map_free(e->as.document.refmap);
 		}
-		tmp = e->children;
-		if (tmp) {
-		    // Find last child
-		    while (tmp->next) {
-			tmp = tmp->next;
-		    }
+		if (e->last_child) {
 		    // Splice children into list
-		    tmp->next = e->next;
+		    e->last_child->next = e->next;
 		    e->next = e->children;
 		}
 		next = e->next;
