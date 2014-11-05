@@ -8,6 +8,63 @@
 #include "debug.h"
 #include "html/houdini.h"
 
+typedef struct RenderStack {
+    struct RenderStack *previous;
+    chunk literal;
+    union {
+	node_inl *inl;
+	node_block *block;
+    } next_sibling;
+    bool tight;
+} render_stack;
+
+static void free_render_stack(render_stack * stack)
+{
+    render_stack * tempstack;
+    while (stack) {
+	tempstack = stack;
+	stack = stack->previous;
+	chunk_free(&tempstack->literal);
+	free(tempstack);
+    }
+}
+
+static render_stack* push_inline(render_stack* stack,
+				 node_inl* inl,
+				 char* literal)
+{
+    render_stack* newstack;
+    newstack = (render_stack*)malloc(sizeof(render_stack));
+    newstack->previous = stack;
+    newstack->next_sibling.inl = inl;
+    newstack->literal = chunk_literal(literal);
+    return newstack;
+}
+
+static render_stack* push_block(render_stack* stack,
+				node_block* block,
+				char* literal,
+				bool tight)
+{
+    render_stack* newstack;
+    newstack = (render_stack*)malloc(sizeof(render_stack));
+    newstack->previous = stack;
+    newstack->next_sibling.block = block;
+    newstack->literal = chunk_literal(literal);
+    newstack->tight = tight;
+    return newstack;
+}
+
+static render_stack* pop_render_stack(render_stack* stack)
+{
+    render_stack* top = stack;
+    if (stack == NULL) {
+	return NULL;
+    }
+    stack = stack->previous;
+    return top;
+}
+
 // Functions to convert node_block and inline lists to HTML strings.
 
 static void escape_html(strbuf *dest, const unsigned char *source, int length)
