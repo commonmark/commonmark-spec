@@ -124,17 +124,16 @@ inline static node_inl* make_simple(int t)
 // Utility function used by free_inlines
 void splice_into_list(node_inl* e, node_inl* children) {
 	node_inl * tmp;
-	tmp = children;
-	if (!tmp) {
-	    return ;
+	if (children) {
+	    tmp = children;
+	    // Find last child
+	    while (tmp->next) {
+		tmp = tmp->next;
+	    }
+	    // Splice children into list
+	    tmp->next = e->next;
+	    e->next = children;
 	}
-	// Find last child
-	while (tmp->next) {
-	    tmp = tmp->next;
-	}
-	// Splice children into list
-	tmp->next = e->next;
-	e->next = children;
 	return ;
 }
 
