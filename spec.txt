@@ -5686,9 +5686,9 @@ is followed by a link label (even though `[bar]` is not defined):
 ## Images
 
 An (unescaped) exclamation mark (`!`) followed by a reference or
-inline link will be parsed as an image.  The link label will be
-used as the image's alt text, and the link title, if any, will
-be used as the image's title.
+inline link will be parsed as an image.  The plain string content
+of the link label will be used as the image's alt text, and the link
+title, if any, will be used as the image's title.
 
 .
 ![foo](/url "title")
@@ -5701,15 +5701,19 @@ be used as the image's title.
 
 [foo *bar*]: train.jpg "train & tracks"
 .
-<p><img src="train.jpg" alt="foo &lt;em&gt;bar&lt;/em&gt;" title="train &amp; tracks" /></p>
+<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>
 .
+
+Note that in the above example, the alt text is `foo bar`, not `foo
+*bar*` or `foo <em>bar</em>` or `foo &lt;em&gt;bar&lt;/em&gt;`.  Only
+the plain string content is rendered, without formatting.
 
 .
 ![foo *bar*][]
 
 [foo *bar*]: train.jpg "train & tracks"
 .
-<p><img src="train.jpg" alt="foo &lt;em&gt;bar&lt;/em&gt;" title="train &amp; tracks" /></p>
+<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>
 .
 
 .
@@ -5717,7 +5721,7 @@ be used as the image's title.
 
 [FOOBAR]: train.jpg "train & tracks"
 .
-<p><img src="train.jpg" alt="foo &lt;em&gt;bar&lt;/em&gt;" title="train &amp; tracks" /></p>
+<p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>
 .
 
 .
@@ -5777,7 +5781,7 @@ Collapsed:
 
 [*foo* bar]: /url "title"
 .
-<p><img src="/url" alt="&lt;em&gt;foo&lt;/em&gt; bar" title="title" /></p>
+<p><img src="/url" alt="foo bar" title="title" /></p>
 .
 
 The labels are case-insensitive:
@@ -5817,7 +5821,7 @@ Shortcut:
 
 [*foo* bar]: /url "title"
 .
-<p><img src="/url" alt="&lt;em&gt;foo&lt;/em&gt; bar" title="title" /></p>
+<p><img src="/url" alt="foo bar" title="title" /></p>
 .
 
 .
