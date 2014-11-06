@@ -42,9 +42,9 @@ static unsigned char *bufdup(const unsigned char *buf)
 	if (buf) {
 		int len = strlen((char *)buf);
 		new = calloc(len + 1, sizeof(*new));
-        if(new != NULL) {
-    		memcpy(new, buf, len + 1);
-        }
+		if(new != NULL) {
+			memcpy(new, buf, len + 1);
+		}
 	}
 
 	return new;
@@ -53,13 +53,13 @@ static unsigned char *bufdup(const unsigned char *buf)
 static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned char *title)
 {
 	node_inl* e = calloc(1, sizeof(*e));
-    if(e != NULL) {
-    	e->tag = INL_LINK;
-    	e->content.linkable.label = label;
-	    e->content.linkable.url   = url;
-    	e->content.linkable.title = title;
-	    e->next = NULL;
-    }
+	if(e != NULL) {
+		e->tag = INL_LINK;
+		e->content.linkable.label = label;
+		e->content.linkable.url   = url;
+		e->content.linkable.title = title;
+		e->next = NULL;
+	}
 	return e;
 }
 
@@ -82,11 +82,11 @@ inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
 inline static node_inl* make_inlines(int t, node_inl* contents)
 {
 	node_inl * e = calloc(1, sizeof(*e));
-    if(e != NULL) {
-    	e->tag = t;
-	    e->content.inlines = contents;
-    	e->next = NULL;
-    }
+	if(e != NULL) {
+		e->tag = t;
+		e->content.inlines = contents;
+		e->next = NULL;
+	}
 	return e;
 }
 
@@ -94,11 +94,11 @@ inline static node_inl* make_inlines(int t, node_inl* contents)
 inline static node_inl* make_literal(int t, chunk s)
 {
 	node_inl * e = calloc(1, sizeof(*e));
-    if(e != NULL) {
-    	e->tag = t;
-	    e->content.literal = s;
-    	e->next = NULL;
-    }
+	if(e != NULL) {
+		e->tag = t;
+		e->content.literal = s;
+		e->next = NULL;
+	}
 	return e;
 }
 
@@ -106,10 +106,10 @@ inline static node_inl* make_literal(int t, chunk s)
 inline static node_inl* make_simple(int t)
 {
 	node_inl* e = calloc(1, sizeof(*e));
-    if(e != NULL) {
-    	e->tag = t;
-	    e->next = NULL;
-    }
+	if(e != NULL) {
+		e->tag = t;
+		e->next = NULL;
+	}
 	return e;
 }
 
@@ -126,14 +126,14 @@ inline static node_inl* make_simple(int t)
 void splice_into_list(node_inl* e, node_inl* children) {
 	node_inl * tmp;
 	if (children) {
-	    tmp = children;
-	    // Find last child
-	    while (tmp->next) {
-		tmp = tmp->next;
-	    }
-	    // Splice children into list
-	    tmp->next = e->next;
-	    e->next = children;
+		tmp = children;
+		// Find last child
+		while (tmp->next) {
+			tmp = tmp->next;
+		}
+		// Splice children into list
+		tmp->next = e->next;
+		e->next = children;
 	}
 	return ;
 }
@@ -328,13 +328,13 @@ static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * c
 
 static void free_openers(subject* subj, inline_stack* istack)
 {
-    inline_stack * tempstack;
-    while (subj->emphasis_openers != istack) {
-	tempstack = subj->emphasis_openers;
-	subj->emphasis_openers = subj->emphasis_openers->previous;
-	subj->emphasis_nestlevel--;
-	free(tempstack);
-    }
+	inline_stack * tempstack;
+	while (subj->emphasis_openers != istack) {
+		tempstack = subj->emphasis_openers;
+		subj->emphasis_openers = subj->emphasis_openers->previous;
+		subj->emphasis_nestlevel--;
+		free(tempstack);
+	}
 }
 
 // Parse strong/emph or a fallback.
@@ -353,83 +353,83 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
 
 	if (can_close)
-	{
-		// walk the stack and find a matching opener, if there is one
-		istack = subj->emphasis_openers;
-		while (true)
 		{
-			if (istack == NULL)
-				goto cannotClose;
+			// walk the stack and find a matching opener, if there is one
+			istack = subj->emphasis_openers;
+			while (true)
+				{
+					if (istack == NULL)
+						goto cannotClose;
 
-			if (istack->delim_char == c)
-				break;
+					if (istack->delim_char == c)
+						break;
 
-			istack = istack->previous;
+					istack = istack->previous;
+				}
+
+			// calculate the actual number of delimeters used from this closer
+			openerDelims = istack->delim_count;
+			if (numdelims < 3 || openerDelims < 3) {
+				useDelims = numdelims <= openerDelims ? numdelims : openerDelims;
+			} else { // (numdelims >= 3 && openerDelims >= 3)
+				useDelims = numdelims % 2 == 0 ? 2 : 1;
+			}
+
+			if (istack->delim_count == useDelims)
+				{
+					// the opener is completely used up - remove the stack entry and reuse the inline element
+					inl = istack->first_inline;
+					inl->tag = useDelims == 1 ? INL_EMPH : INL_STRONG;
+					chunk_free(&inl->content.literal);
+					inl->content.inlines = inl->next;
+					inl->next = NULL;
+
+					// remove this opener and all later ones from stack:
+					free_openers(subj, istack->previous);
+					*last = inl;
+				}
+			else
+				{
+					// the opener will only partially be used - stack entry remains (truncated) and a new inline is added.
+					inl = istack->first_inline;
+					istack->delim_count -= useDelims;
+					inl->content.literal.len = istack->delim_count;
+
+					emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+					inl->next = emph;
+
+					// remove all later openers from stack:
+					free_openers(subj, istack);
+
+					*last = emph;
+				}
+
+			// if the closer was not fully used, move back a char or two and try again.
+			if (useDelims < numdelims)
+				{
+					subj->pos = subj->pos - numdelims + useDelims;
+					return NULL;
+				}
+
+			return NULL; // make_str(chunk_literal(""));
 		}
 
-		// calculate the actual number of delimeters used from this closer
-		openerDelims = istack->delim_count;
-		if (numdelims < 3 || openerDelims < 3) {
-		    useDelims = numdelims <= openerDelims ? numdelims : openerDelims;
-		} else { // (numdelims >= 3 && openerDelims >= 3)
-		    useDelims = numdelims % 2 == 0 ? 2 : 1;
-		}
-
-		if (istack->delim_count == useDelims)
-		{
-			// the opener is completely used up - remove the stack entry and reuse the inline element
-			inl = istack->first_inline;
-			inl->tag = useDelims == 1 ? INL_EMPH : INL_STRONG;
-			chunk_free(&inl->content.literal);
-			inl->content.inlines = inl->next;
-			inl->next = NULL;
-
-			// remove this opener and all later ones from stack:
-                        free_openers(subj, istack->previous);
-			*last = inl;
-		}
-		else
-		{
-			// the opener will only partially be used - stack entry remains (truncated) and a new inline is added.
-			inl = istack->first_inline;
-			istack->delim_count -= useDelims;
-			inl->content.literal.len = istack->delim_count;
-
-			emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
-			inl->next = emph;
-
-			// remove all later openers from stack:
-                        free_openers(subj, istack);
-
-			*last = emph;
-		}
-
-		// if the closer was not fully used, move back a char or two and try again.
-		if (useDelims < numdelims)
-		{
-			subj->pos = subj->pos - numdelims + useDelims;
-			return NULL;
-		}
-
-		return NULL; // make_str(chunk_literal(""));
-	}
-
-cannotClose:
+ cannotClose:
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
 	if (can_open)
-	{
-		istack = (inline_stack*)malloc(sizeof(inline_stack));
-                if (istack == NULL) {
-                  return NULL;
-                }
-		istack->delim_count = numdelims;
-		istack->delim_char = c;
-		istack->first_inline = inl_text;
-		istack->previous = subj->emphasis_openers;
-		subj->emphasis_openers = istack;
-		subj->emphasis_nestlevel++;
-	}
+		{
+			istack = (inline_stack*)malloc(sizeof(inline_stack));
+			if (istack == NULL) {
+				return NULL;
+			}
+			istack->delim_count = numdelims;
+			istack->delim_char = c;
+			istack->first_inline = inl_text;
+			istack->previous = subj->emphasis_openers;
+			subj->emphasis_openers = istack;
+			subj->emphasis_nestlevel++;
+		}
 
 	return inl_text;
 }
@@ -462,7 +462,7 @@ static node_inl* handle_entity(subject* subj)
 	len = houdini_unescape_ent(&ent,
 				   subj->input.data + subj->pos,
 				   subj->input.len - subj->pos
-		);
+				   );
 
 	if (len == 0)
 		return make_str(chunk_literal("&"));
@@ -562,9 +562,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		subj->pos += matchlen;
 
 		return make_autolink(
-			make_str_with_entities(&contents),
-			contents, 0
-			);
+				     make_str_with_entities(&contents),
+				     contents, 0
+				     );
 	}
 
 	// next try to match an email autolink
@@ -574,9 +574,9 @@ static node_inl* handle_pointy_brace(subject* subj)
 		subj->pos += matchlen;
 
 		return make_autolink(
-			make_str_with_entities(&contents),
-			contents, 1
-			);
+				     make_str_with_entities(&contents),
+				     contents, 1
+				     );
 	}
 
 	// finally, try to match an html tag
@@ -778,9 +778,9 @@ extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
 	node_inl** last = &result;
 	node_inl* first = NULL;
 	while ((*f)(subj) && parse_inline(subj, last)) {
-	    if (!first) {
-		first = *last;
-	    }
+		if (!first) {
+			first = *last;
+		}
 	}
 
 	inline_stack* istack = subj->emphasis_openers;

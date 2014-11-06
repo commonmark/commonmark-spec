@@ -20,14 +20,14 @@ static node_block* make_block(int tag, int start_line, int start_column)
 	node_block* e;
 
 	e = calloc(1, sizeof(*e));
-    if(e != NULL) {
-    	e->tag = tag;
-	    e->open = true;
-    	e->start_line = start_line;
-	    e->start_column = start_column;
-    	e->end_line = start_line;
-	    strbuf_init(&e->string_content, 32);
-    }
+	if(e != NULL) {
+		e->tag = tag;
+		e->open = true;
+		e->start_line = start_line;
+		e->start_column = start_column;
+		e->end_line = start_line;
+		strbuf_init(&e->string_content, 32);
+	}
 
 	return e;
 }
@@ -266,9 +266,9 @@ void cmark_free_nodes(node_block *e)
 			reference_map_free(e->as.document.refmap);
 		}
 		if (e->last_child) {
-		    // Splice children into list
-		    e->last_child->next = e->next;
-		    e->next = e->children;
+			// Splice children into list
+			e->last_child->next = e->next;
+			e->next = e->children;
 		}
 		next = e->next;
 		free(e);
@@ -316,16 +316,16 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 			return 0;
 		}
 		data = calloc(1, sizeof(*data));
-        if(data == NULL) {
-            return 0;
-        } else {
-    		data->marker_offset = 0; // will be adjusted later
-	    	data->list_type = bullet;
-		    data->bullet_char = c;
-    		data->start = 1;
-	    	data->delimiter = period;
-		    data->tight = false;
-        }
+		if(data == NULL) {
+			return 0;
+		} else {
+			data->marker_offset = 0; // will be adjusted later
+			data->list_type = bullet;
+			data->bullet_char = c;
+			data->start = 1;
+			data->delimiter = period;
+			data->tight = false;
+		}
 	} else if (isdigit(c)) {
 		int start = 0;
 
@@ -341,16 +341,16 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 				return 0;
 			}
 			data = calloc(1, sizeof(*data));
-            if(data == NULL) {
-                return 0;
-            } else {
-    			data->marker_offset = 0; // will be adjusted later
-	    		data->list_type = ordered;
-		    	data->bullet_char = 0;
-			    data->start = start;
-    			data->delimiter = (c == '.' ? period : parens);
-	    		data->tight = false;
-            }
+			if(data == NULL) {
+				return 0;
+			} else {
+				data->marker_offset = 0; // will be adjusted later
+				data->list_type = ordered;
+				data->bullet_char = 0;
+				data->start = start;
+				data->delimiter = (c == '.' ? period : parens);
+				data->tight = false;
+			}
 		} else {
 			return 0;
 		}
@@ -443,8 +443,8 @@ static void chop_trailing_hashtags(chunk *ch)
 
 	// Check for a be a space before the final #s:
 	if (n != orig_n && n >= 0 && peek_at(ch, n) == ' ') {
-	    ch->len = n;
-	    chunk_rtrim(ch);
+		ch->len = n;
+		chunk_rtrim(ch);
 	}
 }
 
@@ -467,7 +467,7 @@ static void incorporate_line(strbuf *line, int line_number, node_block** curptr)
 
 	// Add a newline to the end if not present:
 	if (line->ptr[line->size - 1] != '\n') {
-	    strbuf_putc(line, '\n');
+		strbuf_putc(line, '\n');
 	}
 	input.data = line->ptr;
 	input.len = line->size;
