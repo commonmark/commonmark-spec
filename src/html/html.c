@@ -10,7 +10,7 @@
 
 typedef struct RenderStack {
     struct RenderStack *previous;
-    chunk literal;
+    char* literal;
     union {
 	node_inl *inl;
 	node_block *block;
@@ -24,7 +24,6 @@ static void free_render_stack(render_stack * rstack)
     while (rstack) {
 	tempstack = rstack;
 	rstack = rstack->previous;
-	chunk_free(&(tempstack->literal));
 	free(tempstack);
     }
 }
@@ -37,7 +36,7 @@ static render_stack* push_inline(render_stack* rstack,
     newstack = (render_stack*)malloc(sizeof(render_stack));
     newstack->previous = rstack;
     newstack->next_sibling.inl = inl;
-    newstack->literal = chunk_literal(literal);
+    newstack->literal = literal;
     return newstack;
 }
 
@@ -50,7 +49,7 @@ static render_stack* push_block(render_stack* rstack,
     newstack = (render_stack*)malloc(sizeof(render_stack));
     newstack->previous = rstack;
     newstack->next_sibling.block = block;
-    newstack->literal = chunk_literal(literal);
+    newstack->literal = literal;
     newstack->tight = tight;
     return newstack;
 }
@@ -178,7 +177,7 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 		    ils = ils->next;
 		}
 		while (ils == NULL && rstack != NULL) {
-		    strbuf_puts(html, rstack->literal.data);
+		    strbuf_puts(html, rstack->literal);
 		    ils = rstack->next_sibling.inl;
 		    rstack = pop_render_stack(rstack);
 		}
