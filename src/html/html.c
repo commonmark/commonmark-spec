@@ -18,51 +18,54 @@ typedef struct RenderStack {
     bool tight;
 } render_stack;
 
-static void free_render_stack(render_stack * stack)
+static void free_render_stack(render_stack * rstack)
 {
     render_stack * tempstack;
-    while (stack) {
-	tempstack = stack;
-	stack = stack->previous;
-	chunk_free(&tempstack->literal);
+    while (rstack) {
+	tempstack = rstack;
+	rstack = rstack->previous;
+	chunk_free(&(tempstack->literal));
 	free(tempstack);
     }
 }
 
-static render_stack* push_inline(render_stack* stack,
+static render_stack* push_inline(render_stack* rstack,
 				 node_inl* inl,
 				 char* literal)
 {
     render_stack* newstack;
     newstack = (render_stack*)malloc(sizeof(render_stack));
-    newstack->previous = stack;
+    newstack->previous = rstack;
     newstack->next_sibling.inl = inl;
     newstack->literal = chunk_literal(literal);
     return newstack;
 }
 
-static render_stack* push_block(render_stack* stack,
+static render_stack* push_block(render_stack* rstack,
 				node_block* block,
 				char* literal,
 				bool tight)
 {
     render_stack* newstack;
     newstack = (render_stack*)malloc(sizeof(render_stack));
-    newstack->previous = stack;
+    newstack->previous = rstack;
     newstack->next_sibling.block = block;
     newstack->literal = chunk_literal(literal);
     newstack->tight = tight;
     return newstack;
 }
 
-static render_stack* pop_render_stack(render_stack* stack)
+static render_stack* pop_render_stack(render_stack* rstack)
 {
-    render_stack* top = stack;
-    if (stack == NULL) {
+    render_stack* top = rstack;
+
+    if (rstack == NULL) {
 	return NULL;
     }
-    stack = stack->previous;
-    return top;
+    rstack = rstack->previous;
+    top->previous = NULL;
+    free_render_stack(top);
+    return rstack;
 }
 
 // Functions to convert node_block and inline lists to HTML strings.
@@ -93,8 +96,11 @@ static inline void cr(strbuf *html)
 static void inlines_to_html(strbuf *html, node_inl* ils)
 {
 	strbuf scrap = GH_BUF_INIT;
+	node_inl* children;
+	render_stack* rstack = NULL;
 
 	while(ils != NULL) {
+	        children = NULL;
 		switch(ils->tag) {
 			case INL_STRING:
 				escape_html(html, ils->content.literal.data, ils->content.literal.len);
@@ -156,20 +162,30 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 
 			case INL_STRONG:
 				strbuf_puts(html, "<strong>");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</strong>");
+				children = ils->content.inlines;
+				rstack = push_inline(rstack, ils->next, "</strong>");
 				break;
 
 			case INL_EMPH:
 				strbuf_puts(html, "<em>");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</em>");
+				children = ils->content.inlines;
+				rstack = push_inline(rstack, ils->next, "</em>");
 				break;
 		}
-		ils = ils->next;
+		if (children) {
+		    ils = children;
+		} else {
+		    ils = ils->next;
+		}
+		while (ils == NULL && rstack != NULL) {
+		    strbuf_puts(html, rstack->literal.data);
+		    ils = rstack->next_sibling.inl;
+		    rstack = pop_render_stack(rstack);
+		}
 	}
 
 	strbuf_free(&scrap);
+	free_render_stack(rstack);
 }
 
 // Convert a node_block list to HTML.  Returns 0 on success, and sets result.
