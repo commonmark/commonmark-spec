@@ -98,9 +98,56 @@ static inline void cr(strbuf *html)
 }
 
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
+static void inlines_to_plain_html(strbuf *html, node_inl* ils)
+{
+	node_inl* children;
+	render_stack* rstack = NULL;
+
+	while(ils != NULL) {
+	        children = NULL;
+		switch(ils->tag) {
+			case INL_STRING:
+			case INL_CODE:
+		        case INL_RAW_HTML:
+				escape_html(html, ils->content.literal.data, ils->content.literal.len);
+				break;
+
+			case INL_LINEBREAK:
+			case INL_SOFTBREAK:
+				strbuf_putc(html, '\n');
+				break;
+
+			case INL_LINK:
+			case INL_IMAGE:
+				children = ils->content.inlines;
+				rstack = push_inline(rstack, ils->next, "");
+				break;
+
+			case INL_STRONG:
+			case INL_EMPH:
+				children = ils->content.inlines;
+				rstack = push_inline(rstack, ils->next, "");
+				break;
+		}
+		if (children) {
+		    ils = children;
+		} else {
+		    ils = ils->next;
+		}
+		while (ils == NULL && rstack != NULL) {
+		    strbuf_puts(html, rstack->literal);
+		    ils = rstack->next_sibling.inl;
+		    rstack = pop_render_stack(rstack);
+		}
+	}
+
+	free_render_stack(rstack);
+}
+
+
+// Convert an inline list to HTML.  Returns 0 on success, and sets result.
 static void inlines_to_html(strbuf *html, node_inl* ils)
 {
-	strbuf scrap = GH_BUF_INIT;
 	node_inl* children;
 	render_stack* rstack = NULL;
 
@@ -151,11 +198,8 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 				if (ils->content.linkable.url)
 					escape_href(html, ils->content.linkable.url, -1);
 
-				inlines_to_html(&scrap, ils->content.inlines);
 				strbuf_puts(html, "\" alt=\"");
-				if (scrap.size)
-					escape_html(html, scrap.ptr, scrap.size);
-				strbuf_clear(&scrap);
+				inlines_to_plain_html(html, ils->content.inlines);
 
 				if (ils->content.linkable.title) {
 					strbuf_puts(html, "\" title=\"");
@@ -189,7 +233,6 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 		}
 	}
 
-	strbuf_free(&scrap);
 	free_render_stack(rstack);
 }
 
