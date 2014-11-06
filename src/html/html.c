@@ -34,6 +34,9 @@ static render_stack* push_inline(render_stack* rstack,
 {
     render_stack* newstack;
     newstack = (render_stack*)malloc(sizeof(render_stack));
+    if (newstack == NULL) {
+	return NULL;
+    }
     newstack->previous = rstack;
     newstack->next_sibling.inl = inl;
     newstack->literal = literal;
@@ -47,6 +50,9 @@ static render_stack* push_block(render_stack* rstack,
 {
     render_stack* newstack;
     newstack = (render_stack*)malloc(sizeof(render_stack));
+    if (newstack == NULL) {
+	return NULL;
+    }
     newstack->previous = rstack;
     newstack->next_sibling.block = block;
     newstack->literal = literal;
@@ -136,8 +142,8 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 				}
 
 				strbuf_puts(html, "\">");
-				inlines_to_html(html, ils->content.inlines);
-				strbuf_puts(html, "</a>");
+				children = ils->content.inlines;
+				rstack = push_inline(rstack, ils->next, "</a>");
 				break;
 
 			case INL_IMAGE:
