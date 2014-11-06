@@ -43,7 +43,7 @@ var renderInline = function(inline) {
         return inTags('a', attrs, this.renderInlines(inline.label));
     case 'Image':
         attrs = [['src', this.escape(inline.destination, true)],
-                 ['alt', this.escape(this.renderInlines(inline.label))]];
+                 ['alt', this.renderInlines(inline.label).replace(/\<[^>]*\>/g,'')]];
         if (inline.title) {
             attrs.push(['title', this.escape(inline.title, true)]);
         }
