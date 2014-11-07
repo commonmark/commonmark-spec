@@ -1,6 +1,10 @@
 project(cmark)
 cmake_minimum_required(VERSION 2.8)
 
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+    message(FATAL_ERROR "Do not build in-source.\nPlease remove CMakeCache.txt and the CMakeFiles/ directory.\nThen: mkdir build ; cd build ; cmake .. ; make")
+endif()
+
 set(PROJECT_NAME "cmark")
 
 set(PROJECT_VERSION_MAJOR 0)
