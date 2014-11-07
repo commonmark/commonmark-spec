@@ -12,7 +12,11 @@ SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site
 
-all: $(SRCDIR)/case_fold_switch.inc $(PROG) libcommonmark.so
+all:
+	mkdir -p build; cd build; cmake ..; make
+
+install:
+	mkdir -p build; cd build; cmake ..; make install
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -71,11 +75,11 @@ $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 ibcommonmark.so: $(HTML_OBJ) $(CMARK_OBJ)
 	$(CC) $(LDFLAGS) -shared -o $@ $^
 
-install: libcommonmark.so $(cmark_HDR) $(HTML_HDR)
-	install -d $(PREFIX)/lib $(PREFIX)/include/cmark/html
-	install libcommonmark.so $(PREFIX)/lib/
-	install $(cmark_HDR) $(PREFIX)/include/cmark/
-	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
+#install: libcommonmark.so $(cmark_HDR) $(HTML_HDR)
+#	install -d $(PREFIX)/lib $(PREFIX)/include/cmark/html
+#	install libcommonmark.so $(PREFIX)/lib/
+#	install $(cmark_HDR) $(PREFIX)/include/cmark/
+#	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
 
 dingus: js/commonmark.js
 	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
