@@ -4,7 +4,6 @@ BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 SPEC=spec.txt
 SITE=_site
-SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 BUILDDIR=build
 PROG?=$(BUILDDIR)/src/cmark
 
@@ -75,22 +74,11 @@ fuzztest:
 	for i in `seq 1 10`; do \
 	  time cat /dev/urandom | head -c 500000 | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | $(PROG) > /dev/null && rm fuzz-$$i.txt ; done
 
-$(SITE)/index.html: spec.txt
-	./make_site_index.sh $(SPECVERSION) | \
-	  pandoc --template template.html -S -s -t html5 -o $@
+update-site: spec.html
+	make -C $(SITE) update
 
-$(SITE)/$(SPECVERSION)/index.html: spec.html
-	mkdir -p $(SITE)/$(SPECVERSION)
-	cp $< $@
-	cd $(SITE); git add $(SPECVERSION)/index.html; git commit -a -m "Added version $(SPECVERSION) of spec"; cd ..
-
-$(SITE)/%: %
-	cp $< $@
-
-update-site: $(SITE)/dingus.html $(SITE)/js/commonmark.js $(SITE)/index.html $(SITE)/$(SPECVERSION)/index.html $(SITE)/js/LICENSE
-
-upload-site:
-	cd $(SITE) ; git pull; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..
+upload-site: spec.html
+	make -C $(SITE) upload
 
 distclean: clean
 	-rm -f js/commonmark.js
