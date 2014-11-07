@@ -12,7 +12,7 @@ SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site
 
-all: $(SRCDIR)/case_fold_switch.inc $(PROG) libcmark.so
+all: $(PROG) libcmark.so
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
