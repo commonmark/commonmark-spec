@@ -59,6 +59,29 @@ run the tests for `commonmark.js`, do `make testjs`.
 
 [The spec]:  http://jgm.github.io/CommonMark/spec.html
 
+Installing
+----------
+
+To install the C program (and shared library), [cmake] is required:
+
+    mkdir build
+    cd build
+    cmake ..     # optionally: -DCMAKE_INSTALL_PREFIX=path
+    make         # executable will be created as build/src/cmake
+    make install
+
+To run tests:
+
+    perl runtests.pl spec.txt build/src/cmark
+
+To build the javascript library:
+
+    browserify --standalone commonmark js/lib/index.js -o js/commonmark.js
+
+To run tests:
+
+    node js/test.js
+
 The spec
 --------
 
@@ -196,4 +219,6 @@ CommonMark](http://talk.commonmark.org); you should use it instead of
 github issues for questions and possibly open-ended discussions.
 Use the [github issue tracker](http://github.com/jgm/stmd/issues)
 only for simple, clear, actionable issues.
+
+[cmake]: http://www.cmake.org/download/
 
