@@ -276,25 +276,52 @@ void cmark_free_nodes(node_block *e)
 	}
 }
 
+typedef struct BlockStack {
+	struct BlockStack *previous;
+	node_block *next_sibling;
+} block_stack;
+
 // Walk through node_block and all children, recursively, parsing
 // string content into inline content where appropriate.
 void process_inlines(node_block* cur, reference_map *refmap)
 {
-	switch (cur->tag) {
-	case BLOCK_PARAGRAPH:
-	case BLOCK_ATX_HEADER:
-	case BLOCK_SETEXT_HEADER:
-		cur->inline_content = parse_inlines(&cur->string_content, refmap);
-		break;
+	block_stack* stack = NULL;
+	block_stack* newstack = NULL;
 
-	default:
-		break;
+	while (cur != NULL) {
+		switch (cur->tag) {
+		case BLOCK_PARAGRAPH:
+		case BLOCK_ATX_HEADER:
+		case BLOCK_SETEXT_HEADER:
+			cur->inline_content = parse_inlines(&cur->string_content, refmap);
+			break;
+
+		default:
+			break;
+		}
+
+		if (cur->children) {
+			newstack = (block_stack*)malloc(sizeof(block_stack));
+			if (newstack == NULL) return;
+			newstack->previous = stack;
+			stack = newstack;
+			stack->next_sibling = cur->next;
+			cur = cur->children;
+		} else {
+			cur = cur->next;
+		}
+
+		while (cur == NULL && stack != NULL) {
+			cur = stack->next_sibling;
+			newstack = stack->previous;
+			free(stack);
+			stack = newstack;
+		}
 	}
-
-	node_block *child = cur->children;
-	while (child != NULL) {
-		process_inlines(child, refmap);
-		child = child->next;
+	while (stack != NULL) {
+		newstack = stack->previous;
+		free(stack);
+		stack = newstack;
 	}
 }
 
