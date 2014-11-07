@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(LIBRARY "commonmark")
+set(LIBRARY "cmark-shared")
 set(HEADERS
   cmark.h
   buffer.h
@@ -53,6 +53,8 @@ endif(MSVC)
 add_executable(${PROGRAM} ${PROGRAM_SOURCES})
 
 add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
+set_target_properties(${LIBRARY}
+  PROPERTIES OUTPUT_NAME "cmark")
 
 set_property(TARGET ${LIBRARY}
   APPEND PROPERTY MACOSX_RPATH true)
