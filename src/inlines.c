@@ -11,19 +11,20 @@
 #include "inlines.h"
 #include "debug.h"
 
-typedef struct InlineStack {
-	struct InlineStack *previous;
+typedef struct OpenerStack {
+	struct OpenerStack *previous;
 	node_inl *first_inline;
 	int delim_count;
 	unsigned char delim_char;
-} inline_stack;
+	int position;
+} opener_stack;
 
 typedef struct Subject {
 	chunk input;
 	int pos;
 	int label_nestlevel;
 	reference_map *refmap;
-	inline_stack *emphasis_openers;
+	opener_stack *openers;
 	int emphasis_nestlevel;
 } subject;
 
@@ -197,7 +198,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
-	e->emphasis_openers = NULL;
+	e->openers = NULL;
 	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
@@ -211,7 +212,7 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->pos = 0;
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
-	e->emphasis_openers = NULL;
+	e->openers = NULL;
 	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
@@ -326,15 +327,33 @@ static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * c
 	return numdelims;
 }
 
-static void free_openers(subject* subj, inline_stack* istack)
+static void free_openers(subject* subj, opener_stack* istack)
 {
-	inline_stack * tempstack;
-	while (subj->emphasis_openers != istack) {
-		tempstack = subj->emphasis_openers;
-		subj->emphasis_openers = subj->emphasis_openers->previous;
+	opener_stack * tempstack;
+	while (subj->openers != istack) {
+		tempstack = subj->openers;
+		subj->openers = subj->openers->previous;
 		subj->emphasis_nestlevel--;
 		free(tempstack);
 	}
+}
+
+static opener_stack * push_opener(subject *subj,
+				     int numdelims,
+				     unsigned char c,
+				     node_inl *inl_text)
+{
+	opener_stack *istack =
+		(opener_stack*)malloc(sizeof(opener_stack));
+	if (istack == NULL) {
+		return NULL;
+	}
+	istack->delim_count = numdelims;
+	istack->delim_char = c;
+	istack->first_inline = inl_text;
+	istack->previous = subj->openers;
+	istack->position = subj->pos;
+	return istack;
 }
 
 // Parse strong/emph or a fallback.
@@ -345,7 +364,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 	int numdelims;
 	int useDelims;
 	int openerDelims;
-	inline_stack * istack;
+	opener_stack * istack;
 	node_inl * inl;
 	node_inl * emph;
 	node_inl * inl_text;
@@ -355,7 +374,7 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 	if (can_close)
 		{
 			// walk the stack and find a matching opener, if there is one
-			istack = subj->emphasis_openers;
+			istack = subj->openers;
 			while (true)
 				{
 					if (istack == NULL)
@@ -419,16 +438,10 @@ static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **l
 
 	if (can_open)
 		{
-			istack = (inline_stack*)malloc(sizeof(inline_stack));
-			if (istack == NULL) {
-				return NULL;
-			}
-			istack->delim_count = numdelims;
-			istack->delim_char = c;
-			istack->first_inline = inl_text;
-			istack->previous = subj->emphasis_openers;
-			subj->emphasis_openers = istack;
-			subj->emphasis_nestlevel++;
+			subj->openers = push_opener(subj,
+						    numdelims,
+						    c,
+						    inl_text);
 		}
 
 	return inl_text;
@@ -771,8 +784,8 @@ extern node_inl* parse_inlines_from_subject(subject* subj)
 		}
 	}
 
-	inline_stack* istack = subj->emphasis_openers;
-	inline_stack* temp;
+	opener_stack* istack = subj->openers;
+	opener_stack* temp;
 	while (istack != NULL) {
 		temp = istack->previous;
 		free(istack);
