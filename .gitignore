@@ -29,5 +29,6 @@
 scanners.c
 *.zip
 bstrlib.txt
+build
 cmark.dSYM/*
 cmark
