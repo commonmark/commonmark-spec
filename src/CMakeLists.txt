@@ -1,28 +1,32 @@
-set(LIBRARY_cmark "commonmark")
-set(LIBRARY_cmark_SOURCES   blocks.c
-                            inlines.c
+set(LIBRARY "commonmark")
+set(HEADERS                 cmark.h
+                            buffer.h
+                            chunk.h
+                            references.h
                             debug.h
-                            print.c
+                            utf8.h
                             scanners.h
+                            inlines.h
+                            html/html_unescape.h
+                            html/houdini.h
+                            )
+set(LIBRARY_SOURCES         blocks.c
+                            inlines.c
+                            print.c
                             scanners.c
                             scanners.re
-                            cmark.h
-                            utf8.h
                             utf8.c
-                            buffer.h
                             buffer.c
-                            references.h
                             references.c
                             html/html.c
-                            html/html_unescape.h
                             html/html_unescape.gperf
-                            html/houdini.h
                             html/houdini_href_e.c
                             html/houdini_html_e.c
                             html/houdini_html_u.c
+                            ${HEADERS}
                             )
-set(PROGRAM_cmark "cmark")
-set(PROGRAM_cmark_SOURCES   ${LIBRARY_cmark_SOURCES}
+set(PROGRAM "cmark")
+set(PROGRAM_SOURCES   ${LIBRARY_SOURCES}
                             main.c)
 
 include_directories(. html)
@@ -38,21 +42,20 @@ else(MSVC)
                         COMMAND ${RE2C} --case-insensitive -b -i ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re >${CMAKE_CURRENT_SOURCE_DIR}/scanners.c)
 endif(MSVC)
 
-add_executable(${PROGRAM_cmark}
-                ${PROGRAM_cmark_SOURCES})
+add_executable(${PROGRAM}
+                ${PROGRAM_SOURCES})
 
-add_library(${LIBRARY_cmark} SHARED ${LIBRARY_cmark_SOURCES})
+add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
 
-set_property(TARGET ${LIBRARY_cmark}
+set_property(TARGET ${LIBRARY}
   APPEND PROPERTY MACOSX_RPATH true)
 
 if (MSVC)
-set_property(TARGET ${PROGRAM_cmark}
+set_property(TARGET ${PROGRAM}
                      APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO)
 # if sometimes libs are needed ...
 #target_link_libraries(${PROGRAM_chronolog})
 endif(MSVC)
-install(TARGETS ${PROGRAM_cmark}
-  RUNTIME DESTINATION bin)
-install(TARGETS ${LIBRARY_cmark}
+install(TARGETS ${PROGRAM} ${LIBRARY}
+  RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib)

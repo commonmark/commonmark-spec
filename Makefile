@@ -75,10 +75,11 @@ benchjs:
 #
 #$(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 #	re2c --case-insensitive -bis $< > $@ || (rm $@ && false)
-#
-#$(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
-#	perl mkcasefold.pl < $< > $@
-#
+
+
+$(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
+	perl mkcasefold.pl < $< > $@
+
 #$(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 #	gperf -I -t -N find_entity -H hash_entity -K entity -C -l
 #	--null-strings -m5 $< > $@
@@ -91,6 +92,12 @@ benchjs:
 #	install libcommonmark.so $(PREFIX)/lib/
 #	install $(cmark_HDR) $(PREFIX)/include/cmark/
 #	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
+
+#CMARK_HDR = $(SRCDIR)/cmark.h $(SRCDIR)/buffer.h $(SRCDIR)/references.h \
+#           $(SRCDIR)/chunk.h $(SRCDIR)/debug.h $(SRCDIR)/utf8.h \
+#           $(SRCDIR)/scanners.h $(SRCDIR)/inlines.h
+#
+#HTML_HDR = $(SRCDIR)/html/html_unescape.h $(SRCDIR)/html/houdini.h
 
 dingus: js/commonmark.js
 	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
