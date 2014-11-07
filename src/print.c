@@ -35,8 +35,10 @@ static void print_str(const unsigned char *s, int len)
 // Prettyprint an inline list, for debugging.
 static void print_inlines(node_inl* ils, int indent)
 {
+	int i;
+
 	while(ils != NULL) {
-		for (int i=0; i < indent; i++) {
+		for (i=0; i < indent; i++) {
 			putchar(' ');
 		}
 		switch(ils->tag) {
@@ -93,9 +95,10 @@ static void print_inlines(node_inl* ils, int indent)
 static void print_blocks(node_block* b, int indent)
 {
 	struct ListData *data;
+	int i;
 
 	while(b != NULL) {
-		for (int i=0; i < indent; i++) {
+		for (i=0; i < indent; i++) {
 			putchar(' ');
 		}
 
