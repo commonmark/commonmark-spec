@@ -291,6 +291,21 @@ void strbuf_drop(strbuf *buf, int n)
 	}
 }
 
+void strbuf_rtrim(strbuf *buf)
+{
+	if (!buf->size)
+		return;
+
+	while (buf->size > 0) {
+		if (!isspace(buf->ptr[buf->size - 1]))
+			break;
+
+		buf->size--;
+	}
+
+	buf->ptr[buf->size] = '\0';
+}
+
 void strbuf_trim(strbuf *buf)
 {
 	int i = 0;
@@ -303,15 +318,7 @@ void strbuf_trim(strbuf *buf)
 
 	strbuf_drop(buf, i);
 
-	/* rtrim */
-	while (buf->size > 0) {
-		if (!isspace(buf->ptr[buf->size - 1]))
-			break;
-
-		buf->size--;
-	}
-
-	buf->ptr[buf->size] = '\0';
+	strbuf_rtrim(buf);
 }
 
 // Destructively modify string, collapsing consecutive
