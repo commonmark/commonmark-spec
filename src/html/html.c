@@ -16,6 +16,7 @@ typedef struct RenderStack {
 		node_block *block;
 	} next_sibling;
 	bool tight;
+	bool trim;
 } render_stack;
 
 static void free_render_stack(render_stack * rstack)
@@ -40,13 +41,16 @@ static render_stack* push_inline(render_stack* rstack,
 	newstack->previous = rstack;
 	newstack->next_sibling.inl = inl;
 	newstack->literal = literal;
+	newstack->tight = false;
+	newstack->trim = false;
 	return newstack;
 }
 
 static render_stack* push_block(render_stack* rstack,
 				node_block* block,
 				char* literal,
-				bool tight)
+				bool tight,
+				bool trim)
 {
 	render_stack* newstack;
 	newstack = (render_stack*)malloc(sizeof(render_stack));
@@ -57,6 +61,7 @@ static render_stack* push_block(render_stack* rstack,
 	newstack->next_sibling.block = block;
 	newstack->literal = literal;
 	newstack->tight = tight;
+	newstack->trim = trim;
 	return newstack;
 }
 
@@ -101,10 +106,11 @@ static inline void cr(strbuf *html)
 static void inlines_to_plain_html(strbuf *html, node_inl* ils)
 {
 	node_inl* children;
+	bool visit_children;
 	render_stack* rstack = NULL;
 
 	while(ils != NULL) {
-	        children = NULL;
+		visit_children = false;
 		switch(ils->tag) {
 		case INL_STRING:
 		case INL_CODE:
@@ -120,16 +126,18 @@ static void inlines_to_plain_html(strbuf *html, node_inl* ils)
 		case INL_LINK:
 		case INL_IMAGE:
 			children = ils->content.inlines;
+			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "");
 			break;
 
 		case INL_STRONG:
 		case INL_EMPH:
 			children = ils->content.inlines;
+			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "");
 			break;
 		}
-		if (children) {
+		if (visit_children) {
 			ils = children;
 		} else {
 			ils = ils->next;
@@ -237,14 +245,19 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 }
 
 // Convert a node_block list to HTML.  Returns 0 on success, and sets result.
-static void blocks_to_html(strbuf *html, node_block *b, bool tight)
+static void blocks_to_html(strbuf *html, node_block *b)
 {
 	struct ListData *data;
+	render_stack* rstack = NULL;
+	bool visit_children = false;
+	bool tight = false;
 
 	while(b != NULL) {
+		visit_children = false;
 		switch(b->tag) {
 		case BLOCK_DOCUMENT:
-			blocks_to_html(html, b->children, false);
+			rstack = push_block(rstack, b->next, "", false, false);
+			visit_children = true;
 			break;
 
 		case BLOCK_PARAGRAPH:
@@ -261,16 +274,16 @@ static void blocks_to_html(strbuf *html, node_block *b, bool tight)
 		case BLOCK_BQUOTE:
 			cr(html);
 			strbuf_puts(html, "<blockquote>\n");
-			blocks_to_html(html, b->children, false);
-			strbuf_puts(html, "</blockquote>\n");
+			rstack = push_block(rstack, b->next, "</blockquote>\n", tight, false);
+			tight = false;
+			visit_children = true;
 			break;
 
 		case BLOCK_LIST_ITEM:
 			cr(html);
 			strbuf_puts(html, "<li>");
-			blocks_to_html(html, b->children, tight);
-			strbuf_trim(html); /* TODO: rtrim */
-			strbuf_puts(html, "</li>\n");
+			rstack = push_block(rstack, b->next, "</li>\n", tight, true);
+			visit_children = true;
 			break;
 
 		case BLOCK_LIST:
@@ -286,9 +299,11 @@ static void blocks_to_html(strbuf *html, node_block *b, bool tight)
 				strbuf_puts(html, data->list_type == bullet ? "<ul>\n" : "<ol>\n");
 			}
 
-			blocks_to_html(html, b->children, data->tight);
-			strbuf_puts(html, data->list_type == bullet ? "</ul>" : "</ol>");
-			strbuf_putc(html, '\n');
+			rstack = push_block(rstack, b->next,
+					    data->list_type == bullet ?
+					    "\n</ul>\n" : "\n</ol>\n", tight, false);
+			tight = data->tight;
+			visit_children = true;
 			break;
 
 		case BLOCK_ATX_HEADER:
@@ -338,12 +353,26 @@ static void blocks_to_html(strbuf *html, node_block *b, bool tight)
 		default:
 			assert(false);
 		}
-
-		b = b->next;
+		if (visit_children) {
+			b = b->children;
+		} else {
+			b = b->next;
+		}
+		while (b == NULL && rstack != NULL) {
+			strbuf_puts(html, rstack->literal);
+			if (rstack->trim) {
+				strbuf_rtrim(html);
+			}
+			tight = rstack->tight;
+			b = rstack->next_sibling.block;
+			rstack = pop_render_stack(rstack);
+		}
 	}
+
+	free_render_stack(rstack);
 }
 
 void cmark_render_html(strbuf *html, node_block *root)
 {
-	blocks_to_html(html, root, false);
+	blocks_to_html(html, root);
 }
