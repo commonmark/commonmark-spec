@@ -14,7 +14,7 @@ PROG?=$(BUILDDIR)/src/cmark
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check
 
-all: check
+all: check man/man1/cmark.1
 	mkdir -p $(BUILDDIR); cd build; cmake ..; make
 
 install: check
@@ -27,6 +27,9 @@ check:
 	@cmake --version >/dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
 $(PROG): all
+
+man/man1/cmark.1: man/cmark.1.md
+	pandoc $< -o $@ -s -t man
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
