@@ -669,11 +669,12 @@ static node_inl* handle_left_bracket(subject* subj)
 	int n;
 	int sps;
 	int found_label;
-	int endlabel, starturl, endurl, starttitle, endtitle, endall;
+	int endlabel, startpos, starturl, endurl, starttitle, endtitle, endall;
 
 	chunk rawlabel;
 	chunk url, title;
 
+	startpos = subj->pos;
 	found_label = link_label(subj, &rawlabel);
 	endlabel = subj->pos;
 
@@ -702,13 +703,7 @@ static node_inl* handle_left_bracket(subject* subj)
 
 				return make_link(lab, url, title);
 			} else {
-				// if we get here, we matched a label but didn't get further:
-				subj->pos = endlabel;
-				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
-				result = append_inlines(make_str(chunk_literal("[")),
-							append_inlines(lab,
-								       make_str(chunk_literal("]"))));
-				return result;
+			    goto noMatch;
 			}
 		} else {
 			chunk rawlabel_tmp;
@@ -733,16 +728,14 @@ static node_inl* handle_left_bracket(subject* subj)
 				lab = parse_chunk_inlines(&rawlabel, NULL);
 				result = make_ref_link(lab, ref);
 			} else {
-				subj->pos = endlabel;
-				lab = parse_chunk_inlines(&rawlabel, subj->refmap);
-				result = append_inlines(make_str(chunk_literal("[")),
-							append_inlines(lab, make_str(chunk_literal("]"))));
+			    goto noMatch;
 			}
 			return result;
 		}
 	}
+noMatch:
 	// If we fall through to here, it means we didn't match a link:
-	advance(subj);  // advance past [
+	subj->pos = startpos + 1;  // advance past [
 	return make_str(chunk_literal("["));
 }
 
