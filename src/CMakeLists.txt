@@ -38,11 +38,13 @@ set(PROGRAM_SOURCES
 include_directories(. html)
 
 if (MSVC)
+    set(RE2C ${CMAKE_CURRENT_SOURCE_DIR}/re2c)
     file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} DOS_CURRENT_SOURCE_DIR)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i ${DOS_CURRENT_SOURCE_DIR}\\scanners.re >${DOS_CURRENT_SOURCE_DIR}\\scanners.c)
 else(MSVC)
+    set(RE2C re2c)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re >${CMAKE_CURRENT_SOURCE_DIR}/scanners.c)
@@ -63,7 +65,11 @@ endif(MSVC)
 
 install(TARGETS ${PROGRAM} ${LIBRARY}
   RUNTIME DESTINATION bin
-  LIBRARY DESTINATION lib)
+  LIBRARY DESTINATION lib
+  )
+install(DIRECTORY ./
+  DESTINATION include/${PROJECT_NAME}
+  FILES_MATCHING PATTERN "*.h")
 
 if(UNIX)
   INSTALL(FILES ../man/man1/cmark.1 DESTINATION share/man/man1)
@@ -83,3 +89,4 @@ if(MSVC)
 elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99")
 endif()
+

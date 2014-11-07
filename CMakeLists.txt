@@ -16,66 +16,6 @@ add_subdirectory(src)
 
 set(CMAKE_BUILD_TYPE Release)
 
-#option(${PROJECT_NAME}_WITH_DOCS "generate Documentation" OFF)
-#option(${PROJECT_NAME}_WITH_TESTS "enable testing" ON)
-option(CMAKE_SUPPRESS_REGENERATION "suppress rules to re-run cmake on changes (warning: no dependency checks!)?" OFF)
-if (MSVC)
-    set(RE2C ${CMAKE_CURRENT_SOURCE_DIR}/re2c)
-else(MSVC)
-    set(RE2C re2c)
-endif(MSVC)
-
-if (MSVC)
-  option(PROJECT_LINK_MSVC_MT "link with /MT instead of /MD (use msvc runtime dlls versus static linked)" ON)
-  # see http://msdn.microsoft.com/en-us/library/2kzt1wy3%28VS.71%29.aspx
-  if (PROJECT_LINK_MSVC_MT)
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-  endif (PROJECT_LINK_MSVC_MT)
-
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /INCREMENTAL:NO")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W4")
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /W4")
-
-  set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS UNICODE)
-    set(CMAKE_FIND_LIBRARY_PREFIXES "")
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib")
-    set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
-    set(CMAKE_STATIC_LIBRARY_SUFFIX ".lib")
-    set(CMAKE_SHARED_LIBRARY_PREFIX "")          # lib
-    set(CMAKE_SHARED_LIBRARY_SUFFIX ".dll")          # .so
-    set(CMAKE_IMPORT_LIBRARY_PREFIX "")
-    set(CMAKE_IMPORT_LIBRARY_SUFFIX ".lib")
-    set(CMAKE_EXECUTABLE_SUFFIX ".exe")          # .exe
-    set(CMAKE_LINK_LIBRARY_SUFFIX ".lib")
-    set(CMAKE_DL_LIBS "")
-    set(CMAKE_DEBUG_POSTFIX "d")
-    add_definitions(-DUNICODE -D_UNICODE)
-else(MSVC)
-  list(APPEND CMAKE_CXX_FLAGS "-Wall -Wunused-variable -Wno-long-long")
-   #-pedantic
-  list(APPEND CMAKE_C_FLAGS "-Wall -Wunused-variable -Wno-long-long")
-endif(MSVC)
-
-# create config.h
-# configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake
-#        ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-
-# set include directories
-get_filename_component(CONFIG_INCLUDE ${CMAKE_CURRENT_BINARY_DIR}/config.h PATH)
-include_directories(include ${CONFIG_INCLUDE})
-
-install(DIRECTORY include DESTINATION .
-    COMPONENT devel
-    FILES_MATCHING PATTERN "*.h"
-    PATTERN .svn EXCLUDE
-    )
-# install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h
-#     DESTINATION include/${PROJECT_NAME}
-#     COMPONENT devel)
-
 set(CPACK_GENERATOR TGZ ZIP)
 if(WIN32 AND NOT CYGWIN)
   set(CPACK_GENERATOR NSIS ${CPACK_GENERATOR})
