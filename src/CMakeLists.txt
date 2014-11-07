@@ -1,7 +1,6 @@
-set(PROGRAM_cmark "cmark")
-set(PROGRAM_cmark_SOURCES   blocks.c
+set(LIBRARY_cmark "commonmark")
+set(LIBRARY_cmark_SOURCES   blocks.c
                             inlines.c
-                            main.c
                             debug.h
                             print.c
                             scanners.h
@@ -22,6 +21,9 @@ set(PROGRAM_cmark_SOURCES   blocks.c
                             html/houdini_html_e.c
                             html/houdini_html_u.c
                             )
+set(PROGRAM_cmark "cmark")
+set(PROGRAM_cmark_SOURCES   ${LIBRARY_cmark_SOURCES}
+                            main.c)
 
 include_directories(. html)
 
@@ -39,6 +41,11 @@ endif(MSVC)
 add_executable(${PROGRAM_cmark}
                 ${PROGRAM_cmark_SOURCES})
 
+add_library(${LIBRARY_cmark} SHARED ${LIBRARY_cmark_SOURCES})
+
+set_property(TARGET ${LIBRARY_cmark}
+  APPEND PROPERTY MACOSX_RPATH true)
+
 if (MSVC)
 set_property(TARGET ${PROGRAM_cmark}
                      APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO)
@@ -46,5 +53,6 @@ set_property(TARGET ${PROGRAM_cmark}
 #target_link_libraries(${PROGRAM_chronolog})
 endif(MSVC)
 install(TARGETS ${PROGRAM_cmark}
-RUNTIME DESTINATION bin
-BUNDLE DESTINATION /Applications)
+  RUNTIME DESTINATION bin)
+install(TARGETS ${LIBRARY_cmark}
+  LIBRARY DESTINATION lib)

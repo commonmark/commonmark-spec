@@ -12,7 +12,7 @@ SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site
 
-all: $(SRCDIR)/case_fold_switch.inc $(PROG) libcmark.so
+all: $(SRCDIR)/case_fold_switch.inc $(PROG) libcommonmark.so
 
 README.html: README.md template.html
 	pandoc --template template.html -S -s -t html5 -o $@ $<
@@ -68,12 +68,12 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 	gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 $< > $@
 
-libcmark.so: $(HTML_OBJ) $(CMARK_OBJ)
+ibcommonmark.so: $(HTML_OBJ) $(CMARK_OBJ)
 	$(CC) $(LDFLAGS) -shared -o $@ $^
 
-install: libcmark.so $(cmark_HDR) $(HTML_HDR)
+install: libcommonmark.so $(cmark_HDR) $(HTML_HDR)
 	install -d $(PREFIX)/lib $(PREFIX)/include/cmark/html
-	install libcmark.so $(PREFIX)/lib/
+	install libcommonmark.so $(PREFIX)/lib/
 	install $(cmark_HDR) $(PREFIX)/include/cmark/
 	install $(HTML_HDR) $(PREFIX)/include/cmark/html/
 
@@ -108,7 +108,7 @@ upload-site:
 	cd $(SITE) ; git pull; git commit -a -m "Updated site for latest spec, js" ; git push; cd ..
 
 clean:
-	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcmark.so
+	-rm -f test $(SRCDIR)/*.o $(SRCDIR)/scanners.c $(SRCDIR)/html/*.o libcommonmark.so
 	-rm -f js/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
