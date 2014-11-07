@@ -12,8 +12,7 @@ set(PROJECT_VERSION_MINOR 0)
 set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} )
 
-include (CheckIncludeFile)
-CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
+add_subdirectory(src)
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -88,8 +87,6 @@ install(DIRECTORY include DESTINATION .
 # install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h
 #     DESTINATION include/${PROJECT_NAME}
 #     COMPONENT devel)
-
-add_subdirectory(src)
 
 set(CPACK_GENERATOR TGZ ZIP)
 if(WIN32 AND NOT CYGWIN)
