@@ -858,6 +858,7 @@ static int parse_inline(subject* subj, node_inl ** last)
 	case '!':
 		advance(subj);
 		if (peek_char(subj) == '[') {
+			advance(subj);
 			new = make_str(chunk_literal("!["));
 			subj->openers = push_opener(subj, 1, '!', new);
 		} else {
