@@ -579,17 +579,24 @@ static node_inl* handle_pointy_brace(subject* subj)
 static int link_label(subject* subj, chunk *raw_label)
 {
 	int startpos = subj->pos;
+	int length = 0;
 
 	advance(subj);  // advance past [
 	unsigned char c;
 	while ((c = peek_char(subj)) && c != '[' && c != ']') {
 		if (c == '\\') {
 			advance(subj);
+			length++;
 			if (ispunct(peek_char(subj))) {
 				advance(subj);
+				length++;
 			}
 		} else {
 			advance(subj);
+			length++;
+		}
+		if (length > MAX_LINK_LABEL_LENGTH) {
+			goto noMatch;
 		}
 	}
 
@@ -597,10 +604,12 @@ static int link_label(subject* subj, chunk *raw_label)
 		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
 		advance(subj);  // advance past ]
 		return 1;
-	} else {
-		subj->pos = startpos; // rewind
-		return 0;
 	}
+
+ noMatch:
+	subj->pos = startpos; // rewind
+	return 0;
+
 }
 
 // Return a link, an image, or a literal close bracket.
@@ -679,16 +688,11 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	subj->pos = subj->pos + scan_spacechars(&subj->input, subj->pos);
 	raw_label = chunk_literal("");
 	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
-		// chunk_free(&raw_label);
+		chunk_free(&raw_label);
 		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
 	}
 
-	// TODO - document this hard length limit in spec; also impose for creation of refs
-	if (raw_label.len < 1000) {
-		ref = reference_lookup(subj->refmap, &raw_label);
-	} else {
-		ref = NULL;
-	}
+	ref = reference_lookup(subj->refmap, &raw_label);
 	chunk_free(&raw_label);
 
 	if (ref != NULL) { // found
