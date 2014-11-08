@@ -607,8 +607,9 @@ static int link_label(subject* subj, chunk *raw_label)
 			if (ispunct(peek_char(subj))) {
 				advance(subj);
 			}
+		} else {
+			advance(subj);
 		}
-		advance(subj);
 	}
 
 	if (c == ']') { // match found
@@ -699,7 +700,12 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
 	}
 
-	ref = reference_lookup(subj->refmap, &raw_label);
+	// TODO - document this hard length limit in READE; also impose for creation of refs
+	if (raw_label.len < 1000) {
+		ref = reference_lookup(subj->refmap, &raw_label);
+	} else {
+		ref = NULL;
+	}
 	chunk_free(&raw_label);
 
 	if (ref != NULL) { // found
