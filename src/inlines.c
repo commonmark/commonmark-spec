@@ -634,6 +634,8 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	chunk urlchunk, titlechunk;
 	unsigned char *url, *title;
 	opener_stack *ostack = subj->openers;
+	opener_stack *closer_above;
+	opener_stack *tempstack;
 	node_inl *link_text;
 	node_inl *inl;
 	chunk raw_label;
@@ -700,7 +702,7 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
 	}
 
-	// TODO - document this hard length limit in READE; also impose for creation of refs
+	// TODO - document this hard length limit in spec; also impose for creation of refs
 	if (raw_label.len < 1000) {
 		ref = reference_lookup(subj->refmap, &raw_label);
 	} else {
@@ -731,8 +733,30 @@ match:
 	inl->next = NULL;
 	*last = inl;
 
-	// remove this opener and all later ones from stack:
+	// remove this opener and all later ones:
 	free_openers(subj, ostack->previous);
+
+	// remove earlier ones of the same kind
+	// (so, no links in links, and no images in images):
+	// (This code can be removed if we decide to allow links
+	// inside links and images inside images):
+	ostack = subj->openers;
+	closer_above = NULL;
+	while (ostack != NULL) {
+		tempstack = ostack->previous;
+		if (ostack->delim_char == (is_image ? '!' : '[')) {
+			free(ostack);
+			if (closer_above) {
+				closer_above->previous = tempstack;
+			} else {
+				subj->openers = tempstack;
+			}
+		} else {
+			closer_above = ostack;
+		}
+		ostack = tempstack;
+	}
+
 	return NULL;
 }
 
