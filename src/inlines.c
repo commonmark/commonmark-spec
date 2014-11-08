@@ -22,7 +22,6 @@ typedef struct OpenerStack {
 typedef struct Subject {
 	chunk input;
 	int pos;
-	int label_nestlevel;
 	reference_map *refmap;
 	opener_stack *openers;
 } subject;
@@ -195,7 +194,6 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->input.len = buffer->size;
 	e->input.alloc = 0;
 	e->pos = 0;
-	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->openers = NULL;
 
@@ -208,7 +206,6 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->input.len = chunk->len;
 	e->input.alloc = 0;
 	e->pos = 0;
-	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->openers = NULL;
 
@@ -601,69 +598,30 @@ static node_inl* handle_pointy_brace(subject* subj)
 }
 
 // Parse a link label.  Returns 1 if successful.
-// Unless raw_label is null, it is set to point to the raw contents of the [].
-// Assumes the subject has a '[' character at the current position.
-// Returns 0 and does not advance if no matching ] is found.
-// Note the precedence:  code backticks have precedence over label bracket
-// markers, which have precedence over *, _, and other inline formatting
-// markers. So, 2 below contains a link while 1 does not:
-// 1. [a link `with a ](/url)` character
-// 2. [a link *with emphasized ](/url) text*
+// Note:  unescaped brackets are not allowed in labels.
+// The label begins with `[` and ends with the first `]` character
+// encountered.  Backticks in labels do not start code spans.
 static int link_label(subject* subj, chunk *raw_label)
 {
-	int nestlevel = 0;
-	node_inl* tmp = NULL;
 	int startpos = subj->pos;
-
-	if (subj->label_nestlevel) {
-		// if we've already checked to the end of the subject
-		// for a label, even with a different starting [, we
-		// know we won't find one here and we can just return.
-		// Note:  nestlevel 1 would be: [foo [bar]
-		// nestlevel 2 would be: [foo [bar [baz]
-		subj->label_nestlevel--;
-		return 0;
-	}
 
 	advance(subj);  // advance past [
 	unsigned char c;
-	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
-		switch (c) {
-		case '`':
-			tmp = handle_backticks(subj);
-			free_inlines(tmp);
-			break;
-		case '<':
-			tmp = handle_pointy_brace(subj);
-			free_inlines(tmp);
-			break;
-		case '[':  // nested []
-			nestlevel++;
-			advance(subj);
-			break;
-		case ']':  // nested []
-			nestlevel--;
-			advance(subj);
-			break;
-		case '\\':
+	while ((c = peek_char(subj)) && c != '[' && c != ']') {
+		if (c == '\\') {
 			advance(subj);
 			if (ispunct(peek_char(subj))) {
 				advance(subj);
 			}
-			break;
-		default:
-			advance(subj);
 		}
+		advance(subj);
 	}
-	if (nestlevel == 0 && c == ']') {
+
+	if (c == ']') { // match found
 		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
-		subj->label_nestlevel = 0;
 		advance(subj);  // advance past ]
 		return 1;
 	} else {
-		if (c == 0) {
-			subj->label_nestlevel = nestlevel;
-		}
 		subj->pos = startpos; // rewind
 		return 0;
 	}
