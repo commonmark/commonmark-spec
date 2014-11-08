@@ -628,12 +628,15 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	int starturl, endurl, starttitle, endtitle, endall;
 	int n;
 	int sps;
+	reference *ref;
 	bool is_image = false;
-	chunk url, title;
+	chunk urlchunk, titlechunk;
+	unsigned char *url, *title;
 	opener_stack *ostack = subj->openers;
 	node_inl *link_text;
 	node_inl *tmp;
 	node_inl *inl;
+	chunk raw_label;
 
 	advance(subj);  // advance past ]
 	initial_pos = subj->pos;
@@ -656,7 +659,7 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 
 	// Now we check to see if it's a link/image.
 
-
+	// First, look for an inline link.
 	if (peek_char(subj) == '(' &&
 	    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
 	    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
@@ -675,139 +678,60 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 		if (peek_at(subj, endall) == ')') {
 			subj->pos = endall + 1;
 
-			url = chunk_dup(&subj->input, starturl, endurl - starturl);
-			title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
+			urlchunk = chunk_dup(&subj->input, starturl, endurl - starturl);
+			titlechunk = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
+			url = clean_url(&urlchunk);
+			title = clean_title(&titlechunk);
+			chunk_free(&urlchunk);
+			chunk_free(&titlechunk);
+			goto match;
 
-			tmp = link_text->next;
-			inl = ostack->first_inline;
-			inl->tag = is_image ? INL_IMAGE : INL_LINK;
-			chunk_free(&inl->content.literal);
-			inl->content.linkable.label = link_text;
-			inl->content.linkable.url   = clean_url(&url);
-			inl->content.linkable.title = clean_title(&title);
-			chunk_free(&url);
-			chunk_free(&title);
-			inl->next = NULL;
-
-			// remove this opener and all later ones from stack:
-			free_openers(subj, ostack->previous);
-			*last = inl;
-			return NULL;
 		} else {
 			goto noMatch;
 		}
+	}
+
+	// Next, look for a following [link label] that matches in refmap.
+	// skip spaces
+	subj->pos = subj->pos + scan_spacechars(&subj->input, subj->pos);
+	raw_label = chunk_literal("");
+	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
+		chunk_free(&raw_label);
+		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
+	}
+
+	log_info("looking up '%s'", chunk_to_cstr(&raw_label));
+	ref = reference_lookup(subj->refmap, &raw_label);
+	chunk_free(&raw_label);
+
+	if (ref != NULL) { // found
+		log_info("ref found url{%s} title{%s}", ref->url, ref->title);
+		url = ref->url;
+		title = ref->title;
+		goto match;
 	} else {
-		goto noMatch; // for now
+		goto noMatch;
 	}
 
-	// if found, check to see if we have a target:
-	// - followed by (inline link)
-	// - followed by [link label] that matches
-	// - followed by [], and our brackets have a label that matches
-	// - our brackets have a label that matches
-
-	// if no target, remove the matching opener from the stack and return literal ].
-	// if yes target, remove the matching opener and any later openers.
-	// return a link or an image.
-
-		/*
-		chunk rawlabel_tmp;
-		chunk reflabel;
-
-		// Check for reference link.
-		// First, see if there's another label:
-		subj->pos = subj->pos + scan_spacechars(&subj->input, endlabel);
-		reflabel = rawlabel;
-
-		// if followed by a nonempty link label, we change reflabel to it:
-		if (peek_char(subj) == '[' && link_label(subj, &rawlabel_tmp)) {
-			if (rawlabel_tmp.len > 0)
-				reflabel = rawlabel_tmp;
-		} else {
-			subj->pos = endlabel;
-		}
-
-		// lookup rawlabel in subject->reference_map:
-		ref = reference_lookup(subj->refmap, &reflabel);
-		if (ref != NULL) { // found
-			lab = parse_chunk_inlines(&rawlabel, NULL);
-			result = make_ref_link(lab, ref);
-		} else {
-			goto noMatch;
-		}
-		return result;
-
-	node_inl *lab = NULL;
-	node_inl *result = NULL;
-	reference *ref;
-	int found_label;
-
-	chunk rawlabel;
-
-	found_label = link_label(subj, &rawlabel);
-	endlabel = subj->pos;
-
-	if (found_label)
- {
-		if (peek_char(subj) == '(' &&
-		    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
-		    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
-
-			// try to parse an explicit link:
-			starturl = subj->pos + 1 + sps; // after (
-			endurl = starturl + n;
-			starttitle = endurl + scan_spacechars(&subj->input, endurl);
-
-			// ensure there are spaces btw url and title
-			endtitle = (starttitle == endurl) ? starttitle :
-				starttitle + scan_link_title(&subj->input, starttitle);
-
-			endall = endtitle + scan_spacechars(&subj->input, endtitle);
-
-			if (peek_at(subj, endall) == ')') {
-				subj->pos = endall + 1;
-
-				url = chunk_dup(&subj->input, starturl, endurl - starturl);
-				title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
-				lab = parse_chunk_inlines(&rawlabel, NULL);
-
-				return make_link(lab, url, title);
-			} else {
-			    goto noMatch;
-			}
-		} else {
-			chunk rawlabel_tmp;
-			chunk reflabel;
-
-			// Check for reference link.
-			// First, see if there's another label:
-			subj->pos = subj->pos + scan_spacechars(&subj->input, endlabel);
-			reflabel = rawlabel;
-
-			// if followed by a nonempty link label, we change reflabel to it:
-			if (peek_char(subj) == '[' && link_label(subj, &rawlabel_tmp)) {
-				if (rawlabel_tmp.len > 0)
-					reflabel = rawlabel_tmp;
-			} else {
-				subj->pos = endlabel;
-			}
-
-			// lookup rawlabel in subject->reference_map:
-			ref = reference_lookup(subj->refmap, &reflabel);
-			if (ref != NULL) { // found
-				lab = parse_chunk_inlines(&rawlabel, NULL);
-				result = make_ref_link(lab, ref);
-			} else {
-			    goto noMatch;
-			}
-			return result;
-		}
-	}
-	*/
 noMatch:
 	// If we fall through to here, it means we didn't match a link:
 	subj->pos = initial_pos;
 	return make_str(chunk_literal("]"));
+
+match:
+	tmp = link_text->next;
+	inl = ostack->first_inline;
+	inl->tag = is_image ? INL_IMAGE : INL_LINK;
+	chunk_free(&inl->content.literal);
+	inl->content.linkable.label = link_text;
+	inl->content.linkable.url   = url;
+	inl->content.linkable.title = title;
+	inl->next = NULL;
+
+	// remove this opener and all later ones from stack:
+	free_openers(subj, ostack->previous);
+	*last = inl;
+	return NULL;
 }
 
 // Parse a hard or soft linebreak, returning an inline.
