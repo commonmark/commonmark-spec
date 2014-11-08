@@ -72,12 +72,6 @@ inline static node_inl* make_autolink(node_inl* label, chunk url, int is_email)
 	return make_link_(label, clean_autolink(&url, is_email), NULL);
 }
 
-// Create an inline with a linkable string value.
-inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
-{
-	return make_link_(label, clean_url(&url), clean_title(&title));
-}
-
 inline static node_inl* make_inlines(int t, node_inl* contents)
 {
 	node_inl * e = calloc(1, sizeof(*e));
@@ -628,16 +622,18 @@ static int link_label(subject* subj, chunk *raw_label)
 }
 
 // Return a link, an image, or a literal close bracket.
-static node_inl* handle_close_bracket(subject* subj)
+static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 {
 	int initial_pos;
 	int starturl, endurl, starttitle, endtitle, endall;
 	int n;
 	int sps;
+	bool is_image = false;
 	chunk url, title;
 	opener_stack *ostack = subj->openers;
-	node_inl *link_text = NULL;
-	node_inl *tmp = NULL;
+	node_inl *link_text;
+	node_inl *tmp;
+	node_inl *inl;
 
 	advance(subj);  // advance past ]
 	initial_pos = subj->pos;
@@ -655,6 +651,7 @@ static node_inl* handle_close_bracket(subject* subj)
 	}
 
 	// If we got here, we matched a potential link/image text.
+	is_image = ostack->delim_char == '!';
 	link_text = ostack->first_inline->next;
 
 	// Now we check to see if it's a link/image.
@@ -682,9 +679,20 @@ static node_inl* handle_close_bracket(subject* subj)
 			title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
 
 			tmp = link_text->next;
-			ostack->first_inline->content.literal = chunk_literal("X"); // TODO a kludge
-			ostack->first_inline->next = make_link(link_text, url, title);
-			return make_str(chunk_literal("X"));
+			inl = ostack->first_inline;
+			inl->tag = is_image ? INL_IMAGE : INL_LINK;
+			chunk_free(&inl->content.literal);
+			inl->content.linkable.label = link_text;
+			inl->content.linkable.url   = clean_url(&url);
+			inl->content.linkable.title = clean_title(&title);
+			chunk_free(&url);
+			chunk_free(&title);
+			inl->next = NULL;
+
+			// remove this opener and all later ones from stack:
+			free_openers(subj, ostack->previous);
+			*last = inl;
+			return NULL;
 		} else {
 			goto noMatch;
 		}
@@ -925,7 +933,7 @@ static int parse_inline(subject* subj, node_inl ** last)
 		subj->openers = push_opener(subj, 1, '[', new);
 		break;
 	case ']':
-		new = handle_close_bracket(subj);
+		new = handle_close_bracket(subj, last);
 		break;
 	case '!':
 		advance(subj);
