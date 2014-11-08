@@ -627,25 +627,120 @@ static int link_label(subject* subj, chunk *raw_label)
 	}
 }
 
-// Parse a link or the link portion of an image, or return a fallback.
-static node_inl* handle_left_bracket(subject* subj)
+// Return a link, an image, or a literal close bracket.
+static node_inl* handle_close_bracket(subject* subj)
 {
+	int initial_pos;
+	int starturl, endurl, starttitle, endtitle, endall;
+	int n;
+	int sps;
+	chunk url, title;
+	opener_stack *ostack = subj->openers;
+	node_inl *link_text = NULL;
+	node_inl *tmp = NULL;
+
+	advance(subj);  // advance past ]
+	initial_pos = subj->pos;
+
+	// look through stack of openers for a [ or !
+	while (ostack) {
+		if (ostack->delim_char == '[' || ostack->delim_char == '!') {
+			break;
+		}
+		ostack = ostack->previous;
+	}
+
+	if (ostack == NULL) {
+		return make_str(chunk_literal("]"));
+	}
+
+	// If we got here, we matched a potential link/image text.
+	link_text = ostack->first_inline->next;
+
+	// Now we check to see if it's a link/image.
+
+
+	if (peek_char(subj) == '(' &&
+	    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
+	    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
+
+		// try to parse an explicit link:
+		starturl = subj->pos + 1 + sps; // after (
+		endurl = starturl + n;
+		starttitle = endurl + scan_spacechars(&subj->input, endurl);
+
+		// ensure there are spaces btw url and title
+		endtitle = (starttitle == endurl) ? starttitle :
+			starttitle + scan_link_title(&subj->input, starttitle);
+
+		endall = endtitle + scan_spacechars(&subj->input, endtitle);
+
+		if (peek_at(subj, endall) == ')') {
+			subj->pos = endall + 1;
+
+			url = chunk_dup(&subj->input, starturl, endurl - starturl);
+			title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
+
+			tmp = link_text->next;
+			ostack->first_inline->content.literal = chunk_literal("X"); // TODO a kludge
+			ostack->first_inline->next = make_link(link_text, url, title);
+			return make_str(chunk_literal("X"));
+		} else {
+			goto noMatch;
+		}
+	} else {
+		goto noMatch; // for now
+	}
+
+	// if found, check to see if we have a target:
+	// - followed by (inline link)
+	// - followed by [link label] that matches
+	// - followed by [], and our brackets have a label that matches
+	// - our brackets have a label that matches
+
+	// if no target, remove the matching opener from the stack and return literal ].
+	// if yes target, remove the matching opener and any later openers.
+	// return a link or an image.
+
+		/*
+		chunk rawlabel_tmp;
+		chunk reflabel;
+
+		// Check for reference link.
+		// First, see if there's another label:
+		subj->pos = subj->pos + scan_spacechars(&subj->input, endlabel);
+		reflabel = rawlabel;
+
+		// if followed by a nonempty link label, we change reflabel to it:
+		if (peek_char(subj) == '[' && link_label(subj, &rawlabel_tmp)) {
+			if (rawlabel_tmp.len > 0)
+				reflabel = rawlabel_tmp;
+		} else {
+			subj->pos = endlabel;
+		}
+
+		// lookup rawlabel in subject->reference_map:
+		ref = reference_lookup(subj->refmap, &reflabel);
+		if (ref != NULL) { // found
+			lab = parse_chunk_inlines(&rawlabel, NULL);
+			result = make_ref_link(lab, ref);
+		} else {
+			goto noMatch;
+		}
+		return result;
+
 	node_inl *lab = NULL;
 	node_inl *result = NULL;
 	reference *ref;
-	int n;
-	int sps;
 	int found_label;
-	int endlabel, startpos, starturl, endurl, starttitle, endtitle, endall;
 
 	chunk rawlabel;
-	chunk url, title;
 
-	startpos = subj->pos;
 	found_label = link_label(subj, &rawlabel);
 	endlabel = subj->pos;
 
-	if (found_label) {
+	if (found_label)
+ {
 		if (peek_char(subj) == '(' &&
 		    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
 		    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
@@ -700,10 +795,11 @@ static node_inl* handle_left_bracket(subject* subj)
 			return result;
 		}
 	}
+	*/
 noMatch:
 	// If we fall through to here, it means we didn't match a link:
-	subj->pos = startpos + 1;  // advance past [
-	return make_str(chunk_literal("["));
+	subj->pos = initial_pos;
+	return make_str(chunk_literal("]"));
 }
 
 // Parse a hard or soft linebreak, returning an inline.
@@ -824,17 +920,18 @@ static int parse_inline(subject* subj, node_inl ** last)
 		new = handle_strong_emph(subj, '*', last);
 		break;
 	case '[':
-		new = handle_left_bracket(subj);
+		advance(subj);
+		new = make_str(chunk_literal("["));
+		subj->openers = push_opener(subj, 1, '[', new);
+		break;
+	case ']':
+		new = handle_close_bracket(subj);
 		break;
 	case '!':
 		advance(subj);
 		if (peek_char(subj) == '[') {
-			new = handle_left_bracket(subj);
-			if (new != NULL && new->tag == INL_LINK) {
-				new->tag = INL_IMAGE;
-			} else {
-				new = append_inlines(make_str(chunk_literal("!")), new);
-			}
+			new = make_str(chunk_literal("!["));
+			subj->openers = push_opener(subj, 1, '!', new);
 		} else {
 			new = make_str(chunk_literal("!"));
 		}
