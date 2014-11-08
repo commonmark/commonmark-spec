@@ -25,7 +25,6 @@ typedef struct Subject {
 	int label_nestlevel;
 	reference_map *refmap;
 	opener_stack *openers;
-	int emphasis_nestlevel;
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
@@ -199,7 +198,6 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->openers = NULL;
-	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
 }
@@ -213,7 +211,6 @@ static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
 	e->label_nestlevel = 0;
 	e->refmap = refmap;
 	e->openers = NULL;
-	e->emphasis_nestlevel = 0;
 
 	chunk_rtrim(&e->input);
 }
@@ -333,7 +330,6 @@ static void free_openers(subject* subj, opener_stack* istack)
 	while (subj->openers != istack) {
 		tempstack = subj->openers;
 		subj->openers = subj->openers->previous;
-		subj->emphasis_nestlevel--;
 		free(tempstack);
 	}
 }
