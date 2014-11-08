@@ -634,7 +634,6 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	unsigned char *url, *title;
 	opener_stack *ostack = subj->openers;
 	node_inl *link_text;
-	node_inl *tmp;
 	node_inl *inl;
 	chunk raw_label;
 
@@ -696,18 +695,16 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	subj->pos = subj->pos + scan_spacechars(&subj->input, subj->pos);
 	raw_label = chunk_literal("");
 	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
-		chunk_free(&raw_label);
+		// chunk_free(&raw_label);
 		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
 	}
 
-	log_info("looking up '%s'", chunk_to_cstr(&raw_label));
 	ref = reference_lookup(subj->refmap, &raw_label);
 	chunk_free(&raw_label);
 
 	if (ref != NULL) { // found
-		log_info("ref found url{%s} title{%s}", ref->url, ref->title);
-		url = ref->url;
-		title = ref->title;
+		url = bufdup(ref->url);
+		title = bufdup(ref->title);
 		goto match;
 	} else {
 		goto noMatch;
@@ -719,7 +716,6 @@ noMatch:
 	return make_str(chunk_literal("]"));
 
 match:
-	tmp = link_text->next;
 	inl = ostack->first_inline;
 	inl->tag = is_image ? INL_IMAGE : INL_LINK;
 	chunk_free(&inl->content.literal);
@@ -727,10 +723,10 @@ match:
 	inl->content.linkable.url   = url;
 	inl->content.linkable.title = title;
 	inl->next = NULL;
+	*last = inl;
 
 	// remove this opener and all later ones from stack:
 	free_openers(subj, ostack->previous);
-	*last = inl;
 	return NULL;
 }
 

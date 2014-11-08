@@ -125,7 +125,7 @@ static void inlines_to_plain_html(strbuf *html, node_inl* ils)
 
 		case INL_LINK:
 		case INL_IMAGE:
-			children = ils->content.inlines;
+			children = ils->content.linkable.label;
 			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "");
 			break;
@@ -197,7 +197,7 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 			}
 
 			strbuf_puts(html, "\">");
-			children = ils->content.inlines;
+			children = ils->content.linkable.label;
 			rstack = push_inline(rstack, ils->next, "</a>");
 			break;
 
