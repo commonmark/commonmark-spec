@@ -26,11 +26,9 @@ typedef struct Subject {
 	opener_stack *openers;
 } subject;
 
-static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
 static node_inl *parse_inlines_from_subject(subject* subj);
 static int parse_inline(subject* subj, node_inl ** last);
 
-static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
 
@@ -60,11 +58,6 @@ static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned
 		e->next = NULL;
 	}
 	return e;
-}
-
-inline static node_inl* make_ref_link(node_inl* label, reference *ref)
-{
-	return make_link_(label, bufdup(ref->url), bufdup(ref->title));
 }
 
 inline static node_inl* make_autolink(node_inl* label, chunk url, int is_email)
@@ -186,18 +179,6 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 {
 	e->input.data = buffer->ptr;
 	e->input.len = buffer->size;
-	e->input.alloc = 0;
-	e->pos = 0;
-	e->refmap = refmap;
-	e->openers = NULL;
-
-	chunk_rtrim(&e->input);
-}
-
-static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
-{
-	e->input.data = chunk->data;
-	e->input.len = chunk->len;
 	e->input.alloc = 0;
 	e->pos = 0;
 	e->refmap = refmap;
@@ -801,13 +782,6 @@ extern node_inl* parse_inlines_from_subject(subject* subj)
 	}
 
 	return first;
-}
-
-node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
-{
-	subject subj;
-	subject_from_chunk(&subj, chunk, refmap);
-	return parse_inlines_from_subject(&subj);
 }
 
 static int subject_find_special_char(subject *subj)
