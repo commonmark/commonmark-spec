@@ -28,7 +28,7 @@ typedef struct Subject {
 } subject;
 
 static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
-static node_inl *parse_inlines_while(subject* subj, int (*f)(subject*));
+static node_inl *parse_inlines_from_subject(subject* subj);
 static int parse_inline(subject* subj, node_inl ** last);
 
 static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
@@ -759,18 +759,13 @@ static node_inl* handle_newline(subject *subj)
 	}
 }
 
-inline static int not_eof(subject* subj)
-{
-	return !is_eof(subj);
-}
-
-// Parse inlines while a predicate is satisfied.  Return inlines.
-extern node_inl* parse_inlines_while(subject* subj, int (*f)(subject*))
+// Parse inlines til end of subject, returning inlines.
+extern node_inl* parse_inlines_from_subject(subject* subj)
 {
 	node_inl* result = NULL;
 	node_inl** last = &result;
 	node_inl* first = NULL;
-	while ((*f)(subj) && parse_inline(subj, last)) {
+	while (!is_eof(subj) && parse_inline(subj, last)) {
 		if (!first) {
 			first = *last;
 		}
@@ -791,7 +786,7 @@ node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
 {
 	subject subj;
 	subject_from_chunk(&subj, chunk, refmap);
-	return parse_inlines_while(&subj, not_eof);
+	return parse_inlines_from_subject(&subj);
 }
 
 static int subject_find_special_char(subject *subj)
@@ -903,7 +898,7 @@ extern node_inl* parse_inlines(strbuf *input, reference_map *refmap)
 {
 	subject subj;
 	subject_from_buf(&subj, input, refmap);
-	return parse_inlines_while(&subj, not_eof);
+	return parse_inlines_from_subject(&subj);
 }
 
 // Parse zero or more space characters, including at most one newline.
