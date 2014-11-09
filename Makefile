@@ -5,6 +5,7 @@ JSMODULES=$(wildcard js/lib/*.js)
 SPEC=spec.txt
 SITE=_site
 BUILDDIR=build
+FUZZCHARS=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check
@@ -71,8 +72,10 @@ operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
 
 fuzztest:
-	for i in `seq 1 10`; do \
-	  time cat /dev/urandom | head -c 500000 | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | $(PROG) > /dev/null && rm fuzz-$$i.txt ; done
+	{ for i in `seq 1 10`; do \
+	  cat /dev/urandom | head -c $(FUZZCHARS) | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | \
+		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
+	done } 2>&1 | grep user
 
 update-site: spec.html
 	make -C $(SITE) update
