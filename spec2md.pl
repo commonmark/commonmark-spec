@@ -29,7 +29,7 @@ while (<STDIN>) {
         $section = $match[0];
     }
     if ($stage != 0) {
-      #  $_ =~ s/ /␣/g;
+      $_ =~ s/ /␣/g;
     }
     print $_;
   }
