@@ -36,7 +36,10 @@ spec.md: $(SPEC)
 	perl spec2md.pl < $< > $@
 
 spec.html: spec.md template.html
-	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< > $@ # | perl -pe 's/␣/<span class="space"> <\/span>/g' > $@
+	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< | \
+	perl -pe 's/a href="@([^"]*)"/a id="\1" href="#\1" class="definition"/g' > $@
+
+	 # | perl -pe 's/␣/<span class="space"> <\/span>/g' > $@
 
 spec.pdf: spec.md template.tex specfilter.hs
 	pandoc -s $< --template template.tex \
