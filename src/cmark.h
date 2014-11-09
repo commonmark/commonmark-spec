@@ -10,6 +10,8 @@
 #define VERSION "0.1"
 #define CODE_INDENT 4
 
+#define MAX_LINK_LABEL_LENGTH 1000
+
 struct node_inl {
 	enum {
 		INL_STRING,

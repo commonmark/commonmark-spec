@@ -191,11 +191,11 @@ In the examples, the `→` character is used to represent tabs.
 
 # Preprocessing
 
-A [line](#line) <a id="line"></a>
+A [line](@line)
 is a sequence of zero or more [characters](#character) followed by a
 line ending (CR, LF, or CRLF) or by the end of file.
 
-A [character](#character)<a id="character"></a> is a unicode code point.
+A [character](@character) is a unicode code point.
 This spec does not specify an encoding; it thinks of lines as composed
 of characters rather than bytes.  A conforming parser may be limited
 to a certain encoding.
@@ -221,15 +221,15 @@ Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 Line endings are replaced by newline characters (LF).
 
 A line containing no characters, or a line containing only spaces (after
-tab expansion), is called a [blank line](#blank-line).
-<a id="blank-line"></a>
+tab expansion), is called a [blank line](@blank-line).
 
 # Blocks and inlines
 
-We can think of a document as a sequence of [blocks](#block)<a
-id="block"></a>---structural elements like paragraphs, block quotations,
+We can think of a document as a sequence of
+[blocks](@block)---structural
+elements like paragraphs, block quotations,
 lists, headers, rules, and code blocks.  Blocks can contain other
-blocks, or they can contain [inline](#inline)<a id="inline"></a> content:
+blocks, or they can contain [inline](@inline) content:
 words, spaces, links, emphasized text, images, and inline code.
 
 ## Precedence
@@ -260,9 +260,9 @@ one block element does not affect the inline parsing of any other.
 ## Container blocks and leaf blocks
 
 We can divide blocks into two types:
-[container blocks](#container-block), <a id="container-block"></a>
-which can contain other blocks, and [leaf blocks](#leaf-block),
-<a id="leaf-block"></a> which cannot.
+[container blocks](@container-block),
+which can contain other blocks, and [leaf blocks](@leaf-block),
+which cannot.
 
 # Leaf blocks
 
@@ -274,7 +274,7 @@ Markdown document.
 A line consisting of 0-3 spaces of indentation, followed by a sequence
 of three or more matching `-`, `_`, or `*` characters, each followed
 optionally by any number of spaces, forms a [horizontal
-rule](#horizontal-rule). <a id="horizontal-rule"></a>
+rule](@horizontal-rule).
 
 .
 ***
@@ -474,7 +474,7 @@ If you want a horizontal rule in a list item, use a different bullet:
 
 ## ATX headers
 
-An [ATX header](#atx-header) <a id="atx-header"></a>
+An [ATX header](@atx-header)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
@@ -672,14 +672,14 @@ ATX headers can be empty:
 
 ## Setext headers
 
-A [setext header](#setext-header) <a id="setext-header"></a>
+A [setext header](@setext-header)
 consists of a line of text, containing at least one nonspace character,
 with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  The line of text must be
 one that, were it not followed by the setext header underline,
 would be interpreted as part of a paragraph:  it cannot be a code
 block, header, blockquote, horizontal rule, or list.  A [setext header
-underline](#setext-header-underline) <a id="setext-header-underline"></a>
+underline](@setext-header-underline)
 is a sequence of `=` characters or a sequence of `-` characters, with no
 more than 3 spaces indentation and any number of trailing
 spaces.  The header is a level 1 header if `=` characters are used, and
@@ -943,10 +943,10 @@ use backslash escapes:
 
 ## Indented code blocks
 
-An [indented code block](#indented-code-block)
-<a id="indented-code-block"></a> is composed of one or more
+An [indented code block](@indented-code-block)
+is composed of one or more
 [indented chunks](#indented-chunk) separated by blank lines.
-An [indented chunk](#indented-chunk) <a id="indented-chunk"></a>
+An [indented chunk](@indented-chunk)
 is a sequence of non-blank lines, each indented four or more
 spaces.  An indented code block cannot interrupt a paragraph, so
 if it occurs before or after a paragraph, there must be an
@@ -1096,16 +1096,16 @@ Trailing spaces are included in the code block's content:
 
 ## Fenced code blocks
 
-A [code fence](#code-fence) <a id="code-fence"></a> is a sequence
+A [code fence](@code-fence) is a sequence
 of at least three consecutive backtick characters (`` ` ``) or
 tildes (`~`).  (Tildes and backticks cannot be mixed.)
-A [fenced code block](#fenced-code-block) <a id="fenced-code-block"></a>
+A [fenced code block](@fenced-code-block)
 begins with a code fence, indented no more than three spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
-spaces and called the [info string](#info-string).
-<a id="info-string"></a> The info string may not contain any backtick
+spaces and called the [info string](@info-string).
+The info string may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
 beginning of a fenced code block.)
@@ -1458,7 +1458,7 @@ Closing code fences cannot have info strings:
 
 ## HTML blocks
 
-An [HTML block tag](#html-block-tag) <a id="html-block-tag"></a> is
+An [HTML block tag](@html-block-tag) is
 an [open tag](#open-tag) or [closing tag](#closing-tag) whose tag
 name is one of the following (case-insensitive):
 `article`, `header`, `aside`, `hgroup`, `blockquote`, `hr`, `iframe`,
@@ -1469,7 +1469,7 @@ name is one of the following (case-insensitive):
 `tr`, `form`, `ul`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `video`,
 `script`, `style`.
 
-An [HTML block](#html-block) <a id="html-block"></a> begins with an
+An [HTML block](@html-block) begins with an
 [HTML block tag](#html-block-tag), [HTML comment](#html-comment),
 [processing instruction](#processing-instruction),
 [declaration](#declaration), or [CDATA section](#cdata-section).
@@ -1743,8 +1743,8 @@ So there is no important loss of expressive power with the new rule.
 
 ## Link reference definitions
 
-A [link reference definition](#link-reference-definition)
-<a id="link-reference-definition"></a> consists of a [link
+A [link reference definition](@link-reference-definition)
+consists of a [link
 label](#link-label), indented up to three spaces, followed
 by a colon (`:`), optional blank space (including up to one
 newline), a [link destination](#link-destination), optional
@@ -1969,7 +1969,7 @@ are defined:
 ## Paragraphs
 
 A sequence of non-blank lines that cannot be interpreted as other
-kinds of blocks forms a [paragraph](#paragraph).<a id="paragraph"></a>
+kinds of blocks forms a [paragraph](@paragraph).
 The contents of the paragraph are the result of parsing the
 paragraph's raw content as inlines.  The paragraph's raw content
 is formed by concatenating the lines and removing initial and final
@@ -2113,12 +2113,11 @@ these constructions.  (A recipe is provided below in the section entitled
 
 ## Block quotes
 
-A [block quote marker](#block-quote-marker) <a id="block-quote-marker"></a>
+A [block quote marker](@block-quote-marker)
 consists of 0-3 spaces of initial indent, plus (a) the character `>` together
 with a following space, or (b) a single character `>` not followed by a space.
 
-The following rules define [block quotes](#block-quote):
-<a id="block-quote"></a>
+The following rules define [block quotes](@block-quote):
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
     of blocks *Bs*, then the result of prepending a [block quote
@@ -2131,8 +2130,8 @@ The following rules define [block quotes](#block-quote):
     more lines in which the next non-space character after the [block
     quote marker](#block-quote-marker) is [paragraph continuation
     text](#paragraph-continuation-text) is a block quote with *Bs* as
-    its content.  <a id="paragraph-continuation-text"></a>
-    [Paragraph continuation text](#paragraph-continuation-text) is text
+    its content.
+    [Paragraph continuation text](@paragraph-continuation-text) is text
     that will be parsed as part of the content of a paragraph, but does
     not occur at the beginning of the paragraph.
 
@@ -2475,19 +2474,18 @@ the `>`:
 
 ## List items
 
-A [list marker](#list-marker) <a id="list-marker"></a> is a
+A [list marker](@list-marker) is a
 [bullet list marker](#bullet-list-marker) or an [ordered list
 marker](#ordered-list-marker).
 
-A [bullet list marker](#bullet-list-marker) <a id="bullet-list-marker"></a>
+A [bullet list marker](@bullet-list-marker)
 is a `-`, `+`, or `*` character.
 
-An [ordered list marker](#ordered-list-marker) <a id="ordered-list-marker"></a>
+An [ordered list marker](@ordered-list-marker)
 is a sequence of one of more digits (`0-9`), followed by either a
 `.` character or a `)` character.
 
-The following rules define [list items](#list-item):<a
-id="list-item"></a>
+The following rules define [list items](@list-item):
 
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
     blocks *Bs* starting with a non-space character and not separated
@@ -2938,8 +2936,9 @@ Four spaces indent gives a code block:
     some or all of the indentation from one or more lines in which the
     next non-space character after the indentation is
     [paragraph continuation text](#paragraph-continuation-text) is a
-    list item with the same contents and attributes.<a
-    id="lazy-continuation-line"></a>
+    list item with the same contents and attributes.  The unindented
+    lines are called
+    [lazy continuation lines](@lazy-continuation-line).
 
 Here is an example with [lazy continuation
 lines](#lazy-continuation-line):
@@ -3316,33 +3315,33 @@ takes four spaces (a common case), but diverge in other cases.
 
 ## Lists
 
-A [list](#list) <a id="list"></a> is a sequence of one or more
+A [list](@list) is a sequence of one or more
 list items [of the same type](#of-the-same-type).  The list items
 may be separated by single [blank lines](#blank-line), but two
 blank lines end all containing lists.
 
-Two list items are [of the same type](#of-the-same-type)
-<a id="of-the-same-type"></a> if they begin with a [list
+Two list items are [of the same type](@of-the-same-type)
+if they begin with a [list
 marker](#list-marker) of the same type.  Two list markers are of the
 same type if (a) they are bullet list markers using the same character
 (`-`, `+`, or `*`) or (b) they are ordered list numbers with the same
 delimiter (either `.` or `)`).
 
-A list is an [ordered list](#ordered-list) <a id="ordered-list"></a>
+A list is an [ordered list](@ordered-list)
 if its constituent list items begin with
 [ordered list markers](#ordered-list-marker), and a [bullet
-list](#bullet-list) <a id="bullet-list"></a> if its constituent list
+list](@bullet-list) if its constituent list
 items begin with [bullet list markers](#bullet-list-marker).
 
-The [start number](#start-number) <a id="start-number"></a>
+The [start number](@start-number)
 of an [ordered list](#ordered-list) is determined by the list number of
 its initial list item.  The numbers of subsequent list items are
 disregarded.
 
-A list is [loose](#loose)<a id="loose"></a> if it any of its constituent
+A list is [loose](@loose) if it any of its constituent
 list items are separated by blank lines, or if any of its constituent
 list items directly contain two block-level elements with a blank line
-between them.  Otherwise a list is [tight](#tight).<a id="tight"></a>
+between them.  Otherwise a list is [tight](@tight).
 (The difference in HTML output is that paragraphs in a loose list are
 wrapped in `<p>` tags, while paragraphs in a tight list are not.)
 
@@ -3420,8 +3419,8 @@ blank lines:
 
 Second, we are attracted to a
 
-> [principle of uniformity](#principle-of-uniformity):<a
-> id="principle-of-uniformity"></a> if a span of text has a certain
+> [principle of uniformity](@principle-of-uniformity):
+> if a span of text has a certain
 > meaning, it will continue to have the same meaning when put into a list
 > item.
 
@@ -3947,7 +3946,7 @@ the entities when generating HTML, and simplifies the job of
 implementations targetting other languages, as these will only need to
 handle the unicode chars and need not be HTML-entity aware.
 
-[Named entities](#name-entities) <a id="named-entities"></a> consist of `&`
+[Named entities](@name-entities) consist of `&`
 + any of the valid HTML5 entity names + `;`. The
 [following document](http://www.whatwg.org/specs/web-apps/current-work/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
@@ -3964,7 +3963,7 @@ always need to be written as entities for security reasons.
 <p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
 .
 
-[Decimal entities](#decimal-entities) <a id="decimal-entities"></a>
+[Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
 entities need to be recognised and tranformed into their corresponding
 UTF8 codepoints. Invalid Unicode codepoints will be written as the
@@ -3976,7 +3975,7 @@ UTF8 codepoints. Invalid Unicode codepoints will be written as the
 <p># Ӓ Ϡ �</p>
 .
 
-[Hexadecimal entities](#hexadecimal-entities) <a id="hexadecimal-entities"></a>
+[Hexadecimal entities](@hexadecimal-entities)
 consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
 + `;`. They will also be parsed and turned into their corresponding UTF8 values in the AST.
 
@@ -4063,7 +4062,7 @@ Entities are treated as literal text in code spans and code blocks:
 
 ## Code span
 
-A [backtick string](#backtick-string) <a id="backtick-string"></a>
+A [backtick string](@backtick-string)
 is a string of one or more backtick characters (`` ` ``) that is neither
 preceded nor followed by a backtick.
 
@@ -4247,31 +4246,31 @@ no emphasis: foo_bar_baz
 The following rules capture all of these patterns, while allowing
 for efficient parsing strategies that do not backtrack:
 
-1.  A single `*` character [can open emphasis](#can-open-emphasis)
-    <a id="can-open-emphasis"></a> iff it is not followed by
+1.  A single `*` character [can open emphasis](@can-open-emphasis)
+    iff it is not followed by
     whitespace.
 
 2.  A single `_` character [can open emphasis](#can-open-emphasis) iff
     it is not followed by whitespace and it is not preceded by an
     ASCII alphanumeric character.
 
-3.  A single `*` character [can close emphasis](#can-close-emphasis)
-    <a id="can-close-emphasis"></a> iff it is not preceded by whitespace.
+3.  A single `*` character [can close emphasis](@can-close-emphasis)
+    iff it is not preceded by whitespace.
 
 4.  A single `_` character [can close emphasis](#can-close-emphasis) iff
     it is not preceded by whitespace and it is not followed by an
     ASCII alphanumeric character.
 
-5.  A double `**` [can open strong emphasis](#can-open-strong-emphasis)
-    <a id="can-open-strong-emphasis" ></a> iff it is not followed by
+5.  A double `**` [can open strong emphasis](@can-open-strong-emphasis)
+    iff it is not followed by
     whitespace.
 
 6.  A double `__` [can open strong emphasis](#can-open-strong-emphasis)
     iff it is not followed by whitespace and it is not preceded by an
     ASCII alphanumeric character.
 
-7.  A double `**` [can close strong emphasis](#can-close-strong-emphasis)
-    <a id="can-close-strong-emphasis" ></a> iff it is not preceded by
+7.  A double `**` [can close strong emphasis](@can-close-strong-emphasis)
+    iff it is not preceded by
     whitespace.
 
 8.  A double `__` [can close strong emphasis](#can-close-strong-emphasis)
@@ -5119,7 +5118,7 @@ and title are given immediately after the label.  In [reference
 links](#reference-links) the destination and title are defined elsewhere
 in the document.
 
-A [link label](#link-label) <a id="link-label"></a>  consists of
+A [link label](@link-label)  consists of
 
 - an opening `[`, followed by
 - zero or more backtick code spans, autolinks, HTML tags, link labels,
@@ -5134,7 +5133,7 @@ These rules are motivated by the following intuitive ideas:
   but less tightly than `<>` or `` ` ``.
 - Link labels may contain material in matching square brackets.
 
-A [link destination](#link-destination) <a id="link-destination"></a>
+A [link destination](@link-destination)
 consists of either
 
 - a sequence of zero or more characters between an opening `<` and a
@@ -5147,7 +5146,7 @@ consists of either
   a balanced pair of unescaped parentheses that is not itself
   inside a balanced pair of unescaped paretheses.
 
-A [link title](#link-title) <a id="link-title"></a>  consists of either
+A [link title](@link-title)  consists of either
 
 - a sequence of zero or more characters between straight double-quote
   characters (`"`), including a `"` character only if it is
@@ -5160,7 +5159,7 @@ A [link title](#link-title) <a id="link-title"></a>  consists of either
 - a sequence of zero or more characters between matching parentheses
   (`(...)`), including a `)` character only if it is backslash-escaped.
 
-An [inline link](#inline-link) <a id="inline-link"></a>
+An [inline link](@inline-link)
 consists of a [link label](#link-label) followed immediately
 by a left parenthesis `(`, optional whitespace,
 an optional [link destination](#link-destination),
@@ -5366,16 +5365,15 @@ an HTML tag:
 .
 
 
-There are three kinds of [reference links](#reference-link):
-<a id="reference-link"></a>
+There are three kinds of [reference links](@reference-link):
 
-A [full reference link](#full-reference-link) <a id="full-reference-link"></a>
+A [full reference link](@full-reference-link)
 consists of a [link label](#link-label), optional whitespace, and
 another [link label](#link-label) that [matches](#matches) a
 [link reference definition](#link-reference-definition) elsewhere in the
 document.
 
-One label [matches](#matches) <a id="matches"></a>
+One label [matches](@matches)
 another just in case their normalized forms are equal.  To normalize a
 label, perform the *unicode case fold* and collapse consecutive internal
 whitespace to a single space.  If there are multiple matching reference
@@ -5482,8 +5480,8 @@ labels define equivalent inline content:
 <p>[bar][foo!]</p>
 .
 
-A [collapsed reference link](#collapsed-reference-link)
-<a id="collapsed-reference-link"></a> consists of a [link
+A [collapsed reference link](@collapsed-reference-link)
+consists of a [link
 label](#link-label) that [matches](#matches) a [link reference
 definition](#link-reference-definition) elsewhere in the
 document, optional whitespace, and the string `[]`.  The contents of the
@@ -5530,8 +5528,8 @@ between the two sets of brackets:
 <p><a href="/url" title="title">foo</a></p>
 .
 
-A [shortcut reference link](#shortcut-reference-link)
-<a id="shortcut-reference-link"></a> consists of a [link
+A [shortcut reference link](@shortcut-reference-link)
+consists of a [link
 label](#link-label) that [matches](#matches) a [link reference
 definition](#link-reference-definition)  elsewhere in the
 document and is not followed by `[]` or a link label.
@@ -5870,18 +5868,18 @@ Autolinks are absolute URIs and email addresses inside `<` and `>`.
 They are parsed as links, with the URL or email address as the link
 label.
 
-A [URI autolink](#uri-autolink) <a id="uri-autolink"></a>
+A [URI autolink](@uri-autolink)
 consists of `<`, followed by an [absolute
 URI](#absolute-uri) not containing `<`, followed by `>`.  It is parsed
 as a link to the URI, with the URI as the link's label.
 
-An [absolute URI](#absolute-uri), <a id="absolute-uri"></a>
+An [absolute URI](@absolute-uri),
 for these purposes, consists of a [scheme](#scheme) followed by a colon (`:`)
 followed by zero or more characters other than ASCII whitespace and
 control characters, `<`, and `>`.  If the URI includes these characters,
 you must use percent-encoding (e.g. `%20` for a space).
 
-The following [schemes](#scheme) <a id="scheme"></a>
+The following [schemes](@scheme)
 are recognized (case-insensitive):
 `coap`, `doi`, `javascript`, `aaa`, `aaas`, `about`, `acap`, `cap`,
 `cid`, `crid`, `data`, `dav`, `dict`, `dns`, `file`, `ftp`, `geo`, `go`,
@@ -5943,12 +5941,12 @@ Spaces are not allowed in autolinks:
 <p>&lt;http://foo.bar/baz bim&gt;</p>
 .
 
-An [email autolink](#email-autolink) <a id="email-autolink"></a>
+An [email autolink](@email-autolink)
 consists of `<`, followed by an [email address](#email-address),
 followed by `>`.  The link's label is the email address,
 and the URL is `mailto:` followed by the email address.
 
-An [email address](#email-address), <a id="email-address"></a>
+An [email address](@email-address),
 for these purposes, is anything that matches
 the [non-normative regex from the HTML5
 spec](http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-%28type=email%29):
@@ -6023,67 +6021,67 @@ so custom tags (and even, say, DocBook tags) may be used.
 
 Here is the grammar for tags:
 
-A [tag name](#tag-name) <a id="tag-name"></a> consists of an ASCII letter
+A [tag name](@tag-name) consists of an ASCII letter
 followed by zero or more ASCII letters or digits.
 
-An [attribute](#attribute) <a id="attribute"></a> consists of whitespace,
-an **attribute name**, and an optional **attribute value
-specification**.
+An [attribute](@attribute) consists of whitespace,
+an [attribute name](#attribute-name), and an optional
+[attribute value specification](#attribute-value-specification).
 
-An [attribute name](#attribute-name) <a id="attribute-name"></a>
+An [attribute name](@attribute-name)
 consists of an ASCII letter, `_`, or `:`, followed by zero or more ASCII
 letters, digits, `_`, `.`, `:`, or `-`.  (Note:  This is the XML
 specification restricted to ASCII.  HTML5 is laxer.)
 
-An [attribute value specification](#attribute-value-specification)
-<a id="attribute-value-specification"></a> consists of optional whitespace,
+An [attribute value specification](@attribute-value-specification)
+consists of optional whitespace,
 a `=` character, optional whitespace, and an [attribute
 value](#attribute-value).
 
-An [attribute value](#attribute-value) <a id="attribute-value"></a>
+An [attribute value](@attribute-value)
 consists of an [unquoted attribute value](#unquoted-attribute-value),
 a [single-quoted attribute value](#single-quoted-attribute-value),
 or a [double-quoted attribute value](#double-quoted-attribute-value).
 
-An [unquoted attribute value](#unquoted-attribute-value)
-<a id="unquoted-attribute-value"></a> is a nonempty string of characters not
+An [unquoted attribute value](@unquoted-attribute-value)
+is a nonempty string of characters not
 including spaces, `"`, `'`, `=`, `<`, `>`, or `` ` ``.
 
-A [single-quoted attribute value](#single-quoted-attribute-value)
-<a id="single-quoted-attribute-value"></a> consists of `'`, zero or more
+A [single-quoted attribute value](@single-quoted-attribute-value)
+consists of `'`, zero or more
 characters not including `'`, and a final `'`.
 
-A [double-quoted attribute value](#double-quoted-attribute-value)
-<a id="double-quoted-attribute-value"></a> consists of `"`, zero or more
+A [double-quoted attribute value](@double-quoted-attribute-value)
+consists of `"`, zero or more
 characters not including `"`, and a final `"`.
 
-An [open tag](#open-tag) <a id="open-tag"></a> consists of a `<` character,
+An [open tag](@open-tag) consists of a `<` character,
 a [tag name](#tag-name), zero or more [attributes](#attribute),
 optional whitespace, an optional `/` character, and a `>` character.
 
-A [closing tag](#closing-tag) <a id="closing-tag"></a> consists of the
+A [closing tag](@closing-tag) consists of the
 string `</`, a [tag name](#tag-name), optional whitespace, and the
 character `>`.
 
-An [HTML comment](#html-comment) <a id="html-comment"></a> consists of the
+An [HTML comment](@html-comment) consists of the
 string `<!--`, a string of characters not including the string `--`, and
 the string `-->`.
 
-A [processing instruction](#processing-instruction)
-<a id="processing-instruction"></a> consists of the string `<?`, a string
+A [processing instruction](@processing-instruction)
+consists of the string `<?`, a string
 of characters not including the string `?>`, and the string
 `?>`.
 
-A [declaration](#declaration) <a id="declaration"></a> consists of the
+A [declaration](@declaration) consists of the
 string `<!`, a name consisting of one or more uppercase ASCII letters,
 whitespace, a string of characters not including the character `>`, and
 the character `>`.
 
-A [CDATA section](#cdata-section) <a id="cdata-section"></a> consists of
+A [CDATA section](@cdata-section) consists of
 the string `<![CDATA[`, a string of characters not including the string
 `]]>`, and the string `]]>`.
 
-An [HTML tag](#html-tag) <a id="html-tag"></a> consists of an [open
+An [HTML tag](@html-tag) consists of an [open
 tag](#open-tag), a [closing tag](#closing-tag), an [HTML
 comment](#html-comment), a [processing
 instruction](#processing-instruction), an [element type
@@ -6252,7 +6250,7 @@ Backslash escapes do not work in HTML attributes:
 
 A line break (not in a code span or HTML tag) that is preceded
 by two or more spaces is parsed as a [hard line
-break](#hard-line-break)<a id="hard-line-break"></a> (rendered
+break](@hard-line-break) (rendered
 in HTML as a `<br />` tag):
 
 .

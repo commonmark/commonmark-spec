@@ -100,6 +100,9 @@ reference* reference_lookup(reference_map *map, chunk *label)
 	unsigned char *norm;
 	unsigned int hash;
 
+	if (label->len > MAX_LINK_LABEL_LENGTH)
+		return NULL;
+
 	if (map == NULL)
 		return NULL;
 

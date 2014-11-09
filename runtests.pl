@@ -19,6 +19,7 @@ if (!(@PROG && defined $SPEC)) {
 my $passed = 0;
 my $failed = 0;
 my $skipped = 0;
+my $errored = 0;
 
 # Markdown implementations vary on insignificant whitespace.
 # Some leave blanks between block elements, others don't.
@@ -63,6 +64,7 @@ sub tidy
   return $out;
 }
 
+# return 0 for passing test, -1 for failing, positive for error
 sub dotest
 {
   my $markdown = $_[0];
@@ -79,13 +81,14 @@ sub dotest
   $actual = do { local $/; <$out>; };
   close $out;
   waitpid($pid, 0);
+  my $exit_status = $?;
   $html   = &tidy($html);
   $actual = &tidy($actual);
   $actual =~ s/\&#39;/'/g;
 
   if ($actual eq $html) {
     print colored("✓", "green");
-    return 1;
+    return 0;
   } else {
     print colored("\n✘ $testname", "red");
     print "\n";
@@ -99,7 +102,11 @@ sub dotest
     print $actual;
 	print "\n";
     print color "black";
-    return 0;
+    if ($exit_status == 0) {
+        return -1;
+    } else {
+        return $exit_status;
+    }
   }
 }
 
@@ -111,6 +118,7 @@ my $linenum = 0;
 my $exampleline = 0;
 my @secnums = ();
 my $secheading;
+my $testresult;
 
 open(SPEC, "< $SPEC");
 while (<SPEC>) {
@@ -123,11 +131,13 @@ while (<SPEC>) {
       if ($stage == 0) {
           $example++;
           if (!$PATT || $secheading =~ /$PATT/) {
-            if (&dotest($markdown, $html,
-                        "Example $example (line $exampleline)")) {
+            $testresult = &dotest($markdown, $html, "Example $example (line $exampleline)");
+            if ($testresult == 0) {
                 $passed++;
-            } else {
+            } elsif ($testresult == -1) {
                 $failed++;
+            } else {
+                $errored++;
             }
           } else {
             $skipped++;
@@ -161,6 +171,6 @@ while (<SPEC>) {
 }
 
 print "\n";
-print STDERR colored("$passed tests passed, $failed failed, $skipped skipped.", "bold");
+print STDERR colored("$passed tests passed, $failed failed, $errored errored, $skipped skipped.", "bold");
 print STDERR "\n";
 exit $failed;

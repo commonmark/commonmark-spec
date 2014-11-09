@@ -11,27 +11,28 @@
 #include "inlines.h"
 #include "debug.h"
 
-typedef struct OpenerStack {
-	struct OpenerStack *previous;
+
+typedef struct DelimiterStack {
+	struct DelimiterStack *previous;
+	struct DelimiterStack *next;
 	node_inl *first_inline;
 	int delim_count;
 	unsigned char delim_char;
 	int position;
-} opener_stack;
+	bool can_open;
+	bool can_close;
+} delimiter_stack;
 
 typedef struct Subject {
 	chunk input;
 	int pos;
-	int label_nestlevel;
 	reference_map *refmap;
-	opener_stack *openers;
+	delimiter_stack *delimiters;
 } subject;
 
-static node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap);
 static node_inl *parse_inlines_from_subject(subject* subj);
 static int parse_inline(subject* subj, node_inl ** last);
 
-static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap);
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
 
@@ -63,20 +64,9 @@ static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned
 	return e;
 }
 
-inline static node_inl* make_ref_link(node_inl* label, reference *ref)
-{
-	return make_link_(label, bufdup(ref->url), bufdup(ref->title));
-}
-
 inline static node_inl* make_autolink(node_inl* label, chunk url, int is_email)
 {
 	return make_link_(label, clean_autolink(&url, is_email), NULL);
-}
-
-// Create an inline with a linkable string value.
-inline static node_inl* make_link(node_inl* label, chunk url, chunk title)
-{
-	return make_link_(label, clean_url(&url), clean_title(&title));
 }
 
 inline static node_inl* make_inlines(int t, node_inl* contents)
@@ -195,22 +185,8 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	e->input.len = buffer->size;
 	e->input.alloc = 0;
 	e->pos = 0;
-	e->label_nestlevel = 0;
 	e->refmap = refmap;
-	e->openers = NULL;
-
-	chunk_rtrim(&e->input);
-}
-
-static void subject_from_chunk(subject *e, chunk *chunk, reference_map *refmap)
-{
-	e->input.data = chunk->data;
-	e->input.len = chunk->len;
-	e->input.alloc = 0;
-	e->pos = 0;
-	e->label_nestlevel = 0;
-	e->refmap = refmap;
-	e->openers = NULL;
+	e->delimiters = NULL;
 
 	chunk_rtrim(&e->input);
 }
@@ -324,30 +300,57 @@ static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * c
 	return numdelims;
 }
 
-static void free_openers(subject* subj, opener_stack* istack)
+/*
+static void print_delimiters(subject *subj)
 {
-	opener_stack * tempstack;
-	while (subj->openers != istack) {
-		tempstack = subj->openers;
-		subj->openers = subj->openers->previous;
-		free(tempstack);
+	delimiter_stack *tempstack;
+	tempstack = subj->delimiters;
+	while (tempstack != NULL) {
+		printf("Item at %p: %d %d %d %d next(%p) prev(%p)\n",
+		       tempstack, tempstack->delim_count, tempstack->delim_char,
+		       tempstack->can_open, tempstack->can_close,
+		       tempstack->next, tempstack->previous);
+		tempstack = tempstack->previous;
 	}
 }
+*/
 
-static opener_stack * push_opener(subject *subj,
-				     int numdelims,
-				     unsigned char c,
-				     node_inl *inl_text)
+static void remove_delimiter(subject *subj, delimiter_stack *stack)
 {
-	opener_stack *istack =
-		(opener_stack*)malloc(sizeof(opener_stack));
+	if (stack->previous != NULL) {
+		stack->previous->next = stack->next;
+	}
+	if (stack->next == NULL) {
+		// top of stack
+		subj->delimiters = stack->previous;
+	} else {
+		stack->next->previous = stack->previous;
+	}
+	free(stack);
+}
+
+static delimiter_stack * push_delimiter(subject *subj,
+					int numdelims,
+					unsigned char c,
+					bool can_open,
+					bool can_close,
+					node_inl *inl_text)
+{
+	delimiter_stack *istack =
+		(delimiter_stack*)malloc(sizeof(delimiter_stack));
 	if (istack == NULL) {
 		return NULL;
 	}
 	istack->delim_count = numdelims;
 	istack->delim_char = c;
+	istack->can_open = can_open;
+	istack->can_close = can_close;
 	istack->first_inline = inl_text;
-	istack->previous = subj->openers;
+	istack->previous = subj->delimiters;
+	istack->next = NULL;
+	if (istack->previous != NULL) {
+		istack->previous->next = istack;
+	}
 	istack->position = subj->pos;
 	return istack;
 }
@@ -356,91 +359,119 @@ static opener_stack * push_opener(subject *subj,
 // Assumes the subject has '_' or '*' at the current position.
 static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **last)
 {
-	bool can_open, can_close;
 	int numdelims;
-	int useDelims;
-	int openerDelims;
-	opener_stack * istack;
-	node_inl * inl;
-	node_inl * emph;
 	node_inl * inl_text;
+	bool can_open, can_close;
 
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
 
-	if (can_close)
-		{
-			// walk the stack and find a matching opener, if there is one
-			istack = subj->openers;
-			while (true)
-				{
-					if (istack == NULL)
-						goto cannotClose;
-
-					if (istack->delim_char == c)
-						break;
-
-					istack = istack->previous;
-				}
-
-			// calculate the actual number of delimeters used from this closer
-			openerDelims = istack->delim_count;
-			if (numdelims < 3 || openerDelims < 3) {
-				useDelims = numdelims <= openerDelims ? numdelims : openerDelims;
-			} else { // (numdelims >= 3 && openerDelims >= 3)
-				useDelims = numdelims % 2 == 0 ? 2 : 1;
-			}
-
-			if (istack->delim_count == useDelims)
-				{
-					// the opener is completely used up - remove the stack entry and reuse the inline element
-					inl = istack->first_inline;
-					inl->tag = useDelims == 1 ? INL_EMPH : INL_STRONG;
-					chunk_free(&inl->content.literal);
-					inl->content.inlines = inl->next;
-					inl->next = NULL;
-
-					// remove this opener and all later ones from stack:
-					free_openers(subj, istack->previous);
-					*last = inl;
-				}
-			else
-				{
-					// the opener will only partially be used - stack entry remains (truncated) and a new inline is added.
-					inl = istack->first_inline;
-					istack->delim_count -= useDelims;
-					inl->content.literal.len = istack->delim_count;
-
-					emph = useDelims == 1 ? make_emph(inl->next) : make_strong(inl->next);
-					inl->next = emph;
-
-					// remove all later openers from stack:
-					free_openers(subj, istack);
-
-					*last = emph;
-				}
-
-			// if the closer was not fully used, move back a char or two and try again.
-			if (useDelims < numdelims)
-				{
-					subj->pos = subj->pos - numdelims + useDelims;
-					return NULL;
-				}
-
-			return NULL; // make_str(chunk_literal(""));
-		}
-
- cannotClose:
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
-	if (can_open)
-		{
-			subj->openers = push_opener(subj,
-						    numdelims,
-						    c,
-						    inl_text);
-		}
+	if (can_open || can_close) {
+		subj->delimiters = push_delimiter(subj, numdelims, c, can_open, can_close,
+						  inl_text);
+	}
 
 	return inl_text;
+}
+
+static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
+{
+	delimiter_stack *closer = subj->delimiters;
+	delimiter_stack *opener, *tempstack, *nextstack;
+	int use_delims;
+	node_inl *inl, *tmp, *emph;
+
+	// move back to first relevant delim.
+	while (closer != NULL && closer->previous != stack_bottom) {
+		closer = closer->previous;
+	}
+
+	// now move forward, looking for closers, and handling each
+	while (closer != NULL) {
+		if (closer->can_close &&
+		    (closer->delim_char == '*' || closer->delim_char == '_')) {
+			// Now look backwards for first matching opener:
+			opener = closer->previous;
+			while (opener != NULL && opener != stack_bottom) {
+				if (opener->delim_char == closer->delim_char &&
+				    opener->can_open) {
+					break;
+				}
+				opener = opener->previous;
+			}
+			if (opener != NULL && opener != stack_bottom) {
+				// calculate the actual number of delimeters used from this closer
+				if (closer->delim_count < 3 || opener->delim_count < 3) {
+					use_delims = closer->delim_count <= opener->delim_count ?
+						closer->delim_count : opener->delim_count;
+				} else { // closer and opener both have >= 3 delims
+					use_delims = closer->delim_count % 2 == 0 ? 2 : 1;
+				}
+
+				inl = opener->first_inline;
+
+				// remove used delimiters from stack elements and associated inlines.
+				opener->delim_count -= use_delims;
+				closer->delim_count -= use_delims;
+				inl->content.literal.len = opener->delim_count;
+				closer->first_inline->content.literal.len = closer->delim_count;
+
+				// free delimiters between opener and closer
+				tempstack = closer->previous;
+				while (tempstack != NULL && tempstack != opener) {
+					nextstack = tempstack->previous;
+					remove_delimiter(subj, tempstack);
+					tempstack = nextstack;
+				}
+
+				// create new emph or strong, and splice it in to our inlines
+				// between the opener and closer
+				emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+				emph->next = closer->first_inline;
+				inl->next = emph;
+				tmp = emph->content.inlines;
+				while (tmp->next != NULL && tmp->next != closer->first_inline) {
+					tmp = tmp->next;
+				}
+				tmp->next = NULL;
+
+				// if opener has 0 delims, remove it and its associated inline
+				if (opener->delim_count == 0) {
+					// replace empty opener inline with emph
+					chunk_free(&(inl->content.literal));
+					inl->tag = emph->tag;
+					inl->next = emph->next;
+					inl->content.inlines = emph->content.inlines;
+					free(emph);
+					emph = inl;
+					// remove opener from stack
+					remove_delimiter(subj, opener);
+				}
+
+				// if closer has 0 delims, remove it and its associated inline
+				if (closer->delim_count == 0) {
+					// remove empty closer inline
+					tmp = closer->first_inline;
+					emph->next = tmp->next;
+					tmp->next = NULL;
+					free_inlines(tmp);
+					// remove closer from stack
+					tempstack = closer->next;
+					remove_delimiter(subj, closer);
+					closer = tempstack;
+				}
+			} else {
+				closer = closer->next;
+			}
+		} else {
+			closer = closer->next;
+		}
+	}
+	// free all delimiters in stack down to stack_bottom:
+	while (subj->delimiters != stack_bottom) {
+		remove_delimiter(subj, subj->delimiters);
+	}
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
@@ -601,151 +632,176 @@ static node_inl* handle_pointy_brace(subject* subj)
 }
 
 // Parse a link label.  Returns 1 if successful.
-// Unless raw_label is null, it is set to point to the raw contents of the [].
-// Assumes the subject has a '[' character at the current position.
-// Returns 0 and does not advance if no matching ] is found.
-// Note the precedence:  code backticks have precedence over label bracket
-// markers, which have precedence over *, _, and other inline formatting
-// markers. So, 2 below contains a link while 1 does not:
-// 1. [a link `with a ](/url)` character
-// 2. [a link *with emphasized ](/url) text*
+// Note:  unescaped brackets are not allowed in labels.
+// The label begins with `[` and ends with the first `]` character
+// encountered.  Backticks in labels do not start code spans.
 static int link_label(subject* subj, chunk *raw_label)
 {
-	int nestlevel = 0;
-	node_inl* tmp = NULL;
 	int startpos = subj->pos;
-
-	if (subj->label_nestlevel) {
-		// if we've already checked to the end of the subject
-		// for a label, even with a different starting [, we
-		// know we won't find one here and we can just return.
-		// Note:  nestlevel 1 would be: [foo [bar]
-		// nestlevel 2 would be: [foo [bar [baz]
-		subj->label_nestlevel--;
-		return 0;
-	}
+	int length = 0;
 
 	advance(subj);  // advance past [
 	unsigned char c;
-	while ((c = peek_char(subj)) && (c != ']' || nestlevel > 0)) {
-		switch (c) {
-		case '`':
-			tmp = handle_backticks(subj);
-			free_inlines(tmp);
-			break;
-		case '<':
-			tmp = handle_pointy_brace(subj);
-			free_inlines(tmp);
-			break;
-		case '[':  // nested []
-			nestlevel++;
+	while ((c = peek_char(subj)) && c != '[' && c != ']') {
+		if (c == '\\') {
 			advance(subj);
-			break;
-		case ']':  // nested []
-			nestlevel--;
-			advance(subj);
-			break;
-		case '\\':
-			advance(subj);
+			length++;
 			if (ispunct(peek_char(subj))) {
 				advance(subj);
-			}
-			break;
-		default:
-			advance(subj);
-		}
-	}
-	if (nestlevel == 0 && c == ']') {
-		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
-		subj->label_nestlevel = 0;
-		advance(subj);  // advance past ]
-		return 1;
-	} else {
-		if (c == 0) {
-			subj->label_nestlevel = nestlevel;
-		}
-		subj->pos = startpos; // rewind
-		return 0;
-	}
-}
-
-// Parse a link or the link portion of an image, or return a fallback.
-static node_inl* handle_left_bracket(subject* subj)
-{
-	node_inl *lab = NULL;
-	node_inl *result = NULL;
-	reference *ref;
-	int n;
-	int sps;
-	int found_label;
-	int endlabel, startpos, starturl, endurl, starttitle, endtitle, endall;
-
-	chunk rawlabel;
-	chunk url, title;
-
-	startpos = subj->pos;
-	found_label = link_label(subj, &rawlabel);
-	endlabel = subj->pos;
-
-	if (found_label) {
-		if (peek_char(subj) == '(' &&
-		    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
-		    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
-
-			// try to parse an explicit link:
-			starturl = subj->pos + 1 + sps; // after (
-			endurl = starturl + n;
-			starttitle = endurl + scan_spacechars(&subj->input, endurl);
-
-			// ensure there are spaces btw url and title
-			endtitle = (starttitle == endurl) ? starttitle :
-				starttitle + scan_link_title(&subj->input, starttitle);
-
-			endall = endtitle + scan_spacechars(&subj->input, endtitle);
-
-			if (peek_at(subj, endall) == ')') {
-				subj->pos = endall + 1;
-
-				url = chunk_dup(&subj->input, starturl, endurl - starturl);
-				title = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
-				lab = parse_chunk_inlines(&rawlabel, NULL);
-
-				return make_link(lab, url, title);
-			} else {
-			    goto noMatch;
+				length++;
 			}
 		} else {
-			chunk rawlabel_tmp;
-			chunk reflabel;
-
-			// Check for reference link.
-			// First, see if there's another label:
-			subj->pos = subj->pos + scan_spacechars(&subj->input, endlabel);
-			reflabel = rawlabel;
-
-			// if followed by a nonempty link label, we change reflabel to it:
-			if (peek_char(subj) == '[' && link_label(subj, &rawlabel_tmp)) {
-				if (rawlabel_tmp.len > 0)
-					reflabel = rawlabel_tmp;
-			} else {
-				subj->pos = endlabel;
-			}
-
-			// lookup rawlabel in subject->reference_map:
-			ref = reference_lookup(subj->refmap, &reflabel);
-			if (ref != NULL) { // found
-				lab = parse_chunk_inlines(&rawlabel, NULL);
-				result = make_ref_link(lab, ref);
-			} else {
-			    goto noMatch;
-			}
-			return result;
+			advance(subj);
+			length++;
+		}
+		if (length > MAX_LINK_LABEL_LENGTH) {
+			goto noMatch;
 		}
 	}
+
+	if (c == ']') { // match found
+		*raw_label = chunk_dup(&subj->input, startpos + 1, subj->pos - (startpos + 1));
+		advance(subj);  // advance past ]
+		return 1;
+	}
+
+ noMatch:
+	subj->pos = startpos; // rewind
+	return 0;
+
+}
+
+// Return a link, an image, or a literal close bracket.
+static node_inl* handle_close_bracket(subject* subj, node_inl **last)
+{
+	int initial_pos;
+	int starturl, endurl, starttitle, endtitle, endall;
+	int n;
+	int sps;
+	reference *ref;
+	bool is_image = false;
+	chunk urlchunk, titlechunk;
+	unsigned char *url, *title;
+	delimiter_stack *ostack;
+	delimiter_stack *closer_above;
+	delimiter_stack *tempstack;
+	node_inl *link_text;
+	node_inl *inl;
+	chunk raw_label;
+
+	advance(subj);  // advance past ]
+	initial_pos = subj->pos;
+
+	// look through stack of delimiters for a [ or !
+	ostack = subj->delimiters;
+	while (ostack) {
+		if (ostack->delim_char == '[' || ostack->delim_char == '!') {
+			break;
+		}
+		ostack = ostack->previous;
+	}
+
+	if (ostack == NULL) {
+		return make_str(chunk_literal("]"));
+	}
+
+	// If we got here, we matched a potential link/image text.
+	is_image = ostack->delim_char == '!';
+	link_text = ostack->first_inline->next;
+
+	// Now we check to see if it's a link/image.
+
+	// First, look for an inline link.
+	if (peek_char(subj) == '(' &&
+	    ((sps = scan_spacechars(&subj->input, subj->pos + 1)) > -1) &&
+	    ((n = scan_link_url(&subj->input, subj->pos + 1 + sps)) > -1)) {
+
+		// try to parse an explicit link:
+		starturl = subj->pos + 1 + sps; // after (
+		endurl = starturl + n;
+		starttitle = endurl + scan_spacechars(&subj->input, endurl);
+
+		// ensure there are spaces btw url and title
+		endtitle = (starttitle == endurl) ? starttitle :
+			starttitle + scan_link_title(&subj->input, starttitle);
+
+		endall = endtitle + scan_spacechars(&subj->input, endtitle);
+
+		if (peek_at(subj, endall) == ')') {
+			subj->pos = endall + 1;
+
+			urlchunk = chunk_dup(&subj->input, starturl, endurl - starturl);
+			titlechunk = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
+			url = clean_url(&urlchunk);
+			title = clean_title(&titlechunk);
+			chunk_free(&urlchunk);
+			chunk_free(&titlechunk);
+			goto match;
+
+		} else {
+			goto noMatch;
+		}
+	}
+
+	// Next, look for a following [link label] that matches in refmap.
+	// skip spaces
+	subj->pos = subj->pos + scan_spacechars(&subj->input, subj->pos);
+	raw_label = chunk_literal("");
+	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
+		chunk_free(&raw_label);
+		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
+	}
+
+	ref = reference_lookup(subj->refmap, &raw_label);
+	chunk_free(&raw_label);
+
+	if (ref != NULL) { // found
+		url = bufdup(ref->url);
+		title = bufdup(ref->title);
+		goto match;
+	} else {
+		goto noMatch;
+	}
+
 noMatch:
 	// If we fall through to here, it means we didn't match a link:
-	subj->pos = startpos + 1;  // advance past [
-	return make_str(chunk_literal("["));
+	subj->pos = initial_pos;
+	return make_str(chunk_literal("]"));
+
+match:
+	inl = ostack->first_inline;
+	inl->tag = is_image ? INL_IMAGE : INL_LINK;
+	chunk_free(&inl->content.literal);
+	inl->content.linkable.label = link_text;
+	process_emphasis(subj, ostack->previous);
+	inl->content.linkable.url   = url;
+	inl->content.linkable.title = title;
+	inl->next = NULL;
+	*last = inl;
+
+	// process_emphasis will remove this delimiter and all later ones.
+	// Now we also remove earlier ones of the same kind
+	// (so, no links in links, and no images in images):
+	// (This code can be removed if we decide to allow links
+	// inside links and images inside images):
+	ostack = subj->delimiters;
+	closer_above = NULL;
+	while (ostack != NULL) {
+		tempstack = ostack->previous;
+		if (ostack->delim_char == (is_image ? '!' : '[')) {
+			free(ostack);
+			if (closer_above) {
+				closer_above->previous = tempstack;
+			} else {
+				subj->delimiters = tempstack;
+			}
+		} else {
+			closer_above = ostack;
+		}
+		ostack = tempstack;
+	}
+
+	return NULL;
 }
 
 // Parse a hard or soft linebreak, returning an inline.
@@ -780,22 +836,9 @@ extern node_inl* parse_inlines_from_subject(subject* subj)
 		}
 	}
 
-	opener_stack* istack = subj->openers;
-	opener_stack* temp;
-	while (istack != NULL) {
-		temp = istack->previous;
-		free(istack);
-		istack = temp;
-	}
+	process_emphasis(subj, NULL);
 
 	return first;
-}
-
-node_inl *parse_chunk_inlines(chunk *chunk, reference_map *refmap)
-{
-	subject subj;
-	subject_from_chunk(&subj, chunk, refmap);
-	return parse_inlines_from_subject(&subj);
 }
 
 static int subject_find_special_char(subject *subj)
@@ -859,24 +902,24 @@ static int parse_inline(subject* subj, node_inl ** last)
 	case '<':
 		new = handle_pointy_brace(subj);
 		break;
-	case '_':
-		new = handle_strong_emph(subj, '_', last);
-		break;
 	case '*':
-		new = handle_strong_emph(subj, '*', last);
+	case '_':
+		new = handle_strong_emph(subj, c, last);
 		break;
 	case '[':
-		new = handle_left_bracket(subj);
+		advance(subj);
+		new = make_str(chunk_literal("["));
+		subj->delimiters = push_delimiter(subj, 1, '[', true, false, new);
+		break;
+	case ']':
+		new = handle_close_bracket(subj, last);
 		break;
 	case '!':
 		advance(subj);
 		if (peek_char(subj) == '[') {
-			new = handle_left_bracket(subj);
-			if (new != NULL && new->tag == INL_LINK) {
-				new->tag = INL_IMAGE;
-			} else {
-				new = append_inlines(make_str(chunk_literal("!")), new);
-			}
+			advance(subj);
+			new = make_str(chunk_literal("!["));
+			subj->delimiters = push_delimiter(subj, 1, '!', false, true, new);
 		} else {
 			new = make_str(chunk_literal("!"));
 		}

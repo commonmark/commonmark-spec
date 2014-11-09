@@ -17,13 +17,14 @@ h1 { font-size: 140%; font-weight: bold; border-top: 1px solid gray; padding-top
 h2 { font-size: 120%; font-weight: bold; }
 h3 { font-size: 110%; font-weight: bold; }
 h4 { font-size: 100%; font-weight: bold; }
+a.definition { font-weight: bold; }
 span.space { position: relative; }
 span.space:after {
-  content: "";
+  content: "·";
   position: absolute;
   /* create a mark that indicates a space (trick from D. Greenspan) */
-  top: 3px; bottom: 3px; left: 1px; right: 1px;
-  border: 1px solid #999;
+  top: 0px; bottom: 7px; left: 1px; right: 1px;
+  color: #AAA;
 }
 div.example { overflow: hidden; }
 p { text-align: justify; }
@@ -43,9 +44,6 @@ div.example > pre.markdown { clear:left; }
 pre.tree { font-weight: bold; color: #777; }
 pre.markdown { background-color: #D3E1E4; }
 pre.html { background-color: #C9CaCE; }
-pre.html span.space:after {
-  border: 1px solid #666;
-}
 #watermark {
  position:fixed;
  bottom:0px;
