@@ -682,7 +682,7 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	bool is_image = false;
 	chunk urlchunk, titlechunk;
 	unsigned char *url, *title;
-	delimiter_stack *ostack;
+	delimiter_stack *opener;
 	delimiter_stack *closer_above;
 	delimiter_stack *tempstack;
 	node_inl *link_text;
@@ -693,21 +693,21 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	initial_pos = subj->pos;
 
 	// look through stack of delimiters for a [ or !
-	ostack = subj->delimiters;
-	while (ostack) {
-		if (ostack->delim_char == '[' || ostack->delim_char == '!') {
+	opener = subj->delimiters;
+	while (opener) {
+		if (opener->delim_char == '[' || opener->delim_char == '!') {
 			break;
 		}
-		ostack = ostack->previous;
+		opener = opener->previous;
 	}
 
-	if (ostack == NULL) {
+	if (opener == NULL) {
 		return make_str(chunk_literal("]"));
 	}
 
 	// If we got here, we matched a potential link/image text.
-	is_image = ostack->delim_char == '!';
-	link_text = ostack->first_inline->next;
+	is_image = opener->delim_char == '!';
+	link_text = opener->first_inline->next;
 
 	// Now we check to see if it's a link/image.
 
@@ -749,7 +749,8 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	raw_label = chunk_literal("");
 	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
 		chunk_free(&raw_label);
-		raw_label = chunk_dup(&subj->input, ostack->position, initial_pos - ostack->position - 1);
+		raw_label = chunk_dup(&subj->input, opener->position,
+				      initial_pos - opener->position - 1);
 	}
 
 	ref = reference_lookup(subj->refmap, &raw_label);
@@ -765,16 +766,16 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 
 noMatch:
 	// If we fall through to here, it means we didn't match a link:
-	remove_delimiter(subj, ostack);  // remove this opener from delimiter stack
+	remove_delimiter(subj, opener);  // remove this opener from delimiter stack
 	subj->pos = initial_pos;
 	return make_str(chunk_literal("]"));
 
 match:
-	inl = ostack->first_inline;
+	inl = opener->first_inline;
 	inl->tag = is_image ? INL_IMAGE : INL_LINK;
 	chunk_free(&inl->content.literal);
 	inl->content.linkable.label = link_text;
-	process_emphasis(subj, ostack->previous);
+	process_emphasis(subj, opener->previous);
 	inl->content.linkable.url   = url;
 	inl->content.linkable.title = title;
 	inl->next = NULL;
@@ -785,21 +786,21 @@ match:
 	// (so, no links in links, and no images in images):
 	// (This code can be removed if we decide to allow links
 	// inside links and images inside images):
-	ostack = subj->delimiters;
+	opener = subj->delimiters;
 	closer_above = NULL;
-	while (ostack != NULL) {
-		tempstack = ostack->previous;
-		if (ostack->delim_char == (is_image ? '!' : '[')) {
-			free(ostack);
+	while (opener != NULL) {
+		tempstack = opener->previous;
+		if (opener->delim_char == (is_image ? '!' : '[')) {
+			free(opener);
 			if (closer_above) {
 				closer_above->previous = tempstack;
 			} else {
 				subj->delimiters = tempstack;
 			}
 		} else {
-			closer_above = ostack;
+			closer_above = opener;
 		}
-		ostack = tempstack;
+		opener = tempstack;
 	}
 
 	return NULL;
