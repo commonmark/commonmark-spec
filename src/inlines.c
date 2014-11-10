@@ -791,12 +791,7 @@ match:
 		while (opener != NULL) {
 			tempstack = opener->previous;
 			if (opener->delim_char == '[') {
-				free(opener);
-				if (closer_above) {
-					closer_above->previous = tempstack;
-				} else {
-					subj->delimiters = tempstack;
-				}
+				remove_delimiter(subj, opener);
 			} else {
 				closer_above = opener;
 			}
