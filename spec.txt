@@ -6473,8 +6473,8 @@ Backslash escapes do not work in HTML attributes:
 ## Hard line breaks
 
 A line break (not in a code span or HTML tag) that is preceded
-by two or more spaces is parsed as a [hard line
-break](@hard-line-break) (rendered
+by two or more spaces and does not occur at the end of a block
+is parsed as a [hard line break](@hard-line-break) (rendered
 in HTML as a `<br />` tag):
 
 .
@@ -6575,6 +6575,34 @@ bar">
 .
 <p><a href="foo\
 bar"></p>
+.
+
+Hard line breaks are for separating inline content within a block.
+Neither syntax for hard line breaks works at the end of a paragraph or
+other block element:
+
+.
+foo\
+.
+<p>foo\</p>
+.
+
+.
+foo
+.
+<p>foo</p>
+.
+
+.
+### foo\
+.
+<h3>foo\</h3>
+.
+
+.
+### foo
+.
+<h3>foo</h3>
 .
 
 ## Soft line breaks
