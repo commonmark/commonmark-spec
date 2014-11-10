@@ -52,7 +52,7 @@ untrusted user input, you must run the output through an HTML
 sanitizer to protect against
 [XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
 
-[The spec] contains over 450 embedded examples which serve as conformance
+[The spec] contains over 500 embedded examples which serve as conformance
 tests.  To run the tests for `cmark`, do `make test`.  To run them for
 another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `commonmark.js`, do `make testjs`.
