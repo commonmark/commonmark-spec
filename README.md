@@ -18,17 +18,19 @@ tarball.)
 
 The parser is very fast, on par with
 [sundown](https://github.com/vmg/sundown).  Some benchmarks (on
-a 1.6 GHz Intel Core i5, measured using `time`, and parsing a
+an ancient Thinkpad running Intel Core 2 Duo at 2GHz, measured using
+`time` and parsing a
 ~500K book, the English version of [*Pro
 Git*](https://github.com/progit/progit/tree/master/en) by
 Scott Chacon and Ben Straub):
 
-|Implementation | Time  |
-|---------------|-------|
-| Markdown.pl   | 3.990s|
-| discount      | 0.089s|
-| sundown       | 0.015s|
-| cmark         | 0.019s|
+|Implementation | Time  |  Factor|
+|---------------|-------|--------|
+| Markdown.pl   | 5.162s|   286.8|
+| PHP Markdown  | 1.021s|    56.7|
+| discount      | 0.090s|     5.0|
+| sundown       | 0.018s|     1.1|
+| cmark         | 0.020s|     1.0|
 
     Usage:   cmark [FILE*]
     Options: --help, -h    Print usage information
