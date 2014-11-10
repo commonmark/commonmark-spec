@@ -5372,7 +5372,7 @@ unless they are escaped:
 .
 [link] bar](/uri)
 .
-<p><[link] bar](/uri)</p>
+<p>[link] bar](/uri)</p>
 .
 
 .
@@ -5605,7 +5605,7 @@ and autolinks over link grouping:
 
 [ref]: /uri
 .
-<p>[foo<a href="http://example.com?search=%5D%5Dref%5B">http://example.com?search=][ref]</a></p>
+<p>[foo<a href="http://example.com?search=%5D%5Bref%5D">http://example.com?search=][ref]</a></p>
 .
 
 Matching is case-insensitive:
