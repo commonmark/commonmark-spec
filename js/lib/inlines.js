@@ -261,17 +261,35 @@ var Str = function(s) {
 
 // Attempt to parse emphasis or strong emphasis.
 var parseEmphasis = function(cc,inlines) {
-    var startpos = this.pos;
 
     var res = this.scanDelims(cc);
     var numdelims = res.numdelims;
-    var usedelims;
+    var startpos = this.pos;
 
     if (numdelims === 0) {
         this.pos = startpos;
         return false;
     }
 
+    this.pos += numdelims;
+    inlines.push(Str(this.subject.slice(startpos, this.pos)));
+
+    // Add entry to stack for this opener
+    this.emphasis_openers = { cc: cc,
+                              numdelims: numdelims,
+                              pos: inlines.length - 1,
+                              previous: this.emphasis_openers,
+                              next: null,
+                              can_open: res.can_open,
+                              can_close: res.can_close};
+
+    return true;
+
+};
+
+/* TODO
+    var numdelims = res.numdelims;
+    var usedelims;
     if (res.can_close) {
 
       // Walk the stack and find a matching opener, if possible
@@ -318,22 +336,7 @@ var parseEmphasis = function(cc,inlines) {
     }
 
     // If we're here, we didn't match a closer.
-
-    this.pos += numdelims;
-    inlines.push(Str(this.subject.slice(startpos, startpos + numdelims)));
-
-    if (res.can_open) {
-
-      // Add entry to stack for this opener
-      this.emphasis_openers = { cc: cc,
-                                numdelims: numdelims,
-                                pos: inlines.length - 1,
-                                previous: this.emphasis_openers };
-    }
-
-    return true;
-
-};
+*/
 
 // Attempt to parse link title (sans quotes), returning the string
 // or null if no match.
