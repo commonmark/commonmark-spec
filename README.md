@@ -29,6 +29,7 @@ Scott Chacon and Ben Straub):
 | Markdown.pl   | 5.162s|   286.8|
 | PHP Markdown  | 1.021s|    56.7|
 | commonmark.js | 0.292s|    16.2|
+| peg-markdown  | 0.279s|    15.5|
 | marked        | 0.239s|    13.3|
 | discount      | 0.090s|     5.0|
 | **cmark**     | 0.020s|     1.1|
