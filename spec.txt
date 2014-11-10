@@ -4066,7 +4066,7 @@ A [backtick string](@backtick-string)
 is a string of one or more backtick characters (`` ` ``) that is neither
 preceded nor followed by a backtick.
 
-A code span begins with a backtick string and ends with a backtick
+A [code span](@code-span) begins with a backtick string and ends with a backtick
 string of equal length.  The contents of the code span are the
 characters between the two backtick strings, with leading and trailing
 spaces and newlines removed, and consecutive spaces and newlines
@@ -5110,31 +5110,36 @@ __a<http://foo.bar?q=__>
 
 ## Links
 
-A link contains a [link label](#link-label) (the visible text),
+A link contains [link text](#link-label) (the visible text),
 a [destination](#destination) (the URI that is the link destination),
 and optionally a [link title](#link-title).  There are two basic kinds
 of links in Markdown.  In [inline links](#inline-links) the destination
-and title are given immediately after the label.  In [reference
+and title are given immediately after the link text.  In [reference
 links](#reference-links) the destination and title are defined elsewhere
 in the document.
 
-A [link label](@link-label)  consists of
+A [link text](@link-text) consists of a sequence of zero or more
+inline elements enclosed by square brackets (`[` and `]`).  The
+following rules apply:
 
-- an opening `[`, followed by
-- zero or more backtick code spans, autolinks, HTML tags, link labels,
-  backslash-escaped ASCII punctuation characters, or non-`]` characters,
-  followed by
-- a closing `]`.
+- Links may not contain other links, at any level of nesting.
 
-These rules are motivated by the following intuitive ideas:
+- Brackets are allowed in the link text only if (a) they are
+  backslash-escaped or (b) they appear as a matched pair of brackets,
+  with an open bracket `[`, a sequence of zero or more inlines, and
+  a close bracket `]`.
 
-- A link label is a container for inline elements.
-- The square brackets bind more tightly than emphasis markers,
-  but less tightly than `<>` or `` ` ``.
-- Link labels may contain material in matching square brackets.
+- Backtick [code spans](#code-span), [autolinks](#autolink), and
+  raw [HTML tags](#html-tag) bind more tightly
+  than the brackets in link text.  Thus, for example,
+  `` [foo`]` `` could not be a link text, since the second `]`
+  is part of a code span.
 
-A [link destination](@link-destination)
-consists of either
+- The brackets in link text bind more tightly than markers for
+  [emphasis and strong emphasis](#emphasis-and-strong-emphasis).
+  Thus, for example, `*[foo*](url)` is a link.
+
+A [link destination](@link-destination) consists of either
 
 - a sequence of zero or more characters between an opening `<` and a
   closing `>` that contains no line breaks or unescaped `<` or `>`
@@ -5160,17 +5165,18 @@ A [link title](@link-title)  consists of either
   (`(...)`), including a `)` character only if it is backslash-escaped.
 
 An [inline link](@inline-link)
-consists of a [link label](#link-label) followed immediately
+consists of a [link text](#link-text) followed immediately
 by a left parenthesis `(`, optional whitespace,
 an optional [link destination](#link-destination),
 an optional [link title](#link-title) separated from the link
 destination by whitespace, optional whitespace, and a right
-parenthesis `)`.  The link's text consists of the label (excluding
-the enclosing square brackets) parsed as inlines.  The link's
-URI consists of the link destination, excluding enclosing `<...>` if
-present, with backslash-escapes in effect as described above.  The
-link's title consists of the link title, excluding its enclosing
-delimiters, with backslash-escapes in effect as described above.
+parenthesis `)`.  The link's text consists of the inlines contained
+in the [link text](#link-text) (excluding the enclosing square brackets).
+The link's URI consists of the link destination, excluding enclosing
+`<...>` if present, with backslash-escapes in effect as described
+above.  The link's title consists of the link title, excluding its
+enclosing delimiters, with backslash-escapes in effect as described
+above.
 
 Here is a simple inline link:
 
@@ -5201,7 +5207,6 @@ Both the title and the destination may be omitted:
 .
 <p><a href="">link</a></p>
 .
-
 
 If the destination contains spaces, it must be enclosed in pointy
 braces:
@@ -5346,7 +5351,7 @@ Whitespace is allowed around the destination and title:
 <p><a href="/uri" title="title">link</a></p>
 .
 
-But it is not allowed between the link label and the
+But it is not allowed between the link text and the
 following parenthesis:
 
 .
@@ -5355,8 +5360,78 @@ following parenthesis:
 <p>[link] (/uri)</p>
 .
 
-Note that this is not a link, because the closing `]` occurs in
-an HTML tag:
+The link text may contain balanced brackets, but not unbalanced ones,
+unless they are escaped:
+
+.
+[link [foo [bar]]](/uri)
+.
+<p><a href="/uri">link [foo [bar]]</a></p>
+.
+
+.
+[link] bar](/uri)
+.
+<p><[link] bar](/uri)</p>
+.
+
+.
+[link [bar](/uri)
+.
+<p>[link <a href="/uri">bar</a></p>
+.
+
+.
+[link \[bar](/uri)
+.
+<p><a href="/uri">link [bar</a></p>
+.
+
+The link text may contain inline content:
+
+.
+[link *foo **bar** `#`*](/uri)
+.
+<p><a href="/uri">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
+.
+
+.
+[![moon](moon.jpg)](/uri)
+.
+<p><a href="/uri"><img src="moon.jpg" alt="moon" /></a></p>
+.
+
+However, links may not contain other links, at any level of nesting.
+
+.
+[foo [bar](/uri)](/uri)
+.
+<p>[foo <a href="/uri">bar</a>](/uri)</p>
+.
+
+.
+[foo *[bar [baz](/uri)](/uri)*](/uri)
+.
+<p>[foo <em>[bar <a href="/uri">baz</a>](/uri)</em>](/uri)</p>
+.
+
+These cases illustrate the precedence of link text grouping over
+emphasis grouping:
+
+.
+*[foo*](/uri)
+.
+<p>*<a href="/uri">foo*</a></p>
+.
+
+.
+[foo *bar](baz*)
+.
+<p><a href="baz*">foo *bar</a></p>
+.
+
+These cases illustrate the precedence of HTML tags, code spans,
+and autolinks over link grouping:
 
 .
 [foo <bar attr="](baz)">
@@ -5364,14 +5439,33 @@ an HTML tag:
 <p>[foo <bar attr="](baz)"></p>
 .
 
+.
+[foo`](/uri)`
+.
+<p>[foo<code>](/uri)</code></p>
+.
+
+.
+[foo<http://example.com?search=](uri)>
+.
+<p>[foo<a href="http://example.com?search=%5D(uri)">http://example.com?search=](uri)</a></p>
+.
 
 There are three kinds of [reference links](@reference-link):
+[full](#full-reference-link), [collapsed](#collapsed-reference-link),
+and [shortcut](#shortcut-reference-link).
 
 A [full reference link](@full-reference-link)
-consists of a [link label](#link-label), optional whitespace, and
-another [link label](#link-label) that [matches](#matches) a
+consists of a [link text](#link-text), optional whitespace, and
+a [link label](#link-label) that [matches](#matches) a
 [link reference definition](#link-reference-definition) elsewhere in the
 document.
+
+A [link label](@link-label)  begins with a left bracket (`[`) and ends
+with the first right bracket (`]`) that is not backslash-escaped.
+Unescaped square bracket characters are not allowed in
+[link labels](#link-label).  A link label can have at most 999
+characters inside the square brackets.
 
 One label [matches](@matches)
 another just in case their normalized forms are equal.  To normalize a
@@ -5394,14 +5488,124 @@ Here is a simple example:
 <p><a href="/url" title="title">foo</a></p>
 .
 
-The first label can contain inline content:
+The rules for the [link text](#link-text) are the same as with
+[inline links](#inline-link).  Thus:
+
+The link text may contain balanced brackets, but not unbalanced ones,
+unless they are escaped:
 
 .
-[*foo\!*][bar]
+[link [foo [bar]]][ref]
 
-[bar]: /url "title"
+[ref]: /uri
 .
-<p><a href="/url" title="title"><em>foo!</em></a></p>
+<p><a href="/uri">link [foo [bar]]</a></p>
+.
+
+.
+[link] bar][ref]
+
+[ref]: /uri
+.
+<p><[link] bar][ref]</p>
+.
+
+.
+[link [bar][ref]
+
+[ref]: /uri
+.
+<p>[link [bar][ref]</p>
+.
+
+.
+[link \[bar][ref]
+
+[ref]: /uri
+.
+<p><a href="/uri">link [bar</a></p>
+.
+
+The link text may contain inline content:
+
+.
+[link *foo **bar** `#`*][ref]
+
+[ref]: /uri
+.
+<p><a href="/uri">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
+.
+
+.
+[![moon](moon.jpg)][ref]
+
+[ref]: /uri
+.
+<p><a href="/uri"><img src="moon.jpg" alt="moon" /></a></p>
+.
+
+However, links may not contain other links, at any level of nesting.
+
+.
+[foo [bar](/uri)][ref]
+
+[ref]: /uri
+.
+<p>[foo <a href="/uri">bar</a>][ref]</p>
+.
+
+.
+[foo *bar [baz][ref]*][ref]
+
+[ref]: /uri
+.
+<p>[foo <em>bar <a href="/uri">baz</a></em>][ref]</p>
+.
+
+These cases illustrate the precedence of link text grouping over
+emphasis grouping:
+
+.
+*[foo*][ref]
+
+[ref]: /uri
+.
+<p>*<a href="/uri">foo*</a></p>
+.
+
+.
+[foo *bar][ref]
+
+[ref]: /uri
+.
+<p><a href="/uri">foo *bar</a></p>
+.
+
+These cases illustrate the precedence of HTML tags, code spans,
+and autolinks over link grouping:
+
+.
+[foo <bar attr="][ref]">
+
+[ref]: /uri
+.
+<p>[foo <bar attr="][ref]"></p>
+.
+
+.
+[foo`][ref]`
+
+[ref]: /uri
+.
+<p>[foo<code>][ref]</code></p>
+.
+
+.
+[foo<http://example.com?search=][ref]>
+
+[ref]: /uri
+.
+<p>[foo<a href="http://example.com?search=%5D%5Dref%5B">http://example.com?search=][ref]</a></p>
 .
 
 Matching is case-insensitive:
@@ -5436,7 +5640,8 @@ purposes of determining matching:
 <p><a href="/url">Baz</a></p>
 .
 
-There can be whitespace between the two labels:
+There can be whitespace between the [link text](#link-text) and the
+[link label](#link-label):
 
 .
 [foo] [bar]
@@ -5478,6 +5683,44 @@ labels define equivalent inline content:
 [foo!]: /url
 .
 <p>[bar][foo!]</p>
+.
+
+[Link labels](#link-label) cannot contain brackets, unless they are
+backslash-escaped:
+
+.
+[foo][ref[]
+
+[ref[]: /uri
+.
+<p>[foo][ref[]</p>
+<p>[ref[]: /uri</p>
+.
+
+.
+[foo][ref[bar]]
+
+[ref[bar]]: /uri
+.
+<p>[foo][ref[bar]]</p>
+<p>[ref[bar]]: /uri</p>
+.
+
+.
+[[[foo]]]
+
+[[[foo]]]: /url
+.
+<p>[[[foo]]]</p>
+<p>[[[foo]]]: /url</p>
+.
+
+.
+[foo][ref\[]
+
+[ref\[]: /uri
+.
+<p><a href="/uri">foo</a></p>
 .
 
 A [collapsed reference link](@collapsed-reference-link)
@@ -5583,8 +5826,8 @@ opening bracket to avoid links:
 <p>[foo]</p>
 .
 
-Note that this is a link, because link labels bind more tightly
-than emphasis:
+Note that this is a link, because a link label ends with the first
+following closing bracket:
 
 .
 [foo*]: /url
@@ -5594,8 +5837,7 @@ than emphasis:
 <p>*<a href="/url">foo*</a></p>
 .
 
-However, this is not, because link labels bind less
-tightly than code backticks:
+This is a link too, for the same reason:
 
 .
 [foo`]: /url
@@ -5603,35 +5845,6 @@ tightly than code backticks:
 [foo`]`
 .
 <p>[foo<code>]</code></p>
-.
-
-Link labels can contain matched square brackets:
-
-.
-[[[foo]]]
-
-[[[foo]]]: /url
-.
-<p><a href="/url">[[foo]]</a></p>
-.
-
-.
-[[[foo]]]
-
-[[[foo]]]: /url1
-[foo]: /url2
-.
-<p><a href="/url1">[[foo]]</a></p>
-.
-
-For non-matching brackets, use backslash escapes:
-
-.
-[\[foo]
-
-[\[foo]: /url
-.
-<p><a href="/url">[foo</a></p>
 .
 
 Full references take precedence over shortcut references:
@@ -5683,10 +5896,16 @@ is followed by a link label (even though `[bar]` is not defined):
 
 ## Images
 
-An (unescaped) exclamation mark (`!`) followed by a reference or
-inline link will be parsed as an image.  The plain string content
-of the link label will be used as the image's alt text, and the link
-title, if any, will be used as the image's title.
+Syntax for images is very much like the syntax for links.  To a
+first approximation: an (unescaped) exclamation mark (`!`) followed by
+a reference or inline link will be parsed as an image.  The plain
+string content of the link text will be used as the image's alt text,
+and the link title, if any, will be used as the image's title.
+
+There is just one important difference.  A [link text](#link-text) can
+contain images, but not other links.  An image's alt text, by
+contrast, can contain links, but not images.
+
 
 .
 ![foo](/url "title")
@@ -5702,9 +5921,23 @@ title, if any, will be used as the image's title.
 <p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>
 .
 
-Note that in the above example, the alt text is `foo bar`, not `foo
-*bar*` or `foo <em>bar</em>` or `foo &lt;em&gt;bar&lt;/em&gt;`.  Only
-the plain string content is rendered, without formatting.
+.
+![foo ![bar](/url)](/url2)
+.
+<p>![foo <img src="/url" alt="bar" />](/url2)</p>
+.
+
+.
+![foo [bar](/url)](/url2)
+.
+<p><img src="/url2" alt="foo bar" /></p>
+.
+
+Though this spec is concerned with parsing, not rendering, it is
+recommended that in rendering to HTML, only the plain string content
+of the alt text be used.  Note that in the above example, the alt text
+is `foo bar`, not `foo [bar](/url)` or `foo <a href="/url">bar</a>`.
+Only the plain string content is rendered, without formatting.
 
 .
 ![foo *bar*][]
@@ -5822,12 +6055,15 @@ Shortcut:
 <p><img src="/url" alt="foo bar" title="title" /></p>
 .
 
+Note that link labels cannot contain unescaped brackets:
+
 .
 ![[foo]]
 
 [[foo]]: /url "title"
 .
-<p><img src="/url" alt="[foo]" title="title" /></p>
+<p>![[foo]]</p>
+<p>[[foo]]: /url &quot;title&quot;</p>
 .
 
 The link labels are case-insensitive:
@@ -5864,7 +6100,7 @@ If you want a link after a literal `!`, backslash-escape the
 
 ## Autolinks
 
-Autolinks are absolute URIs and email addresses inside `<` and `>`.
+[Autolinks](@autolink) are absolute URIs and email addresses inside `<` and `>`.
 They are parsed as links, with the URL or email address as the link
 label.
 
