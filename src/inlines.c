@@ -765,6 +765,7 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 
 noMatch:
 	// If we fall through to here, it means we didn't match a link:
+	remove_delimiter(subj, ostack);  // remove this opener from delimiter stack
 	subj->pos = initial_pos;
 	return make_str(chunk_literal("]"));
 
