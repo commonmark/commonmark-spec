@@ -2,8 +2,8 @@
 title: CommonMark Spec
 author:
 - John MacFarlane
-version: 0.10
-date: 2014-11-06
+version: 0.11
+date: 2014-11-10
 ...
 
 # Introduction
