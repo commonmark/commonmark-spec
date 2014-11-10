@@ -5,7 +5,7 @@ JSMODULES=$(wildcard js/lib/*.js)
 SPEC=spec.txt
 SITE=_site
 BUILDDIR=build
-FUZZCHARS=2000000  # for fuzztest
+FUZZCHARS?=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check
