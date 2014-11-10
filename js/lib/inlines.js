@@ -492,59 +492,8 @@ var parseLinkDestination = function() {
 
 // Attempt to parse a link label, returning number of characters parsed.
 var parseLinkLabel = function() {
-    if (this.peek() != C_OPEN_BRACKET) {
-        return 0;
-    }
-    var startpos = this.pos;
-    var nest_level = 0;
-    if (this.label_nest_level > 0) {
-        // If we've already checked to the end of this subject
-        // for a label, even with a different starting [, we
-        // know we won't find one here and we can just return.
-        // This avoids lots of backtracking.
-        // Note:  nest level 1 would be: [foo [bar]
-        //        nest level 2 would be: [foo [bar [baz]
-        this.label_nest_level--;
-        return 0;
-    }
-    this.pos++;  // advance past [
-    var c;
-    while ((c = this.peek()) && c != -1 && (c != C_CLOSE_BRACKET || nest_level > 0)) {
-        switch (c) {
-        case C_BACKTICK:
-            this.parseBackticks([]);
-            break;
-        case C_LESSTHAN:
-            if (!(this.parseAutolink([]) || this.parseHtmlTag([]))) {
-                this.pos++;
-            }
-            break;
-        case C_OPEN_BRACKET:  // nested []
-            nest_level++;
-            this.pos++;
-            break;
-        case C_CLOSE_BRACKET:  // nested []
-            nest_level--;
-            this.pos++;
-            break;
-        case C_BACKSLASH:
-            this.parseBackslash([]);
-            break;
-        default:
-            this.parseString([]);
-        }
-    }
-    if (c === C_CLOSE_BRACKET) {
-        this.label_nest_level = 0;
-        this.pos++; // advance past ]
-        return this.pos - startpos;
-    } else {
-        if (c === -1) {
-            this.label_nest_level = nest_level;
-        }
-        this.pos = startpos;
-        return 0;
-    }
+    var match = this.match(/^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/);
+    return match === null ? 0 : match.length;
 };
 
 // Parse raw link label, including surrounding [], and return
