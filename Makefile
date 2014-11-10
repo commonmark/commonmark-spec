@@ -81,7 +81,7 @@ fuzztest:
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
 	done } 2>&1 | grep user
 
-update-site: spec.html
+update-site: spec.html js/commonmark.js
 	make -C $(SITE) update
 
 upload-site: spec.html
