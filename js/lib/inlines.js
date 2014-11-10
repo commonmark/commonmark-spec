@@ -374,7 +374,6 @@ var processEmphasis = function(inlines, stack_bottom) {
                 tempstack = closer.previous;
                 while (tempstack !== null && tempstack !== opener) {
                     nextstack = tempstack.previous;
-                    // TODO add remove_delimiter!
                     this.removeDelimiter(tempstack);
                     tempstack = nextstack;
                 }
@@ -504,23 +503,104 @@ var parseRawLabel = function(s) {
     return new InlineParser().parse(s.substr(1, s.length - 2), {});
 };
 
-// Attempt to parse a link.  If successful, return the link.
-var parseLink = function(inlines) {
+// Add open bracket to delimiter stack and add a Str to inlines.
+var parseOpenBracket = function(inlines) {
+
     var startpos = this.pos;
-    var reflabel;
-    var n;
+    this.pos += 1;
+    inlines.push(Str("["));
+
+    // Add entry to stack for this opener
+    this.delimiters = { cc: C_OPEN_BRACKET,
+                        numdelims: 1,
+                        pos: inlines.length - 1,
+                        previous: this.delimiters,
+                        next: null,
+                        can_open: true,
+                        can_close: false,
+                        index: startpos };
+    if (this.delimiters.previous != null) {
+        this.delimiters.previous.next = this.delimiters;
+    }
+    return true;
+
+};
+
+// IF next character is [, and ! delimiter to delimiter stack and
+// add a Str to inlines.  Otherwise just add a Str.
+var parseBang = function(inlines) {
+
+    var startpos = this.pos;
+    this.pos += 1;
+    if (this.peek() === C_OPEN_BRACKET) {
+        this.pos += 1;
+        inlines.push(Str("!["));
+
+        // Add entry to stack for this opener
+        this.delimiters = { cc: C_BANG,
+                            numdelims: 1,
+                            pos: inlines.length - 1,
+                            previous: this.delimiters,
+                            next: null,
+                            can_open: true,
+                            can_close: false,
+                            index: startpos + 1 };
+        if (this.delimiters.previous != null) {
+            this.delimiters.previous.next = this.delimiters;
+        }
+    } else {
+        inlines.push(Str("!"));
+    }
+    return true;
+};
+
+// Try to match close bracket against an opening in the delimiter
+// stack.  Add either a link or image, or a plain [ character,
+// to the inlines stack.  If there is a matching delimiter,
+// remove it from the delimiter stack.
+var parseCloseBracket = function(inlines) {
+    var startpos;
+    var is_image;
     var dest;
     var title;
+    var matched = false;
+    var link_text;
+    var i;
+    var opener, closer_above, tempstack;
 
-    n = this.parseLinkLabel();
-    if (n === 0) {
-        return false;
+    this.pos += 1;
+    startpos = this.pos;
+
+    // look through stack of delimiters for a [ or !
+    opener = this.delimiters;
+    while (opener !== null) {
+        if (opener.cc === C_OPEN_BRACKET || opener.cc === C_BANG) {
+            break;
+        }
+        opener = opener.previous;
     }
-    var afterlabel = this.pos;
-    var rawlabel = this.subject.substr(startpos, n);
 
-    // if we got this far, we've parsed a label.
-    // Try to parse an explicit link: [label](url "title")
+    if (opener === null) {
+        // no matched opener, just return a literal
+        inlines.push(Str("]"));
+        return true;
+    }
+
+    // If we got here, open is a potential opener
+    is_image = opener.cc === C_BANG;
+    // instead of copying a slice, we null out the
+    // parts of inlines that don't correspond to link_text;
+    // later, we'll collapse them.  This is awkward, and could
+    // be simplified if we made inlines a linked list rather than
+    // an array:
+    link_text = inlines.slice(0);
+    for (i = 0; i < opener.pos + 1; i++) {
+        link_text[i] = null;
+    }
+
+    // Check to see if we have a link/image
+
+    // Inline link?
     if (this.peek() == C_OPEN_PAREN) {
         this.pos++;
         if (this.spnl() &&
@@ -531,46 +611,72 @@ var parseLink = function(inlines) {
              (title = this.parseLinkTitle() || '') || true) &&
             this.spnl() &&
             this.match(/^\)/)) {
-            inlines.push({ t: 'Link',
-                      destination: dest,
-                      title: title,
-                      label: parseRawLabel(rawlabel) });
-            return true;
+            matched = true;
+        }
+    } else {
+
+        // Next, see if there's a link label
+        var savepos = this.pos;
+        this.spnl();
+        var beforelabel = this.pos;
+        n = this.parseLinkLabel();
+        if (n === 0 || n === 2) {
+            // empty or missing second label
+            reflabel = this.subject.slice(opener.index, startpos);
         } else {
-            this.pos = startpos;
-            return false;
+            reflabel = this.subject.slice(beforelabel, beforelabel + n);
+        }
+
+        // lookup rawlabel in refmap
+        var link = this.refmap[normalizeReference(reflabel)];
+        if (link) {
+            dest = link.destination;
+            title = link.title;
+            matched = true;
         }
     }
-    // If we're here, it wasn't an explicit link. Try to parse a reference link.
-    // first, see if there's another label
-    var savepos = this.pos;
-    this.spnl();
-    var beforelabel = this.pos;
-    n = this.parseLinkLabel();
-    if (n == 2) {
-        // empty second label
-        reflabel = rawlabel;
-    } else if (n > 0) {
-        reflabel = this.subject.slice(beforelabel, beforelabel + n);
-    } else {
-        this.pos = savepos;
-        reflabel = rawlabel;
-    }
-    // lookup rawlabel in refmap
-    var link = this.refmap[normalizeReference(reflabel)];
-    if (link) {
-        inlines.push({t: 'Link',
-                 destination: link.destination,
-                 title: link.title,
-                 label: parseRawLabel(rawlabel) });
+
+    if (matched) {
+        this.processEmphasis(link_text, opener.previous);
+
+        // remove the part of inlines that became link_text.
+        // see note above on why we need to do this instead of splice:
+        for (i = opener.pos; i < inlines.length; i++) {
+            inlines[i] = null;
+        }
+
+        // processEmphasis will remove this and later delimiters.
+        // Now we also remove earlier ones of the same kind (so,
+        // no links in links, no images in images).
+        opener = this.delimiters;
+        closer_above = null;
+        while (opener !== null) {
+            if (opener.cc === (is_image ? C_BANG : C_OPEN_BRACKET)) {
+                if (closer_above) {
+                    closer_above.previous = opener.previous;
+                } else {
+                    this.delimiters = opener.previous;
+                }
+            } else {
+                closer_above = opener;
+            }
+            opener = opener.previous;
+        }
+
+        inlines.push({t: is_image ? 'Image' : 'Link',
+                      destination: dest,
+                      title: title,
+                      label: link_text});
         return true;
-    } else {
+
+    } else { // no match
+
+        this.removeDelimiter(opener);  // remove this opener from stack
         this.pos = startpos;
-        return false;
+        inlines.push(Str("]"));
+        return true;
     }
-    // Nothing worked, rewind:
-    this.pos = startpos;
-    return false;
+
 };
 
 // Attempt to parse an entity, return Entity object if successful.
@@ -716,10 +822,13 @@ var parseInline = function(inlines) {
         res = this.parseEmphasis(c, inlines);
         break;
     case C_OPEN_BRACKET:
-        res = this.parseLink(inlines);
+        res = this.parseOpenBracket(inlines);
         break;
     case C_BANG:
-        res = this.parseImage(inlines);
+        res = this.parseBang(inlines);
+        break;
+    case C_CLOSE_BRACKET:
+        res = this.parseCloseBracket(inlines);
         break;
     case C_LESSTHAN:
         res = this.parseAutolink(inlines) || this.parseHtmlTag(inlines);
@@ -773,11 +882,12 @@ function InlineParser(){
         parseLinkTitle: parseLinkTitle,
         parseLinkDestination: parseLinkDestination,
         parseLinkLabel: parseLinkLabel,
-        parseLink: parseLink,
+        parseOpenBracket: parseOpenBracket,
+        parseCloseBracket: parseCloseBracket,
+        parseBang: parseBang,
         parseEntity: parseEntity,
         parseString: parseString,
         parseNewline: parseNewline,
-        parseImage: parseImage,
         parseReference: parseReference,
         parseInline: parseInline,
         processEmphasis: processEmphasis,
