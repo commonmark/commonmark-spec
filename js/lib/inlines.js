@@ -267,7 +267,6 @@ var parseEmphasis = function(cc,inlines) {
     var startpos = this.pos;
 
     if (numdelims === 0) {
-        this.pos = startpos;
         return false;
     }
 
@@ -275,16 +274,141 @@ var parseEmphasis = function(cc,inlines) {
     inlines.push(Str(this.subject.slice(startpos, this.pos)));
 
     // Add entry to stack for this opener
-    this.emphasis_openers = { cc: cc,
-                              numdelims: numdelims,
-                              pos: inlines.length - 1,
-                              previous: this.emphasis_openers,
-                              next: null,
-                              can_open: res.can_open,
-                              can_close: res.can_close};
+    this.delimiters = { cc: cc,
+                        numdelims: numdelims,
+                        pos: inlines.length - 1,
+                        previous: this.delimiters,
+                        next: null,
+                        can_open: res.can_open,
+                        can_close: res.can_close};
+    if (this.delimiters.previous != null) {
+        this.delimiters.previous.next = this.delimiters;
+    }
 
     return true;
 
+};
+
+var removeDelimiter = function(delim) {
+    if (delim.previous !== null) {
+        delim.previous.next = delim.next;
+    }
+    if (delim.next === null) {
+        // top of stack
+        this.delimiters = delim.previous;
+    } else {
+        delim.next.previous = delim.previous;
+    }
+}
+
+var removeGaps = function(inlines) {
+    // remove gaps from inlines
+    var i, j;
+    j = 0;
+    for (i = 0 ; i < inlines.length; i++) {
+        if (inlines[i] !== null) {
+            inlines[j] = inlines[i];
+            j++;
+        }
+    }
+    inlines.splice(j);
+}
+
+var processEmphasis = function(inlines, stack_bottom) {
+    var opener, closer;
+    var opener_inl, closer_inl;
+    var nextstack, tempstack;
+    var use_delims;
+    var contents;
+    var tmp;
+    var emph;
+    var i,j;
+
+    // find first closer above stack_bottom:
+    closer = this.delimiters;
+    while (closer !== null && closer.previous !== stack_bottom) {
+        closer = closer.previous;
+    }
+    // move forward, looking for closers, and handling each
+    while (closer !== null) {
+        if (closer.can_close && (closer.cc === C_UNDERSCORE || closer.cc === C_ASTERISK)) {
+            // found emphasis closer. now look back for first matching opener:
+            opener = closer.previous;
+            while (opener !== null && opener !== stack_bottom) {
+                if (opener.cc === closer.cc && opener.can_open) {
+                    break;
+                }
+                opener = opener.previous;
+            }
+            if (opener != null && opener != stack_bottom) {
+                // calculate actual number of delimiters used from this closer
+                if (closer.numdelims < 3 || opener.numdelims < 3) {
+                    use_delims = closer.numdelims <= opener.numdelims ?
+                        closer.numdelims : opener.numdelims;
+                } else {
+                    use_delims = closer.numdelims % 2 == 0 ? 2 : 1;
+                }
+
+                opener_inl = inlines[opener.pos];
+                closer_inl = inlines[closer.pos];
+
+                // remove used delimiters from stack elts and inlines
+                opener.numdelims -= use_delims;
+                closer.numdelims -= use_delims;
+                opener_inl.c = opener_inl.c.slice(0, opener_inl.c.length - use_delims);
+                closer_inl.c = closer_inl.c.slice(0, closer_inl.c.length - use_delims);
+
+                // build contents for new emph element
+                contents = inlines.slice(opener.pos + 1, closer.pos);
+                removeGaps(contents);
+
+                emph = use_delims === 1 ? Emph(contents) : Strong(contents);
+
+                // insert into list of inlines
+                inlines[opener.pos + 1] = emph;
+                for (i = opener.pos + 2; i < closer.pos; i++) {
+                    inlines[i] = null;
+                }
+
+                // remove elts btw opener and closer in delimiters stack
+                tempstack = closer.previous;
+                while (tempstack !== null && tempstack !== opener) {
+                    nextstack = tempstack.previous;
+                    // TODO add remove_delimiter!
+                    this.removeDelimiter(tempstack);
+                    tempstack = nextstack;
+                }
+
+                // if opener has 0 delims, remove it and the inline
+                if (opener.numdelims === 0) {
+                    inlines[opener.pos] = null;
+                    this.removeDelimiter(opener);
+                }
+
+                if (closer.numdelims === 0) {
+                    inlines[closer.pos] = null;
+                    tempstack = closer.next;
+                    this.removeDelimiter(closer);
+                    closer = tempstack;
+                }
+
+
+            } else {
+                closer = closer.next;
+            }
+
+        } else {
+            closer = closer.next;
+        }
+
+    }
+
+    removeGaps(inlines);
+
+    // remove all delimiters
+    while (this.delimiters != stack_bottom) {
+        this.removeDelimiter(this.delimiters);
+    }
 };
 
 /* TODO
@@ -293,7 +417,7 @@ var parseEmphasis = function(cc,inlines) {
     if (res.can_close) {
 
       // Walk the stack and find a matching opener, if possible
-      var opener = this.emphasis_openers;
+      var opener = this.delimiters;
       while (opener) {
 
         if (opener.cc === cc) { // we have a match!
@@ -311,7 +435,7 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emphasis_openers = opener.previous;
+            this.delimiters = opener.previous;
             return true;
 
           } else if (opener.numdelims > usedelims) { // only some openers used
@@ -323,7 +447,7 @@ var parseEmphasis = function(cc,inlines) {
             inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
             inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
             // Remove entries after this, to prevent overlapping nesting:
-            this.emphasis_openers = opener;
+            this.delimiters = opener;
             return true;
 
           } else { // usedelims > opener.numdelims, should never happen
@@ -671,10 +795,11 @@ var parseInlines = function(s, refmap) {
     this.subject = s;
     this.pos = 0;
     this.refmap = refmap || {};
-    this.emphasis_openers = null;
+    this.delimiters = null;
     var inlines = [];
     while (this.parseInline(inlines)) {
     }
+    this.processEmphasis(inlines, null);
     return inlines;
 };
 
@@ -683,7 +808,7 @@ function InlineParser(){
     return {
         subject: '',
         label_nest_level: 0, // used by parseLinkLabel method
-        emphasis_openers: null,  // used by parseEmphasis method
+        delimiters: null,  // used by parseEmphasis method
         pos: 0,
         refmap: {},
         match: match,
@@ -706,6 +831,8 @@ function InlineParser(){
         parseImage: parseImage,
         parseReference: parseReference,
         parseInline: parseInline,
+        processEmphasis: processEmphasis,
+        removeDelimiter: removeDelimiter,
         parse: parseInlines
     };
 }
