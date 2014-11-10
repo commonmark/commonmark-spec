@@ -5503,22 +5503,6 @@ unless they are escaped:
 .
 
 .
-[link] bar][ref]
-
-[ref]: /uri
-.
-<p><[link] bar][ref]</p>
-.
-
-.
-[link [bar][ref]
-
-[ref]: /uri
-.
-<p>[link [bar][ref]</p>
-.
-
-.
 [link \[bar][ref]
 
 [ref]: /uri
@@ -5551,7 +5535,7 @@ However, links may not contain other links, at any level of nesting.
 
 [ref]: /uri
 .
-<p>[foo <a href="/uri">bar</a>][ref]</p>
+<p>[foo <a href="/uri">bar</a>]<a href="/uri">ref</a></p>
 .
 
 .
@@ -5559,10 +5543,14 @@ However, links may not contain other links, at any level of nesting.
 
 [ref]: /uri
 .
-<p>[foo <em>bar <a href="/uri">baz</a></em>][ref]</p>
+<p>[foo <em>bar <a href="/uri">baz</a></em>]<a href="/uri">ref</a></p>
 .
 
-These cases illustrate the precedence of link text grouping over
+(In the examples above, we have two [shortcut reference
+links](#shortcut-reference-link) instead of one [full reference
+link](#full-reference-link).)
+
+The following cases illustrate the precedence of link text grouping over
 emphasis grouping:
 
 .
