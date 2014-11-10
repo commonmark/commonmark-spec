@@ -5889,8 +5889,8 @@ difference. Instead of [link text](#link-text), we have an [image
 description](@image-description).  The rules for this are the
 same as for [link text](#link-text), except that (a) an
 image description starts with `![` rather than `[`, and
-(b) an image description may contain links, but not images
-(even deeply nested).  An image description has inline elements
+(b) an image description may contain links.
+An image description has inline elements
 as its contents.  When an image is rendered to HTML,
 this is standardly used as the image's `alt` attribute.
 
@@ -5911,7 +5911,7 @@ this is standardly used as the image's `alt` attribute.
 .
 ![foo ![bar](/url)](/url2)
 .
-<p>![foo <img src="/url" alt="bar" />](/url2)</p>
+<p><img src="/url2" alt="foo bar" /></p>
 .
 
 .

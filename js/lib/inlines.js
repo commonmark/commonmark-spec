@@ -595,21 +595,23 @@ var parseCloseBracket = function(inlines) {
         }
 
         // processEmphasis will remove this and later delimiters.
-        // Now we also remove earlier ones of the same kind (so,
-        // no links in links, no images in images).
-        opener = this.delimiters;
-        closer_above = null;
-        while (opener !== null) {
-            if (opener.cc === (is_image ? C_BANG : C_OPEN_BRACKET)) {
-                if (closer_above) {
-                    closer_above.previous = opener.previous;
-                } else {
-                    this.delimiters = opener.previous;
-                }
+        // Now, for a link, we also remove earlier link openers.
+        // (no links in links)
+        if (!is_image) {
+          opener = this.delimiters;
+          closer_above = null;
+          while (opener !== null) {
+            if (opener.cc === C_OPEN_BRACKET) {
+              if (closer_above) {
+                closer_above.previous = opener.previous;
+              } else {
+                this.delimiters = opener.previous;
+              }
             } else {
-                closer_above = opener;
+              closer_above = opener;
             }
             opener = opener.previous;
+          }
         }
 
         inlines.push({t: is_image ? 'Image' : 'Link',

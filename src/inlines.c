@@ -782,25 +782,26 @@ match:
 	*last = inl;
 
 	// process_emphasis will remove this delimiter and all later ones.
-	// Now we also remove earlier ones of the same kind
-	// (so, no links in links, and no images in images):
-	// (This code can be removed if we decide to allow links
-	// inside links and images inside images):
-	opener = subj->delimiters;
-	closer_above = NULL;
-	while (opener != NULL) {
-		tempstack = opener->previous;
-		if (opener->delim_char == (is_image ? '!' : '[')) {
-			free(opener);
-			if (closer_above) {
-				closer_above->previous = tempstack;
+	// Now, if we have a link, we also want to remove earlier link
+        // delimiters. (This code can be removed if we decide to allow links
+	// inside links.)
+	if (!is_image) {
+		opener = subj->delimiters;
+		closer_above = NULL;
+		while (opener != NULL) {
+			tempstack = opener->previous;
+			if (opener->delim_char == '[') {
+				free(opener);
+				if (closer_above) {
+					closer_above->previous = tempstack;
+				} else {
+					subj->delimiters = tempstack;
+				}
 			} else {
-				subj->delimiters = tempstack;
+				closer_above = opener;
 			}
-		} else {
-			closer_above = opener;
+			opener = tempstack;
 		}
-		opener = tempstack;
 	}
 
 	return NULL;
