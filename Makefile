@@ -79,7 +79,7 @@ fuzztest:
 	{ for i in `seq 1 10`; do \
 	  cat /dev/urandom | head -c $(FUZZCHARS) | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | \
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
-	done } 2>&1 | grep user
+	done } 2>&1 | grep 'user\|abnormally'
 
 update-site: spec.html js/commonmark.js
 	make -C $(SITE) update
