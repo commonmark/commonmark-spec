@@ -139,7 +139,7 @@ var parseBackticks = function(inlines) {
     var foundCode = false;
     var match;
     while (!foundCode && (match = this.match(/`+/m))) {
-        if (match == ticks) {
+        if (match === ticks) {
             inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
                                                       this.pos - ticks.length)
                      .replace(/[ \n]+/g,' ')
@@ -281,7 +281,7 @@ var parseEmphasis = function(cc,inlines) {
                         next: null,
                         can_open: res.can_open,
                         can_close: res.can_close};
-    if (this.delimiters.previous != null) {
+    if (this.delimiters.previous !== null) {
         this.delimiters.previous.next = this.delimiters;
     }
 
@@ -299,7 +299,7 @@ var removeDelimiter = function(delim) {
     } else {
         delim.next.previous = delim.previous;
     }
-}
+};
 
 var removeGaps = function(inlines) {
     // remove gaps from inlines
@@ -312,7 +312,7 @@ var removeGaps = function(inlines) {
         }
     }
     inlines.splice(j);
-}
+};
 
 var processEmphasis = function(inlines, stack_bottom) {
     var opener, closer;
@@ -340,13 +340,13 @@ var processEmphasis = function(inlines, stack_bottom) {
                 }
                 opener = opener.previous;
             }
-            if (opener != null && opener != stack_bottom) {
+            if (opener !== null && opener !== stack_bottom) {
                 // calculate actual number of delimiters used from this closer
                 if (closer.numdelims < 3 || opener.numdelims < 3) {
                     use_delims = closer.numdelims <= opener.numdelims ?
                         closer.numdelims : opener.numdelims;
                 } else {
-                    use_delims = closer.numdelims % 2 == 0 ? 2 : 1;
+                    use_delims = closer.numdelims % 2 === 0 ? 2 : 1;
                 }
 
                 opener_inl = inlines[opener.pos];
@@ -410,57 +410,6 @@ var processEmphasis = function(inlines, stack_bottom) {
     }
 };
 
-/* TODO
-    var numdelims = res.numdelims;
-    var usedelims;
-    if (res.can_close) {
-
-      // Walk the stack and find a matching opener, if possible
-      var opener = this.delimiters;
-      while (opener) {
-
-        if (opener.cc === cc) { // we have a match!
-
-          if (numdelims < 3 || opener.numdelims < 3) {
-                usedelims = numdelims <= opener.numdelims ? numdelims : opener.numdelims;
-          } else { // numdelims >= 3 && opener.numdelims >= 3
-                usedelims = numdelims % 2 === 0 ? 2 : 1;
-          }
-          var X = usedelims === 1 ? Emph : Strong;
-
-          if (opener.numdelims == usedelims) { // all openers used
-
-            this.pos += usedelims;
-            inlines[opener.pos] = X(inlines.slice(opener.pos + 1));
-            inlines.splice(opener.pos + 1, inlines.length - (opener.pos + 1));
-            // Remove entries after this, to prevent overlapping nesting:
-            this.delimiters = opener.previous;
-            return true;
-
-          } else if (opener.numdelims > usedelims) { // only some openers used
-
-            this.pos += usedelims;
-            opener.numdelims -= usedelims;
-            inlines[opener.pos].c =
-              inlines[opener.pos].c.slice(0, opener.numdelims);
-            inlines[opener.pos + 1] = X(inlines.slice(opener.pos + 1));
-            inlines.splice(opener.pos + 2, inlines.length - (opener.pos + 2));
-            // Remove entries after this, to prevent overlapping nesting:
-            this.delimiters = opener;
-            return true;
-
-          } else { // usedelims > opener.numdelims, should never happen
-            throw new Error("Logic error: usedelims > opener.numdelims");
-          }
-
-        }
-        opener = opener.previous;
-      }
-    }
-
-    // If we're here, we didn't match a closer.
-*/
-
 // Attempt to parse link title (sans quotes), returning the string
 // or null if no match.
 var parseLinkTitle = function() {
@@ -519,7 +468,7 @@ var parseOpenBracket = function(inlines) {
                         can_open: true,
                         can_close: false,
                         index: startpos };
-    if (this.delimiters.previous != null) {
+    if (this.delimiters.previous !== null) {
         this.delimiters.previous.next = this.delimiters;
     }
     return true;
@@ -545,7 +494,7 @@ var parseBang = function(inlines) {
                             can_open: true,
                             can_close: false,
                             index: startpos + 1 };
-        if (this.delimiters.previous != null) {
+        if (this.delimiters.previous !== null) {
             this.delimiters.previous.next = this.delimiters;
         }
     } else {
@@ -601,7 +550,7 @@ var parseCloseBracket = function(inlines) {
     // Check to see if we have a link/image
 
     // Inline link?
-    if (this.peek() == C_OPEN_PAREN) {
+    if (this.peek() === C_OPEN_PAREN) {
         this.pos++;
         if (this.spnl() &&
             ((dest = this.parseLinkDestination()) !== null) &&
