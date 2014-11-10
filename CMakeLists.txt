@@ -14,7 +14,10 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 
 add_subdirectory(src)
 
-set(CMAKE_BUILD_TYPE Release)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING
+  "Choose the type of build, options are: Debug Release." FORCE)
+endif(NOT CMAKE_BUILD_TYPE)
 
 set(CPACK_GENERATOR TGZ ZIP)
 if(WIN32 AND NOT CYGWIN)
