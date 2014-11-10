@@ -29,8 +29,8 @@ Scott Chacon and Ben Straub):
 | Markdown.pl   | 5.162s|   286.8|
 | PHP Markdown  | 1.021s|    56.7|
 | discount      | 0.090s|     5.0|
-| sundown       | 0.018s|     1.1|
-| cmark         | 0.020s|     1.0|
+| cmark         | 0.020s|     1.1|
+| sundown       | 0.018s|     1.0|
 
     Usage:   cmark [FILE*]
     Options: --help, -h    Print usage information
