@@ -31,7 +31,7 @@ Scott Chacon and Ben Straub):
 | commonmark.js | 0.292s|    16.2|
 | marked        | 0.239s|    13.3|
 | discount      | 0.090s|     5.0|
-| cmark         | 0.020s|     1.1|
+| **cmark**     | 0.020s|     1.1|
 | sundown       | 0.018s|     1.0|
 
     Usage:   cmark [FILE*]
