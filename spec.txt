@@ -5884,16 +5884,15 @@ is followed by a link label (even though `[bar]` is not defined):
 
 ## Images
 
-Syntax for images is very much like the syntax for links.  To a
-first approximation: an (unescaped) exclamation mark (`!`) followed by
-a reference or inline link will be parsed as an image.  The plain
-string content of the link text will be used as the image's alt text,
-and the link title, if any, will be used as the image's title.
-
-There is just one important difference.  A [link text](#link-text) can
-contain images, but not other links.  An image's alt text, by
-contrast, can contain links, but not images.
-
+Syntax for images is like the syntax for links, with one
+difference. Instead of [link text](#link-text), we have an [image
+description](@image-description).  The rules for this are the
+same as for [link text](#link-text), except that (a) an
+image description starts with `![` rather than `[`, and
+(b) an image description may contain links, but not images
+(even deeply nested).  An image description has inline elements
+as its contents.  When an image is rendered to HTML,
+this is standardly used as the image's `alt` attribute.
 
 .
 ![foo](/url "title")
@@ -5923,9 +5922,10 @@ contrast, can contain links, but not images.
 
 Though this spec is concerned with parsing, not rendering, it is
 recommended that in rendering to HTML, only the plain string content
-of the alt text be used.  Note that in the above example, the alt text
-is `foo bar`, not `foo [bar](/url)` or `foo <a href="/url">bar</a>`.
-Only the plain string content is rendered, without formatting.
+of the [image description](#image-description) be used.  Note that in
+the above example, the alt attribute's value is `foo bar`, not `foo
+[bar](/url)` or `foo <a href="/url">bar</a>`.  Only the plain string
+content is rendered, without formatting.
 
 .
 ![foo *bar*][]
