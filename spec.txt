@@ -5124,8 +5124,8 @@ following rules apply:
 
 - Links may not contain other links, at any level of nesting.
 
-- Brackets are allowed in the link text only if (a) they are
-  backslash-escaped or (b) they appear as a matched pair of brackets,
+- Brackets are allowed in the [link text](#link-text) only if (a) they
+  are backslash-escaped or (b) they appear as a matched pair of brackets,
   with an open bracket `[`, a sequence of zero or more inlines, and
   a close bracket `]`.
 
