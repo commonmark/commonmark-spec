@@ -372,7 +372,7 @@ static void blocks_to_html(strbuf *html, node_block *b)
 	free_render_stack(rstack);
 }
 
-void cmark_render_html(strbuf *html, node_block *root)
+extern void cmark_render_html(strbuf *html, node_block *root)
 {
 	blocks_to_html(html, root);
 }

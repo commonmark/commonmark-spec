@@ -118,6 +118,8 @@ void cmark_free_nodes(node_block *e);
 void cmark_debug_print(node_block *root);
 void cmark_render_html(strbuf *html, node_block *root);
 
+unsigned char *cmark_markdown_to_html(unsigned char *text);
+
 #ifdef __cplusplus
 }
 #endif

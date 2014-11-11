@@ -13,6 +13,7 @@ set(HEADERS
   html/houdini.h
   )
 set(LIBRARY_SOURCES
+  cmark.c
   blocks.c
   inlines.c
   print.c
