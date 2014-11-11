@@ -129,7 +129,7 @@ __inline
 __attribute__ ((__gnu_inline__))
 #endif
 #endif
-const struct html_ent *
+static const struct html_ent *
 find_entity (str, len)
      register const char *str;
      register unsigned int len;
