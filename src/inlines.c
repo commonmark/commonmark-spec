@@ -9,7 +9,6 @@
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"
-#include "debug.h"
 
 
 typedef struct DelimiterStack {
@@ -155,7 +154,8 @@ extern void free_inlines(node_inl* e)
 		        splice_into_list(e, e->content.inlines);
 			break;
 		default:
-		        log_warn("Unknown inline tag %d", e->tag);
+		        fprintf(stderr, "[WARN] (%s:%d) Unknown inline tag %d",
+				__FILE__, __LINE__, e->tag);
 			break;
 		}
 		next = e->next;

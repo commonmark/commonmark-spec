@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
 #include "cmark.h"
-#include "debug.h"
 
 void print_usage()
 {
