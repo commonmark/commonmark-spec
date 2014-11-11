@@ -7,6 +7,10 @@
 #include "chunk.h"
 #include "references.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define VERSION "0.1"
 #define CODE_INDENT 4
 
@@ -113,5 +117,9 @@ void cmark_free_nodes(node_block *e);
 
 void cmark_debug_print(node_block *root);
 void cmark_render_html(strbuf *html, node_block *root);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
