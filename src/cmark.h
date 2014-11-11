@@ -1,5 +1,5 @@
-#ifndef _STDMD_H_
-#define _STDMD_H_
+#ifndef _CMARK_H_
+#define _CMARK_H_
 
 #include <stdbool.h>
 #include <stdio.h>
