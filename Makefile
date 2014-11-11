@@ -7,14 +7,16 @@ SITE=_site
 BUILDDIR=build
 FUZZCHARS?=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
-BUILDTYPE?=Debug
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check
 
-all: check man/man1/cmark.1
-	mkdir -p $(BUILDDIR); cd build; cmake .. -DCMAKE_BUILD_TYPE=$(BUILDTYPE); make
+all: check
+	mkdir -p $(BUILDDIR); cd build; cmake .. -DCMAKE_BUILD_TYPE=Release; make
 
-install: check
+debug: check
+	mkdir -p $(BUILDDIR); cd build; cmake .. -DCMAKE_BUILD_TYPE=Debug; make
+
+install: check man/man1/cmark.1
 	mkdir -p $(BUILDDIR); cd build; cmake .. -DCMAKE_BUILD_TYPE=Release; make install
 
 clean:
