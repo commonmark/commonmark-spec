@@ -10,17 +10,10 @@ The implementations
 
 The C implementation provides both a library and a standalone program
 `cmark` that converts CommonMark to HTML.  It is written in standard C99
-and has no library dependencies.  (However, if you check it out from the
-repository, you'll need [`re2c`](http://re2c.org) to generate
-`scanners.c` from `scanners.re`.  This is only a build dependency for
-developers, since `scanners.c` can be provided in a released source
-tarball.)
-
-The parser is very fast, on par with
+and has no library dependencies.  The parser is very fast, on par with
 [sundown](https://github.com/vmg/sundown).  Some benchmarks (on
 an ancient Thinkpad running Intel Core 2 Duo at 2GHz, measured using
-`time` and parsing a
-~500K book, the English version of [*Pro
+`time` and parsing a ~500K book, the English version of [*Pro
 Git*](https://github.com/progit/progit/tree/master/en) by
 Scott Chacon and Ben Straub):
 
@@ -35,27 +28,74 @@ Scott Chacon and Ben Straub):
 | **cmark**     | 0.020s|     1.1|
 | sundown       | 0.018s|     1.0|
 
-    Usage:   cmark [FILE*]
-    Options: --help, -h    Print usage information
-             --ast         Print AST instead of HTML
-             --version     Print version
 
 The JavaScript implementation is a single JavaScript file, with
-no dependencies, that can be linked to in an HTML page.  To build,
-it, do `make js/commonmark.js` (this requires `browserify`, which you
-can get using `npm install -g browserify`).  You can also fetch
-a pre-built copy from `http://spec.commonmark.org/js/commonmark.js`.
-A command-line version (using `node.js`) is also provided
-(`js/bin/commonmark`), and there is a "dingus" for playing with it
-interactively.  (`make dingus` will start this.)
+no dependencies, that can be linked to in an HTML page. A node
+package is also available; it includes a command-line tool called
+`commonmark`.
 
 [Try it now!](http://jgm.github.io/CommonMark/js/)
 
-**Note:** neither implementation attempts to sanitize link attributes or
+Installing
+----------
+
+Building the C program (`cmark`) and shared library (`libcmark`)
+requires [cmake] and [`re2c`](http://re2c.org), which is used to
+generate `scanners.c` from `scanners.re`.  (Note that `re2c` is only a
+build dependency for developers, since `scanners.c` can be provided in a
+released source tarball.)
+
+On \*nix systems, you can simply `make` and `make install`.  This
+calls `cmake` to create a `Makefile` in the `build` directory,
+then uses that `Makefile` to create the executable and library.
+
+Alternatively, you can use `cmake` manually. `cmake` knows how
+to create build environments for many build systems.  For
+example, to create Xcode project files on OSX:
+
+    mkdir build
+    cd build
+    cmake -G Xcode ..  # optionally: -DCMAKE_INSTALL_PREFIX=path
+    make               # executable will be created as build/src/cmake
+    make install
+
+To run tests:
+
+    make test
+
+or
+
+    perl runtests.pl spec.txt build/src/cmark
+
+The JavaScript library can be installed through `npm`:
+
+    npm install commonmark
+
+To build the JavaScript library as a single standalone file:
+
+    browserify --standalone commonmark js/lib/index.js -o js/commonmark.js
+
+Or fetch a pre-built copy from
+<http://spec.commonmark.org/js/commonmark.js>`.
+
+To run tests for the JavaScript library:
+
+    node js/test.js
+
+`make dingus` will start an interactive dingus you can use to
+play with the JavaScript implementation:
+
+A note on security
+------------------
+
+Neither implementation attempts to sanitize link attributes or
 raw HTML.  If you use these libraries in applications that accept
 untrusted user input, you must run the output through an HTML
 sanitizer to protect against
 [XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
+
+The spec
+--------
 
 [The spec] contains over 500 embedded examples which serve as conformance
 tests.  To run the tests for `cmark`, do `make test`.  To run them for
@@ -63,32 +103,6 @@ another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
 run the tests for `commonmark.js`, do `make testjs`.
 
 [The spec]:  http://jgm.github.io/CommonMark/spec.html
-
-Installing
-----------
-
-To install the C program (and shared library), [cmake] is required:
-
-    mkdir build
-    cd build
-    cmake ..     # optionally: -DCMAKE_INSTALL_PREFIX=path
-    make         # executable will be created as build/src/cmake
-    make install
-
-To run tests:
-
-    perl runtests.pl spec.txt build/src/cmark
-
-To build the javascript library:
-
-    browserify --standalone commonmark js/lib/index.js -o js/commonmark.js
-
-To run tests:
-
-    node js/test.js
-
-The spec
---------
 
 The source of [the spec] is `spec.txt`.  This is basically a Markdown
 file, with code examples written in a shorthand form:
@@ -101,7 +115,7 @@ file, with code examples written in a shorthand form:
 
 To build an HTML version of the spec, do `make spec.html`.  To build a
 PDF version, do `make spec.pdf`.  Both these commands require that
-pandoc is installed, and creating a PDF requires a latex installation.
+[pandoc] is installed, and creating a PDF requires a latex installation.
 
 The spec is written from the point of view of the human writer, not
 the computer reader.  It is not an algorithm---an English translation of
@@ -130,6 +144,9 @@ described in Gruber's canonical syntax description, eschewing extensions
 like footnotes and definition lists.  It is important to get the core
 right before considering such things. However, I have included a visible
 syntax for line breaks and fenced code blocks.
+
+Differences from original Markdown
+----------------------------------
 
 There are only a few places where this spec says things that contradict
 the canonical syntax description:
@@ -210,7 +227,7 @@ based on PEG grammars
 and responding to years of user feedback have given me a good sense of
 the complexities involved in parsing Markdown, and of the various design
 decisions that can be made.  I have also explored differences between
-Markdown implementations extensively using [babelmark
+Markdown implementations extensively using [BabelMark
 2](http://johnmacfarlane.net/babelmark2/).  In the early phases of
 working out the spec, I benefited greatly from collaboration with David
 Greenspan, and from feedback from several industrial users of Markdown,
@@ -226,4 +243,5 @@ Use the [github issue tracker](http://github.com/jgm/stmd/issues)
 only for simple, clear, actionable issues.
 
 [cmake]: http://www.cmake.org/download/
+[pandoc]: http://johnmacfarlane.net/pandoc/
 
