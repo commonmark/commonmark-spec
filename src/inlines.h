@@ -1,13 +1,22 @@
 #ifndef _INLINES_H_
 #define _INLINES_H_
 
-unsigned char *clean_url(cmark_chunk *url);
-unsigned char *clean_autolink(cmark_chunk *url, int is_email);
-unsigned char *clean_title(cmark_chunk *title);
+unsigned char *cmark_clean_url(cmark_chunk *url);
+unsigned char *cmark_clean_autolink(cmark_chunk *url, int is_email);
+unsigned char *cmark_clean_title(cmark_chunk *title);
 
-node_inl* parse_inlines(cmark_strbuf *input, reference_map *refmap);
-void free_inlines(node_inl* e);
+node_inl* cmark_parse_inlines(cmark_strbuf *input, reference_map *refmap);
+void cmark_free_inlines(node_inl* e);
 
-int parse_reference_inline(cmark_strbuf *input, reference_map *refmap);
+int cmark_parse_reference_inline(cmark_strbuf *input, reference_map *refmap);
+
+#ifndef CMARK_NO_SHORT_NAMES
+  #define clean_url                 cmark_clean_url
+  #define clean_autolink            cmark_clean_autolink
+  #define clean_title               cmark_clean_title
+  #define parse_inlines             cmark_parse_inlines
+  #define free_inlines              cmark_free_inlines
+  #define parse_reference_inline    cmark_parse_reference_inline
+#endif
 
 #endif
