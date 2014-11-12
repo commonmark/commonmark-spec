@@ -1,7 +1,6 @@
 { "name": "commonmark",
   "description": "a strongly specified, highly compatible variant of Markdown",
-  "dist-tags": { "latest": "0.9.0" },
-  "versions": "0.9.0",
+  "version": "0.12.0",
   "homepage": "http://commonmark.org",
   "keywords":
    [ "markdown",
@@ -14,7 +13,6 @@
   "author": "John MacFarlane",
   "bugs": { "url": "https://github.com/jgm/CommonMark/issues" },
   "license": "BSD-3-Clause",
-  "version": "0.9.0",
   "main": "./lib/index.js",
   "bin": { "commonmark": "./bin/commonmark" },
   "scripts": { "test": "node ./test.js" },
