@@ -112,7 +112,7 @@ inline static node_inl* make_simple(int t)
 #define make_strong(contents) make_inlines(INL_STRONG, contents)
 
 // Utility function used by free_inlines
-void splice_into_list(node_inl* e, node_inl* children) {
+static void splice_into_list(node_inl* e, node_inl* children) {
 	node_inl * tmp;
 	if (children) {
 		tmp = children;
@@ -952,7 +952,7 @@ extern node_inl* parse_inlines(strbuf *input, reference_map *refmap)
 }
 
 // Parse zero or more space characters, including at most one newline.
-void spnl(subject* subj)
+static void spnl(subject* subj)
 {
 	bool seen_newline = false;
 	while (peek_char(subj) == ' ' ||
