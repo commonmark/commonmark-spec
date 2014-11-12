@@ -34,7 +34,7 @@ no dependencies, that can be linked to in an HTML page. A node
 package is also available; it includes a command-line tool called
 `commonmark`.
 
-[Try it now!](http://jgm.github.io/CommonMark/js/)
+[Try it now!](http://spec.commonmark.org/dingus.html)
 
 Installing
 ----------
