@@ -63,27 +63,36 @@ requires [cmake] and [re2c], which is used to generate `scanners.c` from
 developers, since `scanners.c` can be provided in a released source
 tarball.)
 
-On \*nix systems, you can simply `make` and `make install`.  This
-calls [cmake] to create a `Makefile` in the `build` directory,
-then uses that `Makefile` to create the executable and library.
+If you have GNU make, you can simply `make`, `make test`, and `make
+install`.  This calls [cmake] to create a `Makefile` in the `build`
+directory, then uses that `Makefile` to create the executable and
+library.
 
-Alternatively, you can use [cmake] manually. [cmake] knows how
-to create build environments for many build systems.  For
-example, to create Xcode project files on OSX:
+For a more portable method, you can use [cmake] manually. [cmake] knows
+how to create build environments for many build systems.  For example,
+on FreeBSD:
 
     mkdir build
     cd build
-    cmake -G Xcode ..  # optionally: -DCMAKE_INSTALL_PREFIX=path
-    make               # executable will be created as build/src/cmake
+    cmake ..  # optionally: -DCMAKE_INSTALL_PREFIX=path
+    make      # executable will be create as build/src/cmake
+    make test
     make install
 
-To run tests:
+Or, to create Xcode project files on OSX:
 
+    mkdir build
+    cd build
+    cmake -G Xcode ..
+    make
     make test
+    make install
 
-(Or `perl runtests.pl spec.txt build/src/cmark` or, in the cmake
-build directory, `ctest -V`.)
+Tests can also be run manually on any executable `$PROG` using:
 
+    perl runtests.pl spec.txt $PROG
+
+The GNU Makefile also provides a few other targets for developers.
 To test the shared library via a python wrapper:
 
     make testlib
@@ -269,6 +278,8 @@ CommonMark](http://talk.commonmark.org); you should use it instead of
 github issues for questions and possibly open-ended discussions.
 Use the [github issue tracker](http://github.com/jgm/stmd/issues)
 only for simple, clear, actionable issues.
+
+
 
 [cmake]: http://www.cmake.org/download/
 [pandoc]: http://johnmacfarlane.net/pandoc/
