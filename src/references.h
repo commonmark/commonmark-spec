@@ -3,25 +3,34 @@
 
 #define REFMAP_SIZE 16
 
-struct reference {
-	struct reference *next;
+struct cmark_reference {
+	struct cmark_reference *next;
 	unsigned char *label;
 	unsigned char *url;
 	unsigned char *title;
 	unsigned int hash;
 };
 
-typedef struct reference reference;
+typedef struct cmark_reference cmark_reference;
 
-struct reference_map {
-	reference *table[REFMAP_SIZE];
+struct cmark_reference_map {
+	cmark_reference *table[REFMAP_SIZE];
 };
 
-typedef struct reference_map reference_map;
+typedef struct cmark_reference_map cmark_reference_map;
 
-reference_map *reference_map_new(void);
-void reference_map_free(reference_map *map);
-reference* reference_lookup(reference_map *map, chunk *label);
-extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk *title);
+cmark_reference_map *cmark_reference_map_new(void);
+void cmark_reference_map_free(cmark_reference_map *map);
+cmark_reference* cmark_reference_lookup(cmark_reference_map *map, cmark_chunk *label);
+extern void cmark_reference_create(cmark_reference_map *map, cmark_chunk *label, cmark_chunk *url, cmark_chunk *title);
+
+#ifndef CMARK_NO_SHORT_NAMES
+  #define reference             cmark_reference
+  #define reference_map         cmark_reference_map
+  #define reference_map_new     cmark_reference_map_new
+  #define reference_map_free    cmark_reference_map_free
+  #define reference_lookup      cmark_reference_lookup
+  #define reference_create      cmark_reference_create
+#endif
 
 #endif

@@ -33,7 +33,7 @@ static node_block* make_block(int tag, int start_line, int start_column)
 }
 
 // Create a root document node_block.
-extern node_block* make_document()
+static node_block* make_document()
 {
 	node_block *e = make_block(BLOCK_DOCUMENT, 1, 1);
 	e->as.document.refmap = reference_map_new();
@@ -43,7 +43,7 @@ extern node_block* make_document()
 }
 
 // Returns true if line has only space characters, else false.
-bool is_blank(strbuf *s, int offset)
+static bool is_blank(strbuf *s, int offset)
 {
 	while (offset < s->size) {
 		switch (s->ptr[offset]) {
@@ -283,7 +283,7 @@ typedef struct BlockStack {
 
 // Walk through node_block and all children, recursively, parsing
 // string content into inline content where appropriate.
-void process_inlines(node_block* cur, reference_map *refmap)
+static void process_inlines(node_block* cur, reference_map *refmap)
 {
 	block_stack* stack = NULL;
 	block_stack* newstack = NULL;
