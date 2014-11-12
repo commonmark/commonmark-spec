@@ -21,7 +21,7 @@ typedef struct reference_map reference_map;
 
 reference_map *reference_map_new(void);
 void reference_map_free(reference_map *map);
-reference* reference_lookup(reference_map *map, chunk *label);
-extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk *title);
+reference* reference_lookup(reference_map *map, cmark_chunk *label);
+extern void reference_create(reference_map *map, cmark_chunk *label, cmark_chunk *url, cmark_chunk *title);
 
 #endif

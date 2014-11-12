@@ -29,7 +29,7 @@ struct node_inl {
 		INL_IMAGE
 	} tag;
 	union {
-		chunk literal;
+		cmark_chunk literal;
 		struct node_inl *inlines;
 		struct {
 			struct node_inl *label;
