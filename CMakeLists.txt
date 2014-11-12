@@ -14,6 +14,10 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 
 add_subdirectory(src)
 
+if(UNIX)
+  INSTALL(FILES man/man1/cmark.1 DESTINATION share/man/man1)
+endif(UNIX)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING
   "Choose the type of build, options are: Debug Release." FORCE)

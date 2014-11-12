@@ -74,10 +74,6 @@ install(DIRECTORY ./
   DESTINATION include/${PROJECT_NAME}
   FILES_MATCHING PATTERN "*.h")
 
-if(UNIX)
-  INSTALL(FILES ../man/man1/cmark.1 DESTINATION share/man/man1)
-endif(UNIX)
-
 include (CheckIncludeFile)
 CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
 
