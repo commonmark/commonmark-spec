@@ -46,10 +46,10 @@ developers, since `scanners.c` can be provided in a released source
 tarball.)
 
 On \*nix systems, you can simply `make` and `make install`.  This
-calls `cmake` to create a `Makefile` in the `build` directory,
+calls [cmake] to create a `Makefile` in the `build` directory,
 then uses that `Makefile` to create the executable and library.
 
-Alternatively, you can use `cmake` manually. `cmake` knows how
+Alternatively, you can use [cmake] manually. [cmake] knows how
 to create build environments for many build systems.  For
 example, to create Xcode project files on OSX:
 
@@ -79,6 +79,10 @@ Or fetch a pre-built copy from
 <http://spec.commonmark.org/js/commonmark.js>`.
 
 To run tests for the JavaScript library:
+
+    make testjs
+
+or
 
     node js/test.js
 
