@@ -11,39 +11,39 @@
 extern "C" {
 #endif
 
-#define VERSION "0.1"
-#define CODE_INDENT 4
+#define CMARK_VERSION "0.1"
+#define CMARK_CODE_INDENT 4
 
-#define MAX_LINK_LABEL_LENGTH 1000
+#define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
-struct node_inl {
+struct cmark_node_inl {
 	enum {
-		INL_STRING,
-		INL_SOFTBREAK,
-		INL_LINEBREAK,
-		INL_CODE,
-		INL_RAW_HTML,
-		INL_EMPH,
-		INL_STRONG,
-		INL_LINK,
-		INL_IMAGE
+		CMARK_INL_STRING,
+		CMARK_INL_SOFTBREAK,
+		CMARK_INL_LINEBREAK,
+		CMARK_INL_CODE,
+		CMARK_INL_RAW_HTML,
+		CMARK_INL_EMPH,
+		CMARK_INL_STRONG,
+		CMARK_INL_LINK,
+		CMARK_INL_IMAGE
 	} tag;
 	union {
 		cmark_chunk literal;
-		struct node_inl *inlines;
+		struct cmark_node_inl *inlines;
 		struct {
-			struct node_inl *label;
+			struct cmark_node_inl *label;
 			unsigned char *url;
 			unsigned char *title;
 		} linkable;
 	} content;
-	struct node_inl *next;
+	struct cmark_node_inl *next;
 };
 
-typedef struct node_inl node_inl;
+typedef struct cmark_node_inl cmark_node_inl;
 
 // Types for blocks
-struct ListData {
+struct cmark_ListData {
 	enum {
 		bullet,
 		ordered
@@ -59,43 +59,43 @@ struct ListData {
 	bool              tight;
 };
 
-struct FencedCodeData {
+struct cmark_FencedCodeData {
 	int               fence_length;
 	int               fence_offset;
 	unsigned char     fence_char;
 	cmark_strbuf      info;
 };
 
-struct node_block {
+struct cmark_node_block {
 	enum {
-		BLOCK_DOCUMENT,
-		BLOCK_BQUOTE,
-		BLOCK_LIST,
-		BLOCK_LIST_ITEM,
-		BLOCK_FENCED_CODE,
-		BLOCK_INDENTED_CODE,
-		BLOCK_HTML,
-		BLOCK_PARAGRAPH,
-		BLOCK_ATX_HEADER,
-		BLOCK_SETEXT_HEADER,
-		BLOCK_HRULE,
-		BLOCK_REFERENCE_DEF
+		CMARK_BLOCK_DOCUMENT,
+		CMARK_BLOCK_BQUOTE,
+		CMARK_BLOCK_LIST,
+		CMARK_BLOCK_LIST_ITEM,
+		CMARK_BLOCK_FENCED_CODE,
+		CMARK_BLOCK_INDENTED_CODE,
+		CMARK_BLOCK_HTML,
+		CMARK_BLOCK_PARAGRAPH,
+		CMARK_BLOCK_ATX_HEADER,
+		CMARK_BLOCK_SETEXT_HEADER,
+		CMARK_BLOCK_HRULE,
+		CMARK_BLOCK_REFERENCE_DEF
 	} tag;
 	int start_line;
 	int start_column;
 	int end_line;
 	bool open;
 	bool last_line_blank;
-	struct node_block* children;
-	struct node_block* last_child;
-	struct node_block* parent;
-	struct node_block* top;
+	struct cmark_node_block* children;
+	struct cmark_node_block* last_child;
+	struct cmark_node_block* parent;
+	struct cmark_node_block* top;
 	cmark_strbuf string_content;
-	node_inl* inline_content;
+	cmark_node_inl* inline_content;
 
 	union  {
-		struct ListData list;
-		struct FencedCodeData code;
+		struct cmark_ListData list;
+		struct cmark_FencedCodeData code;
 		struct {
 			int level;
 		} header;
@@ -104,21 +104,52 @@ struct node_block {
 		} document;
 	} as;
 
-	struct node_block *next;
-	struct node_block *prev;
+	struct cmark_node_block *next;
+	struct cmark_node_block *prev;
 };
 
-typedef struct node_block node_block;
+typedef struct cmark_node_block cmark_node_block;
 
-node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
-node_block *cmark_parse_file(FILE *f);
+cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
+cmark_node_block *cmark_parse_file(FILE *f);
 
-void cmark_free_nodes(node_block *e);
+void cmark_free_nodes(cmark_node_block *e);
 
-void cmark_debug_print(node_block *root);
-void cmark_render_html(cmark_strbuf *html, node_block *root);
+void cmark_debug_print(cmark_node_block *root);
+void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
 
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
+
+#ifndef CMARK_NO_SHORT_NAMES
+  #define VERSION                   CMARK_VERSION
+  #define CODE_INDENT               CMARK_CODE_INDENT
+  #define MAX_LINK_LABEL_LENGTH     CMARK_MAX_LINK_LABEL_LENGTH
+  #define node_inl                  cmark_node_inl
+  #define INL_STRING                CMARK_INL_STRING
+  #define INL_SOFTBREAK             CMARK_INL_SOFTBREAK
+  #define INL_LINEBREAK             CMARK_INL_LINEBREAK
+  #define INL_CODE                  CMARK_INL_CODE
+  #define INL_RAW_HTML              CMARK_INL_RAW_HTML
+  #define INL_EMPH                  CMARK_INL_EMPH
+  #define INL_STRONG                CMARK_INL_STRONG
+  #define INL_LINK                  CMARK_INL_LINK
+  #define INL_IMAGE                 CMARK_INL_IMAGE
+  #define ListData                  cmark_ListData
+  #define FencedCodeData            cmark_FencedCodeData
+  #define node_block                cmark_node_block
+  #define BLOCK_DOCUMENT            CMARK_BLOCK_DOCUMENT
+  #define BLOCK_BQUOTE              CMARK_BLOCK_BQUOTE
+  #define BLOCK_LIST                CMARK_BLOCK_LIST
+  #define BLOCK_LIST_ITEM           CMARK_BLOCK_LIST_ITEM
+  #define BLOCK_FENCED_CODE         CMARK_BLOCK_FENCED_CODE
+  #define BLOCK_INDENTED_CODE       CMARK_BLOCK_INDENTED_CODE
+  #define BLOCK_HTML                CMARK_BLOCK_HTML
+  #define BLOCK_PARAGRAPH           CMARK_BLOCK_PARAGRAPH
+  #define BLOCK_ATX_HEADER          CMARK_BLOCK_ATX_HEADER
+  #define BLOCK_SETEXT_HEADER       CMARK_BLOCK_SETEXT_HEADER
+  #define BLOCK_HRULE               CMARK_BLOCK_HRULE
+  #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
+#endif
 
 #ifdef __cplusplus
 }
