@@ -40,10 +40,10 @@ var parsed = reader.parse("Hello *world*");
 var result = writer.render(parsed);
 ```
 
+[Try it now!](http://spec.commonmark.org/dingus.html)
+
 A node package is also available; it includes a command-line tool called
 `commonmark`.
-
-[Try it now!](http://spec.commonmark.org/dingus.html)
 
 **A note on security:**
 Neither implementation attempts to sanitize link attributes or
