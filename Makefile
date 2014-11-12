@@ -13,21 +13,24 @@ SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug tarball
 
 all: $(BUILDDIR)
-	@cmake --build $(BUILDDIR) || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
+	@make -C $(BUILDDIR)
 
-install: $(BUILDDIR) man/man1/cmark.1
-	cmake --build $(BUILDDIR) --target install
+check:
+	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR):
+$(BUILDDIR): check
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+
+install: $(BUILDDIR) man/man1/cmark.1
+	make -p $(BUILDDIR) --target install
 
 debug:
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -DCMAKE_BUILD_TYPE=Debug; \
-	cmake --build .
+	make
 
 tarball: spec.html
 	rm -rf $(PKGDIR); \
