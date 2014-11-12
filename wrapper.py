@@ -20,4 +20,4 @@ markdown.argtypes = [c_char_p]
 def md2html(text):
     return markdown(text, len(text))
 
-print md2html(sys.stdin.read())
+sys.stdout.write(md2html(sys.stdin.read()))
