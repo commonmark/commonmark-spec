@@ -32,7 +32,8 @@ debug:
 tarball:
 	rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
-	cp -r src/* $(PKGDIR)/; \
+	cp -r src $(PKGDIR)/; \
+	cp CMakeLists.txt $(PKGDIR); \
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
 	tar cvzf cmark-$(SPECVERSION).tar.gz $(PKGDIR)
