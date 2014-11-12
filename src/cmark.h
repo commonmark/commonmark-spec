@@ -100,7 +100,7 @@ struct node_block {
 			int level;
 		} header;
 		struct {
-			reference_map *refmap;
+			cmark_reference_map *refmap;
 		} document;
 	} as;
 

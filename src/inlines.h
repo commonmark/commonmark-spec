@@ -5,10 +5,10 @@ unsigned char *cmark_clean_url(cmark_chunk *url);
 unsigned char *cmark_clean_autolink(cmark_chunk *url, int is_email);
 unsigned char *cmark_clean_title(cmark_chunk *title);
 
-node_inl* cmark_parse_inlines(cmark_strbuf *input, reference_map *refmap);
+node_inl* cmark_parse_inlines(cmark_strbuf *input, cmark_reference_map *refmap);
 void cmark_free_inlines(node_inl* e);
 
-int cmark_parse_reference_inline(cmark_strbuf *input, reference_map *refmap);
+int cmark_parse_reference_inline(cmark_strbuf *input, cmark_reference_map *refmap);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define clean_url                 cmark_clean_url
