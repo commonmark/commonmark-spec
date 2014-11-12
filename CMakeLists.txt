@@ -18,6 +18,13 @@ if(UNIX)
   INSTALL(FILES man/man1/cmark.1 DESTINATION share/man/man1)
 endif(UNIX)
 
+enable_testing()
+
+# To get verbose output: cmake --build build --target "test" -- ARGS='-V'
+add_test(spectest
+   COMMAND perl "${CMAKE_SOURCE_DIR}/runtests.pl" "${CMAKE_SOURCE_DIR}/spec.txt" "${CMAKE_BINARY_DIR}/src/cmark"
+)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING
   "Choose the type of build, options are: Debug Release." FORCE)

@@ -52,8 +52,8 @@ untrusted user input, you must run the output through an HTML
 sanitizer to protect against
 [XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
 
-Installing
-----------
+Installing (C)
+--------------
 
 Building the C program (`cmark`) and shared library (`libcmark`)
 requires [cmake] and [re2c], which is used to generate `scanners.c` from
@@ -79,9 +79,16 @@ To run tests:
 
     make test
 
-or
+or:
 
     perl runtests.pl spec.txt build/src/cmark
+
+or (in the cmake build directory):
+
+    ctest -V
+
+Installing (JavaScript)
+-----------------------
 
 The JavaScript library can be installed through `npm`:
 
@@ -101,9 +108,6 @@ To run tests for the JavaScript library:
 or
 
     node js/test.js
-
-`make dingus` will start an interactive dingus you can use to
-play with the JavaScript implementation:
 
 The spec
 --------
