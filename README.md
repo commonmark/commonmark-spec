@@ -79,13 +79,24 @@ To run tests:
 
     make test
 
-or:
+(Or `perl runtests.pl spec.txt build/src/cmark` or, in the cmake
+build directory, `ctest -V`.)
 
-    perl runtests.pl spec.txt build/src/cmark
+To test the shared library via a python wrapper:
 
-or (in the cmake build directory):
+    make testlib
 
-    ctest -V
+To run a "fuzz test" against ten long randomly generated inputs:
+
+    make fuzztest
+
+To run a test for memory leaks using valgrind:
+
+    make leakcheck
+
+To make a release tarball:
+
+    make tarball
 
 Installing (JavaScript)
 -----------------------
