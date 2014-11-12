@@ -30,11 +30,27 @@ Scott Chacon and Ben Straub):
 
 
 The JavaScript implementation is a single JavaScript file, with
-no dependencies, that can be linked to in an HTML page. A node
-package is also available; it includes a command-line tool called
+no dependencies, that can be linked to in an HTML page.  Here
+is a simple usage example:
+
+``` javascript
+var reader = new commonmark.DocParser();
+var writer = new commonmark.HtmlRenderer();
+var parsed = reader.parse("Hello *world*");
+var result = writer.render(parsed);
+```
+
+A node package is also available; it includes a command-line tool called
 `commonmark`.
 
 [Try it now!](http://spec.commonmark.org/dingus.html)
+
+**A note on security:**
+Neither implementation attempts to sanitize link attributes or
+raw HTML.  If you use these libraries in applications that accept
+untrusted user input, you must run the output through an HTML
+sanitizer to protect against
+[XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
 
 Installing
 ----------
@@ -88,15 +104,6 @@ or
 
 `make dingus` will start an interactive dingus you can use to
 play with the JavaScript implementation:
-
-A note on security
-------------------
-
-Neither implementation attempts to sanitize link attributes or
-raw HTML.  If you use these libraries in applications that accept
-untrusted user input, you must run the output through an HTML
-sanitizer to protect against
-[XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
 
 The spec
 --------
