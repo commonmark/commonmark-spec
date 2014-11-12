@@ -3,12 +3,11 @@ DATADIR?=data
 BUILDDIR?=build
 SPEC=spec.txt
 SITE=_site
+SPECVERSION=`perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC)`
 PKGDIR?=cmark-$(SPECVERSION)
-SRCFILES=$(shell git ls-tree --full-tree -r HEAD --name-only $(SRCDIR))
 TARBALL?=cmark-$(SPECVERSION).tar.gz
 FUZZCHARS?=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
-SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
@@ -34,11 +33,13 @@ debug:
 	cmake .. -DCMAKE_BUILD_TYPE=Debug; \
 	make
 
-tarball: spec.html
+tarball: spec.html $(SRCDIR)/scanners.c
 	rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
-	for f in $(SRCFILES); do cp $$f $(PKGDIR)/$$f; done; \
+	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR)`; \
+	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
+	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
 	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
