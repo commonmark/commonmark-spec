@@ -34,6 +34,7 @@ tarball:
 	mkdir -p $(PKGDIR)/man/man1; \
 	cp -r src $(PKGDIR)/; \
 	cp CMakeLists.txt $(PKGDIR); \
+	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
 	tar cvzf cmark-$(SPECVERSION).tar.gz $(PKGDIR)
@@ -48,27 +49,6 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 
 man/man1/cmark.1: man/cmark.1.md
 	pandoc $< -o $@ -s -t man
-
-README.html: README.md template.html
-	pandoc --template template.html -S -s -t html5 -o $@ $<
-
-spec: test spec.html
-
-spec.md: $(SPEC)
-	perl spec2md.pl < $< > $@
-
-spec.html: spec.md template.html
-	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< | \
-	perl -pe 's/a href="@([^"]*)"/a id="\1" href="#\1" class="definition"/g' | \
-	perl -pe 's/␣/<span class="space"> <\/span>/g' \
-	> $@
-
-
-spec.pdf: spec.md template.tex specfilter.hs
-	pandoc -s $< --template template.tex \
-	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
-	   --number-sections -V documentclass=report -V tocdepth=2 \
-	   -V classoption=twosides
 
 test: $(SPEC)
 	perl runtests.pl $< $(PROG)
@@ -113,6 +93,23 @@ npm:
 
 dingus: js/commonmark.js
 	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
+
+### Spec ###
+
+spec.md: $(SPEC)
+	perl spec2md.pl < $< > $@
+
+spec.html: spec.md template.html
+	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< | \
+	perl -pe 's/a href="@([^"]*)"/a id="\1" href="#\1" class="definition"/g' | \
+	perl -pe 's/␣/<span class="space"> <\/span>/g' \
+	> $@
+
+spec.pdf: spec.md template.tex specfilter.hs
+	pandoc -s $< --template template.tex \
+	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
+	   --number-sections -V documentclass=report -V tocdepth=2 \
+	   -V classoption=twosides
 
 ### Website ###
 
