@@ -8,7 +8,7 @@ BUILDDIR=build
 FUZZCHARS?=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug
 
 all: check
 	mkdir -p $(BUILDDIR); cd build; cmake .. -DCMAKE_BUILD_TYPE=Release; make
@@ -89,6 +89,9 @@ update-site: spec.html js/commonmark.js
 
 upload-site: spec.html
 	make -C $(SITE) upload
+
+npm:
+	cd js; npm publish
 
 distclean: clean
 	-rm -f js/commonmark.js
