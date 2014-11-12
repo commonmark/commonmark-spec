@@ -40,10 +40,10 @@ Installing
 ----------
 
 Building the C program (`cmark`) and shared library (`libcmark`)
-requires [cmake] and [`re2c`](http://re2c.org), which is used to
-generate `scanners.c` from `scanners.re`.  (Note that `re2c` is only a
-build dependency for developers, since `scanners.c` can be provided in a
-released source tarball.)
+requires [cmake] and [re2c], which is used to generate `scanners.c` from
+`scanners.re`.  (Note that [re2c] is only a build dependency for
+developers, since `scanners.c` can be provided in a released source
+tarball.)
 
 On \*nix systems, you can simply `make` and `make install`.  This
 calls `cmake` to create a `Makefile` in the `build` directory,
@@ -244,4 +244,4 @@ only for simple, clear, actionable issues.
 
 [cmake]: http://www.cmake.org/download/
 [pandoc]: http://johnmacfarlane.net/pandoc/
-
+[re2c]: http://re2c.org
