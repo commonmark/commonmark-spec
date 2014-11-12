@@ -79,12 +79,12 @@ static inline chunk chunk_dup(const chunk *ch, int pos, int len)
 	return c;
 }
 
-static inline chunk chunk_buf_detach(strbuf *buf)
+static inline chunk chunk_buf_detach(cmark_strbuf *buf)
 {
 	chunk c;
 
 	c.len = buf->size;
-	c.data = strbuf_detach(buf);
+	c.data = cmark_strbuf_detach(buf);
 	c.alloc = 1;
 
 	return c;

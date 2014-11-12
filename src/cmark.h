@@ -63,7 +63,7 @@ struct FencedCodeData {
 	int               fence_length;
 	int               fence_offset;
 	unsigned char     fence_char;
-	strbuf            info;
+	cmark_strbuf      info;
 };
 
 struct node_block {
@@ -90,7 +90,7 @@ struct node_block {
 	struct node_block* last_child;
 	struct node_block* parent;
 	struct node_block* top;
-	strbuf string_content;
+	cmark_strbuf string_content;
 	node_inl* inline_content;
 
 	union  {
@@ -116,7 +116,7 @@ node_block *cmark_parse_file(FILE *f);
 void cmark_free_nodes(node_block *e);
 
 void cmark_debug_print(node_block *root);
-void cmark_render_html(strbuf *html, node_block *root);
+void cmark_render_html(cmark_strbuf *html, node_block *root);
 
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 

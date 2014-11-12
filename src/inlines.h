@@ -5,9 +5,9 @@ unsigned char *clean_url(chunk *url);
 unsigned char *clean_autolink(chunk *url, int is_email);
 unsigned char *clean_title(chunk *title);
 
-node_inl* parse_inlines(strbuf *input, reference_map *refmap);
+node_inl* parse_inlines(cmark_strbuf *input, reference_map *refmap);
 void free_inlines(node_inl* e);
 
-int parse_reference_inline(strbuf *input, reference_map *refmap);
+int parse_reference_inline(cmark_strbuf *input, reference_map *refmap);
 
 #endif
