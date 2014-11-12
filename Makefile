@@ -29,15 +29,17 @@ debug:
 	cmake .. -DCMAKE_BUILD_TYPE=Debug; \
 	cmake --build .
 
-tarball:
+tarball: spec.html
 	rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
 	cp -r src $(PKGDIR)/; \
+	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
-	tar cvzf cmark-$(SPECVERSION).tar.gz $(PKGDIR)
+	tar czf cmark-$(SPECVERSION).tar.gz $(PKGDIR); \
+	rm -rf $(PKGDIR)
 
 clean:
 	rm -rf $(BUILDDIR)
