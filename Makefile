@@ -69,6 +69,9 @@ spec.pdf: spec.md template.tex specfilter.hs
 test: $(SPEC)
 	perl runtests.pl $< $(PROG)
 
+testlib: $(SPEC)
+	perl runtests.pl $< ./wrapper.py
+
 js/commonmark.js: js/lib/index.js ${JSMODULES}
 	browserify --standalone commonmark $< -o $@
 
