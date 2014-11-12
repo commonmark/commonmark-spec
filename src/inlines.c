@@ -683,7 +683,6 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	chunk urlchunk, titlechunk;
 	unsigned char *url, *title;
 	delimiter_stack *opener;
-	delimiter_stack *closer_above;
 	delimiter_stack *tempstack;
 	node_inl *link_text;
 	node_inl *inl;
@@ -787,13 +786,10 @@ match:
 	// inside links.)
 	if (!is_image) {
 		opener = subj->delimiters;
-		closer_above = NULL;
 		while (opener != NULL) {
 			tempstack = opener->previous;
 			if (opener->delim_char == '[') {
 				remove_delimiter(subj, opener);
-			} else {
-				closer_above = opener;
 			}
 			opener = tempstack;
 		}
