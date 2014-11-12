@@ -43,6 +43,9 @@ clean:
 
 $(PROG): all
 
+$(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
+	perl mkcasefold.pl < $< > $@
+
 man/man1/cmark.1: man/cmark.1.md
 	pandoc $< -o $@ -s -t man
 
@@ -73,6 +76,26 @@ test: $(SPEC)
 testlib: $(SPEC)
 	perl runtests.pl $< ./wrapper.py
 
+leakcheck: $(PROG)
+	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
+
+fuzztest:
+	{ for i in `seq 1 10`; do \
+	  cat /dev/urandom | head -c $(FUZZCHARS) | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | \
+		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
+	done } 2>&1 | grep 'user\|abnormally'
+
+operf: $(PROG)
+	operf $(PROG) <$(BENCHINP) >/dev/null
+
+distclean: clean
+	-rm -f js/commonmark.js
+	-rm -rf *.dSYM
+	-rm -f README.html
+	-rm -f spec.md fuzz.txt spec.html
+
+### JavaScript ###
+
 js/commonmark.js: js/lib/index.js ${JSMODULES}
 	browserify --standalone commonmark $< -o $@
 
@@ -85,35 +108,16 @@ jshint:
 benchjs:
 	node js/bench.js ${BENCHINP}
 
-$(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
-	perl mkcasefold.pl < $< > $@
+npm:
+	cd js; npm publish
 
 dingus: js/commonmark.js
 	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
 
-leakcheck: $(PROG)
-	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
-
-operf: $(PROG)
-	operf $(PROG) <$(BENCHINP) >/dev/null
-
-fuzztest:
-	{ for i in `seq 1 10`; do \
-	  cat /dev/urandom | head -c $(FUZZCHARS) | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | \
-		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
-	done } 2>&1 | grep 'user\|abnormally'
+### Website ###
 
 update-site: spec.html js/commonmark.js
 	make -C $(SITE) update
 
 upload-site: spec.html
 	make -C $(SITE) upload
-
-npm:
-	cd js; npm publish
-
-distclean: clean
-	-rm -f js/commonmark.js
-	-rm -rf *.dSYM
-	-rm -f README.html
-	-rm -f spec.md fuzz.txt spec.html
