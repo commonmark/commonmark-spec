@@ -1,14 +1,16 @@
 SRCDIR?=src
 DATADIR?=data
-BENCHINP?=README.md
-JSMODULES=$(wildcard js/lib/*.js)
+BUILDDIR?=build
 SPEC=spec.txt
 SITE=_site
-PKGDIR=cmark-$(SPECVERSION)
-BUILDDIR=build
+PKGDIR?=cmark-$(SPECVERSION)
+SRCFILES=$(shell git ls-tree --full-tree -r HEAD --name-only $(SRCDIR))
+TARBALL?=cmark-$(SPECVERSION).tar.gz
 FUZZCHARS?=2000000  # for fuzztest
 PROG?=$(BUILDDIR)/src/cmark
 SPECVERSION=$(shell grep version: $(SPEC) | sed -e 's/version: *//')
+BENCHINP?=README.md
+JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug tarball
 
@@ -35,13 +37,14 @@ debug:
 tarball: spec.html
 	rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
-	cp -r src $(PKGDIR)/; \
+	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
+	for f in $(SRCFILES); do cp $$f $(PKGDIR)/$$f; done; \
 	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
-	tar czf cmark-$(SPECVERSION).tar.gz $(PKGDIR); \
+	tar czf $(TARBALL) $(PKGDIR); \
 	rm -rf $(PKGDIR)
 
 clean:
@@ -60,6 +63,14 @@ test: $(SPEC)
 
 testlib: $(SPEC)
 	perl runtests.pl $< ./wrapper.py
+
+testtarball: $(TARBALL)
+	rm -rf $(PKGDIR); \
+	tar xvzf $(TARBALL); \
+	cd $(PKGDIR); \
+	make && make test; \
+	cd .. ; \
+	rm -rf $(PKGDIR)
 
 leakcheck: $(PROG)
 	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
