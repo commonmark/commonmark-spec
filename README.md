@@ -10,14 +10,14 @@ implementations in C and JavaScript.
 The implementations
 -------------------
 
-The C implementation provides both a library and a standalone program
-`cmark` that converts CommonMark to HTML.  It is written in standard C99
-and has no library dependencies.  The parser is very fast, on par with
-[sundown](https://github.com/vmg/sundown).  Some benchmarks (on
-an ancient Thinkpad running Intel Core 2 Duo at 2GHz, measured using
-`time` and parsing a ~500K book, the English version of [*Pro
-Git*](https://github.com/progit/progit/tree/master/en) by
-Scott Chacon and Ben Straub):
+The C implementation provides both a shared library (`libcmark`) and a
+standalone program `cmark` that converts CommonMark to HTML.  It is
+written in standard C99 and has no library dependencies.  The parser is
+very fast, on par with [sundown](https://github.com/vmg/sundown).  Some
+benchmarks (on an ancient Thinkpad running Intel Core 2 Duo at 2GHz,
+measured using `time` and parsing a ~500K book, the English version of
+[*Pro Git*](https://github.com/progit/progit/tree/master/en) by Scott
+Chacon and Ben Straub):
 
 |Implementation | Time  |  Factor|
 |---------------|-------|--------|
@@ -30,6 +30,8 @@ Scott Chacon and Ben Straub):
 | **cmark**     | 0.020s|     1.1|
 | sundown       | 0.018s|     1.0|
 
+It is easy to use `libcmark` in python or ruby code:  see `wrapper.py`
+and `wrapper.rb` in the repository for simple examples.
 
 The JavaScript implementation is a single JavaScript file, with
 no dependencies, that can be linked to in an HTML page.  Here
