@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 	if (numfps == 0) {
 		document = cmark_parse_file(stdin);
 		print_document(document, ast);
-		cmark_free_nodes(document);
+		cmark_free_blocks(document);
 	} else {
 		for (i = 0; i < numfps; i++) {
 			FILE *fp = fopen(argv[files[i]], "r");
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 			document = cmark_parse_file(fp);
 			print_document(document, ast);
-			cmark_free_nodes(document);
+			cmark_free_blocks(document);
 			fclose(fp);
 		}
 	}

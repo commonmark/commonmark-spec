@@ -101,7 +101,7 @@ struct cmark_node_block {
 
 typedef struct cmark_node_block cmark_node_block;
 
-void cmark_free_nodes(cmark_node_block *e);
+void cmark_free_blocks(cmark_node_block *e);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define node_inl                  cmark_node_inl

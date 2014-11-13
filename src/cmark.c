@@ -14,7 +14,7 @@ extern unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 	blocks = cmark_parse_document(text, len);
 
 	cmark_render_html(&htmlbuf, blocks);
-	cmark_free_nodes(blocks);
+	cmark_free_blocks(blocks);
 
 	result = strbuf_detach(&htmlbuf);
 	strbuf_free(&htmlbuf);

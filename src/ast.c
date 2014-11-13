@@ -6,7 +6,7 @@
 #include "references.h"
 
 // Free a node_block list and any children.
-void cmark_free_nodes(node_block *e)
+void cmark_free_blocks(node_block *e)
 {
 	node_block * next;
 	while (e != NULL) {
