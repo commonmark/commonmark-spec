@@ -25,7 +25,7 @@ $(BUILDDIR): check
 	cmake .. -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 install: $(BUILDDIR) man/man1/cmark.1
-	make -p $(BUILDDIR) --target install
+	make -C $(BUILDDIR) install
 
 debug:
 	mkdir -p $(BUILDDIR); \
