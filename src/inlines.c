@@ -63,12 +63,12 @@ static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned
 	return e;
 }
 
-inline static node_inl* make_autolink(node_inl* label, chunk url, int is_email)
+static inline node_inl* make_autolink(node_inl* label, chunk url, int is_email)
 {
 	return make_link_(label, clean_autolink(&url, is_email), NULL);
 }
 
-inline static node_inl* make_inlines(int t, node_inl* contents)
+static inline node_inl* make_inlines(int t, node_inl* contents)
 {
 	node_inl * e = calloc(1, sizeof(*e));
 	if(e != NULL) {
@@ -80,7 +80,7 @@ inline static node_inl* make_inlines(int t, node_inl* contents)
 }
 
 // Create an inline with a literal string value.
-inline static node_inl* make_literal(int t, chunk s)
+static inline node_inl* make_literal(int t, chunk s)
 {
 	node_inl * e = calloc(1, sizeof(*e));
 	if(e != NULL) {
@@ -92,7 +92,7 @@ inline static node_inl* make_literal(int t, chunk s)
 }
 
 // Create an inline with no value.
-inline static node_inl* make_simple(int t)
+static inline node_inl* make_simple(int t)
 {
 	node_inl* e = calloc(1, sizeof(*e));
 	if(e != NULL) {
@@ -113,7 +113,7 @@ inline static node_inl* make_simple(int t)
 
 // Append inline list b to the end of inline list a.
 // Return pointer to head of new list.
-inline static node_inl* append_inlines(node_inl* a, node_inl* b)
+static inline node_inl* append_inlines(node_inl* a, node_inl* b)
 {
 	if (a == NULL) {  // NULL acts like an empty list
 		return b;
@@ -138,7 +138,7 @@ static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
 	chunk_rtrim(&e->input);
 }
 
-inline static int isbacktick(int c)
+static inline int isbacktick(int c)
 {
 	return (c == '`');
 }
@@ -154,7 +154,7 @@ static inline unsigned char peek_at(subject *subj, int pos)
 }
 
 // Return true if there are more characters in the subject.
-inline static int is_eof(subject* subj)
+static inline int is_eof(subject* subj)
 {
 	return (subj->pos >= subj->input.len);
 }
@@ -163,7 +163,7 @@ inline static int is_eof(subject* subj)
 #define advance(subj) (subj)->pos += 1
 
 // Take characters while a predicate holds, and return a string.
-inline static chunk take_while(subject* subj, int (*f)(int))
+static inline chunk take_while(subject* subj, int (*f)(int))
 {
 	unsigned char c;
 	int startpos = subj->pos;
