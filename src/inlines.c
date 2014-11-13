@@ -111,59 +111,6 @@ inline static node_inl* make_simple(int t)
 #define make_emph(contents) make_inlines(INL_EMPH, contents)
 #define make_strong(contents) make_inlines(INL_STRONG, contents)
 
-// Utility function used by free_inlines
-static void splice_into_list(node_inl* e, node_inl* children) {
-	node_inl * tmp;
-	if (children) {
-		tmp = children;
-		// Find last child
-		while (tmp->next) {
-			tmp = tmp->next;
-		}
-		// Splice children into list
-		tmp->next = e->next;
-		e->next = children;
-	}
-	return ;
-}
-
-// Free an inline list.  Avoid recursion to prevent stack overflows
-// on deeply nested structures.
-extern void free_inlines(node_inl* e)
-{
-	node_inl * next;
-
-	while (e != NULL) {
-		switch (e->tag){
-		case INL_STRING:
-		case INL_RAW_HTML:
-		case INL_CODE:
-			chunk_free(&e->content.literal);
-			break;
-		case INL_LINEBREAK:
-		case INL_SOFTBREAK:
-			break;
-		case INL_LINK:
-		case INL_IMAGE:
-			free(e->content.linkable.url);
-			free(e->content.linkable.title);
-			splice_into_list(e, e->content.linkable.label);
-			break;
-		case INL_EMPH:
-		case INL_STRONG:
-		        splice_into_list(e, e->content.inlines);
-			break;
-		default:
-		        fprintf(stderr, "[WARN] (%s:%d) Unknown inline tag %d",
-				__FILE__, __LINE__, e->tag);
-			break;
-		}
-		next = e->next;
-		free(e);
-		e = next;
-	}
-}
-
 // Append inline list b to the end of inline list a.
 // Return pointer to head of new list.
 inline static node_inl* append_inlines(node_inl* a, node_inl* b)

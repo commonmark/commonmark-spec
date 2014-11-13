@@ -102,6 +102,7 @@ struct cmark_node_block {
 typedef struct cmark_node_block cmark_node_block;
 
 void cmark_free_blocks(cmark_node_block *e);
+void cmark_free_inlines(cmark_node_inl *e);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define node_inl                  cmark_node_inl
@@ -129,6 +130,8 @@ void cmark_free_blocks(cmark_node_block *e);
   #define BLOCK_SETEXT_HEADER       CMARK_BLOCK_SETEXT_HEADER
   #define BLOCK_HRULE               CMARK_BLOCK_HRULE
   #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
+  #define free_inlines              cmark_free_inlines
+  #define free_blocks               cmark_free_blocks
 #endif
 
 #endif

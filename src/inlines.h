@@ -6,7 +6,6 @@ unsigned char *cmark_clean_autolink(cmark_chunk *url, int is_email);
 unsigned char *cmark_clean_title(cmark_chunk *title);
 
 cmark_node_inl* cmark_parse_inlines(cmark_strbuf *input, cmark_reference_map *refmap);
-void cmark_free_inlines(cmark_node_inl* e);
 
 int cmark_parse_reference_inline(cmark_strbuf *input, cmark_reference_map *refmap);
 
@@ -15,7 +14,6 @@ int cmark_parse_reference_inline(cmark_strbuf *input, cmark_reference_map *refma
   #define clean_autolink            cmark_clean_autolink
   #define clean_title               cmark_clean_title
   #define parse_inlines             cmark_parse_inlines
-  #define free_inlines              cmark_free_inlines
   #define parse_reference_inline    cmark_parse_reference_inline
 #endif
 
