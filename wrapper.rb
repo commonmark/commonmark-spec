@@ -7,7 +7,8 @@ module CMark
 end
 
 def markdown_to_html(s)
-  CMark::cmark_markdown_to_html(s, s.length)
+  len = s.bytes.length
+  CMark::cmark_markdown_to_html(s, len)
 end
 
 print markdown_to_html(STDIN.read());
