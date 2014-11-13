@@ -189,13 +189,13 @@ There are only a few places where this spec says things that contradict
 the canonical syntax description:
 
 -   It [allows all punctuation symbols to be
-    backslash-escaped](http://jgm.github.io/stmd/spec.html#backslash-escapes),
+    backslash-escaped](http://jgm.github.io/CommonMark/spec.html#backslash-escapes),
     not just the symbols with special meanings in Markdown. I found
     that it was just too hard to remember which symbols could be
     escaped.
 
 -   It introduces an [alternative syntax for hard line
-    breaks](http://jgm.github.io/stmd/spec.html#hard-line-breaks), a
+    breaks](http://jgm.github.io/CommonMark/spec.html#hard-line-breaks), a
     backslash at the end of the line, supplementing the
     two-spaces-at-the-end-of-line rule. This is motivated by persistent
     complaints about the “invisible” nature of the two-space rule.
@@ -205,11 +205,11 @@ the canonical syntax description:
     quotes around a title in inline links, but not in reference links.
     This kind of difference is really hard for users to remember, so the
     spec [allows single quotes in both
-    contexts](http://jgm.github.io/stmd/spec.html#links).
+    contexts](http://jgm.github.io/CommonMark/spec.html#links).
 
 -   The rule for HTML blocks differs, though in most real cases it
     shouldn't make a difference. (See
-    [here](http://jgm.github.io/stmd/spec.html#html-blocks) for
+    [here](http://jgm.github.io/CommonMark/spec.html#html-blocks) for
     details.) The spec's proposal makes it easy to include Markdown
     inside HTML block-level tags, if you want to, but also allows you to
     exclude this. It is also makes parsing much easier, avoiding
@@ -229,7 +229,7 @@ the canonical syntax description:
 -   Rules for content in lists differ in a few respects, though (as with
     HTML blocks), most lists in existing documents should render as
     intended. There is some discussion of the choice points and
-    differences [here](http://jgm.github.io/stmd/spec.html#motivation).
+    differences [here](http://jgm.github.io/CommonMark/spec.html#motivation).
     I think that the spec's proposal does better than any existing
     implementation in rendering lists the way a human writer or reader
     would intuitively understand them. (I could give numerous examples
@@ -251,7 +251,7 @@ the canonical syntax description:
 
 -   The start number of an ordered list is significant.
 
--   [Fenced code blocks](http://jgm.github.io/stmd/spec.html#fenced-code-blocks) are supported, delimited by either
+-   [Fenced code blocks](http://jgm.github.io/CommonMark/spec.html#fenced-code-blocks) are supported, delimited by either
     backticks (` ``` `) or tildes (` ~~~ `).
 
 In all of this, I have been guided by eight years experience writing
@@ -276,7 +276,7 @@ Contributing
 There is a [forum for discussing
 CommonMark](http://talk.commonmark.org); you should use it instead of
 github issues for questions and possibly open-ended discussions.
-Use the [github issue tracker](http://github.com/jgm/stmd/issues)
+Use the [github issue tracker](http://github.com/jgm/CommonMark/issues)
 only for simple, clear, actionable issues.
 
 
