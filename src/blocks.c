@@ -9,6 +9,7 @@
 #include "scanners.h"
 #include "inlines.h"
 #include "html/houdini.h"
+#include "bench.h"
 
 #define peek_at(i, n) (i)->data[n]
 
@@ -378,6 +379,7 @@ static int lists_match(struct ListData *list_data, struct ListData *item_data)
 
 static node_block *finalize_document(node_block *document, int linenum)
 {
+	start_timer();
 	while (document != document->top) {
 		finalize(document, linenum);
 		document = document->parent;
@@ -385,6 +387,7 @@ static node_block *finalize_document(node_block *document, int linenum)
 
 	finalize(document, linenum);
 	process_inlines(document, document->as.document.refmap);
+	end_timer("finalize_document");
 
 	return document;
 }
@@ -396,12 +399,14 @@ extern node_block *cmark_parse_file(FILE *f)
 	int linenum = 1;
 	node_block *document = make_document();
 
+	start_timer();
 	while (fgets((char *)buffer, sizeof(buffer), f)) {
 		utf8proc_detab(&line, buffer, strlen((char *)buffer));
 		incorporate_line(&line, linenum, &document);
 		strbuf_clear(&line);
 		linenum++;
 	}
+	end_timer("incorporate_line(s)");
 
 	strbuf_free(&line);
 	return finalize_document(document, linenum);

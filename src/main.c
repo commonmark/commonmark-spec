@@ -28,9 +28,7 @@ static void print_document(node_block *document, bool ast)
 
 void parse_and_render(node_block *document, FILE *fp, bool ast)
 {
-	start_timer();
 	document = cmark_parse_file(fp);
-	end_timer("cmark_parse_file");
 	start_timer();
 	print_document(document, ast);
 	end_timer("print_document");
