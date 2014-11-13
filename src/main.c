@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include "cmark.h"
+#include "bench.h"
 
 void print_usage()
 {
@@ -23,6 +24,19 @@ static void print_document(node_block *document, bool ast)
 		printf("%s", html.ptr);
 		strbuf_free(&html);
 	}
+}
+
+void parse_and_render(node_block *document, FILE *fp, bool ast)
+{
+	start_timer();
+	document = cmark_parse_file(fp);
+	end_timer("cmark_parse_file");
+	start_timer();
+	print_document(document, ast);
+	end_timer("print_document");
+	start_timer();
+	cmark_free_blocks(document);
+	end_timer("free_blocks");
 }
 
 int main(int argc, char *argv[])
@@ -52,9 +66,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (numfps == 0) {
-		document = cmark_parse_file(stdin);
-		print_document(document, ast);
-		cmark_free_blocks(document);
+		parse_and_render(document, stdin, ast);
 	} else {
 		for (i = 0; i < numfps; i++) {
 			FILE *fp = fopen(argv[files[i]], "r");
@@ -65,9 +77,7 @@ int main(int argc, char *argv[])
 				exit(1);
 			}
 
-			document = cmark_parse_file(fp);
-			print_document(document, ast);
-			cmark_free_blocks(document);
+			parse_and_render(document, fp, ast);
 			fclose(fp);
 		}
 	}

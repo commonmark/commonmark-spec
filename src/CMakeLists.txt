@@ -7,6 +7,7 @@ set(HEADERS
   chunk.h
   references.h
   debug.h
+  bench.h
   utf8.h
   scanners.h
   inlines.h
@@ -91,3 +92,6 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -pedantic")
 endif()
 
+if($ENV{TIMER})
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTIMER=1")
+endif($ENV{TIMER})
