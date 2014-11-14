@@ -2,7 +2,7 @@
 
 # Example for using the shared library from python
 
-from ctypes import CDLL, c_char_p
+from ctypes import CDLL, c_char_p, c_long
 import sys
 import platform
 
@@ -15,7 +15,7 @@ else:
 
 markdown = cmark.cmark_markdown_to_html
 markdown.restype = c_char_p
-markdown.argtypes = [c_char_p]
+markdown.argtypes = [c_char_p, c_long]
 
 def md2html(text):
     return markdown(text, len(text))
