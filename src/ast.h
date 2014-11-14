@@ -102,7 +102,27 @@ struct cmark_node_block {
 typedef struct cmark_node_block cmark_node_block;
 
 void cmark_free_blocks(cmark_node_block *e);
-void cmark_free_inlines(cmark_node_inl *e);
+void cmark_free_inlines(cmark_node_inl* e);
+void cmark_free_simple(cmark_node_inl *e);
+cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b);
+
+cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title);
+cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, cmark_chunk url, int is_email);
+
+cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents);
+cmark_node_inl* cmark_make_literal(int t, cmark_chunk s);
+cmark_node_inl* cmark_make_simple(int t);
+
+// Macros for creating various kinds of simple.
+#define cmark_make_str(s) cmark_make_literal(INL_STRING, s)
+#define cmark_make_code(s) cmark_make_literal(INL_CODE, s)
+#define cmark_make_raw_html(s) cmark_make_literal(INL_RAW_HTML, s)
+#define cmark_make_linebreak() cmark_make_simple(INL_LINEBREAK)
+#define cmark_make_softbreak() cmark_make_simple(INL_SOFTBREAK)
+#define cmark_make_emph(contents) cmark_make_inlines(INL_EMPH, contents)
+#define cmark_make_strong(contents) cmark_make_inlines(INL_STRONG, contents)
+
+
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define node_inl                  cmark_node_inl
@@ -130,8 +150,21 @@ void cmark_free_inlines(cmark_node_inl *e);
   #define BLOCK_SETEXT_HEADER       CMARK_BLOCK_SETEXT_HEADER
   #define BLOCK_HRULE               CMARK_BLOCK_HRULE
   #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
-  #define free_inlines              cmark_free_inlines
+  #define free_simple               cmark_free_simple
   #define free_blocks               cmark_free_blocks
+  #define append_simple             cmark_append_simple
+  #define make_link                 cmark_make_link
+  #define make_autolink             cmark_make_autolink
+  #define make_str                  cmark_make_str
+  #define make_code                 cmark_make_code
+  #define make_raw_html             cmark_make_raw_html
+  #define make_linebreak            cmark_make_linebreak
+  #define make_softbreak            cmark_make_softbreak
+  #define make_emph                 cmark_make_emph
+  #define make_strong               cmark_make_strong
+  #define make_simple              cmark_make_simple
+  #define make_simple              cmark_make_simple
+  #define make_simple              cmark_make_simple
 #endif
 
 #endif

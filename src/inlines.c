@@ -8,6 +8,7 @@
 #include "html/houdini.h"
 #include "utf8.h"
 #include "scanners.h"
+#include "ast.h"
 #include "inlines.h"
 
 
@@ -48,82 +49,6 @@ static unsigned char *bufdup(const unsigned char *buf)
 	}
 
 	return new;
-}
-
-static inline node_inl *make_link_(node_inl *label, unsigned char *url, unsigned char *title)
-{
-	node_inl* e = calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = INL_LINK;
-		e->content.linkable.label = label;
-		e->content.linkable.url   = url;
-		e->content.linkable.title = title;
-		e->next = NULL;
-	}
-	return e;
-}
-
-static inline node_inl* make_autolink(node_inl* label, chunk url, int is_email)
-{
-	return make_link_(label, clean_autolink(&url, is_email), NULL);
-}
-
-static inline node_inl* make_inlines(int t, node_inl* contents)
-{
-	node_inl * e = calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->content.inlines = contents;
-		e->next = NULL;
-	}
-	return e;
-}
-
-// Create an inline with a literal string value.
-static inline node_inl* make_literal(int t, chunk s)
-{
-	node_inl * e = calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->content.literal = s;
-		e->next = NULL;
-	}
-	return e;
-}
-
-// Create an inline with no value.
-static inline node_inl* make_simple(int t)
-{
-	node_inl* e = calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->next = NULL;
-	}
-	return e;
-}
-
-// Macros for creating various kinds of inlines.
-#define make_str(s) make_literal(INL_STRING, s)
-#define make_code(s) make_literal(INL_CODE, s)
-#define make_raw_html(s) make_literal(INL_RAW_HTML, s)
-#define make_linebreak() make_simple(INL_LINEBREAK)
-#define make_softbreak() make_simple(INL_SOFTBREAK)
-#define make_emph(contents) make_inlines(INL_EMPH, contents)
-#define make_strong(contents) make_inlines(INL_STRONG, contents)
-
-// Append inline list b to the end of inline list a.
-// Return pointer to head of new list.
-static inline node_inl* append_inlines(node_inl* a, node_inl* b)
-{
-	if (a == NULL) {  // NULL acts like an empty list
-		return b;
-	}
-	node_inl* cur = a;
-	while (cur->next) {
-		cur = cur->next;
-	}
-	cur->next = b;
-	return a;
 }
 
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
@@ -402,7 +327,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 					tmp = closer->first_inline;
 					emph->next = tmp->next;
 					tmp->next = NULL;
-					free_inlines(tmp);
+					cmark_free_inlines(tmp);
 					// remove closer from stack
 					tempstack = closer->next;
 					remove_delimiter(subj, closer);
@@ -492,45 +417,28 @@ unsigned char *clean_url(chunk *url)
 	return strbuf_detach(&buf);
 }
 
-unsigned char *clean_autolink(chunk *url, int is_email)
-{
-	strbuf buf = GH_BUF_INIT;
-
-	chunk_trim(url);
-
-	if (url->len == 0)
-		return NULL;
-
-	if (is_email)
-		strbuf_puts(&buf, "mailto:");
-
-	houdini_unescape_html_f(&buf, url->data, url->len);
-	return strbuf_detach(&buf);
-}
-
-// Clean a title: remove surrounding quotes and remove \ that escape punctuation.
 unsigned char *clean_title(chunk *title)
 {
-	strbuf buf = GH_BUF_INIT;
-	unsigned char first, last;
+       strbuf buf = GH_BUF_INIT;
+       unsigned char first, last;
 
-	if (title->len == 0)
-		return NULL;
+       if (title->len == 0)
+               return NULL;
 
-	first = title->data[0];
-	last = title->data[title->len - 1];
+       first = title->data[0];
+       last = title->data[title->len - 1];
 
-	// remove surrounding quotes if any:
-	if ((first == '\'' && last == '\'') ||
-	    (first == '(' && last == ')') ||
-	    (first == '"' && last == '"')) {
-		houdini_unescape_html_f(&buf, title->data + 1, title->len - 2);
-	} else {
-		houdini_unescape_html_f(&buf, title->data, title->len);
-	}
+       // remove surrounding quotes if any:
+       if ((first == '\'' && last == '\'') ||
+           (first == '(' && last == ')') ||
+           (first == '"' && last == '"')) {
+               houdini_unescape_html_f(&buf, title->data + 1, title->len - 2);
+       } else {
+               houdini_unescape_html_f(&buf, title->data, title->len);
+       }
 
-	strbuf_unescape(&buf);
-	return strbuf_detach(&buf);
+       strbuf_unescape(&buf);
+       return strbuf_detach(&buf);
 }
 
 // Parse an autolink or HTML tag.
@@ -880,7 +788,7 @@ static int parse_inline(subject* subj, node_inl ** last)
 	if (*last == NULL) {
 		*last = new;
 	} else if (new) {
-		append_inlines(*last, new);
+		cmark_append_inlines(*last, new);
 		*last = new;
 	}
 
