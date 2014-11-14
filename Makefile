@@ -1,6 +1,8 @@
 SRCDIR?=src
 DATADIR?=data
 BUILDDIR?=build
+MINGW_BUILDDIR?=build-mingw
+MINGW_INSTALLDIR?=windows
 SPEC=spec.txt
 SITE=_site
 SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
@@ -11,7 +13,7 @@ PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug tarball
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw tarball
 
 all: $(BUILDDIR)
 	@make -C $(BUILDDIR)
@@ -33,6 +35,12 @@ debug:
 	cmake .. -DCMAKE_BUILD_TYPE=Debug; \
 	make
 
+mingw:
+	mkdir -p $(MINGW_BUILDDIR); \
+	cd $(MINGW_BUILDDIR); \
+	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
+	make && make install
+
 tarball: spec.html $(SRCDIR)/scanners.c
 	rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
@@ -49,7 +57,7 @@ tarball: spec.html $(SRCDIR)/scanners.c
 	rm -rf $(PKGDIR)
 
 clean:
-	rm -rf $(BUILDDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR)
 
 $(PROG): all
 
