@@ -109,6 +109,16 @@ To make a release tarball:
 
     make tarball
 
+Compiling for Windows
+---------------------
+
+You can cross-compile a Windows binary and dll on linux if you have the
+`mingw32` compiler:
+
+    make mingw
+
+The binaries will be in `build-mingw/windows/bin`.
+
 Installing (JavaScript)
 -----------------------
 
