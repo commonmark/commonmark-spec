@@ -176,9 +176,25 @@ inline cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b
 		return b;
 	}
 	cmark_node_inl* cur = a;
-	while (cur->next) {
+	while (cur->next != NULL) {
 		cur = cur->next;
 	}
 	cur->next = b;
+	return a;
+}
+
+// Append block list b to the end of block list a.
+// Return pointer to head of new list.
+inline cmark_node_block* cmark_append_blocks(cmark_node_block* a, cmark_node_block* b)
+{
+	if (a == NULL) {  // NULL acts like an empty list
+		return b;
+	}
+	cmark_node_block* cur = a;
+	while (cur->next != NULL) {
+		cur = cur->next;
+	}
+	cur->next = b;
+        b->prev = cur;
 	return a;
 }

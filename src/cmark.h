@@ -110,16 +110,31 @@ struct cmark_node_block {
 
 typedef struct cmark_node_block cmark_node_block;
 
+__attribute__((visibility("default")))
 void cmark_free_blocks(cmark_node_block *e);
+
+__attribute__((visibility("default")))
 void cmark_free_inlines(cmark_node_inl* e);
-void cmark_free_simple(cmark_node_inl *e);
+
+__attribute__((visibility("default")))
 cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b);
 
+__attribute__((visibility("default")))
+cmark_node_block* cmark_append_blocks(cmark_node_block* a, cmark_node_block* b);
+
+__attribute__((visibility("default")))
 cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title);
+
+__attribute__((visibility("default")))
 cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, cmark_chunk url, int is_email);
 
+__attribute__((visibility("default")))
 cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents);
+
+__attribute__((visibility("default")))
 cmark_node_inl* cmark_make_literal(int t, cmark_chunk s);
+
+__attribute__((visibility("default")))
 cmark_node_inl* cmark_make_simple(int t);
 
 // Macros for creating various kinds of simple.
@@ -145,8 +160,6 @@ void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
 
 __attribute__((visibility("default")))
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
-
-
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define VERSION                   CMARK_VERSION
