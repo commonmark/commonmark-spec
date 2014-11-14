@@ -1,7 +1,7 @@
 #ifndef __BENCH_H__
 #define __BENCH_H__
 #include <stdio.h>
-#include <sys/time.h>
+#include <time.h>
 
 #ifdef TIMER
 float _cmark_start_time;
