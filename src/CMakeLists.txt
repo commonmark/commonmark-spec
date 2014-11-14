@@ -102,6 +102,10 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -pedantic")
 endif()
 
+if(CMAKE_COMPILER_IS_MINGW)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fgnu89-inline")
+endif(CMAKE_COMPILER_IS_MINGW)
+
 if($ENV{TIMER})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTIMER=1")
 endif($ENV{TIMER})
