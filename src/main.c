@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include "cmark.h"
+#include "buffer.h"
 #include "bench.h"
 
 void print_usage()

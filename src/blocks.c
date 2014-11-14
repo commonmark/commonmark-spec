@@ -9,6 +9,7 @@
 #include "scanners.h"
 #include "inlines.h"
 #include "html/houdini.h"
+#include "buffer.h"
 #include "bench.h"
 
 #define peek_at(i, n) (i)->data[n]
