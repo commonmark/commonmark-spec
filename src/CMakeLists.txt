@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(LIBRARY "cmark-shared")
+set(LIBRARY "libcmark")
 set(HEADERS
   cmark.h
   buffer.h
