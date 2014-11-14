@@ -49,10 +49,7 @@ int cmark_strbuf_try_grow(cmark_strbuf *buf, int target_size, bool mark_oom);
  * @return 0 on success or -1 on failure
  */
 CMARK_EXPORT
-inline int cmark_strbuf_grow(cmark_strbuf *buf, int target_size)
-{
-	return cmark_strbuf_try_grow(buf, target_size, true);
-}
+int cmark_strbuf_grow(cmark_strbuf *buf, int target_size);
 
 CMARK_EXPORT
 void cmark_strbuf_free(cmark_strbuf *buf);
@@ -71,16 +68,10 @@ void cmark_strbuf_swap(cmark_strbuf *buf_a, cmark_strbuf *buf_b);
  * @return false if no error, true if allocation error
  */
 CMARK_EXPORT
-inline bool cmark_strbuf_oom(const cmark_strbuf *buf)
-{
-	return (buf->ptr == cmark_strbuf__oom);
-}
+bool cmark_strbuf_oom(const cmark_strbuf *buf);
 
 CMARK_EXPORT
-inline size_t cmark_strbuf_len(const cmark_strbuf *buf)
-{
-	return buf->size;
-}
+size_t cmark_strbuf_len(const cmark_strbuf *buf);
 
 CMARK_EXPORT
 int cmark_strbuf_cmp(const cmark_strbuf *a, const cmark_strbuf *b);
@@ -91,11 +82,6 @@ CMARK_EXPORT
 unsigned char *cmark_strbuf_detach(cmark_strbuf *buf);
 CMARK_EXPORT
 void cmark_strbuf_copy_cstr(char *data, int datasize, const cmark_strbuf *buf);
-
-static inline const char *cmark_strbuf_cstr(const cmark_strbuf *buf)
-{
-	return (char *)buf->ptr;
-}
 
 #define cmark_strbuf_at(buf, n) ((buf)->ptr[n])
 
@@ -158,7 +144,6 @@ void cmark_strbuf_unescape(cmark_strbuf *s);
   #define strbuf_attach                 cmark_strbuf_attach
   #define strbuf_detach                 cmark_strbuf_detach
   #define strbuf_copy_cstr              cmark_strbuf_copy_cstr
-  #define strbuf_cstr                   cmark_strbuf_cstr
   #define strbuf_at                     cmark_strbuf_at
   #define strbuf_set                    cmark_strbuf_set
   #define strbuf_sets                   cmark_strbuf_sets

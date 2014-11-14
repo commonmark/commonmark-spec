@@ -79,6 +79,21 @@ int cmark_strbuf_try_grow(strbuf *buf, int target_size, bool mark_oom)
 	return 0;
 }
 
+int cmark_strbuf_grow(cmark_strbuf *buf, int target_size)
+{
+	return cmark_strbuf_try_grow(buf, target_size, true);
+}
+
+bool cmark_strbuf_oom(const cmark_strbuf *buf)
+{
+	return (buf->ptr == cmark_strbuf__oom);
+}
+
+size_t cmark_strbuf_len(const cmark_strbuf *buf)
+{
+	return buf->size;
+}
+
 void cmark_strbuf_free(strbuf *buf)
 {
 	if (!buf) return;
@@ -188,6 +203,11 @@ int cmark_strbuf_printf(strbuf *buf, const char *format, ...)
 	va_end(ap);
 
 	return r;
+}
+
+static inline const char *cmark_strbuf_cstr(const cmark_strbuf *buf)
+{
+	return (char *)buf->ptr;
 }
 
 void cmark_strbuf_copy_cstr(char *data, int datasize, const strbuf *buf)
