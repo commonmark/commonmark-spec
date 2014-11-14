@@ -7,7 +7,7 @@
 #include "cmark.h"
 #include "buffer.h"
 
-extern unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
+unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 {
 	node_block *blocks;
 	strbuf htmlbuf = GH_BUF_INIT;
@@ -129,7 +129,7 @@ unsigned char *clean_autolink(chunk *url, int is_email)
 	return strbuf_detach(&buf);
 }
 
-cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, chunk url, int is_email)
+inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, chunk url, int is_email)
 {
 	return cmark_make_link(label, clean_autolink(&url, is_email), NULL);
 }
