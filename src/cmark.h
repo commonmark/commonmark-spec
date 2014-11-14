@@ -15,12 +15,19 @@ extern "C" {
 
 #define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
+__attribute__((visibility("default")))
 cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
+
+__attribute__((visibility("default")))
 cmark_node_block *cmark_parse_file(FILE *f);
 
+__attribute__((visibility("default")))
 void cmark_debug_print(cmark_node_block *root);
+
+__attribute__((visibility("default")))
 void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
 
+__attribute__((visibility("default")))
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 
 #ifndef CMARK_NO_SHORT_NAMES
