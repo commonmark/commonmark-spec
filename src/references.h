@@ -3,6 +3,8 @@
 
 #define REFMAP_SIZE 16
 
+#include "chunk.h"
+
 struct cmark_reference {
 	struct cmark_reference *next;
 	unsigned char *label;

@@ -8,7 +8,6 @@
 #include "html/houdini.h"
 #include "utf8.h"
 #include "scanners.h"
-#include "ast.h"
 #include "inlines.h"
 
 

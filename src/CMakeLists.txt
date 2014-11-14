@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 set(LIBRARY "cmark-shared")
 set(HEADERS
   cmark.h
-  ast.h
   buffer.h
   chunk.h
   references.h
@@ -16,7 +15,6 @@ set(HEADERS
   )
 set(LIBRARY_SOURCES
   cmark.c
-  ast.c
   blocks.c
   inlines.c
   print.c
