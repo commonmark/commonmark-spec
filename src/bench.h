@@ -14,7 +14,7 @@ float _cmark_save_time;
 
 #define end_timer(M) \
 	_cmark_end_time = (float)clock()/CLOCKS_PER_SEC; \
-	fprintf(stderr, "[TIME] (%s:%d) %8.f ns " M "\n", __FILE__, \
+	fprintf(stderr, "[TIME] (%s:%d) %4.f ns " M "\n", __FILE__, \
 		__LINE__, (_cmark_end_time - _cmark_start_time) * 1000000); \
 	_cmark_start_time = _cmark_save_time;
 
