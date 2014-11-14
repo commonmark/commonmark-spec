@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "buffer.h"
 #include "houdini.h"
 #include "utf8.h"
 #include "html_unescape.h"
