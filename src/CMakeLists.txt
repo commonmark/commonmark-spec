@@ -37,7 +37,7 @@ set(PROGRAM_SOURCES
   main.c
   )
 
-include_directories(. html)
+include_directories(. html ${CMAKE_CURRENT_BINARY_DIR})
 
 if (MSVC)
     set(RE2C ${CMAKE_CURRENT_SOURCE_DIR}/re2c)
@@ -52,8 +52,13 @@ else(MSVC)
                         COMMAND ${RE2C} --case-insensitive -b -i ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re >${CMAKE_CURRENT_SOURCE_DIR}/scanners.c)
 endif(MSVC)
 
-add_executable(${PROGRAM} ${PROGRAM_SOURCES})
+include (GenerateExportHeader)
 
+add_executable(${PROGRAM} ${PROGRAM_SOURCES})
+add_compiler_export_flags()
+
+set(CMAKE_C_VISIBILITY_PRESET hidden)
+set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
 set_target_properties(${LIBRARY}
   PROPERTIES OUTPUT_NAME "cmark")
@@ -61,19 +66,22 @@ set_target_properties(${LIBRARY}
 set_property(TARGET ${LIBRARY}
   APPEND PROPERTY MACOSX_RPATH true)
 
-if (MSVC)
-set_property(TARGET ${PROGRAM}
-  APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO)
+generate_export_header(${LIBRARY}
+    BASE_NAME ${PROJECT_NAME})
 
+if (MSVC)
+  set_property(TARGET ${PROGRAM}
+    APPEND PROPERTY LINK_FLAGS /INCREMENTAL:NO)
 endif(MSVC)
 
 install(TARGETS ${PROGRAM} ${LIBRARY}
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   )
-install(DIRECTORY ./
-  DESTINATION include/${PROJECT_NAME}
-  FILES_MATCHING PATTERN "*.h")
+
+install(FILES cmark.h buffer.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+  DESTINATION includes/${PROJECT_NAME}
+  )
 
 include (CheckIncludeFile)
 CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
@@ -87,7 +95,7 @@ if(MSVC)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /W4")
   endif()
 elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden -Wall -std=c99 -pedantic")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -pedantic")
 endif()
 
 if($ENV{TIMER})
