@@ -57,6 +57,10 @@ include (GenerateExportHeader)
 add_executable(${PROGRAM} ${PROGRAM_SOURCES})
 add_compiler_export_flags()
 
+# Disable the PUBLIC declarations when compiling the executable:
+set_target_properties(${PROGRAM} PROPERTIES
+  COMPILE_FLAGS -DCMARK_STATIC_DEFINE)
+
 set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
 add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
