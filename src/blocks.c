@@ -316,8 +316,14 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 	startpos = pos;
 	c = peek_at(input, pos);
 
-	if ((c == '*' || c == '-' || c == '+') && !scan_hrule(input, pos)) {
+	// unicode bullet character U+2022 is represented in UTF-8 as E2 80 A2
+	if (c == '+' 
+	    || (c == 0xe2 && peek_at(input, pos + 1) == 0x80 && peek_at(input, pos + 2) == 0xa2)
+	    || ((c == '*' || c == '-') && !scan_hrule(input, pos))) {
 		pos++;
+		if (c == 0xe2) {
+			pos += 2;
+		}
 		if (!isspace(peek_at(input, pos))) {
 			return 0;
 		}
