@@ -28,13 +28,14 @@ int main(int argc, char *argv[])
 {
 	int i, numfps = 0;
 	bool ast = false;
-	int files[argc];
+	int *files;
 	unsigned char buffer[4096];
 	cmark_doc_parser *parser;
 	size_t offset;
 	node_block *document;
 
 	parser = cmark_new_doc_parser();
+	files = (int *)malloc(argc * sizeof(*files));
 
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--version") == 0) {
@@ -98,6 +99,8 @@ int main(int argc, char *argv[])
 	start_timer();
 	cmark_free_blocks(document);
 	end_timer("free_blocks");
+
+	free(files);
 
 	return 0;
 }
