@@ -43,7 +43,7 @@ static unsigned char *bufdup(const unsigned char *buf)
 
 	if (buf) {
 		int len = strlen((char *)buf);
-		new = calloc(len + 1, sizeof(*new));
+		new = (unsigned char *)calloc(len + 1, sizeof(*new));
 		if(new != NULL) {
 			memcpy(new, buf, len + 1);
 		}

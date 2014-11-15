@@ -60,7 +60,7 @@ int cmark_strbuf_try_grow(strbuf *buf, int target_size, bool mark_oom)
 	/* round allocation up to multiple of 8 */
 	new_size = (new_size + 7) & ~7;
 
-	new_ptr = realloc(new_ptr, new_size);
+	new_ptr = (unsigned char *)realloc(new_ptr, new_size);
 
 	if (!new_ptr) {
 		if (mark_oom)
@@ -241,7 +241,7 @@ unsigned char *cmark_strbuf_detach(strbuf *buf)
 
 	if (buf->asize == 0 || buf->ptr == cmark_strbuf__oom) {
 		/* return an empty string */
-		return calloc(1, 1);
+		return (unsigned char *)calloc(1, 1);
 	}
 
 	cmark_strbuf_init(buf, 0);
@@ -273,7 +273,7 @@ int cmark_strbuf_cmp(const strbuf *a, const strbuf *b)
 
 int cmark_strbuf_strchr(const strbuf *buf, int c, int pos)
 {
-	const unsigned char *p = memchr(buf->ptr + pos, c, buf->size - pos);
+	const unsigned char *p = (unsigned char *)memchr(buf->ptr + pos, c, buf->size - pos);
 	if (!p)
 		return -1;
 

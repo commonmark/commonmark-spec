@@ -76,7 +76,7 @@ void cmark_free_inlines(cmark_node_inl* e)
 
 inline cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title)
 {
-	cmark_node_inl* e = calloc(1, sizeof(*e));
+	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->tag = CMARK_INL_LINK;
 		e->content.linkable.label = label;
@@ -110,7 +110,7 @@ inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, chunk url, int
 
 inline cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents)
 {
-	cmark_node_inl * e = calloc(1, sizeof(*e));
+	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->tag = t;
 		e->content.inlines = contents;
@@ -122,7 +122,7 @@ inline cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents)
 // Create an inline with a literal string value.
 inline cmark_node_inl* cmark_make_literal(int t, cmark_chunk s)
 {
-	cmark_node_inl * e = calloc(1, sizeof(*e));
+	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->tag = t;
 		e->content.literal = s;
@@ -134,7 +134,7 @@ inline cmark_node_inl* cmark_make_literal(int t, cmark_chunk s)
 // Create an inline with no value.
 inline cmark_node_inl* cmark_make_simple(int t)
 {
-	cmark_node_inl* e = calloc(1, sizeof(*e));
+	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->tag = t;
 		e->next = NULL;

@@ -82,7 +82,7 @@ extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk
 	if (reflabel == NULL)
 		return;
 
-	ref = calloc(1, sizeof(*ref));
+	ref = (reference *)calloc(1, sizeof(*ref));
 	if(ref != NULL) {
 		ref->label = reflabel;
 		ref->hash = refhash(ref->label);
@@ -149,5 +149,5 @@ void reference_map_free(reference_map *map)
 
 reference_map *reference_map_new(void)
 {
-	return calloc(1, sizeof(reference_map));
+	return (reference_map *)calloc(1, sizeof(reference_map));
 }

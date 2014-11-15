@@ -20,7 +20,7 @@ static node_block* make_block(int tag, int start_line, int start_column)
 {
 	node_block* e;
 
-	e = calloc(1, sizeof(*e));
+	e = (node_block *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->tag = tag;
 		e->open = true;
@@ -344,7 +344,7 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 		if (!isspace(peek_at(input, pos))) {
 			return 0;
 		}
-		data = calloc(1, sizeof(*data));
+		data = (struct ListData *)calloc(1, sizeof(*data));
 		if(data == NULL) {
 			return 0;
 		} else {
@@ -369,7 +369,7 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 			if (!isspace(peek_at(input, pos))) {
 				return 0;
 			}
-			data = calloc(1, sizeof(*data));
+			data = (struct ListData *)calloc(1, sizeof(*data));
 			if(data == NULL) {
 				return 0;
 			} else {
@@ -440,7 +440,7 @@ extern node_block *cmark_parse_document(const unsigned char *buffer, size_t len)
 	node_block *document;
 
 	while (buffer < end) {
-		const unsigned char *eol = memchr(buffer, '\n', end - buffer);
+		const unsigned char *eol = (unsigned char *)memchr(buffer, '\n', end - buffer);
 		offset = eol ? (eol - buffer) + 1 : eol - buffer;
 		cmark_process_line(parser, buffer, offset);
 		buffer += offset;

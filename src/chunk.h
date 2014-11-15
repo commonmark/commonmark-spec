@@ -51,7 +51,7 @@ static inline void cmark_chunk_trim(cmark_chunk *c)
 
 static inline int cmark_chunk_strchr(cmark_chunk *ch, int c, int offset)
 {
-	const unsigned char *p = memchr(ch->data + offset, c, ch->len - offset);
+	const unsigned char *p = (unsigned char *)memchr(ch->data + offset, c, ch->len - offset);
 	return p ? (int)(p - ch->data) : ch->len;
 }
 
@@ -59,7 +59,7 @@ static inline unsigned char *cmark_chunk_to_cstr(cmark_chunk *c)
 {
 	unsigned char *str;
 
-	str = calloc(c->len + 1, sizeof(*str));
+	str = (unsigned char *)calloc(c->len + 1, sizeof(*str));
     if(str != NULL) {
     	memcpy(str, c->data, c->len);
 	    str[c->len] = 0;
