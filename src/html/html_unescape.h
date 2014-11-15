@@ -1,5 +1,5 @@
-/* C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 src/html/html_unescape.gperf  */
+/* ANSI-C code produced by gperf version 3.0.4 */
+/* Command-line: gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 src/html/html_unescape.gperf  */
 /* Computed positions: -k'1-7,10,12,$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -26,7 +26,7 @@
       && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
       && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126))
 /* The character set is not based on ISO-646.  */
-error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
+#error "gperf generated tables don't work with this execution character set. Please report a bug to <bug-gnu-gperf@gnu.org>."
 #endif
 
 #line 1 "src/html/html_unescape.gperf"
@@ -52,9 +52,7 @@ inline
 #endif
 #endif
 static unsigned int
-hash_entity (str, len)
-     register const char *str;
-     register unsigned int len;
+hash_entity (register const char *str, register unsigned int len)
 {
   static const unsigned short asso_values[] =
     {
@@ -129,10 +127,8 @@ __inline
 __attribute__ ((__gnu_inline__))
 #endif
 #endif
-static const struct html_ent *
-find_entity (str, len)
-     register const char *str;
-     register unsigned int len;
+const struct html_ent *
+find_entity (register const char *str, register unsigned int len)
 {
   static const unsigned char lengthtable[] =
     {
