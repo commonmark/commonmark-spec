@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "chunk.h"
+#include "scanners.h"
 
 int _scan_at(int (*scanner)(const unsigned char *), chunk *c, int offset)
 {

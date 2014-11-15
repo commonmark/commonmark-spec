@@ -6,6 +6,10 @@
 #include "config.h"
 #include "cmark_export.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	unsigned char *ptr;
 	int asize, size;
@@ -162,6 +166,10 @@ void cmark_strbuf_unescape(cmark_strbuf *s);
   #define strbuf_trim                   cmark_strbuf_trim
   #define strbuf_normalize_whitespace   cmark_strbuf_normalize_whitespace
   #define strbuf_unescape               cmark_strbuf_unescape
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

@@ -1,5 +1,9 @@
 #include "cmark.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int _scan_at(int (*scanner)(const unsigned char *), chunk *c, int offset);
 int _scan_autolink_uri(const unsigned char *p);
 int _scan_autolink_email(const unsigned char *p);
@@ -28,3 +32,7 @@ int _scan_entity(const unsigned char *p);
 #define scan_open_code_fence(c, n) _scan_at(&_scan_open_code_fence, c, n)
 #define scan_close_code_fence(c, n) _scan_at(&_scan_close_code_fence, c, n)
 #define scan_entity(c, n) _scan_at(&_scan_entity, c, n)
+
+#ifdef __cplusplus
+}
+#endif

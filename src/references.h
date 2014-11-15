@@ -4,6 +4,10 @@
 #include "chunk.h"
 #include "ast.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 cmark_reference_map *cmark_reference_map_new(void);
 void cmark_reference_map_free(cmark_reference_map *map);
 cmark_reference* cmark_reference_lookup(cmark_reference_map *map, cmark_chunk *label);
@@ -16,6 +20,10 @@ extern void cmark_reference_create(cmark_reference_map *map, cmark_chunk *label,
   #define reference_map_free    cmark_reference_map_free
   #define reference_lookup      cmark_reference_lookup
   #define reference_create      cmark_reference_create
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif

@@ -1,6 +1,10 @@
 #ifndef CMARK_INLINES_H
 #define CMARK_INLINES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 unsigned char *cmark_clean_url(cmark_chunk *url);
 unsigned char *cmark_clean_title(cmark_chunk *title);
 
@@ -13,6 +17,10 @@ int cmark_parse_reference_inline(cmark_strbuf *input, cmark_reference_map *refma
   #define parse_reference_inline    cmark_parse_reference_inline
   #define clean_url                 cmark_clean_url
   #define clean_title               cmark_clean_title
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif
