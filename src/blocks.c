@@ -16,7 +16,7 @@
 
 #define peek_at(i, n) (i)->data[n]
 
-static node_block* make_block(int tag, int start_line, int start_column)
+static node_block* make_block(cmark_block_tag tag, int start_line, int start_column)
 {
 	node_block* e;
 
@@ -85,7 +85,7 @@ static bool is_blank(strbuf *s, int offset)
 	return true;
 }
 
-static inline bool can_contain(int parent_type, int child_type)
+static inline bool can_contain(cmark_block_tag parent_type, cmark_block_tag child_type)
 {
 	return ( parent_type == BLOCK_DOCUMENT ||
 			parent_type == BLOCK_BQUOTE ||
@@ -251,7 +251,7 @@ static void finalize(node_block* b, int line_number)
 
 // Add a node_block as child of another.  Return pointer to child.
 static node_block* add_child(node_block* parent,
-		int block_type, int start_line, int start_column)
+		cmark_block_tag block_type, int start_line, int start_column)
 {
 	assert(parent);
 

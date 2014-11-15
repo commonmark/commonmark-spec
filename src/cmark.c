@@ -108,7 +108,7 @@ inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, chunk url, int
 	return cmark_make_link(label, clean_autolink(&url, is_email), NULL);
 }
 
-inline cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents)
+inline cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, cmark_node_inl* contents)
 {
 	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
@@ -120,7 +120,7 @@ inline cmark_node_inl* cmark_make_inlines(int t, cmark_node_inl* contents)
 }
 
 // Create an inline with a literal string value.
-inline cmark_node_inl* cmark_make_literal(int t, cmark_chunk s)
+inline cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s)
 {
 	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {
@@ -132,7 +132,7 @@ inline cmark_node_inl* cmark_make_literal(int t, cmark_chunk s)
 }
 
 // Create an inline with no value.
-inline cmark_node_inl* cmark_make_simple(int t)
+inline cmark_node_inl* cmark_make_simple(cmark_inl_tag t)
 {
 	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
 	if(e != NULL) {

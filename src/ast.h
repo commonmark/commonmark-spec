@@ -15,18 +15,20 @@ extern "C" {
 #define REFMAP_SIZE 16
 #define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
+typedef enum {
+	CMARK_INL_STRING,
+	CMARK_INL_SOFTBREAK,
+	CMARK_INL_LINEBREAK,
+	CMARK_INL_CODE,
+	CMARK_INL_RAW_HTML,
+	CMARK_INL_EMPH,
+	CMARK_INL_STRONG,
+	CMARK_INL_LINK,
+	CMARK_INL_IMAGE
+} cmark_inl_tag;
+
 struct cmark_node_inl {
-	enum {
-		CMARK_INL_STRING,
-		CMARK_INL_SOFTBREAK,
-		CMARK_INL_LINEBREAK,
-		CMARK_INL_CODE,
-		CMARK_INL_RAW_HTML,
-		CMARK_INL_EMPH,
-		CMARK_INL_STRONG,
-		CMARK_INL_LINK,
-		CMARK_INL_IMAGE
-	} tag;
+	cmark_inl_tag tag;
 	union {
 		cmark_chunk literal;
 		struct cmark_node_inl *inlines;
@@ -55,19 +57,23 @@ struct cmark_reference_map {
 
 typedef struct cmark_reference_map cmark_reference_map;
 
+typedef enum {
+	bullet,
+	ordered
+}  cmark_list_type;
+
+typedef enum {
+	period,
+	parens
+} cmark_delim_type;
+
 // Types for blocks
 struct cmark_ListData {
-	enum {
-		bullet,
-		ordered
-	}  list_type;
+	cmark_list_type   list_type;
 	int               marker_offset;
 	int               padding;
 	int               start;
-	enum {
-		period,
-		parens
-	} delimiter;
+	cmark_delim_type  delimiter;
 	unsigned char     bullet_char;
 	bool              tight;
 };
@@ -79,21 +85,23 @@ struct cmark_FencedCodeData {
 	cmark_strbuf      info;
 };
 
+typedef enum {
+	CMARK_BLOCK_DOCUMENT,
+	CMARK_BLOCK_BQUOTE,
+	CMARK_BLOCK_LIST,
+	CMARK_BLOCK_LIST_ITEM,
+	CMARK_BLOCK_FENCED_CODE,
+	CMARK_BLOCK_INDENTED_CODE,
+	CMARK_BLOCK_HTML,
+	CMARK_BLOCK_PARAGRAPH,
+	CMARK_BLOCK_ATX_HEADER,
+	CMARK_BLOCK_SETEXT_HEADER,
+	CMARK_BLOCK_HRULE,
+	CMARK_BLOCK_REFERENCE_DEF
+} cmark_block_tag;
+
 struct cmark_node_block {
-	enum {
-		CMARK_BLOCK_DOCUMENT,
-		CMARK_BLOCK_BQUOTE,
-		CMARK_BLOCK_LIST,
-		CMARK_BLOCK_LIST_ITEM,
-		CMARK_BLOCK_FENCED_CODE,
-		CMARK_BLOCK_INDENTED_CODE,
-		CMARK_BLOCK_HTML,
-		CMARK_BLOCK_PARAGRAPH,
-		CMARK_BLOCK_ATX_HEADER,
-		CMARK_BLOCK_SETEXT_HEADER,
-		CMARK_BLOCK_HRULE,
-		CMARK_BLOCK_REFERENCE_DEF
-	} tag;
+	cmark_block_tag tag;
 	int start_line;
 	int start_column;
 	int end_line;
@@ -132,11 +140,11 @@ struct cmark_node_inl *cmark_make_link(struct cmark_node_inl *label, unsigned ch
 
 struct cmark_node_inl* cmark_make_autolink(struct cmark_node_inl* label, cmark_chunk url, int is_email);
 
-struct cmark_node_inl* cmark_make_inlines(int t, struct cmark_node_inl* contents);
+struct cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, struct cmark_node_inl* contents);
 
-struct cmark_node_inl* cmark_make_literal(int t, cmark_chunk s);
+struct cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s);
 
-struct cmark_node_inl* cmark_make_simple(int t);
+struct cmark_node_inl* cmark_make_simple(cmark_inl_tag t);
 
 // Macros for creating various kinds of simple.
 #define cmark_make_str(s) cmark_make_literal(INL_STRING, s)
