@@ -39,17 +39,17 @@ static int subject_find_special_char(subject *subj);
 
 static unsigned char *bufdup(const unsigned char *buf)
 {
-	unsigned char *new = NULL;
+	unsigned char *new_buf = NULL;
 
 	if (buf) {
 		int len = strlen((char *)buf);
-		new = (unsigned char *)calloc(len + 1, sizeof(*new));
-		if(new != NULL) {
-			memcpy(new, buf, len + 1);
+		new_buf = (unsigned char *)calloc(len + 1, sizeof(*new_buf));
+		if(new_buf != NULL) {
+			memcpy(new_buf, buf, len + 1);
 		}
 	}
 
-	return new;
+	return new_buf;
 }
 
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
@@ -743,7 +743,7 @@ static int subject_find_special_char(subject *subj)
 // Return 0 if no inline can be parsed, 1 otherwise.
 static int parse_inline(subject* subj, node_inl ** last)
 {
-	node_inl* new = NULL;
+	node_inl* new_inl = NULL;
 	chunk contents;
 	unsigned char c;
 	int endpos;
@@ -753,40 +753,40 @@ static int parse_inline(subject* subj, node_inl ** last)
 	}
 	switch(c){
 	case '\n':
-		new = handle_newline(subj);
+		new_inl = handle_newline(subj);
 		break;
 	case '`':
-		new = handle_backticks(subj);
+		new_inl = handle_backticks(subj);
 		break;
 	case '\\':
-		new = handle_backslash(subj);
+		new_inl = handle_backslash(subj);
 		break;
 	case '&':
-		new = handle_entity(subj);
+		new_inl = handle_entity(subj);
 		break;
 	case '<':
-		new = handle_pointy_brace(subj);
+		new_inl = handle_pointy_brace(subj);
 		break;
 	case '*':
 	case '_':
-		new = handle_strong_emph(subj, c, last);
+		new_inl = handle_strong_emph(subj, c, last);
 		break;
 	case '[':
 		advance(subj);
-		new = make_str(chunk_literal("["));
-		subj->delimiters = push_delimiter(subj, 1, '[', true, false, new);
+		new_inl = make_str(chunk_literal("["));
+		subj->delimiters = push_delimiter(subj, 1, '[', true, false, new_inl);
 		break;
 	case ']':
-		new = handle_close_bracket(subj, last);
+		new_inl = handle_close_bracket(subj, last);
 		break;
 	case '!':
 		advance(subj);
 		if (peek_char(subj) == '[') {
 			advance(subj);
-			new = make_str(chunk_literal("!["));
-			subj->delimiters = push_delimiter(subj, 1, '!', false, true, new);
+			new_inl = make_str(chunk_literal("!["));
+			subj->delimiters = push_delimiter(subj, 1, '!', false, true, new_inl);
 		} else {
-			new = make_str(chunk_literal("!"));
+			new_inl = make_str(chunk_literal("!"));
 		}
 		break;
 	default:
@@ -799,13 +799,13 @@ static int parse_inline(subject* subj, node_inl ** last)
 			chunk_rtrim(&contents);
 		}
 
-		new = make_str(contents);
+		new_inl = make_str(contents);
 	}
 	if (*last == NULL) {
-		*last = new;
-	} else if (new) {
-		cmark_append_inlines(*last, new);
-		*last = new;
+		*last = new_inl;
+	} else if (new_inl) {
+		cmark_append_inlines(*last, new_inl);
+		*last = new_inl;
 	}
 
 	return 1;
