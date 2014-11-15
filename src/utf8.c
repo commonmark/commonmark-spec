@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include <unistd.h>
 #include <assert.h>
 
 #include "utf8.h"

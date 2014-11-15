@@ -4,7 +4,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdarg.h>
-#include <sys/types.h>
 #include "cmark_export.h"
 
 typedef struct {
