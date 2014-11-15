@@ -2479,7 +2479,7 @@ A [list marker](@list-marker) is a
 marker](#ordered-list-marker).
 
 A [bullet list marker](@bullet-list-marker)
-is a `-`, `+`, or `*` character.
+is a `-`, `+`, `*` or `•` (U+2022) character.
 
 An [ordered list marker](@ordered-list-marker)
 is a sequence of one of more digits (`0-9`), followed by either a
@@ -3324,7 +3324,7 @@ Two list items are [of the same type](@of-the-same-type)
 if they begin with a [list
 marker](#list-marker) of the same type.  Two list markers are of the
 same type if (a) they are bullet list markers using the same character
-(`-`, `+`, or `*`) or (b) they are ordered list numbers with the same
+(`-`, `+`, `*` or `•`) or (b) they are ordered list numbers with the same
 delimiter (either `.` or `)`).
 
 A list is an [ordered list](@ordered-list)
@@ -3351,6 +3351,7 @@ Changing the bullet or ordered list delimiter starts a new list:
 - foo
 - bar
 + baz
+• cat
 .
 <ul>
 <li>foo</li>
@@ -3358,6 +3359,9 @@ Changing the bullet or ordered list delimiter starts a new list:
 </ul>
 <ul>
 <li>baz</li>
+</ul>
+<ul>
+<li>cat</li>
 </ul>
 .
 
