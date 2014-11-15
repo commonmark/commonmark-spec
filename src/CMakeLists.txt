@@ -112,6 +112,11 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c99 -pedantic")
 endif()
 
+# Compile as C++ under MSVC
+if(MSVC)
+  set(CMAKE_C_FLAGS "/TP")
+endif()
+
 if(CMAKE_COMPILER_IS_MINGW)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fgnu89-inline")
 endif(CMAKE_COMPILER_IS_MINGW)
