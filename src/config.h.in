@@ -1,0 +1,8 @@
+#cmakedefine HAVE_STDBOOL_H
+
+#ifdef HAVE_STDBOOL_H
+  #include <stdbool.h>
+#elif !defined(__cplusplus)
+  typedef char bool;
+#endif
+

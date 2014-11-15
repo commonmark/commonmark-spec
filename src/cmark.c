@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include "references.h"
 #include "html/houdini.h"
 #include "cmark.h"

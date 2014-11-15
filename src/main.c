@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <stdbool.h>
+#include "config.h"
 #include "cmark.h"
 #include "debug.h"
 #include "bench.h"

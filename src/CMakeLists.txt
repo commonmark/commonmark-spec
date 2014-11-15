@@ -96,6 +96,10 @@ install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
 include (CheckIncludeFile)
 CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
 
+CONFIGURE_FILE(
+  ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 # Always compile with warnings
 if(MSVC)
   # Force to always compile with W4

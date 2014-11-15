@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
 
+#include "config.h"
 #include "ast.h"
 #include "cmark.h"
 #include "references.h"

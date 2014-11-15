@@ -1,9 +1,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdbool.h>
 #include <ctype.h>
 
+#include "config.h"
 #include "ast.h"
 #include "references.h"
 #include "cmark.h"

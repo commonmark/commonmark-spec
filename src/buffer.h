@@ -1,9 +1,9 @@
 #ifndef CMARK_BUFFER_H
 #define CMARK_BUFFER_H
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include "config.h"
 #include "cmark_export.h"
 
 typedef struct {
