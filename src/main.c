@@ -4,6 +4,7 @@
 #include <errno.h>
 #include "cmark.h"
 #include "buffer.h"
+#include "debug.h"
 #include "bench.h"
 
 void print_usage()
@@ -27,23 +28,17 @@ static void print_document(node_block *document, bool ast)
 	}
 }
 
-void parse_and_render(node_block *document, FILE *fp, bool ast)
-{
-	document = cmark_parse_file(fp);
-	start_timer();
-	print_document(document, ast);
-	end_timer("print_document");
-	start_timer();
-	cmark_free_blocks(document);
-	end_timer("free_blocks");
-}
-
 int main(int argc, char *argv[])
 {
 	int i, numfps = 0;
 	bool ast = false;
 	int files[argc];
-	node_block *document = NULL;
+	unsigned char buffer[4096];
+	cmark_doc_parser *parser;
+	size_t offset;
+	node_block *document;
+
+	parser = cmark_new_doc_parser();
 
 	for (i = 1; i < argc; i++) {
 		if (strcmp(argv[i], "--version") == 0) {
@@ -64,22 +59,49 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	for (i = 0; i < numfps; i++) {
+		FILE *fp = fopen(argv[files[i]], "r");
+		if (fp == NULL) {
+			fprintf(stderr, "Error opening file %s: %s\n",
+				argv[files[i]], strerror(errno));
+			exit(1);
+		}
+
+		start_timer();
+		while (fgets((char *)buffer, sizeof(buffer), fp)) {
+			offset = strlen((char *)buffer);
+			cmark_process_line(parser, buffer, offset);
+		}
+		end_timer("processing lines");
+
+		fclose(fp);
+	}
+
 	if (numfps == 0) {
-		parse_and_render(document, stdin, ast);
-	} else {
-		for (i = 0; i < numfps; i++) {
-			FILE *fp = fopen(argv[files[i]], "r");
+		/*
+		document = cmark_parse_file(stdin);
+		print_document(document, ast);
+		exit(0);
+		*/
 
-			if (fp == NULL) {
-				fprintf(stderr, "Error opening file %s: %s\n",
-					argv[files[i]], strerror(errno));
-				exit(1);
-			}
-
-			parse_and_render(document, fp, ast);
-			fclose(fp);
+		while (fgets((char *)buffer, sizeof(buffer), stdin)) {
+			offset = strlen((char *)buffer);
+			cmark_process_line(parser, buffer, offset);
 		}
 	}
+
+	start_timer();
+	document = cmark_finish(parser);
+	end_timer("finishing document");
+	cmark_free_doc_parser(parser);
+
+	start_timer();
+	print_document(document, ast);
+	end_timer("print_document");
+
+	start_timer();
+	cmark_free_blocks(document);
+	end_timer("free_blocks");
 
 	return 0;
 }

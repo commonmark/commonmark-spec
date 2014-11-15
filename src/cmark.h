@@ -111,6 +111,15 @@ struct cmark_node_block {
 
 typedef struct cmark_node_block cmark_node_block;
 
+struct cmark_doc_parser {
+	cmark_node_block* head;
+	cmark_node_block* current;
+	int line_number;
+	cmark_strbuf *curline;
+};
+
+typedef struct cmark_doc_parser cmark_doc_parser;
+
 CMARK_EXPORT
 void cmark_free_blocks(cmark_node_block *e);
 
@@ -146,6 +155,21 @@ cmark_node_inl* cmark_make_simple(int t);
 #define cmark_make_softbreak() cmark_make_simple(INL_SOFTBREAK)
 #define cmark_make_emph(contents) cmark_make_inlines(INL_EMPH, contents)
 #define cmark_make_strong(contents) cmark_make_inlines(INL_STRONG, contents)
+
+CMARK_EXPORT
+cmark_doc_parser *cmark_new_doc_parser();
+
+CMARK_EXPORT
+void cmark_free_doc_parser(cmark_doc_parser *parser);
+
+CMARK_EXPORT
+cmark_node_block *cmark_finish(cmark_doc_parser *parser);
+
+CMARK_EXPORT
+void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer, size_t bytes);
+
+CMARK_EXPORT
+cmark_node_block *cmark_finish(cmark_doc_parser *parser);
 
 CMARK_EXPORT
 cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
@@ -203,9 +227,14 @@ unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
   #define make_softbreak            cmark_make_softbreak
   #define make_emph                 cmark_make_emph
   #define make_strong               cmark_make_strong
-  #define make_simple              cmark_make_simple
-  #define make_simple              cmark_make_simple
-  #define make_simple              cmark_make_simple
+  #define make_simple               cmark_make_simple
+  #define make_simple               cmark_make_simple
+  #define make_simple               cmark_make_simple
+  #define doc_parser                cmark_doc_parser
+  #define new_doc_parser            cmark_new_doc_parser
+  #define free_doc_parser           cmark_free_doc_parser
+  #define process_line              cmark_process_line
+  #define finish                    cmark_finish
 #endif
 
 #ifdef __cplusplus

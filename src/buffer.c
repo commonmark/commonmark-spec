@@ -205,7 +205,7 @@ int cmark_strbuf_printf(strbuf *buf, const char *format, ...)
 	return r;
 }
 
-static inline const char *cmark_strbuf_cstr(const cmark_strbuf *buf)
+inline const char *cmark_strbuf_cstr(const cmark_strbuf *buf)
 {
 	return (char *)buf->ptr;
 }
