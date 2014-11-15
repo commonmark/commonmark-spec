@@ -151,7 +151,7 @@ var parseListMarker = function(ln, offset) {
     if (rest.match(reHrule)) {
         return null;
     }
-    if ((match = rest.match(/^[*+-•]( +|$)/))) {
+    if ((match = rest.match(/^[\u2022*+-]( +|$)/))) {
         spaces_after_marker = match[1].length;
         data.type = 'Bullet';
         data.bullet_char = match[0][0];
@@ -326,7 +326,7 @@ var incorporateLine = function(ln, line_number) {
            container.t != 'IndentedCode' &&
            container.t != 'HtmlBlock' &&
            // this is a little performance optimization:
-           matchAt(/^[ #`~*•+_=<>0-9-]/,ln,offset) !== -1) {
+           matchAt(/^[ #`~*\u2022+_=<>0-9-]/,ln,offset) !== -1) {
 
         match = matchAt(/[^ ]/, ln, offset);
         if (match === -1) {
