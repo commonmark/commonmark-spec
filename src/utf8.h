@@ -1,5 +1,5 @@
-#ifndef _H_cmark_UTF8_
-#define _H_cmark_UTF8_
+#ifndef CMARK_UTF8_H
+#define CMARK_UTF8_H
 
 #include <stdint.h>
 #include "buffer.h"

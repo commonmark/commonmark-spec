@@ -1,5 +1,5 @@
-#ifndef __HOUDINI_H__
-#define __HOUDINI_H__
+#ifndef CMARK_HOUDINI_H
+#define CMARK_HOUDINI_H
 
 #ifdef __cplusplus
 extern "C" {
