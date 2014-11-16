@@ -1,5 +1,5 @@
-#ifndef _REFERENCES_H_
-#define _REFERENCES_H_
+#ifndef CMARK_REFERENCES_H
+#define CMARK_REFERENCES_H
 
 #define REFMAP_SIZE 16
 

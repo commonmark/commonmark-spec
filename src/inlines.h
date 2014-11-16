@@ -1,5 +1,5 @@
-#ifndef _INLINES_H_
-#define _INLINES_H_
+#ifndef CMARK_INLINES_H
+#define CMARK_INLINES_H
 
 unsigned char *cmark_clean_url(cmark_chunk *url);
 unsigned char *cmark_clean_title(cmark_chunk *title);

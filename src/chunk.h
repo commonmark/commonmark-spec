@@ -1,5 +1,5 @@
-#ifndef _CHUNK_H_
-#define _CHUNK_H_
+#ifndef CMARK_CHUNK_H
+#define CMARK_CHUNK_H
 
 #include <string.h>
 #include <ctype.h>

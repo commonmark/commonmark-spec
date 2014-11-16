@@ -1,5 +1,6 @@
-#ifndef __BENCH_H__
-#define __BENCH_H__
+#ifndef CMARK_BENCH_H
+#define CMARK_BENCH_H
+
 #include <stdio.h>
 #include <time.h>
 
@@ -22,4 +23,5 @@ float _cmark_save_time;
 #define start_timer()
 #define end_timer(M)
 #endif
+
 #endif

@@ -1,5 +1,5 @@
-#ifndef __debug_h__
-#define __debug_h__
+#ifndef CMARK_DEBUG_H
+#define CMARK_DEBUG_H
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>

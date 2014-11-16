@@ -1,5 +1,5 @@
-#ifndef INCLUDE_buffer_h__
-#define INCLUDE_buffer_h__
+#ifndef CMARK_BUFFER_H
+#define CMARK_BUFFER_H
 
 #include <stdbool.h>
 #include <stddef.h>
