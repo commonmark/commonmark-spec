@@ -91,7 +91,7 @@ fuzztest:
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
 	done } 2>&1 | grep 'user\|abnormally'
 
-bench:
+bench: $(BUILDDIR)
 	make -C ${BUILDDIR} TIMER=1
 	{ for x in `seq 1 100` ; do \
 	  /usr/bin/env time -p ${PROG} progit.md >/dev/null ; \
