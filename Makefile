@@ -92,7 +92,7 @@ fuzztest:
 	done } 2>&1 | grep 'user\|abnormally'
 
 bench: $(BUILDDIR)
-	make -C ${BUILDDIR} TIMER=1
+	TIMER=1 make
 	{ for x in `seq 1 100` ; do \
 	  /usr/bin/env time -p ${PROG} progit.md >/dev/null ; \
 	  done \
