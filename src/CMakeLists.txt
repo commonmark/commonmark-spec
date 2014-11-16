@@ -83,8 +83,8 @@ install(TARGETS ${PROGRAM} ${LIBRARY}
   LIBRARY DESTINATION lib
   )
 
-install(FILES cmark.h buffer.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
-  DESTINATION includes/${PROJECT_NAME}
+install(FILES cmark.h buffer.h chunk.h references.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+  DESTINATION include/${PROJECT_NAME}
   )
 
 include (CheckIncludeFile)
