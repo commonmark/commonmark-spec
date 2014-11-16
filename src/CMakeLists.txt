@@ -125,10 +125,6 @@ if(MSVC)
   set(CMAKE_C_FLAGS "/TP")
 endif()
 
-if(CMAKE_COMPILER_IS_MINGW)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fgnu89-inline")
-endif(CMAKE_COMPILER_IS_MINGW)
-
 if($ENV{TIMER})
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -DTIMER=1")
 endif($ENV{TIMER})

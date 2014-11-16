@@ -73,20 +73,7 @@ void cmark_free_inlines(cmark_node_inl* e)
 	}
 }
 
-inline cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title)
-{
-	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = CMARK_INL_LINK;
-		e->content.linkable.label = label;
-		e->content.linkable.url   = url;
-		e->content.linkable.title = title;
-		e->next = NULL;
-	}
-	return e;
-}
-
-unsigned char *clean_autolink(chunk *url, int is_email)
+unsigned char *cmark_clean_autolink(chunk *url, int is_email)
 {
 	strbuf buf = GH_BUF_INIT;
 
@@ -100,45 +87,6 @@ unsigned char *clean_autolink(chunk *url, int is_email)
 
 	houdini_unescape_html_f(&buf, url->data, url->len);
 	return strbuf_detach(&buf);
-}
-
-inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, chunk url, int is_email)
-{
-	return cmark_make_link(label, clean_autolink(&url, is_email), NULL);
-}
-
-inline cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, cmark_node_inl* contents)
-{
-	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->content.inlines = contents;
-		e->next = NULL;
-	}
-	return e;
-}
-
-// Create an inline with a literal string value.
-inline cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s)
-{
-	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->content.literal = s;
-		e->next = NULL;
-	}
-	return e;
-}
-
-// Create an inline with no value.
-inline cmark_node_inl* cmark_make_simple(cmark_inl_tag t)
-{
-	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->tag = t;
-		e->next = NULL;
-	}
-	return e;
 }
 
 // Free a node_block list and any children.

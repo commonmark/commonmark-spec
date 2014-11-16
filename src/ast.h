@@ -5,6 +5,7 @@
 #include "config.h"
 #include "buffer.h"
 #include "chunk.h"
+#include "cmark.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -136,15 +137,59 @@ struct cmark_doc_parser {
 	cmark_strbuf *curline;
 };
 
-struct cmark_node_inl *cmark_make_link(struct cmark_node_inl *label, unsigned char *url, unsigned char *title);
+unsigned char *cmark_clean_autolink(chunk *url, int is_email);
 
-struct cmark_node_inl* cmark_make_autolink(struct cmark_node_inl* label, cmark_chunk url, int is_email);
+static inline cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title)
+{
+	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->tag = CMARK_INL_LINK;
+		e->content.linkable.label = label;
+		e->content.linkable.url   = url;
+		e->content.linkable.title = title;
+		e->next = NULL;
+	}
+	return e;
+}
 
-struct cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, struct cmark_node_inl* contents);
+static inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, cmark_chunk url, int is_email)
+{
+	return cmark_make_link(label, cmark_clean_autolink(&url, is_email), NULL);
+}
 
-struct cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s);
+static inline cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, cmark_node_inl* contents)
+{
+	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->tag = t;
+		e->content.inlines = contents;
+		e->next = NULL;
+	}
+	return e;
+}
 
-struct cmark_node_inl* cmark_make_simple(cmark_inl_tag t);
+// Create an inline with a literal string value.
+static inline cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s)
+{
+	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->tag = t;
+		e->content.literal = s;
+		e->next = NULL;
+	}
+	return e;
+}
+
+// Create an inline with no value.
+static inline cmark_node_inl* cmark_make_simple(cmark_inl_tag t)
+{
+	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->tag = t;
+		e->next = NULL;
+	}
+	return e;
+}
 
 // Macros for creating various kinds of simple.
 #define cmark_make_str(s) cmark_make_literal(INL_STRING, s)
