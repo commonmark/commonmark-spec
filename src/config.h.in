@@ -7,3 +7,11 @@
 #endif
 
 #cmakedefine HAVE___BUILTIN_EXPECT
+
+#cmakedefine HAVE___ATTRIBUTE__
+
+#ifdef HAVE___ATTRIBUTE__
+  #define CMARK_ATTRIBUTE(list) __attribute__ (list)
+#else
+  #define CMARK_ATTRIBUTE(list)
+#endif

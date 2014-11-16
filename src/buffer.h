@@ -110,7 +110,7 @@ CMARK_EXPORT
 int cmark_strbuf_puts(cmark_strbuf *buf, const char *string);
 CMARK_EXPORT
 int cmark_strbuf_printf(cmark_strbuf *buf, const char *format, ...)
-	__attribute__((format (printf, 2, 3)));
+	CMARK_ATTRIBUTE((format (printf, 2, 3)));
 CMARK_EXPORT
 int cmark_strbuf_vprintf(cmark_strbuf *buf, const char *format, va_list ap);
 CMARK_EXPORT

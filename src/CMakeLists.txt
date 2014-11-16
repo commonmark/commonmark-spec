@@ -99,6 +99,10 @@ CHECK_INCLUDE_FILE(stdbool.h HAVE_STDBOOL_H)
 CHECK_C_SOURCE_COMPILES(
   "int main() { __builtin_expect(0,0); return 0; }"
   HAVE___BUILTIN_EXPECT)
+CHECK_C_SOURCE_COMPILES("
+  int f(void) __attribute__ (());
+  int main() { return 0; }
+" HAVE___ATTRIBUTE__)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
