@@ -101,6 +101,21 @@ static inline chunk take_while(subject* subj, int (*f)(int))
 	return chunk_dup(&subj->input, startpos, len);
 }
 
+// Append inline list b to the end of inline list a.
+// Return pointer to head of new list.
+static inline cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b)
+{
+	if (a == NULL) {  // NULL acts like an empty list
+		return b;
+	}
+	cmark_node_inl* cur = a;
+	while (cur->next != NULL) {
+		cur = cur->next;
+	}
+	cur->next = b;
+	return a;
+}
+
 // Try to process a backtick code span that began with a
 // span of ticks of length openticklength length (already
 // parsed).  Return 0 if you don't find matching closing

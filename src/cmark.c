@@ -24,29 +24,6 @@ unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 	return result;
 }
 
-// Free a node_block list and any children.
-void cmark_free_blocks(cmark_node_block *e)
-{
-	cmark_node_block * next;
-	while (e != NULL) {
-		cmark_free_inlines(e->inline_content);
-		strbuf_free(&e->string_content);
-		if (e->tag == CMARK_BLOCK_FENCED_CODE) {
-			strbuf_free(&e->as.code.info);
-		} else if (e->tag == CMARK_BLOCK_DOCUMENT) {
-			reference_map_free(e->as.document.refmap);
-		}
-		if (e->last_child) {
-			// Splice children into list
-			e->last_child->next = e->next;
-			e->next = e->children;
-		}
-		next = e->next;
-		free(e);
-		e = next;
-	}
-}
-
 // Utility function used by free_inlines
 static void splice_into_list(cmark_node_inl* e, node_inl* children) {
 	cmark_node_inl * tmp;
@@ -168,33 +145,26 @@ inline cmark_node_inl* cmark_make_simple(int t)
 	return e;
 }
 
-// Append inline list b to the end of inline list a.
-// Return pointer to head of new list.
-inline cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b)
+// Free a node_block list and any children.
+void cmark_free_blocks(cmark_node_block *e)
 {
-	if (a == NULL) {  // NULL acts like an empty list
-		return b;
+	cmark_node_block * next;
+	while (e != NULL) {
+		cmark_free_inlines(e->inline_content);
+		strbuf_free(&e->string_content);
+		if (e->tag == CMARK_BLOCK_FENCED_CODE) {
+			strbuf_free(&e->as.code.info);
+		} else if (e->tag == CMARK_BLOCK_DOCUMENT) {
+			reference_map_free(e->as.document.refmap);
+		}
+		if (e->last_child) {
+			// Splice children into list
+			e->last_child->next = e->next;
+			e->next = e->children;
+		}
+		next = e->next;
+		free(e);
+		e = next;
 	}
-	cmark_node_inl* cur = a;
-	while (cur->next != NULL) {
-		cur = cur->next;
-	}
-	cur->next = b;
-	return a;
 }
 
-// Append block list b to the end of block list a.
-// Return pointer to head of new list.
-inline cmark_node_block* cmark_append_blocks(cmark_node_block* a, cmark_node_block* b)
-{
-	if (a == NULL) {  // NULL acts like an empty list
-		return b;
-	}
-	cmark_node_block* cur = a;
-	while (cur->next != NULL) {
-		cur = cur->next;
-	}
-	cur->next = b;
-        b->prev = cur;
-	return a;
-}

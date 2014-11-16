@@ -127,12 +127,6 @@ CMARK_EXPORT
 void cmark_free_inlines(cmark_node_inl* e);
 
 CMARK_EXPORT
-cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b);
-
-CMARK_EXPORT
-cmark_node_block* cmark_append_blocks(cmark_node_block* a, cmark_node_block* b);
-
-CMARK_EXPORT
 cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title);
 
 CMARK_EXPORT
@@ -217,7 +211,6 @@ unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
   #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
   #define free_simple               cmark_free_simple
   #define free_blocks               cmark_free_blocks
-  #define append_simple             cmark_append_simple
   #define make_link                 cmark_make_link
   #define make_autolink             cmark_make_autolink
   #define make_str                  cmark_make_str
@@ -228,8 +221,8 @@ unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
   #define make_emph                 cmark_make_emph
   #define make_strong               cmark_make_strong
   #define make_simple               cmark_make_simple
-  #define make_simple               cmark_make_simple
-  #define make_simple               cmark_make_simple
+  #define make_literal              cmark_make_literal
+  #define make_inlines              cmark_make_inlines
   #define doc_parser                cmark_doc_parser
   #define new_doc_parser            cmark_new_doc_parser
   #define free_doc_parser           cmark_free_doc_parser
