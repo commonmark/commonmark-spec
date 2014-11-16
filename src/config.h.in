@@ -6,3 +6,4 @@
   typedef char bool;
 #endif
 
+#cmakedefine HAVE___BUILTIN_EXPECT

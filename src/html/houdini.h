@@ -6,10 +6,16 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "config.h"
 #include "buffer.h"
 
-#define likely(x)       __builtin_expect((x),1)
-#define unlikely(x)     __builtin_expect((x),0)
+#ifdef HAVE___BUILTIN_EXPECT
+#	define likely(x)	__builtin_expect((x),1)
+#	define unlikely(x)	__builtin_expect((x),0)
+#else
+#	define likely(x)	(x)
+#	define unlikely(x)	(x)
+#endif
 
 #ifdef HOUDINI_USE_LOCALE
 #	define _isxdigit(c) isxdigit(c)

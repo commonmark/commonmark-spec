@@ -93,8 +93,13 @@ install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
   DESTINATION include
   )
 
-include (CheckIncludeFile)
-CHECK_INCLUDE_FILE (stdbool.h HAVE_STDBOOL_H)
+# Feature tests
+include(CheckIncludeFile)
+include(CheckCSourceCompiles)
+CHECK_INCLUDE_FILE(stdbool.h HAVE_STDBOOL_H)
+CHECK_C_SOURCE_COMPILES(
+  "int main() { __builtin_expect(0,0); return 0; }"
+  HAVE___BUILTIN_EXPECT)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
