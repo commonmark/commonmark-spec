@@ -166,13 +166,10 @@ int cmark_strbuf_vprintf(strbuf *buf, const char *format, va_list ap)
 	ENSURE_SIZE(buf, expected_size);
 
 	while (1) {
-		va_list args;
-		va_copy(args, ap);
-
 		len = vsnprintf(
 			(char *)buf->ptr + buf->size,
 			buf->asize - buf->size,
-			format, args
+			format, ap
 			);
 
 		if (len < 0) {
