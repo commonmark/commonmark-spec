@@ -13,7 +13,7 @@ PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw tarball
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw tarball bench
 
 all: $(BUILDDIR)
 	@make -C $(BUILDDIR)
@@ -89,6 +89,15 @@ fuzztest:
 	  cat /dev/urandom | head -c $(FUZZCHARS) | iconv -f latin1 -t utf-8 | tee fuzz-$$i.txt | \
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
 	done } 2>&1 | grep 'user\|abnormally'
+
+bench:
+	make -C ${BUILDDIR} TIMER=1
+	{ for x in `seq 1 100` ; do \
+	  /usr/bin/env time -p ${PROG} progit.md >/dev/null ; \
+	  done \
+	} 2>&1  | grep 'processing lines' | \
+	          awk '{print $$3;}' | \
+		  Rscript -e 'summary (as.numeric (readLines ("stdin")))'
 
 operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
