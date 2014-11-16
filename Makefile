@@ -53,6 +53,7 @@ tarball: spec.html $(SRCDIR)/scanners.c
 	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
+	cp Makefile.nmake nmake.bat $(PKGDIR); \
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
