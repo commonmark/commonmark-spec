@@ -9,6 +9,7 @@ SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
 PKGDIR?=cmark-$(SPECVERSION)
 TARBALL?=cmark-$(SPECVERSION).tar.gz
 FUZZCHARS?=2000000  # for fuzztest
+BENCHPATT?="processing lines" # for bench
 PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
@@ -95,7 +96,7 @@ bench:
 	{ for x in `seq 1 100` ; do \
 	  /usr/bin/env time -p ${PROG} progit.md >/dev/null ; \
 	  done \
-	} 2>&1  | grep 'processing lines' | \
+	} 2>&1  | grep ${BENCHPATT} | \
 	          awk '{print $$3;}' | \
 		  Rscript -e 'summary (as.numeric (readLines ("stdin")))'
 
