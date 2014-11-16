@@ -1,3 +1,4 @@
+binmode STDOUT;
 print("    switch (c) {\n");
 my $lastchar = "";
 while (<STDIN>) {
