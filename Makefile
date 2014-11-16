@@ -49,6 +49,7 @@ tarball: spec.html $(SRCDIR)/scanners.c
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR)`; \
 	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
+	cp -a $(BUILDDIR)/$(SRCDIR)/cmark_export.h $(PKGDIR)/$(SRCDIR)/; \
 	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
