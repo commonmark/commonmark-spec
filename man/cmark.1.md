@@ -18,7 +18,8 @@ cmark [*options*] [file\*]
 `cmark` acts as a pipe, reading from stdin or from the specified
 files and writing to stdout.  It converts Markdown formatted plain
 text to HTML, using the conventions described in the CommonMark
-spec.
+spec.  If multiple files are specified, the contents of the files are
+simply concatenated before parsing.
 
 # OPTIONS
 
