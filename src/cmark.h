@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include "buffer.h"
 #include "chunk.h"
 
 #ifdef __cplusplus
@@ -43,7 +42,7 @@ CMARK_EXPORT
 void cmark_debug_print(cmark_node_block *root);
 
 CMARK_EXPORT
-void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
+unsigned char *cmark_render_html(cmark_node_block *root);
 
 CMARK_EXPORT
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);

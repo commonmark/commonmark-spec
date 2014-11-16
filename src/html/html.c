@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "cmark.h"
+#include "buffer.h"
 #include "ast.h"
 #include "debug.h"
 #include "html/houdini.h"
@@ -373,7 +374,12 @@ static void blocks_to_html(strbuf *html, node_block *b)
 	free_render_stack(rstack);
 }
 
-extern void cmark_render_html(strbuf *html, node_block *root)
+unsigned char *cmark_render_html(node_block *root)
 {
-	blocks_to_html(html, root);
+	unsigned char *result;
+	strbuf html = GH_BUF_INIT;
+	blocks_to_html(&html, root);
+	result = strbuf_detach(&html);
+	strbuf_free(&html);
+	return result;
 }

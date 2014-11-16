@@ -11,16 +11,12 @@
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 {
 	node_block *blocks;
-	strbuf htmlbuf = GH_BUF_INIT;
 	unsigned char *result;
 
 	blocks = cmark_parse_document(text, len);
 
-	cmark_render_html(&htmlbuf, blocks);
+	result = cmark_render_html(blocks);
 	cmark_free_blocks(blocks);
-
-	result = strbuf_detach(&htmlbuf);
-	strbuf_free(&htmlbuf);
 
 	return result;
 }

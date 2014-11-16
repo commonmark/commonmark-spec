@@ -3,7 +3,6 @@
 #include <string.h>
 #include <errno.h>
 #include "cmark.h"
-#include "buffer.h"
 #include "debug.h"
 #include "bench.h"
 
@@ -17,14 +16,10 @@ void print_usage()
 
 static void print_document(node_block *document, bool ast)
 {
-	strbuf html = GH_BUF_INIT;
-
 	if (ast) {
 		cmark_debug_print(document);
 	} else {
-		cmark_render_html(&html, document);
-		printf("%s", html.ptr);
-		strbuf_free(&html);
+		printf("%s", cmark_render_html(document));
 	}
 }
 
