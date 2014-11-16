@@ -5,6 +5,7 @@
 #include <assert.h>
 
 #include "cmark.h"
+#include "ast.h"
 #include "debug.h"
 #include "html/houdini.h"
 

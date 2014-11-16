@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "ast.h"
+#include "references.h"
 #include "cmark.h"
 #include "html/houdini.h"
 #include "utf8.h"

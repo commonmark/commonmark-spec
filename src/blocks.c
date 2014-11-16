@@ -4,7 +4,9 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "ast.h"
 #include "cmark.h"
+#include "references.h"
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"

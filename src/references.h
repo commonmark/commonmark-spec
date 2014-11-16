@@ -1,25 +1,8 @@
 #ifndef CMARK_REFERENCES_H
 #define CMARK_REFERENCES_H
 
-#define REFMAP_SIZE 16
-
 #include "chunk.h"
-
-struct cmark_reference {
-	struct cmark_reference *next;
-	unsigned char *label;
-	unsigned char *url;
-	unsigned char *title;
-	unsigned int hash;
-};
-
-typedef struct cmark_reference cmark_reference;
-
-struct cmark_reference_map {
-	cmark_reference *table[REFMAP_SIZE];
-};
-
-typedef struct cmark_reference_map cmark_reference_map;
+#include "ast.h"
 
 cmark_reference_map *cmark_reference_map_new(void);
 void cmark_reference_map_free(cmark_reference_map *map);

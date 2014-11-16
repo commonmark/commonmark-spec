@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include "buffer.h"
 #include "chunk.h"
-#include "references.h"
-#include "cmark_export.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,111 +12,41 @@ extern "C" {
 
 #define CMARK_VERSION "0.1"
 #define CMARK_CODE_INDENT 4
-
 #define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
-struct cmark_node_inl {
-	enum {
-		CMARK_INL_STRING,
-		CMARK_INL_SOFTBREAK,
-		CMARK_INL_LINEBREAK,
-		CMARK_INL_CODE,
-		CMARK_INL_RAW_HTML,
-		CMARK_INL_EMPH,
-		CMARK_INL_STRONG,
-		CMARK_INL_LINK,
-		CMARK_INL_IMAGE
-	} tag;
-	union {
-		cmark_chunk literal;
-		struct cmark_node_inl *inlines;
-		struct {
-			struct cmark_node_inl *label;
-			unsigned char *url;
-			unsigned char *title;
-		} linkable;
-	} content;
-	struct cmark_node_inl *next;
-};
-
 typedef struct cmark_node_inl cmark_node_inl;
-
-// Types for blocks
-struct cmark_ListData {
-	enum {
-		bullet,
-		ordered
-	}  list_type;
-	int               marker_offset;
-	int               padding;
-	int               start;
-	enum {
-		period,
-		parens
-	} delimiter;
-	unsigned char     bullet_char;
-	bool              tight;
-};
-
-struct cmark_FencedCodeData {
-	int               fence_length;
-	int               fence_offset;
-	unsigned char     fence_char;
-	cmark_strbuf      info;
-};
-
-struct cmark_node_block {
-	enum {
-		CMARK_BLOCK_DOCUMENT,
-		CMARK_BLOCK_BQUOTE,
-		CMARK_BLOCK_LIST,
-		CMARK_BLOCK_LIST_ITEM,
-		CMARK_BLOCK_FENCED_CODE,
-		CMARK_BLOCK_INDENTED_CODE,
-		CMARK_BLOCK_HTML,
-		CMARK_BLOCK_PARAGRAPH,
-		CMARK_BLOCK_ATX_HEADER,
-		CMARK_BLOCK_SETEXT_HEADER,
-		CMARK_BLOCK_HRULE,
-		CMARK_BLOCK_REFERENCE_DEF
-	} tag;
-	int start_line;
-	int start_column;
-	int end_line;
-	bool open;
-	bool last_line_blank;
-	struct cmark_node_block* children;
-	struct cmark_node_block* last_child;
-	struct cmark_node_block* parent;
-	struct cmark_node_block* top;
-	cmark_strbuf string_content;
-	cmark_node_inl* inline_content;
-
-	union  {
-		struct cmark_ListData list;
-		struct cmark_FencedCodeData code;
-		struct {
-			int level;
-		} header;
-		struct {
-			cmark_reference_map *refmap;
-		} document;
-	} as;
-
-	struct cmark_node_block *next;
-	struct cmark_node_block *prev;
-};
-
 typedef struct cmark_node_block cmark_node_block;
-
-struct cmark_doc_parser {
-	cmark_node_block* head;
-	cmark_node_block* current;
-	int line_number;
-	cmark_strbuf *curline;
-};
-
 typedef struct cmark_doc_parser cmark_doc_parser;
+
+CMARK_EXPORT
+cmark_doc_parser *cmark_new_doc_parser();
+
+CMARK_EXPORT
+void cmark_free_doc_parser(cmark_doc_parser *parser);
+
+CMARK_EXPORT
+cmark_node_block *cmark_finish(cmark_doc_parser *parser);
+
+CMARK_EXPORT
+void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer, size_t bytes);
+
+CMARK_EXPORT
+cmark_node_block *cmark_finish(cmark_doc_parser *parser);
+
+CMARK_EXPORT
+cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
+
+CMARK_EXPORT
+cmark_node_block *cmark_parse_file(FILE *f);
+
+CMARK_EXPORT
+void cmark_debug_print(cmark_node_block *root);
+
+CMARK_EXPORT
+void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
+
+CMARK_EXPORT
+unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 
 CMARK_EXPORT
 void cmark_free_blocks(cmark_node_block *e);
@@ -150,35 +78,6 @@ cmark_node_inl* cmark_make_simple(int t);
 #define cmark_make_emph(contents) cmark_make_inlines(INL_EMPH, contents)
 #define cmark_make_strong(contents) cmark_make_inlines(INL_STRONG, contents)
 
-CMARK_EXPORT
-cmark_doc_parser *cmark_new_doc_parser();
-
-CMARK_EXPORT
-void cmark_free_doc_parser(cmark_doc_parser *parser);
-
-CMARK_EXPORT
-cmark_node_block *cmark_finish(cmark_doc_parser *parser);
-
-CMARK_EXPORT
-void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer, size_t bytes);
-
-CMARK_EXPORT
-cmark_node_block *cmark_finish(cmark_doc_parser *parser);
-
-CMARK_EXPORT
-cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
-
-CMARK_EXPORT
-cmark_node_block *cmark_parse_file(FILE *f);
-
-CMARK_EXPORT
-void cmark_debug_print(cmark_node_block *root);
-
-CMARK_EXPORT
-void cmark_render_html(cmark_strbuf *html, cmark_node_block *root);
-
-CMARK_EXPORT
-unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define VERSION                   CMARK_VERSION

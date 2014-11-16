@@ -1,5 +1,6 @@
 #include "cmark.h"
 #include "utf8.h"
+#include "ast.h"
 #include "references.h"
 #include "inlines.h"
 #include "chunk.h"
