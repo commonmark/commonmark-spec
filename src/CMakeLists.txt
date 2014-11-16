@@ -40,14 +40,13 @@ set(PROGRAM_SOURCES
 
 include_directories(. html ${CMAKE_CURRENT_BINARY_DIR})
 
+set(RE2C re2c)
 if (MSVC)
-    set(RE2C ${CMAKE_CURRENT_SOURCE_DIR}/re2c)
     file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} DOS_CURRENT_SOURCE_DIR)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i ${DOS_CURRENT_SOURCE_DIR}\\scanners.re >${DOS_CURRENT_SOURCE_DIR}\\scanners.c)
 else(MSVC)
-    set(RE2C re2c)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re >${CMAKE_CURRENT_SOURCE_DIR}/scanners.c)
