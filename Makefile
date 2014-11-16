@@ -1,6 +1,7 @@
 SRCDIR?=src
 DATADIR?=data
 BUILDDIR?=build
+GENERATOR?=Unix Makefiles
 MINGW_BUILDDIR?=build-mingw
 MINGW_INSTALLDIR?=windows
 SPEC=spec.txt
@@ -28,7 +29,7 @@ check:
 $(BUILDDIR): check
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
-	cmake .. -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 install: $(BUILDDIR) man/man1/cmark.1
 	make -C $(BUILDDIR) install
