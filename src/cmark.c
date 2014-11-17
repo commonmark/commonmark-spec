@@ -7,6 +7,72 @@
 #include "buffer.h"
 #include "ast.h"
 
+// AST traversal and manipulation functions
+
+cmark_node_block *cmark_block_next(cmark_node_block *current)
+{
+	return current->next;
+}
+
+cmark_node_block *cmark_block_previous(cmark_node_block *current)
+{
+	return current->prev;
+}
+
+cmark_node_block *cmark_block_parent(cmark_node_block *current)
+{
+	return current->parent;
+}
+
+cmark_node_block *cmark_block_children(cmark_node_block *current)
+{
+	return current->children;
+}
+
+void cmark_block_delete(cmark_node_block *current)
+{
+	if (current->prev) {
+		current->prev->next = current->next;
+	}
+	if (current->next) {
+		current->next->prev = current->prev;
+	}
+	current->next = NULL;
+	cmark_free_blocks(current);
+}
+
+void cmark_block_insert_before(cmark_node_block *new, cmark_node_block *current)
+{
+	// Find last node in new:
+	cmark_node_block *new_last = new;
+	while (new_last->next) {
+		new_last = new_last->next;
+	}
+	new_last->next = current;
+	current->prev = new_last;
+	if (current->prev) {
+		current->prev->next = new;
+		new->prev = current->prev;
+	}
+}
+
+void cmark_block_insert_after(cmark_node_block *current, cmark_node_block *new)
+{
+	// Find last node in new:
+	cmark_node_block *new_last = new;
+	while (new_last->next) {
+		new_last = new_last->next;
+	}
+	if (current->next) {
+		new_last->next = current->next;
+		current->next->prev = new_last;
+	}
+	current->next = new;
+	new->prev = current;
+}
+
+/* * */
+
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 {
 	node_block *blocks;

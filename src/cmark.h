@@ -87,6 +87,27 @@ void cmark_free_blocks(cmark_node_block *e);
 CMARK_EXPORT
 void cmark_free_inlines(cmark_node_inl* e);
 
+CMARK_EXPORT
+cmark_node_block *cmark_block_next(cmark_node_block *current);
+
+CMARK_EXPORT
+cmark_node_block *cmark_block_previous(cmark_node_block *current);
+
+CMARK_EXPORT
+cmark_node_block *cmark_block_parent(cmark_node_block *current);
+
+CMARK_EXPORT
+cmark_node_block *cmark_block_children(cmark_node_block *current);
+
+CMARK_EXPORT
+void cmark_block_delete(cmark_node_block *current);
+
+CMARK_EXPORT
+void cmark_block_insert_before(cmark_node_block *new, cmark_node_block *current);
+
+CMARK_EXPORT
+void cmark_block_insert_after(cmark_node_block *current, cmark_node_block *new);
+
 #ifndef CMARK_NO_SHORT_NAMES
   #define node_inl                  cmark_node_inl
   #define INL_STRING                CMARK_INL_STRING
@@ -124,6 +145,13 @@ void cmark_free_inlines(cmark_node_inl* e);
   #define free_doc_parser           cmark_free_doc_parser
   #define process_line              cmark_process_line
   #define finish                    cmark_finish
+  #define block_next                cmark_block_next
+  #define block_previous            cmark_block_previous
+  #define block_parent              cmark_block_parent
+  #define block_children            cmark_block_children
+  #define block_delete              cmark_block_delete
+  #define block_insert_before       cmark_block_insert_before
+  #define block_insert_after        cmark_block_insert_after
 #endif
 
 #ifdef __cplusplus
