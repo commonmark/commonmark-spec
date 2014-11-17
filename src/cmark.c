@@ -164,8 +164,6 @@ void cmark_free_blocks(cmark_node_block *e)
 		strbuf_free(&e->string_content);
 		if (e->tag == CMARK_BLOCK_FENCED_CODE) {
 			strbuf_free(&e->as.code.info);
-		} else if (e->tag == CMARK_BLOCK_DOCUMENT) {
-			reference_map_free(e->as.document.refmap);
 		}
 		if (e->last_child) {
 			// Splice children into list

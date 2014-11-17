@@ -72,7 +72,6 @@ struct cmark_node_block {
 	struct cmark_node_block* children;
 	struct cmark_node_block* last_child;
 	struct cmark_node_block* parent;
-	struct cmark_node_block* top;
 	cmark_strbuf string_content;
 	struct cmark_node_inl* inline_content;
 
@@ -82,9 +81,6 @@ struct cmark_node_block {
 		struct {
 			int level;
 		} header;
-		struct {
-			cmark_reference_map *refmap;
-		} document;
 	} as;
 
 	struct cmark_node_block *next;
@@ -92,7 +88,8 @@ struct cmark_node_block {
 };
 
 struct cmark_doc_parser {
-	struct cmark_node_block* head;
+	struct cmark_reference_map *refmap;
+	struct cmark_node_block* root;
 	struct cmark_node_block* current;
 	int line_number;
 	cmark_strbuf *curline;
