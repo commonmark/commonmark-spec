@@ -8,7 +8,7 @@ extern "C" {
 unsigned char *cmark_clean_url(cmark_chunk *url);
 unsigned char *cmark_clean_title(cmark_chunk *title);
 
-cmark_node_inl* cmark_parse_inlines(cmark_strbuf *input, cmark_reference_map *refmap);
+cmark_node* cmark_parse_inlines(cmark_strbuf *input, cmark_reference_map *refmap);
 
 int cmark_parse_reference_inline(cmark_strbuf *input, cmark_reference_map *refmap);
 

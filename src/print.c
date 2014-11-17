@@ -35,7 +35,7 @@ static void print_str(const unsigned char *s, int len)
 }
 
 // Prettyprint an inline list, for debugging.
-static void print_inlines(node_inl* ils, int indent)
+static void print_inlines(cmark_node* ils, int indent)
 {
 	int i;
 
@@ -43,49 +43,51 @@ static void print_inlines(node_inl* ils, int indent)
 		for (i=0; i < indent; i++) {
 			putchar(' ');
 		}
-		switch(ils->tag) {
-		case INL_STRING:
+		switch(ils->type) {
+		case NODE_STRING:
 			printf("str ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
+			print_str(ils->as.literal.data, ils->as.literal.len);
 			putchar('\n');
 			break;
-		case INL_LINEBREAK:
+		case NODE_LINEBREAK:
 			printf("linebreak\n");
 			break;
-		case INL_SOFTBREAK:
+		case NODE_SOFTBREAK:
 			printf("softbreak\n");
 			break;
-		case INL_CODE:
+		case NODE_INLINE_CODE:
 			printf("code ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
+			print_str(ils->as.literal.data, ils->as.literal.len);
 			putchar('\n');
 			break;
-		case INL_RAW_HTML:
+		case NODE_INLINE_HTML:
 			printf("html ");
-			print_str(ils->content.literal.data, ils->content.literal.len);
+			print_str(ils->as.literal.data, ils->as.literal.len);
 			putchar('\n');
 			break;
-		case INL_LINK:
-		case INL_IMAGE:
-			printf("%s url=", ils->tag == INL_LINK ? "link" : "image");
+		case NODE_LINK:
+		case NODE_IMAGE:
+			printf("%s url=", ils->type == NODE_LINK ? "link" : "image");
 
-			if (ils->content.linkable.url)
-				print_str(ils->content.linkable.url, -1);
+			if (ils->as.link.url)
+				print_str(ils->as.link.url, -1);
 
-			if (ils->content.linkable.title) {
+			if (ils->as.link.title) {
 				printf(" title=");
-				print_str(ils->content.linkable.title, -1);
+				print_str(ils->as.link.title, -1);
 			}
 			putchar('\n');
-			print_inlines(ils->content.linkable.label, indent + 2);
+			print_inlines(ils->as.link.label, indent + 2);
 			break;
-		case INL_STRONG:
+		case NODE_STRONG:
 			printf("strong\n");
-			print_inlines(ils->content.linkable.label, indent + 2);
+			print_inlines(ils->as.link.label, indent + 2);
 			break;
-		case INL_EMPH:
+		case NODE_EMPH:
 			printf("emph\n");
-			print_inlines(ils->content.linkable.label, indent + 2);
+			print_inlines(ils->as.link.label, indent + 2);
+			break;
+		default:
 			break;
 		}
 		ils = ils->next;
@@ -133,15 +135,15 @@ static void print_blocks(cmark_node* b, int indent)
 			break;
 		case NODE_ATX_HEADER:
 			printf("atx_header (level=%d)\n", b->as.header.level);
-			print_inlines(b->inline_content, indent + 2);
+			print_inlines(b->first_child, indent + 2);
 			break;
 		case NODE_SETEXT_HEADER:
 			printf("setext_header (level=%d)\n", b->as.header.level);
-			print_inlines(b->inline_content, indent + 2);
+			print_inlines(b->first_child, indent + 2);
 			break;
 		case NODE_PARAGRAPH:
 			printf("paragraph\n");
-			print_inlines(b->inline_content, indent + 2);
+			print_inlines(b->first_child, indent + 2);
 			break;
 		case NODE_HRULE:
 			printf("hrule\n");

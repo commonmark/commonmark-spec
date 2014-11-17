@@ -80,10 +80,7 @@ CMARK_EXPORT
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 
 CMARK_EXPORT
-void cmark_free_blocks(cmark_node *e);
-
-CMARK_EXPORT
-void cmark_free_inlines(cmark_node_inl* e);
+void cmark_free_nodes(cmark_node *e);
 
 CMARK_EXPORT
 cmark_node_block *cmark_block_next(cmark_node_block *current);

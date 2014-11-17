@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include "config.h"
+#include "node.h"
 #include "buffer.h"
 #include "chunk.h"
 #include "cmark.h"
@@ -97,66 +98,66 @@ struct cmark_doc_parser {
 
 unsigned char *cmark_clean_autolink(chunk *url, int is_email);
 
-static inline cmark_node_inl *cmark_make_link(cmark_node_inl *label, unsigned char *url, unsigned char *title)
+static inline cmark_node *cmark_make_link(cmark_node *label, unsigned char *url, unsigned char *title)
 {
-	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {
-		e->tag = CMARK_INL_LINK;
-		e->content.linkable.label = label;
-		e->content.linkable.url   = url;
-		e->content.linkable.title = title;
+		e->type = CMARK_NODE_LINK;
+		e->as.link.label = label;
+		e->as.link.url   = url;
+		e->as.link.title = title;
 		e->next = NULL;
 	}
 	return e;
 }
 
-static inline cmark_node_inl* cmark_make_autolink(cmark_node_inl* label, cmark_chunk url, int is_email)
+static inline cmark_node* cmark_make_autolink(cmark_node* label, cmark_chunk url, int is_email)
 {
 	return cmark_make_link(label, cmark_clean_autolink(&url, is_email), NULL);
 }
 
-static inline cmark_node_inl* cmark_make_inlines(cmark_inl_tag t, cmark_node_inl* contents)
+static inline cmark_node* cmark_make_inlines(cmark_node_type t, cmark_node* contents)
 {
-	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {
-		e->tag = t;
-		e->content.inlines = contents;
+		e->type = t;
+		e->first_child = contents;
 		e->next = NULL;
 	}
 	return e;
 }
 
 // Create an inline with a literal string value.
-static inline cmark_node_inl* cmark_make_literal(cmark_inl_tag t, cmark_chunk s)
+static inline cmark_node* cmark_make_literal(cmark_node_type t, cmark_chunk s)
 {
-	cmark_node_inl * e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {
-		e->tag = t;
-		e->content.literal = s;
+		e->type = t;
+		e->as.literal = s;
 		e->next = NULL;
 	}
 	return e;
 }
 
 // Create an inline with no value.
-static inline cmark_node_inl* cmark_make_simple(cmark_inl_tag t)
+static inline cmark_node* cmark_make_simple(cmark_node_type t)
 {
-	cmark_node_inl* e = (cmark_node_inl *)calloc(1, sizeof(*e));
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {
-		e->tag = t;
+		e->type = t;
 		e->next = NULL;
 	}
 	return e;
 }
 
 // Macros for creating various kinds of simple.
-#define cmark_make_str(s) cmark_make_literal(INL_STRING, s)
-#define cmark_make_code(s) cmark_make_literal(INL_CODE, s)
-#define cmark_make_raw_html(s) cmark_make_literal(INL_RAW_HTML, s)
-#define cmark_make_linebreak() cmark_make_simple(INL_LINEBREAK)
-#define cmark_make_softbreak() cmark_make_simple(INL_SOFTBREAK)
-#define cmark_make_emph(contents) cmark_make_inlines(INL_EMPH, contents)
-#define cmark_make_strong(contents) cmark_make_inlines(INL_STRONG, contents)
+#define cmark_make_str(s) cmark_make_literal(CMARK_NODE_STRING, s)
+#define cmark_make_code(s) cmark_make_literal(CMARK_NODE_INLINE_CODE, s)
+#define cmark_make_raw_html(s) cmark_make_literal(CMARK_NODE_INLINE_HTML, s)
+#define cmark_make_linebreak() cmark_make_simple(CMARK_NODE_LINEBREAK)
+#define cmark_make_softbreak() cmark_make_simple(CMARK_NODE_SOFTBREAK)
+#define cmark_make_emph(contents) cmark_make_inlines(CMARK_NODE_EMPH, contents)
+#define cmark_make_strong(contents) cmark_make_inlines(CMARK_NODE_STRONG, contents)
 
 
 

@@ -295,7 +295,7 @@ static void process_inlines(cmark_node* cur, reference_map *refmap)
 			case NODE_PARAGRAPH:
 			case NODE_ATX_HEADER:
 			case NODE_SETEXT_HEADER:
-				cur->inline_content = parse_inlines(&cur->string_content, refmap);
+				cur->first_child = parse_inlines(&cur->string_content, refmap);
 				break;
 
 			default:

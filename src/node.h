@@ -7,6 +7,7 @@ extern "C" {
 
 #include "cmark.h"
 #include "buffer.h"
+#include "chunk.h"
 
 typedef enum {
     // Block
@@ -86,12 +87,10 @@ struct cmark_node {
 	bool open;
 	bool last_line_blank;
 
-	// Temp
-	cmark_node_inl *inline_content;
-
 	cmark_strbuf string_content;
 
 	union {
+		cmark_chunk       literal;
 		cmark_list        list;
 		cmark_fenced_code code;
 		cmark_header      header;
