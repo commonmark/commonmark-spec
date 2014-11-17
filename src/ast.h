@@ -15,20 +15,6 @@ extern "C" {
 #define REFMAP_SIZE 16
 #define MAX_LINK_LABEL_LENGTH 1000
 
-struct cmark_node_inl {
-	cmark_inl_tag tag;
-	union {
-		cmark_chunk literal;
-		struct cmark_node_inl *inlines;
-		struct {
-			struct cmark_node_inl *label;
-			unsigned char *url;
-			unsigned char *title;
-		} linkable;
-	} content;
-	struct cmark_node_inl *next;
-};
-
 struct cmark_reference {
 	struct cmark_reference *next;
 	unsigned char *label;
@@ -44,49 +30,6 @@ struct cmark_reference_map {
 };
 
 typedef struct cmark_reference_map cmark_reference_map;
-
-// Types for blocks
-struct cmark_ListData {
-	cmark_list_type   list_type;
-	int               marker_offset;
-	int               padding;
-	int               start;
-	cmark_delim_type  delimiter;
-	unsigned char     bullet_char;
-	bool              tight;
-};
-
-struct cmark_FencedCodeData {
-	int               fence_length;
-	int               fence_offset;
-	unsigned char     fence_char;
-	cmark_strbuf      info;
-};
-
-struct cmark_node_block {
-	cmark_block_tag tag;
-	int start_line;
-	int start_column;
-	int end_line;
-	bool open;
-	bool last_line_blank;
-	struct cmark_node_block* children;
-	struct cmark_node_block* last_child;
-	struct cmark_node_block* parent;
-	cmark_strbuf string_content;
-	struct cmark_node_inl* inline_content;
-
-	union  {
-		struct cmark_ListData list;
-		struct cmark_FencedCodeData code;
-		struct {
-			int level;
-		} header;
-	} as;
-
-	struct cmark_node_block *next;
-	struct cmark_node_block *prev;
-};
 
 struct cmark_doc_parser {
 	struct cmark_reference_map *refmap;
@@ -162,10 +105,6 @@ static inline cmark_node* cmark_make_simple(cmark_node_type t)
 
 
 #ifndef CMARK_NO_SHORT_NAMES
-  #define node_inl                  cmark_node_inl
-  #define ListData                  cmark_ListData
-  #define FencedCodeData            cmark_FencedCodeData
-  #define node_block                cmark_node_block
   #define make_link                 cmark_make_link
   #define make_autolink             cmark_make_autolink
   #define make_str                  cmark_make_str
