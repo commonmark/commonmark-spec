@@ -129,7 +129,7 @@ bench: benchmark.md
 	  for x in `seq 1 20` ; do \
 	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
 		  done \
-	} 2>&1  | tee rawdata | grep 'user' |\
+	} 2>&1  | grep 'real' |\
 	          awk '{print $$2}' | \
 		  python3 'bench/stats.py'
 
