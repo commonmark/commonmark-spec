@@ -4,6 +4,7 @@ set(HEADERS
   cmark.h
   ast.h
   buffer.h
+  node.h
   chunk.h
   references.h
   debug.h
@@ -16,6 +17,7 @@ set(HEADERS
   )
 set(LIBRARY_SOURCES
   cmark.c
+  node.c
   blocks.c
   inlines.c
   print.c
