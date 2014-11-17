@@ -62,7 +62,7 @@ archive: spec.html $(BUILDDIR)
 	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR) benchmark.md
 
 $(PROG): all
 
@@ -114,14 +114,17 @@ fuzztest:
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
 	done } 2>&1 | grep 'user\|abnormally'
 
-bench:
-	# First build with TIMER=1
-	{ for x in `seq 1 100` ; do \
-	  /usr/bin/env time -p ${PROG} progit.md >/dev/null ; \
-	  done \
-	} 2>&1  | grep ${BENCHPATT} | \
-	          awk '{print $$3;}' | \
-		  Rscript -e 'summary (as.numeric (readLines ("stdin")))'
+# for benchmarking
+benchmark.md: progit.md
+	for x in `seq 1 10` ; do cat $< >> $@; done
+
+bench: benchmark.md
+	{ for x in `seq 1 20` ; do \
+	  sudo chrt -f 99 /usr/bin/env time -p ${PROG} $< >/dev/null ; \
+		  done \
+	} 2>&1  | tee rawdata | grep 'user' |\
+	          awk '{print $$2}' | \
+		  python3 'bench/stats.py'
 
 operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
