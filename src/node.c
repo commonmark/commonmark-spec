@@ -233,4 +233,55 @@ cmark_node_append_child(cmark_node *node, cmark_node *child)
 	return 1;
 }
 
+// Utility function used by cmark_free_nodes
+static void splice_into_list(cmark_node* e, cmark_node* children) {
+	cmark_node * tmp;
+	if (children) {
+		tmp = children;
+		// Find last child
+		while (tmp->next) {
+			tmp = tmp->next;
+		}
+		// Splice children into list
+		tmp->next = e->next;
+		e->next = children;
+	}
+	return ;
+}
+
+// Free a cmark_node list and any children.
+void cmark_free_nodes(cmark_node *e)
+{
+	cmark_node *next;
+	while (e != NULL) {
+		strbuf_free(&e->string_content);
+		switch (e->type){
+		case NODE_FENCED_CODE:
+			strbuf_free(&e->as.code.info);
+			break;
+		case NODE_STRING:
+		case NODE_INLINE_HTML:
+		case NODE_INLINE_CODE:
+			cmark_chunk_free(&e->as.literal);
+			break;
+		case NODE_LINK:
+		case NODE_IMAGE:
+			free(e->as.link.url);
+			free(e->as.link.title);
+			splice_into_list(e, e->as.link.label);
+			break;
+		default:
+			break;
+		}
+		if (e->last_child) {
+			// Splice children into list
+			e->last_child->next = e->next;
+			e->next = e->first_child;
+		}
+		next = e->next;
+		free(e);
+		e = next;
+	}
+}
+
 
