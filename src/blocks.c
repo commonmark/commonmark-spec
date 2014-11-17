@@ -14,6 +14,7 @@
 #include "buffer.h"
 #include "debug.h"
 
+#define CODE_INDENT 4
 #define peek_at(i, n) (i)->data[n]
 
 static node_block* make_block(cmark_block_tag tag, int start_line, int start_column)

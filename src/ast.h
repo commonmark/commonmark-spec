@@ -11,8 +11,6 @@
 extern "C" {
 #endif
 
-#define CMARK_VERSION "0.1"
-#define CMARK_CODE_INDENT 4
 #define REFMAP_SIZE 16
 #define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
