@@ -4,7 +4,6 @@ compiler:
  - gcc
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq re2c
+ - sudo apt-get install -qq re2c pandoc
 script:
- - make archive
- - make testarchive
+ - make testtarball
