@@ -89,8 +89,8 @@ struct cmark_node_block {
 
 struct cmark_doc_parser {
 	struct cmark_reference_map *refmap;
-	struct cmark_node_block* root;
-	struct cmark_node_block* current;
+	struct cmark_node* root;
+	struct cmark_node* current;
 	int line_number;
 	cmark_strbuf *curline;
 };

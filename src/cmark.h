@@ -47,6 +47,7 @@ typedef enum {
 	CMARK_BLOCK_REFERENCE_DEF
 } cmark_block_tag;
 
+typedef struct cmark_node cmark_node;
 typedef struct cmark_node_inl cmark_node_inl;
 typedef struct cmark_node_block cmark_node_block;
 typedef struct cmark_doc_parser cmark_doc_parser;
@@ -58,31 +59,28 @@ CMARK_EXPORT
 void cmark_free_doc_parser(cmark_doc_parser *parser);
 
 CMARK_EXPORT
-cmark_node_block *cmark_finish(cmark_doc_parser *parser);
+cmark_node *cmark_finish(cmark_doc_parser *parser);
 
 CMARK_EXPORT
 void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer, size_t bytes);
 
 CMARK_EXPORT
-cmark_node_block *cmark_finish(cmark_doc_parser *parser);
+cmark_node *cmark_parse_document(const unsigned char *buffer, size_t len);
 
 CMARK_EXPORT
-cmark_node_block *cmark_parse_document(const unsigned char *buffer, size_t len);
+cmark_node *cmark_parse_file(FILE *f);
 
 CMARK_EXPORT
-cmark_node_block *cmark_parse_file(FILE *f);
+void cmark_debug_print(cmark_node *root);
 
 CMARK_EXPORT
-void cmark_debug_print(cmark_node_block *root);
-
-CMARK_EXPORT
-unsigned char *cmark_render_html(cmark_node_block *root);
+unsigned char *cmark_render_html(cmark_node *root);
 
 CMARK_EXPORT
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
 
 CMARK_EXPORT
-void cmark_free_blocks(cmark_node_block *e);
+void cmark_free_blocks(cmark_node *e);
 
 CMARK_EXPORT
 void cmark_free_inlines(cmark_node_inl* e);
@@ -98,9 +96,6 @@ cmark_node_block *cmark_block_parent(cmark_node_block *current);
 
 CMARK_EXPORT
 cmark_node_block *cmark_block_children(cmark_node_block *current);
-
-CMARK_EXPORT
-void cmark_block_delete(cmark_node_block *current);
 
 CMARK_EXPORT
 void cmark_block_insert_before(cmark_node_block *new, cmark_node_block *current);

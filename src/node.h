@@ -86,6 +86,9 @@ struct cmark_node {
 	bool open;
 	bool last_line_blank;
 
+	// Temp
+	cmark_node_inl *inline_content;
+
 	cmark_strbuf string_content;
 
 	union {
@@ -95,8 +98,6 @@ struct cmark_node {
 		cmark_link        link;
 	} as;
 };
-
-typedef struct cmark_node cmark_node;
 
 CMARK_EXPORT cmark_node_type
 cmark_node_get_type(cmark_node *node);
@@ -134,6 +135,31 @@ cmark_node_prepend_child(cmark_node *node, cmark_node *child);
 
 CMARK_EXPORT int
 cmark_node_append_child(cmark_node *node, cmark_node *child);
+
+#define NODE_DOCUMENT CMARK_NODE_DOCUMENT
+#define NODE_BQUOTE CMARK_NODE_BQUOTE
+#define NODE_LIST CMARK_NODE_LIST
+#define NODE_LIST_ITEM CMARK_NODE_LIST_ITEM
+#define NODE_FENCED_CODE CMARK_NODE_FENCED_CODE
+#define NODE_INDENTED_CODE CMARK_NODE_INDENTED_CODE
+#define NODE_HTML CMARK_NODE_HTML
+#define NODE_PARAGRAPH CMARK_NODE_PARAGRAPH
+#define NODE_ATX_HEADER CMARK_NODE_ATX_HEADER
+#define NODE_SETEXT_HEADER CMARK_NODE_SETEXT_HEADER
+#define NODE_HRULE CMARK_NODE_HRULE
+#define NODE_REFERENCE_DEF CMARK_NODE_REFERENCE_DEF
+
+#define NODE_STRING CMARK_NODE_STRING
+#define NODE_SOFTBREAK CMARK_NODE_SOFTBREAK
+#define NODE_LINEBREAK CMARK_NODE_LINEBREAK
+#define NODE_INLINE_CODE CMARK_NODE_INLINE_CODE
+#define NODE_INLINE_HTML CMARK_NODE_INLINE_HTML
+#define NODE_EMPH CMARK_NODE_EMPH
+#define NODE_STRONG CMARK_NODE_STRONG
+#define NODE_LINK CMARK_NODE_LINK
+#define NODE_IMAGE CMARK_NODE_IMAGE
+
+#define NODE_LINK_LABEL CMARK_NODE_LINK_LABEL
 
 #ifdef __cplusplus
 }
