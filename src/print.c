@@ -76,15 +76,15 @@ static void print_inlines(cmark_node* ils, int indent)
 				print_str(ils->as.link.title, -1);
 			}
 			putchar('\n');
-			print_inlines(ils->as.link.label, indent + 2);
+			print_inlines(ils->first_child, indent + 2);
 			break;
 		case NODE_STRONG:
 			printf("strong\n");
-			print_inlines(ils->as.link.label, indent + 2);
+			print_inlines(ils->first_child, indent + 2);
 			break;
 		case NODE_EMPH:
 			printf("emph\n");
-			print_inlines(ils->as.link.label, indent + 2);
+			print_inlines(ils->first_child, indent + 2);
 			break;
 		default:
 			break;

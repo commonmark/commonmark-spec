@@ -127,11 +127,6 @@ static void inlines_to_plain_html(strbuf *html, cmark_node* ils)
 
 		case NODE_LINK:
 		case NODE_IMAGE:
-			children = ils->as.link.label;
-			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "");
-			break;
-
 		case NODE_STRONG:
 		case NODE_EMPH:
 			children = ils->first_child;
@@ -201,7 +196,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 			}
 
 			strbuf_puts(html, "\">");
-			children = ils->as.link.label;
+			children = ils->first_child;
 			rstack = push_inline(rstack, ils->next, "</a>");
 			break;
 
@@ -211,7 +206,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 				escape_href(html, ils->as.link.url, -1);
 
 			strbuf_puts(html, "\" alt=\"");
-			inlines_to_plain_html(html, ils->as.link.label);
+			inlines_to_plain_html(html, ils->first_child);
 
 			if (ils->as.link.title) {
 				strbuf_puts(html, "\" title=\"");
