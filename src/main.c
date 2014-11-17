@@ -17,10 +17,14 @@ void print_usage()
 
 static void print_document(node_block *document, bool ast)
 {
+	unsigned char *result;
 	if (ast) {
 		cmark_debug_print(document);
 	} else {
-		printf("%s", cmark_render_html(document));
+
+		result = cmark_render_html(document);
+		printf("%s", result);
+		free(result);
 	}
 }
 
