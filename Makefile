@@ -23,7 +23,7 @@ all: $(BUILDDIR)
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check
+$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -66,6 +66,14 @@ clean:
 
 $(PROG): all
 
+# We include html_unescape.h in the repository, so this shouldn't
+# normally need to be generated.
+$(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
+	gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l \
+		--null-strings -m5 $< > $@
+
+# We include case_fold_switch.inc in the repository, so this shouldn't
+# normally need to be generated.
 $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
 

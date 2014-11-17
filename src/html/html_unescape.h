@@ -1,5 +1,5 @@
-/* ANSI-C code produced by gperf version 3.0.4 */
-/* Command-line: gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 src/html/html_unescape.gperf  */
+/* ANSI-C code produced by gperf version 3.0.3 */
+/* Command-line: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l --null-strings -m5 src/html/html_unescape.gperf  */
 /* Computed positions: -k'1-7,10,12,$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -83,7 +83,7 @@ hash_entity (register const char *str, register unsigned int len)
       16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001,
       16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001, 16001
     };
-  register int hval = len;
+  register unsigned int hval = len;
 
   switch (hval)
     {
@@ -121,12 +121,6 @@ hash_entity (register const char *str, register unsigned int len)
   return hval + asso_values[(unsigned char)str[len - 1]];
 }
 
-#ifdef __GNUC__
-__inline
-#if defined __GNUC_STDC_INLINE__ || defined __GNUC_GNU_INLINE__
-__attribute__ ((__gnu_inline__))
-#endif
-#endif
 const struct html_ent *
 find_entity (register const char *str, register unsigned int len)
 {
@@ -9727,9 +9721,9 @@ find_entity (register const char *str, register unsigned int len)
 
   if (len <= MAX_WORD_LENGTH && len >= MIN_WORD_LENGTH)
     {
-      register int key = hash_entity (str, len);
+      unsigned int key = hash_entity (str, len);
 
-      if (key <= MAX_HASH_VALUE && key >= 0)
+      if (key <= MAX_HASH_VALUE)
         if (len == lengthtable[key])
           {
             register const char *s = wordlist[key].entity;
