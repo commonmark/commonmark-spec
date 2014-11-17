@@ -62,6 +62,9 @@ struct cmark_node {
 	} as;
 };
 
+int
+cmark_node_check(cmark_node *node);
+
 #ifdef __cplusplus
 }
 #endif

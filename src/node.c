@@ -249,6 +249,64 @@ static void splice_into_list(cmark_node* e, cmark_node* children) {
 	return ;
 }
 
+int
+cmark_node_check(cmark_node *node) {
+	cmark_node *cur = node;
+	int errors = 0;
+
+	while (cur) {
+		if (cur->first_child) {
+			if (cur->first_child->parent != cur) {
+				fprintf(stderr,
+					"Invalid 'parent' in node type %d\n",
+					cur->first_child->type);
+				cur->first_child->parent = cur;
+				++errors;
+			}
+			cur = cur->first_child;
+		}
+		else if (cur->next) {
+			if (cur->next->prev != cur) {
+				fprintf(stderr,
+					"Invalid 'prev' in node type %d\n",
+					cur->next->type);
+				cur->next->prev = cur;
+				++errors;
+			}
+			if (cur->next->parent != cur->parent) {
+				fprintf(stderr,
+					"Invalid 'parent' in node type %d\n",
+					cur->next->type);
+				cur->next->parent = cur->parent;
+				++errors;
+			}
+			cur = cur->next;
+		}
+		else {
+			if (cur->parent->last_child != cur) {
+				fprintf(stderr,
+					"Invalid 'last_child' in node type %d\n",
+					cur->parent->type);
+				cur->parent->last_child = cur;
+				++errors;
+			}
+
+			cmark_node *ancestor = cur->parent;
+			cur = NULL;
+
+			while (ancestor != node->parent) {
+				if (ancestor->next) {
+					cur = ancestor->next;
+					break;
+				}
+				ancestor = ancestor->parent;
+			}
+		}
+	}
+
+	return errors;
+}
+
 // Free a cmark_node list and any children.
 void cmark_free_nodes(cmark_node *e)
 {

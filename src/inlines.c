@@ -193,6 +193,7 @@ static inline cmark_node* cmark_append_inlines(cmark_node* a, cmark_node* b)
 		cur = cur->next;
 	}
 	cur->next = b;
+	b->prev = cur;
 	return a;
 }
 
@@ -395,12 +396,8 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 				// between the opener and closer
 				emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
 				emph->next = closer->first_inline;
+				emph->prev = inl;
 				inl->next = emph;
-				tmp = emph->first_child;
-				while (tmp->next != NULL && tmp->next != closer->first_inline) {
-					tmp = tmp->next;
-				}
-				tmp->next = NULL;
 
 				// if opener has 0 delims, remove it and its associated inline
 				if (opener->delim_count == 0) {
@@ -415,11 +412,27 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 					remove_delimiter(subj, opener);
 				}
 
+				// fix tree structure
+				tmp = emph->first_child;
+				while (tmp->next != NULL && tmp->next != closer->first_inline) {
+					tmp->parent = emph;
+					tmp = tmp->next;
+				}
+				tmp->parent = emph;
+				if (tmp->next) {
+					tmp->next->prev = emph;
+				}
+				tmp->next = NULL;
+				emph->last_child = tmp;
+
 				// if closer has 0 delims, remove it and its associated inline
 				if (closer->delim_count == 0) {
 					// remove empty closer inline
 					tmp = closer->first_inline;
 					emph->next = tmp->next;
+					if (tmp->next) {
+						tmp->next->prev = emph;
+					}
 					tmp->next = NULL;
 					cmark_free_nodes(tmp);
 					// remove closer from stack
@@ -727,6 +740,15 @@ match:
 	inl->as.link.url   = url;
 	inl->as.link.title = title;
 	inl->next = NULL;
+	if (link_text) {
+		cmark_node *tmp;
+		link_text->prev = NULL;
+		for (tmp = link_text; tmp->next != NULL; tmp = tmp->next) {
+			tmp->parent = inl;
+		}
+		tmp->parent = inl;
+		inl->last_child = tmp;
+	}
 	*last = inl;
 
 	// process_emphasis will remove this delimiter and all later ones.
