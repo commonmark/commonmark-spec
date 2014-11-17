@@ -15,15 +15,15 @@ PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive testarchive testlib bench
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench
 
-all: $(BUILDDIR)
+all: $(BUILDDIR) $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	@make -C $(BUILDDIR)
 
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc
+$(BUILDDIR): check
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -43,7 +43,7 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(SRCDIR)/scanners.c $(BUILDDIR)
+archive: spec.html $(BUILDDIR)
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
@@ -62,7 +62,7 @@ archive: spec.html $(SRCDIR)/scanners.c $(BUILDDIR)
 	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
 
 $(PROG): all
 
@@ -86,18 +86,24 @@ test: $(SPEC)
 testlib: $(SPEC)
 	perl runtests.pl $< ./wrapper.py
 
-testarchive: $(TARBALL) $(ZIPARCHIVE)
+$(TARBALL): archive
+
+$(ZIPARCHIVE): archive
+
+testarchive: testtarball testziparchive
+	rm -rf $(PKGDIR)
+
+testtarball: $(TARBALL)
 	rm -rf $(PKGDIR); \
 	tar xvzf $(TARBALL); \
 	cd $(PKGDIR); \
-	make && make test; \
-	cd .. ; \
-	rm -rf $(PKGDIR) ; \
+	mkdir build && cd build && cmake .. && make && ctest -V
+
+testziparchive: $(ZIPARCHIVE)
+	rm -rf $(PKGDIR); \
 	unzip $(ZIPARCHIVE); \
 	cd $(PKGDIR); \
-	make && make test; \
-	cd .. ; \
-	rm -rf $(PKGDIR)
+	mkdir build && cd build && cmake .. && make && ctest -V
 
 leakcheck: $(PROG)
 	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes $(PROG)
