@@ -68,7 +68,7 @@ static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsig
 	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {
 		e->type = CMARK_NODE_LINK;
-		e->as.link.label = label;
+		e->first_child   = label;
 		e->as.link.url   = url;
 		e->as.link.title = title;
 		e->next = NULL;
@@ -735,7 +735,7 @@ match:
 	inl = opener->first_inline;
 	inl->type = is_image ? NODE_IMAGE : NODE_LINK;
 	chunk_free(&inl->as.literal);
-	inl->as.link.label = link_text;
+	inl->first_child = link_text;
 	process_emphasis(subj, opener->previous);
 	inl->as.link.url   = url;
 	inl->as.link.title = title;

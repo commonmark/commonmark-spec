@@ -41,9 +41,6 @@ typedef enum {
 
     CMARK_NODE_FIRST_INLINE = CMARK_NODE_STRING,
     CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
-
-    // Other
-    CMARK_NODE_LINK_LABEL
 } cmark_node_type;
 
 typedef enum {

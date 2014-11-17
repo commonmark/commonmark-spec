@@ -75,7 +75,6 @@ S_can_contain(cmark_node *node, cmark_node *child)
 	case CMARK_NODE_STRONG:
 	case CMARK_NODE_LINK:
 	case CMARK_NODE_IMAGE:
-	case CMARK_NODE_LINK_LABEL:
 		return S_is_inline(child);
 
 	default:
@@ -233,22 +232,6 @@ cmark_node_append_child(cmark_node *node, cmark_node *child)
 	return 1;
 }
 
-// Utility function used by cmark_free_nodes
-static void splice_into_list(cmark_node* e, cmark_node* children) {
-	cmark_node * tmp;
-	if (children) {
-		tmp = children;
-		// Find last child
-		while (tmp->next) {
-			tmp = tmp->next;
-		}
-		// Splice children into list
-		tmp->next = e->next;
-		e->next = children;
-	}
-	return ;
-}
-
 int
 cmark_node_check(cmark_node *node) {
 	cmark_node *cur = node;
@@ -326,7 +309,6 @@ void cmark_free_nodes(cmark_node *e)
 		case NODE_IMAGE:
 			free(e->as.link.url);
 			free(e->as.link.title);
-			splice_into_list(e, e->as.link.label);
 			break;
 		default:
 			break;

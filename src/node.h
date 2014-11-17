@@ -31,7 +31,6 @@ typedef struct {
 } cmark_header;
 
 typedef struct {
-	struct cmark_node *label;
 	unsigned char *url;
 	unsigned char *title;
 } cmark_link;
