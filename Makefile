@@ -8,13 +8,14 @@ SITE=_site
 SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
 PKGDIR?=cmark-$(SPECVERSION)
 TARBALL?=cmark-$(SPECVERSION).tar.gz
+ZIPARCHIVE?=cmark-$(SPECVERSION).zip
 FUZZCHARS?=2000000  # for fuzztest
 BENCHPATT?="processing lines" # for bench
 PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw tarball bench
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive testarchive testlib bench
 
 all: $(BUILDDIR)
 	@make -C $(BUILDDIR)
@@ -42,14 +43,13 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-tarball: spec.html $(SRCDIR)/scanners.c
-	rm -rf $(PKGDIR); \
+archive: spec.html $(SRCDIR)/scanners.c $(BUILDDIR)
+	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR)`; \
 	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
-	cp -a $(BUILDDIR)/$(SRCDIR)/cmark_export.h $(PKGDIR)/$(SRCDIR)/; \
 	cp spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
@@ -57,10 +57,12 @@ tarball: spec.html $(SRCDIR)/scanners.c
 	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
 	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
-	rm -rf $(PKGDIR)
+	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
+	rm -rf $(PKGDIR) ; \
+	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE)
 
 $(PROG): all
 
@@ -76,9 +78,14 @@ test: $(SPEC)
 testlib: $(SPEC)
 	perl runtests.pl $< ./wrapper.py
 
-testtarball: $(TARBALL)
+testarchive: $(TARBALL) $(ZIPARCHIVE)
 	rm -rf $(PKGDIR); \
 	tar xvzf $(TARBALL); \
+	cd $(PKGDIR); \
+	make && make test; \
+	cd .. ; \
+	rm -rf $(PKGDIR) ; \
+	unzip $(ZIPARCHIVE); \
 	cd $(PKGDIR); \
 	make && make test; \
 	cd .. ; \

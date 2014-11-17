@@ -105,9 +105,9 @@ To run a test for memory leaks using valgrind:
 
     make leakcheck
 
-To make a release tarball:
+To make a release tarball and zip archive:
 
-    make tarball
+    make archive
 
 Compiling for Windows
 ---------------------
