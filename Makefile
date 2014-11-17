@@ -116,7 +116,7 @@ fuzztest:
 
 # for benchmarking
 benchmark.md: progit/progit.md
-	-rm $@; for x in `seq 1 20` ; do cat $< >> $@; done
+	-rm $@; for x in `seq 1 40` ; do cat $< >> $@; done
 
 progit:
 	git clone https://github.com/progit/progit.git
@@ -126,7 +126,7 @@ progit/progit.md: progit
 
 bench: benchmark.md
 	{ sudo renice 99 $$$$; \
-	  for x in `seq 1 20` ; do \
+	  for x in `seq 1 10` ; do \
 	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
 		  done \
 	} 2>&1  | grep 'real' |\
