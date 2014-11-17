@@ -295,14 +295,14 @@ static void blocks_to_html(strbuf *html, node_block *b)
 
 			if (data->start > 1) {
 				strbuf_printf(html, "<%s start=\"%d\">\n",
-					      data->list_type == bullet ? "ul" : "ol",
+					      data->list_type == CMARK_BULLET_LIST ? "ul" : "ol",
 					      data->start);
 			} else {
-				strbuf_puts(html, data->list_type == bullet ? "<ul>\n" : "<ol>\n");
+				strbuf_puts(html, data->list_type == CMARK_BULLET_LIST ? "<ul>\n" : "<ol>\n");
 			}
 
 			rstack = push_block(rstack, b->next,
-					    data->list_type == bullet ?
+					    data->list_type == CMARK_BULLET_LIST ?
 					    "\n</ul>\n" : "\n</ol>\n", tight, false);
 			tight = data->tight;
 			visit_children = true;

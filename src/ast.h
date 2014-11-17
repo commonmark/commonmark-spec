@@ -14,18 +14,6 @@ extern "C" {
 #define REFMAP_SIZE 16
 #define MAX_LINK_LABEL_LENGTH 1000
 
-typedef enum {
-	CMARK_INL_STRING,
-	CMARK_INL_SOFTBREAK,
-	CMARK_INL_LINEBREAK,
-	CMARK_INL_CODE,
-	CMARK_INL_RAW_HTML,
-	CMARK_INL_EMPH,
-	CMARK_INL_STRONG,
-	CMARK_INL_LINK,
-	CMARK_INL_IMAGE
-} cmark_inl_tag;
-
 struct cmark_node_inl {
 	cmark_inl_tag tag;
 	union {
@@ -56,16 +44,6 @@ struct cmark_reference_map {
 
 typedef struct cmark_reference_map cmark_reference_map;
 
-typedef enum {
-	bullet,
-	ordered
-}  cmark_list_type;
-
-typedef enum {
-	period,
-	parens
-} cmark_delim_type;
-
 // Types for blocks
 struct cmark_ListData {
 	cmark_list_type   list_type;
@@ -83,21 +61,6 @@ struct cmark_FencedCodeData {
 	unsigned char     fence_char;
 	cmark_strbuf      info;
 };
-
-typedef enum {
-	CMARK_BLOCK_DOCUMENT,
-	CMARK_BLOCK_BQUOTE,
-	CMARK_BLOCK_LIST,
-	CMARK_BLOCK_LIST_ITEM,
-	CMARK_BLOCK_FENCED_CODE,
-	CMARK_BLOCK_INDENTED_CODE,
-	CMARK_BLOCK_HTML,
-	CMARK_BLOCK_PARAGRAPH,
-	CMARK_BLOCK_ATX_HEADER,
-	CMARK_BLOCK_SETEXT_HEADER,
-	CMARK_BLOCK_HRULE,
-	CMARK_BLOCK_REFERENCE_DEF
-} cmark_block_tag;
 
 struct cmark_node_block {
 	cmark_block_tag tag;
@@ -202,30 +165,9 @@ static inline cmark_node_inl* cmark_make_simple(cmark_inl_tag t)
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define node_inl                  cmark_node_inl
-  #define INL_STRING                CMARK_INL_STRING
-  #define INL_SOFTBREAK             CMARK_INL_SOFTBREAK
-  #define INL_LINEBREAK             CMARK_INL_LINEBREAK
-  #define INL_CODE                  CMARK_INL_CODE
-  #define INL_RAW_HTML              CMARK_INL_RAW_HTML
-  #define INL_EMPH                  CMARK_INL_EMPH
-  #define INL_STRONG                CMARK_INL_STRONG
-  #define INL_LINK                  CMARK_INL_LINK
-  #define INL_IMAGE                 CMARK_INL_IMAGE
   #define ListData                  cmark_ListData
   #define FencedCodeData            cmark_FencedCodeData
   #define node_block                cmark_node_block
-  #define BLOCK_DOCUMENT            CMARK_BLOCK_DOCUMENT
-  #define BLOCK_BQUOTE              CMARK_BLOCK_BQUOTE
-  #define BLOCK_LIST                CMARK_BLOCK_LIST
-  #define BLOCK_LIST_ITEM           CMARK_BLOCK_LIST_ITEM
-  #define BLOCK_FENCED_CODE         CMARK_BLOCK_FENCED_CODE
-  #define BLOCK_INDENTED_CODE       CMARK_BLOCK_INDENTED_CODE
-  #define BLOCK_HTML                CMARK_BLOCK_HTML
-  #define BLOCK_PARAGRAPH           CMARK_BLOCK_PARAGRAPH
-  #define BLOCK_ATX_HEADER          CMARK_BLOCK_ATX_HEADER
-  #define BLOCK_SETEXT_HEADER       CMARK_BLOCK_SETEXT_HEADER
-  #define BLOCK_HRULE               CMARK_BLOCK_HRULE
-  #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
   #define make_link                 cmark_make_link
   #define make_autolink             cmark_make_autolink
   #define make_str                  cmark_make_str

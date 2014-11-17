@@ -350,10 +350,10 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 			return 0;
 		} else {
 			data->marker_offset = 0; // will be adjusted later
-			data->list_type = bullet;
+			data->list_type = CMARK_BULLET_LIST;
 			data->bullet_char = c;
 			data->start = 1;
-			data->delimiter = period;
+			data->delimiter = CMARK_PERIOD_DELIM;
 			data->tight = false;
 		}
 	} else if (isdigit(c)) {
@@ -375,10 +375,10 @@ static int parse_list_marker(chunk *input, int pos, struct ListData ** dataptr)
 				return 0;
 			} else {
 				data->marker_offset = 0; // will be adjusted later
-				data->list_type = ordered;
+				data->list_type = CMARK_ORDERED_LIST;
 				data->bullet_char = 0;
 				data->start = start;
-				data->delimiter = (c == '.' ? period : parens);
+				data->delimiter = (c == '.' ? CMARK_PERIOD_DELIM : CMARK_PAREN_DELIM);
 				data->tight = false;
 			}
 		} else {

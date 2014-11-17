@@ -10,6 +10,43 @@ extern "C" {
 
 #define CMARK_VERSION "0.1"
 
+typedef enum {
+	CMARK_INL_STRING,
+	CMARK_INL_SOFTBREAK,
+	CMARK_INL_LINEBREAK,
+	CMARK_INL_CODE,
+	CMARK_INL_RAW_HTML,
+	CMARK_INL_EMPH,
+	CMARK_INL_STRONG,
+	CMARK_INL_LINK,
+	CMARK_INL_IMAGE
+} cmark_inl_tag;
+
+typedef enum {
+	CMARK_BULLET_LIST,
+	CMARK_ORDERED_LIST
+}  cmark_list_type;
+
+typedef enum {
+	CMARK_PERIOD_DELIM,
+	CMARK_PAREN_DELIM
+} cmark_delim_type;
+
+typedef enum {
+	CMARK_BLOCK_DOCUMENT,
+	CMARK_BLOCK_BQUOTE,
+	CMARK_BLOCK_LIST,
+	CMARK_BLOCK_LIST_ITEM,
+	CMARK_BLOCK_FENCED_CODE,
+	CMARK_BLOCK_INDENTED_CODE,
+	CMARK_BLOCK_HTML,
+	CMARK_BLOCK_PARAGRAPH,
+	CMARK_BLOCK_ATX_HEADER,
+	CMARK_BLOCK_SETEXT_HEADER,
+	CMARK_BLOCK_HRULE,
+	CMARK_BLOCK_REFERENCE_DEF
+} cmark_block_tag;
+
 typedef struct cmark_node_inl cmark_node_inl;
 typedef struct cmark_node_block cmark_node_block;
 typedef struct cmark_doc_parser cmark_doc_parser;
@@ -76,6 +113,10 @@ void cmark_free_inlines(cmark_node_inl* e);
   #define BLOCK_SETEXT_HEADER       CMARK_BLOCK_SETEXT_HEADER
   #define BLOCK_HRULE               CMARK_BLOCK_HRULE
   #define BLOCK_REFERENCE_DEF       CMARK_BLOCK_REFERENCE_DEF
+  #define BULLET_LIST               CMARK_BULLET_LIST
+  #define ORDERED_LIST              CMARK_ORDERED_LIST
+  #define PERIOD_DELIM              CMARK_PERIOD_DELIM
+  #define PAREN_DELIM               CMARK_PAREN_DELIM
   #define free_simple               cmark_free_simple
   #define free_blocks               cmark_free_blocks
   #define doc_parser                cmark_doc_parser

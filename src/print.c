@@ -118,11 +118,11 @@ static void print_blocks(node_block* b, int indent)
 			break;
 		case BLOCK_LIST:
 			data = &(b->as.list);
-			if (data->list_type == ordered) {
+			if (data->list_type == CMARK_ORDERED_LIST) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
 				       (data->tight ? "true" : "false"),
 				       data->start,
-				       (data->delimiter == parens ? "parens" : "period"));
+				       (data->delimiter == CMARK_PAREN_DELIM ? "parens" : "period"));
 			} else {
 				printf("list (type=bullet tight=%s bullet_char=%c)\n",
 				       (data->tight ? "true" : "false"),
