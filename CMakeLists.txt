@@ -22,7 +22,7 @@ enable_testing()
 
 # To get verbose output: cmake --build build --target "test" -- ARGS='-V'
 add_test(spectest
-   COMMAND perl "${CMAKE_SOURCE_DIR}/runtests.pl" "${CMAKE_SOURCE_DIR}/spec.txt" "${CMAKE_BINARY_DIR}/src/cmark"
+   perl "${CMAKE_SOURCE_DIR}/runtests.pl" "${CMAKE_SOURCE_DIR}/spec.txt" "${CMAKE_BINARY_DIR}/src/cmark"
 )
 
 if(NOT CMAKE_BUILD_TYPE)
