@@ -4,7 +4,7 @@
 #include <ctype.h>
 
 #include "config.h"
-#include "ast.h"
+#include "parser.h"
 #include "cmark.h"
 #include "node.h"
 #include "references.h"

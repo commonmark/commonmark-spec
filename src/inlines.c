@@ -5,7 +5,7 @@
 
 #include "config.h"
 #include "node.h"
-#include "ast.h"
+#include "parser.h"
 #include "references.h"
 #include "cmark.h"
 #include "html/houdini.h"
