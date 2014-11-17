@@ -2,11 +2,9 @@
 #define CMARK_AST_H
 
 #include <stdio.h>
-#include "config.h"
 #include "node.h"
+#include "references.h"
 #include "buffer.h"
-#include "chunk.h"
-#include "cmark.h"
 
 #ifdef __cplusplus
 extern "C" {

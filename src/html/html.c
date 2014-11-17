@@ -7,7 +7,6 @@
 #include "cmark.h"
 #include "node.h"
 #include "buffer.h"
-#include "ast.h"
 #include "debug.h"
 #include "html/houdini.h"
 

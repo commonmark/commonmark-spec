@@ -2,7 +2,6 @@
 #define CMARK_REFERENCES_H
 
 #include "chunk.h"
-#include "ast.h"
 
 #ifdef __cplusplus
 extern "C" {

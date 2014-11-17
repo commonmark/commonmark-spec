@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 set(LIBRARY "libcmark")
 set(HEADERS
   cmark.h
-  ast.h
+  parser.h
   buffer.h
   node.h
   chunk.h

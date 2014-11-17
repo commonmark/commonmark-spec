@@ -6,7 +6,6 @@
 #include "html/houdini.h"
 #include "cmark.h"
 #include "buffer.h"
-#include "ast.h"
 
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 {
