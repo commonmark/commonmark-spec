@@ -10,7 +10,8 @@ PKGDIR?=cmark-$(SPECVERSION)
 TARBALL?=cmark-$(SPECVERSION).tar.gz
 ZIPARCHIVE?=cmark-$(SPECVERSION).zip
 FUZZCHARS?=2000000  # for fuzztest
-BENCHPATT?="processing lines" # for bench
+BENCHDIR=bench
+BENCHFILE=$(BENCHDIR)/benchinput.md
 PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
@@ -115,7 +116,7 @@ fuzztest:
 	done } 2>&1 | grep 'user\|abnormally'
 
 # for benchmarking
-benchmark.md: progit/progit.md
+$(BENCHFILE): progit/progit.md
 	-rm $@; for x in `seq 1 40` ; do cat $< >> $@; done
 
 progit:
@@ -124,7 +125,7 @@ progit:
 progit/progit.md: progit
 	cat progit/en/*/*.markdown > $@
 
-bench: benchmark.md
+bench: $(BENCHFILE)
 	{ sudo renice 99 $$$$; \
 	  for x in `seq 1 10` ; do \
 	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
@@ -141,7 +142,7 @@ distclean: clean
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
-	-rm -rf benchmark.md progit
+	-rm -rf $(BENCHFILE) progit
 
 ### JavaScript ###
 
