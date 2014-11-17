@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+#include "node.h"
 #include "references.h"
 #include "html/houdini.h"
 #include "cmark.h"
@@ -27,18 +28,6 @@ cmark_node_block *cmark_block_parent(cmark_node_block *current)
 cmark_node_block *cmark_block_children(cmark_node_block *current)
 {
 	return current->children;
-}
-
-void cmark_block_delete(cmark_node_block *current)
-{
-	if (current->prev) {
-		current->prev->next = current->next;
-	}
-	if (current->next) {
-		current->next->prev = current->prev;
-	}
-	current->next = NULL;
-	cmark_free_blocks(current);
 }
 
 void cmark_block_insert_before(cmark_node_block *new, cmark_node_block *current)
@@ -75,7 +64,7 @@ void cmark_block_insert_after(cmark_node_block *current, cmark_node_block *new)
 
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len)
 {
-	node_block *blocks;
+	cmark_node *blocks;
 	unsigned char *result;
 
 	blocks = cmark_parse_document(text, len);
@@ -156,19 +145,19 @@ unsigned char *cmark_clean_autolink(chunk *url, int is_email)
 }
 
 // Free a node_block list and any children.
-void cmark_free_blocks(cmark_node_block *e)
+void cmark_free_blocks(cmark_node *e)
 {
-	cmark_node_block * next;
+	cmark_node *next;
 	while (e != NULL) {
 		cmark_free_inlines(e->inline_content);
 		strbuf_free(&e->string_content);
-		if (e->tag == CMARK_BLOCK_FENCED_CODE) {
+		if (e->type == NODE_FENCED_CODE) {
 			strbuf_free(&e->as.code.info);
 		}
 		if (e->last_child) {
 			// Splice children into list
 			e->last_child->next = e->next;
-			e->next = e->children;
+			e->next = e->first_child;
 		}
 		next = e->next;
 		free(e);

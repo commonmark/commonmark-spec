@@ -3,6 +3,7 @@
 #include <string.h>
 #include "ast.h"
 #include "cmark.h"
+#include "node.h"
 #include "debug.h"
 
 static void print_str(const unsigned char *s, int len)
@@ -91,11 +92,11 @@ static void print_inlines(node_inl* ils, int indent)
 	}
 }
 
-// Functions to pretty-print inline and node_block lists, for debugging.
+// Functions to pretty-print inline and cmark_node lists, for debugging.
 // Prettyprint an inline list, for debugging.
-static void print_blocks(node_block* b, int indent)
+static void print_blocks(cmark_node* b, int indent)
 {
-	struct ListData *data;
+	cmark_list *data;
 	int i;
 
 	while(b != NULL) {
@@ -103,20 +104,20 @@ static void print_blocks(node_block* b, int indent)
 			putchar(' ');
 		}
 
-		switch(b->tag) {
-		case BLOCK_DOCUMENT:
+		switch(b->type) {
+		case NODE_DOCUMENT:
 			printf("document\n");
-			print_blocks(b->children, indent + 2);
+			print_blocks(b->first_child, indent + 2);
 			break;
-		case BLOCK_BQUOTE:
+		case NODE_BQUOTE:
 			printf("block_quote\n");
-			print_blocks(b->children, indent + 2);
+			print_blocks(b->first_child, indent + 2);
 			break;
-		case BLOCK_LIST_ITEM:
+		case NODE_LIST_ITEM:
 			printf("list_item\n");
-			print_blocks(b->children, indent + 2);
+			print_blocks(b->first_child, indent + 2);
 			break;
-		case BLOCK_LIST:
+		case NODE_LIST:
 			data = &(b->as.list);
 			if (data->list_type == CMARK_ORDERED_LIST) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
@@ -128,29 +129,29 @@ static void print_blocks(node_block* b, int indent)
 				       (data->tight ? "true" : "false"),
 				       data->bullet_char);
 			}
-			print_blocks(b->children, indent + 2);
+			print_blocks(b->first_child, indent + 2);
 			break;
-		case BLOCK_ATX_HEADER:
+		case NODE_ATX_HEADER:
 			printf("atx_header (level=%d)\n", b->as.header.level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case BLOCK_SETEXT_HEADER:
+		case NODE_SETEXT_HEADER:
 			printf("setext_header (level=%d)\n", b->as.header.level);
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case BLOCK_PARAGRAPH:
+		case NODE_PARAGRAPH:
 			printf("paragraph\n");
 			print_inlines(b->inline_content, indent + 2);
 			break;
-		case BLOCK_HRULE:
+		case NODE_HRULE:
 			printf("hrule\n");
 			break;
-		case BLOCK_INDENTED_CODE:
+		case NODE_INDENTED_CODE:
 			printf("indented_code ");
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case BLOCK_FENCED_CODE:
+		case NODE_FENCED_CODE:
 			printf("fenced_code length=%d info=",
 			       b->as.code.fence_length);
 			print_str(b->as.code.info.ptr, -1);
@@ -158,23 +159,23 @@ static void print_blocks(node_block* b, int indent)
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case BLOCK_HTML:
+		case NODE_HTML:
 			printf("html_block ");
 			print_str(b->string_content.ptr, -1);
 			putchar('\n');
 			break;
-		case BLOCK_REFERENCE_DEF:
+		case NODE_REFERENCE_DEF:
 			printf("reference_def\n");
 			break;
 		default:
-			printf("# NOT IMPLEMENTED (%d)\n", b->tag);
+			printf("# NOT IMPLEMENTED (%d)\n", b->type);
 			break;
 		}
 		b = b->next;
 	}
 }
 
-void cmark_debug_print(node_block *root)
+void cmark_debug_print(cmark_node *root)
 {
 	print_blocks(root, 0);
 }

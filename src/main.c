@@ -15,7 +15,7 @@ void print_usage()
 	printf("         --version     Print version\n");
 }
 
-static void print_document(node_block *document, bool ast)
+static void print_document(cmark_node *document, bool ast)
 {
 	unsigned char *result;
 	if (ast) {
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	unsigned char buffer[4096];
 	cmark_doc_parser *parser;
 	size_t offset;
-	node_block *document;
+	cmark_node *document;
 
 	parser = cmark_new_doc_parser();
 	files = (int *)malloc(argc * sizeof(*files));
