@@ -16,8 +16,9 @@ written in standard C99 and has no library dependencies.  The parser is
 very fast, on par with [sundown](https://github.com/vmg/sundown).  Some
 benchmarks (on an ancient Thinkpad running Intel Core 2 Duo at 2GHz,
 measured using `time` and parsing a ~500K book, the English version of
+the 1st edition of
 [*Pro Git*](https://github.com/progit/progit/tree/master/en) by Scott
-Chacon and Ben Straub):
+Chacon):
 
 |Implementation | Time  |  Factor|
 |---------------|-------|--------|

@@ -62,7 +62,7 @@ archive: spec.html $(BUILDDIR)
 	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR) benchmark.md
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
 
 $(PROG): all
 
@@ -115,12 +115,19 @@ fuzztest:
 	done } 2>&1 | grep 'user\|abnormally'
 
 # for benchmarking
-benchmark.md: progit.md
-	for x in `seq 1 10` ; do cat $< >> $@; done
+benchmark.md: progit/progit.md
+	-rm $@; for x in `seq 1 20` ; do cat $< >> $@; done
+
+progit:
+	git clone https://github.com/progit/progit.git
+
+progit/progit.md: progit
+	cat progit/en/*/*.markdown > $@
 
 bench: benchmark.md
-	{ for x in `seq 1 20` ; do \
-	  sudo chrt -f 99 /usr/bin/env time -p ${PROG} $< >/dev/null ; \
+	{ sudo renice 99 $$$$; \
+	  for x in `seq 1 20` ; do \
+	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
 		  done \
 	} 2>&1  | tee rawdata | grep 'user' |\
 	          awk '{print $$2}' | \
@@ -134,6 +141,7 @@ distclean: clean
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
+	-rm -rf benchmark.md progit
 
 ### JavaScript ###
 
