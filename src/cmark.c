@@ -37,22 +37,6 @@ static void splice_into_list(cmark_node* e, cmark_node* children) {
 	return ;
 }
 
-unsigned char *cmark_clean_autolink(chunk *url, int is_email)
-{
-	strbuf buf = GH_BUF_INIT;
-
-	chunk_trim(url);
-
-	if (url->len == 0)
-		return NULL;
-
-	if (is_email)
-		strbuf_puts(&buf, "mailto:");
-
-	houdini_unescape_html_f(&buf, url->data, url->len);
-	return strbuf_detach(&buf);
-}
-
 // Free a cmark_node list and any children.
 void cmark_free_nodes(cmark_node *e)
 {

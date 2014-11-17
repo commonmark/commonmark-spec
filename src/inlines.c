@@ -14,6 +14,15 @@
 #include "inlines.h"
 
 
+// Macros for creating various kinds of simple.
+#define make_str(s) make_literal(CMARK_NODE_STRING, s)
+#define make_code(s) make_literal(CMARK_NODE_INLINE_CODE, s)
+#define make_raw_html(s) make_literal(CMARK_NODE_INLINE_HTML, s)
+#define make_linebreak() make_simple(CMARK_NODE_LINEBREAK)
+#define make_softbreak() make_simple(CMARK_NODE_SOFTBREAK)
+#define make_emph(contents) make_inlines(CMARK_NODE_EMPH, contents)
+#define make_strong(contents) make_inlines(CMARK_NODE_STRONG, contents)
+
 typedef struct DelimiterStack {
 	struct DelimiterStack *previous;
 	struct DelimiterStack *next;
@@ -37,6 +46,74 @@ static int parse_inline(subject* subj, cmark_node ** last);
 
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
+
+static unsigned char *cmark_clean_autolink(chunk *url, int is_email)
+{
+	strbuf buf = GH_BUF_INIT;
+
+	chunk_trim(url);
+
+	if (url->len == 0)
+		return NULL;
+
+	if (is_email)
+		strbuf_puts(&buf, "mailto:");
+
+	houdini_unescape_html_f(&buf, url->data, url->len);
+	return strbuf_detach(&buf);
+}
+
+static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsigned char *title)
+{
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = CMARK_NODE_LINK;
+		e->as.link.label = label;
+		e->as.link.url   = url;
+		e->as.link.title = title;
+		e->next = NULL;
+	}
+	return e;
+}
+
+static inline cmark_node* make_autolink(cmark_node* label, cmark_chunk url, int is_email)
+{
+	return make_link(label, cmark_clean_autolink(&url, is_email), NULL);
+}
+
+static inline cmark_node* make_inlines(cmark_node_type t, cmark_node* contents)
+{
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->first_child = contents;
+		e->next = NULL;
+	}
+	return e;
+}
+
+// Create an inline with a literal string value.
+static inline cmark_node* make_literal(cmark_node_type t, cmark_chunk s)
+{
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->as.literal = s;
+		e->next = NULL;
+	}
+	return e;
+}
+
+// Create an inline with no value.
+static inline cmark_node* make_simple(cmark_node_type t)
+{
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->next = NULL;
+	}
+	return e;
+}
 
 static unsigned char *bufdup(const unsigned char *buf)
 {
