@@ -2,7 +2,16 @@
 /*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
 if (String.fromCodePoint) {
 
-  module.exports = String.fromCodePoint;
+    module.exports = function (_) {
+        try {
+            return String.fromCodePoint(_);
+        } catch (e) {
+            if (e instanceof RangeError) {
+                return String.fromCharCode(0xFFFD);
+            }
+            throw e;
+        }
+    }
 
 } else {
 
