@@ -9,7 +9,6 @@ extern "C" {
 #endif
 
 #define CMARK_VERSION "0.1"
-#define CMARK_MAX_LINK_LABEL_LENGTH 1000
 
 typedef struct cmark_node_inl cmark_node_inl;
 typedef struct cmark_node_block cmark_node_block;
@@ -52,8 +51,6 @@ CMARK_EXPORT
 void cmark_free_inlines(cmark_node_inl* e);
 
 #ifndef CMARK_NO_SHORT_NAMES
-  #define VERSION                   CMARK_VERSION
-  #define MAX_LINK_LABEL_LENGTH     CMARK_MAX_LINK_LABEL_LENGTH
   #define node_inl                  cmark_node_inl
   #define INL_STRING                CMARK_INL_STRING
   #define INL_SOFTBREAK             CMARK_INL_SOFTBREAK

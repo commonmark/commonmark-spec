@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #define REFMAP_SIZE 16
-#define CMARK_MAX_LINK_LABEL_LENGTH 1000
+#define MAX_LINK_LABEL_LENGTH 1000
 
 typedef enum {
 	CMARK_INL_STRING,
