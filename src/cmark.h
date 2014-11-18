@@ -56,8 +56,16 @@ typedef enum {
 typedef struct cmark_node cmark_node;
 typedef struct cmark_doc_parser cmark_doc_parser;
 
-CMARK_EXPORT cmark_node_type
-cmark_node_get_type(cmark_node *node);
+// Construction and destruction
+
+CMARK_EXPORT cmark_node*
+cmark_node_new(cmark_node_type type);
+
+CMARK_EXPORT void
+cmark_node_destroy(cmark_node *node);
+
+CMARK_EXPORT void
+cmark_free_nodes(cmark_node *e);
 
 // Tree traversal
 
@@ -75,6 +83,23 @@ cmark_node_first_child(cmark_node *node);
 
 CMARK_EXPORT cmark_node*
 cmark_node_last_child(cmark_node *node);
+
+// Accessors
+
+CMARK_EXPORT cmark_node_type
+cmark_node_get_type(cmark_node *node);
+
+CMARK_EXPORT const char*
+cmark_node_get_content(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_content(cmark_node *node, const char *content);
+
+CMARK_EXPORT const char*
+cmark_node_get_url(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_url(cmark_node *node, const char *url);
 
 // Tree manipulation
 
@@ -123,9 +148,6 @@ unsigned char *cmark_render_html(cmark_node *root);
 
 CMARK_EXPORT
 unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
-
-CMARK_EXPORT
-void cmark_free_nodes(cmark_node *e);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
