@@ -12,6 +12,7 @@ ZIPARCHIVE?=cmark-$(SPECVERSION).zip
 FUZZCHARS?=2000000  # for fuzztest
 BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
+NUMRUNS?=10
 PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
@@ -117,7 +118,7 @@ fuzztest:
 
 # for benchmarking
 $(BENCHFILE): progit/progit.md
-	-rm $@; for x in `seq 1 40` ; do cat $< >> $@; done
+	-rm $@; for x in `seq 1 20` ; do cat $< >> $@; done
 
 progit:
 	git clone https://github.com/progit/progit.git
@@ -127,12 +128,10 @@ progit/progit.md: progit
 
 bench: $(BENCHFILE)
 	{ sudo renice 99 $$$$; \
-	  for x in `seq 1 10` ; do \
+	  for x in `seq 1 $(NUMRUNS)` ; do \
 	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
 		  done \
-	} 2>&1  | grep 'real' |\
-	          awk '{print $$2}' | \
-		  python3 'bench/stats.py'
+	} 2>&1  | grep 'real' | awk '{print $$2}' | python3 'bench/stats.py'
 
 operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
