@@ -1,5 +1,6 @@
 add_executable(api_test
   harness.c
+  harness.h
   main.c
 )
 include_directories(
