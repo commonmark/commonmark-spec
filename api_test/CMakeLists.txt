@@ -2,8 +2,7 @@ add_executable(api_test
   harness.c
   main.c
 )
-target_include_directories(api_test
-  PRIVATE
+include_directories(
   ${PROJECT_SOURCE_DIR}/src
   ${PROJECT_BINARY_DIR}/src
 )
