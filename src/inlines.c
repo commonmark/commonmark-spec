@@ -69,9 +69,11 @@ static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsig
 	if(e != NULL) {
 		e->type = CMARK_NODE_LINK;
 		e->first_child   = label;
+                e->last_child    = label;
 		e->as.link.url   = url;
 		e->as.link.title = title;
 		e->next = NULL;
+                label->parent = e;
 	}
 	return e;
 }
@@ -81,6 +83,7 @@ static inline cmark_node* make_autolink(cmark_node* label, cmark_chunk url, int 
 	return make_link(label, cmark_clean_autolink(&url, is_email), NULL);
 }
 
+// Setting 'last_child' and the parent of 'contents' is up to the caller.
 static inline cmark_node* make_inlines(cmark_node_type t, cmark_node* contents)
 {
 	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
