@@ -383,6 +383,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 				emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
 				emph->next = closer->first_inline;
 				emph->prev = inl;
+				emph->parent = inl->parent;
 				inl->next = emph;
 
 				// if opener has 0 delims, remove it and its associated inline
