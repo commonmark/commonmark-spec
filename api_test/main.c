@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <cmark.h>
+#include "cmark.h"
+#include "node.h"
 
 #include "harness.h"
 
@@ -34,7 +35,7 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc), 0, "append3 consistent");
 
-	char *html = cmark_render_html(doc);
+	char *html = (char *)cmark_render_html(doc);
 	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
 	       "render_html");
 	free(html);
