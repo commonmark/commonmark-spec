@@ -90,6 +90,12 @@ static inline cmark_node* make_inlines(cmark_node_type t, cmark_node* contents)
 		e->type = t;
 		e->first_child = contents;
 		e->next = NULL;
+                e->prev = NULL;
+                e->parent = NULL;
+                // These fields aren't used for inlines:
+                e->start_line = 0;
+                e->start_column = 0;
+                e->end_line = 0;
 	}
 	return e;
 }
@@ -102,6 +108,14 @@ static inline cmark_node* make_literal(cmark_node_type t, cmark_chunk s)
 		e->type = t;
 		e->as.literal = s;
 		e->next = NULL;
+                e->prev = NULL;
+                e->parent = NULL;
+                e->first_child = NULL;
+                e->last_child = NULL;
+                // These fields aren't used for inlines:
+                e->start_line = 0;
+                e->start_column = 0;
+                e->end_line = 0;
 	}
 	return e;
 }
@@ -113,6 +127,14 @@ static inline cmark_node* make_simple(cmark_node_type t)
 	if(e != NULL) {
 		e->type = t;
 		e->next = NULL;
+                e->prev = NULL;
+                e->parent = NULL;
+                e->first_child = NULL;
+                e->last_child = NULL;
+                // These fields aren't used for inlines:
+                e->start_line = 0;
+                e->start_column = 0;
+                e->end_line = 0;
 	}
 	return e;
 }
