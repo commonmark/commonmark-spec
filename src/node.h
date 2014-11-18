@@ -61,7 +61,7 @@ struct cmark_node {
 	} as;
 };
 
-int
+CMARK_EXPORT int
 cmark_node_check(cmark_node *node);
 
 #ifdef __cplusplus
