@@ -114,6 +114,7 @@ cmark_node_unlink(cmark_node *node) {
 	node->next   = NULL;
 	node->prev   = NULL;
 	node->parent = NULL;
+
 }
 
 int

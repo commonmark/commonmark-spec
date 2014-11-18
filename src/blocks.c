@@ -283,19 +283,6 @@ typedef struct BlockStack {
 	cmark_node *next_sibling;
 } block_stack;
 
-static void fix_parents(cmark_node *node) {
-	cmark_node *cur = node->first_child;
-	if (cur == NULL) {
-		return;
-	}
-	while (cur->next != NULL) {
-		cur->parent = node;
-		cur = cur->next;
-	}
-	cur->parent = node;
-	node->last_child = cur;
-}
-
 // Walk through cmark_node and all children, recursively, parsing
 // string content into inline content where appropriate.
 static void process_inlines(cmark_node* cur, reference_map *refmap)
@@ -308,8 +295,7 @@ static void process_inlines(cmark_node* cur, reference_map *refmap)
 			case NODE_PARAGRAPH:
 			case NODE_ATX_HEADER:
 			case NODE_SETEXT_HEADER:
-				cur->first_child = parse_inlines(&cur->string_content, refmap);
-				fix_parents(cur);
+				parse_inlines(cur, refmap);
 				break;
 
 			default:

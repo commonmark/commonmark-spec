@@ -41,8 +41,7 @@ typedef struct Subject {
 	delimiter_stack *delimiters;
 } subject;
 
-static cmark_node *parse_inlines_from_subject(subject* subj);
-static int parse_inline(subject* subj, cmark_node ** last);
+static int parse_inline(subject* subj, cmark_node * parent);
 
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
@@ -184,22 +183,6 @@ static inline chunk take_while(subject* subj, int (*f)(int))
 	return chunk_dup(&subj->input, startpos, len);
 }
 
-// Append inline list b to the end of inline list a.
-// Return pointer to head of new list.
-static inline cmark_node* cmark_append_inlines(cmark_node* a, cmark_node* b)
-{
-	if (a == NULL) {  // NULL acts like an empty list
-		return b;
-	}
-	cmark_node* cur = a;
-	while (cur->next != NULL) {
-		cur = cur->next;
-	}
-	cur->next = b;
-	b->prev = cur;
-	return a;
-}
-
 // Try to process a backtick code span that began with a
 // span of ticks of length openticklength length (already
 // parsed).  Return 0 if you don't find matching closing
@@ -327,7 +310,7 @@ static delimiter_stack * push_delimiter(subject *subj,
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static cmark_node* handle_strong_emph(subject* subj, unsigned char c, cmark_node **last)
+static cmark_node* handle_strong_emph(subject* subj, unsigned char c)
 {
 	int numdelims;
 	cmark_node * inl_text;
@@ -436,7 +419,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 					if (tmp->next) {
 						tmp->next->prev = emph;
 					}
-					tmp->next = NULL;
+					cmark_node_unlink(tmp);
 					cmark_free_nodes(tmp);
 					// remove closer from stack
 					tempstack = closer->next;
@@ -637,7 +620,7 @@ static int link_label(subject* subj, chunk *raw_label)
 }
 
 // Return a link, an image, or a literal close bracket.
-static cmark_node* handle_close_bracket(subject* subj, cmark_node **last)
+static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 {
 	int initial_pos;
 	int starturl, endurl, starttitle, endtitle, endall;
@@ -752,7 +735,7 @@ match:
 		tmp->parent = inl;
 		inl->last_child = tmp;
 	}
-	*last = inl;
+	parent->last_child = inl;
 
 	// process_emphasis will remove this delimiter and all later ones.
 	// Now, if we have a link, we also want to remove earlier link
@@ -792,23 +775,6 @@ static cmark_node* handle_newline(subject *subj)
 	}
 }
 
-// Parse inlines til end of subject, returning inlines.
-extern cmark_node* parse_inlines_from_subject(subject* subj)
-{
-	cmark_node* result = NULL;
-	cmark_node** last = &result;
-	cmark_node* first = NULL;
-	while (!is_eof(subj) && parse_inline(subj, last)) {
-		if (!first) {
-			first = *last;
-		}
-	}
-
-	process_emphasis(subj, NULL);
-
-	return first;
-}
-
 static int subject_find_special_char(subject *subj)
 {
 	// "\n\\`&_*[]<!"
@@ -841,10 +807,9 @@ static int subject_find_special_char(subject *subj)
 	return subj->input.len;
 }
 
-// Parse an inline, advancing subject, and add it to last element.
-// Adjust tail to point to new last element of list.
+// Parse an inline, advancing subject, and add it as a child of parent.
 // Return 0 if no inline can be parsed, 1 otherwise.
-static int parse_inline(subject* subj, cmark_node ** last)
+static int parse_inline(subject* subj, cmark_node * parent)
 {
 	cmark_node* new_inl = NULL;
 	chunk contents;
@@ -872,7 +837,7 @@ static int parse_inline(subject* subj, cmark_node ** last)
 		break;
 	case '*':
 	case '_':
-		new_inl = handle_strong_emph(subj, c, last);
+		new_inl = handle_strong_emph(subj, c);
 		break;
 	case '[':
 		advance(subj);
@@ -880,7 +845,7 @@ static int parse_inline(subject* subj, cmark_node ** last)
 		subj->delimiters = push_delimiter(subj, 1, '[', true, false, new_inl);
 		break;
 	case ']':
-		new_inl = handle_close_bracket(subj, last);
+		new_inl = handle_close_bracket(subj, parent);
 		break;
 	case '!':
 		advance(subj);
@@ -904,21 +869,22 @@ static int parse_inline(subject* subj, cmark_node ** last)
 
 		new_inl = make_str(contents);
 	}
-	if (*last == NULL) {
-		*last = new_inl;
-	} else if (new_inl) {
-		cmark_append_inlines(*last, new_inl);
-		*last = new_inl;
+	if (new_inl != NULL) {
+		cmark_node_append_child(parent, new_inl);
 	}
 
 	return 1;
 }
 
-extern cmark_node* parse_inlines(strbuf *input, reference_map *refmap)
+// Parse inlines from parent's string_content, adding as children of parent.
+extern void cmark_parse_inlines(cmark_node* parent, cmark_reference_map *refmap)
 {
 	subject subj;
-	subject_from_buf(&subj, input, refmap);
-	return parse_inlines_from_subject(&subj);
+	subject_from_buf(&subj, &parent->string_content, refmap);
+
+	while (!is_eof(&subj) && parse_inline(&subj, parent)) ;
+
+	process_emphasis(&subj, NULL);
 }
 
 // Parse zero or more space characters, including at most one newline.
