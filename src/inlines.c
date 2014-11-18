@@ -4,7 +4,8 @@
 #include <ctype.h>
 
 #include "config.h"
-#include "ast.h"
+#include "node.h"
+#include "parser.h"
 #include "references.h"
 #include "cmark.h"
 #include "html/houdini.h"
@@ -13,10 +14,19 @@
 #include "inlines.h"
 
 
+// Macros for creating various kinds of simple.
+#define make_str(s) make_literal(CMARK_NODE_STRING, s)
+#define make_code(s) make_literal(CMARK_NODE_INLINE_CODE, s)
+#define make_raw_html(s) make_literal(CMARK_NODE_INLINE_HTML, s)
+#define make_linebreak() make_simple(CMARK_NODE_LINEBREAK)
+#define make_softbreak() make_simple(CMARK_NODE_SOFTBREAK)
+#define make_emph(contents) make_inlines(CMARK_NODE_EMPH, contents)
+#define make_strong(contents) make_inlines(CMARK_NODE_STRONG, contents)
+
 typedef struct DelimiterStack {
 	struct DelimiterStack *previous;
 	struct DelimiterStack *next;
-	node_inl *first_inline;
+	cmark_node *first_inline;
 	int delim_count;
 	unsigned char delim_char;
 	int position;
@@ -31,11 +41,82 @@ typedef struct Subject {
 	delimiter_stack *delimiters;
 } subject;
 
-static node_inl *parse_inlines_from_subject(subject* subj);
-static int parse_inline(subject* subj, node_inl ** last);
+static cmark_node *parse_inlines_from_subject(subject* subj);
+static int parse_inline(subject* subj, cmark_node ** last);
 
 static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
 static int subject_find_special_char(subject *subj);
+
+static unsigned char *cmark_clean_autolink(chunk *url, int is_email)
+{
+	strbuf buf = GH_BUF_INIT;
+
+	chunk_trim(url);
+
+	if (url->len == 0)
+		return NULL;
+
+	if (is_email)
+		strbuf_puts(&buf, "mailto:");
+
+	houdini_unescape_html_f(&buf, url->data, url->len);
+	return strbuf_detach(&buf);
+}
+
+static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsigned char *title)
+{
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = CMARK_NODE_LINK;
+		e->first_child   = label;
+                e->last_child    = label;
+		e->as.link.url   = url;
+		e->as.link.title = title;
+		e->next = NULL;
+                label->parent = e;
+	}
+	return e;
+}
+
+static inline cmark_node* make_autolink(cmark_node* label, cmark_chunk url, int is_email)
+{
+	return make_link(label, cmark_clean_autolink(&url, is_email), NULL);
+}
+
+// Setting 'last_child' and the parent of 'contents' is up to the caller.
+static inline cmark_node* make_inlines(cmark_node_type t, cmark_node* contents)
+{
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->first_child = contents;
+		e->next = NULL;
+	}
+	return e;
+}
+
+// Create an inline with a literal string value.
+static inline cmark_node* make_literal(cmark_node_type t, cmark_chunk s)
+{
+	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->as.literal = s;
+		e->next = NULL;
+	}
+	return e;
+}
+
+// Create an inline with no value.
+static inline cmark_node* make_simple(cmark_node_type t)
+{
+	cmark_node* e = (cmark_node *)calloc(1, sizeof(*e));
+	if(e != NULL) {
+		e->type = t;
+		e->next = NULL;
+	}
+	return e;
+}
 
 static unsigned char *bufdup(const unsigned char *buf)
 {
@@ -105,16 +186,17 @@ static inline chunk take_while(subject* subj, int (*f)(int))
 
 // Append inline list b to the end of inline list a.
 // Return pointer to head of new list.
-static inline cmark_node_inl* cmark_append_inlines(cmark_node_inl* a, cmark_node_inl* b)
+static inline cmark_node* cmark_append_inlines(cmark_node* a, cmark_node* b)
 {
 	if (a == NULL) {  // NULL acts like an empty list
 		return b;
 	}
-	cmark_node_inl* cur = a;
+	cmark_node* cur = a;
 	while (cur->next != NULL) {
 		cur = cur->next;
 	}
 	cur->next = b;
+	b->prev = cur;
 	return a;
 }
 
@@ -146,7 +228,7 @@ static int scan_to_closing_backticks(subject* subj, int openticklength)
 
 // Parse backtick code section or raw backticks, return an inline.
 // Assumes that the subject has a backtick at the current position.
-static node_inl* handle_backticks(subject *subj)
+static cmark_node* handle_backticks(subject *subj)
 {
 	chunk openticks = take_while(subj, isbacktick);
 	int startpos = subj->pos;
@@ -222,7 +304,7 @@ static delimiter_stack * push_delimiter(subject *subj,
 					unsigned char c,
 					bool can_open,
 					bool can_close,
-					node_inl *inl_text)
+					cmark_node *inl_text)
 {
 	delimiter_stack *istack =
 		(delimiter_stack*)malloc(sizeof(delimiter_stack));
@@ -245,10 +327,10 @@ static delimiter_stack * push_delimiter(subject *subj,
 
 // Parse strong/emph or a fallback.
 // Assumes the subject has '_' or '*' at the current position.
-static node_inl* handle_strong_emph(subject* subj, unsigned char c, node_inl **last)
+static cmark_node* handle_strong_emph(subject* subj, unsigned char c, cmark_node **last)
 {
 	int numdelims;
-	node_inl * inl_text;
+	cmark_node * inl_text;
 	bool can_open, can_close;
 
 	numdelims = scan_delims(subj, c, &can_open, &can_close);
@@ -268,7 +350,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 	delimiter_stack *closer = subj->delimiters;
 	delimiter_stack *opener, *tempstack, *nextstack;
 	int use_delims;
-	node_inl *inl, *tmp, *emph;
+	cmark_node *inl, *tmp, *emph;
 
 	// move back to first relevant delim.
 	while (closer != NULL && closer->previous != stack_bottom) {
@@ -302,8 +384,8 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 				// remove used delimiters from stack elements and associated inlines.
 				opener->delim_count -= use_delims;
 				closer->delim_count -= use_delims;
-				inl->content.literal.len = opener->delim_count;
-				closer->first_inline->content.literal.len = closer->delim_count;
+				inl->as.literal.len = opener->delim_count;
+				closer->first_inline->as.literal.len = closer->delim_count;
 
 				// free delimiters between opener and closer
 				tempstack = closer->previous;
@@ -317,33 +399,45 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 				// between the opener and closer
 				emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
 				emph->next = closer->first_inline;
+				emph->prev = inl;
 				inl->next = emph;
-				tmp = emph->content.inlines;
-				while (tmp->next != NULL && tmp->next != closer->first_inline) {
-					tmp = tmp->next;
-				}
-				tmp->next = NULL;
 
 				// if opener has 0 delims, remove it and its associated inline
 				if (opener->delim_count == 0) {
 					// replace empty opener inline with emph
-					chunk_free(&(inl->content.literal));
-					inl->tag = emph->tag;
+					chunk_free(&(inl->as.literal));
+					inl->type = emph->type;
 					inl->next = emph->next;
-					inl->content.inlines = emph->content.inlines;
+					inl->first_child = emph->first_child;
 					free(emph);
 					emph = inl;
 					// remove opener from stack
 					remove_delimiter(subj, opener);
 				}
 
+				// fix tree structure
+				tmp = emph->first_child;
+				while (tmp->next != NULL && tmp->next != closer->first_inline) {
+					tmp->parent = emph;
+					tmp = tmp->next;
+				}
+				tmp->parent = emph;
+				if (tmp->next) {
+					tmp->next->prev = emph;
+				}
+				tmp->next = NULL;
+				emph->last_child = tmp;
+
 				// if closer has 0 delims, remove it and its associated inline
 				if (closer->delim_count == 0) {
 					// remove empty closer inline
 					tmp = closer->first_inline;
 					emph->next = tmp->next;
+					if (tmp->next) {
+						tmp->next->prev = emph;
+					}
 					tmp->next = NULL;
-					cmark_free_inlines(tmp);
+					cmark_free_nodes(tmp);
 					// remove closer from stack
 					tempstack = closer->next;
 					remove_delimiter(subj, closer);
@@ -363,7 +457,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
-static node_inl* handle_backslash(subject *subj)
+static cmark_node* handle_backslash(subject *subj)
 {
 	advance(subj);
 	unsigned char nextchar = peek_char(subj);
@@ -380,7 +474,7 @@ static node_inl* handle_backslash(subject *subj)
 
 // Parse an entity or a regular "&" string.
 // Assumes the subject has an '&' character at the current position.
-static node_inl* handle_entity(subject* subj)
+static cmark_node* handle_entity(subject* subj)
 {
 	strbuf ent = GH_BUF_INIT;
 	size_t len;
@@ -401,7 +495,7 @@ static node_inl* handle_entity(subject* subj)
 
 // Like make_str, but parses entities.
 // Returns an inline sequence consisting of str and entity elements.
-static node_inl *make_str_with_entities(chunk *content)
+static cmark_node *make_str_with_entities(chunk *content)
 {
 	strbuf unescaped = GH_BUF_INIT;
 
@@ -459,7 +553,7 @@ unsigned char *clean_title(chunk *title)
 
 // Parse an autolink or HTML tag.
 // Assumes the subject has a '<' character at the current position.
-static node_inl* handle_pointy_brace(subject* subj)
+static cmark_node* handle_pointy_brace(subject* subj)
 {
 	int matchlen = 0;
 	chunk contents;
@@ -543,7 +637,7 @@ static int link_label(subject* subj, chunk *raw_label)
 }
 
 // Return a link, an image, or a literal close bracket.
-static node_inl* handle_close_bracket(subject* subj, node_inl **last)
+static cmark_node* handle_close_bracket(subject* subj, cmark_node **last)
 {
 	int initial_pos;
 	int starturl, endurl, starttitle, endtitle, endall;
@@ -555,8 +649,8 @@ static node_inl* handle_close_bracket(subject* subj, node_inl **last)
 	unsigned char *url, *title;
 	delimiter_stack *opener;
 	delimiter_stack *tempstack;
-	node_inl *link_text;
-	node_inl *inl;
+	cmark_node *link_text;
+	cmark_node *inl;
 	chunk raw_label;
 
 	advance(subj);  // advance past ]
@@ -642,13 +736,22 @@ noMatch:
 
 match:
 	inl = opener->first_inline;
-	inl->tag = is_image ? INL_IMAGE : INL_LINK;
-	chunk_free(&inl->content.literal);
-	inl->content.linkable.label = link_text;
+	inl->type = is_image ? NODE_IMAGE : NODE_LINK;
+	chunk_free(&inl->as.literal);
+	inl->first_child = link_text;
 	process_emphasis(subj, opener->previous);
-	inl->content.linkable.url   = url;
-	inl->content.linkable.title = title;
+	inl->as.link.url   = url;
+	inl->as.link.title = title;
 	inl->next = NULL;
+	if (link_text) {
+		cmark_node *tmp;
+		link_text->prev = NULL;
+		for (tmp = link_text; tmp->next != NULL; tmp = tmp->next) {
+			tmp->parent = inl;
+		}
+		tmp->parent = inl;
+		inl->last_child = tmp;
+	}
 	*last = inl;
 
 	// process_emphasis will remove this delimiter and all later ones.
@@ -671,7 +774,7 @@ match:
 
 // Parse a hard or soft linebreak, returning an inline.
 // Assumes the subject has a newline at the current position.
-static node_inl* handle_newline(subject *subj)
+static cmark_node* handle_newline(subject *subj)
 {
 	int nlpos = subj->pos;
 	// skip over newline
@@ -690,11 +793,11 @@ static node_inl* handle_newline(subject *subj)
 }
 
 // Parse inlines til end of subject, returning inlines.
-extern node_inl* parse_inlines_from_subject(subject* subj)
+extern cmark_node* parse_inlines_from_subject(subject* subj)
 {
-	node_inl* result = NULL;
-	node_inl** last = &result;
-	node_inl* first = NULL;
+	cmark_node* result = NULL;
+	cmark_node** last = &result;
+	cmark_node* first = NULL;
 	while (!is_eof(subj) && parse_inline(subj, last)) {
 		if (!first) {
 			first = *last;
@@ -741,9 +844,9 @@ static int subject_find_special_char(subject *subj)
 // Parse an inline, advancing subject, and add it to last element.
 // Adjust tail to point to new last element of list.
 // Return 0 if no inline can be parsed, 1 otherwise.
-static int parse_inline(subject* subj, node_inl ** last)
+static int parse_inline(subject* subj, cmark_node ** last)
 {
-	node_inl* new_inl = NULL;
+	cmark_node* new_inl = NULL;
 	chunk contents;
 	unsigned char c;
 	int endpos;
@@ -811,7 +914,7 @@ static int parse_inline(subject* subj, node_inl ** last)
 	return 1;
 }
 
-extern node_inl* parse_inlines(strbuf *input, reference_map *refmap)
+extern cmark_node* parse_inlines(strbuf *input, reference_map *refmap)
 {
 	subject subj;
 	subject_from_buf(&subj, input, refmap);

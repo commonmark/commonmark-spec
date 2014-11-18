@@ -5,8 +5,8 @@
 
 #include "config.h"
 #include "cmark.h"
+#include "node.h"
 #include "buffer.h"
-#include "ast.h"
 #include "debug.h"
 #include "html/houdini.h"
 
@@ -14,8 +14,8 @@ typedef struct RenderStack {
 	struct RenderStack *previous;
 	char* literal;
 	union {
-		node_inl *inl;
-		node_block *block;
+		cmark_node *inl;
+		cmark_node *block;
 	} next_sibling;
 	bool tight;
 	bool trim;
@@ -32,7 +32,7 @@ static void free_render_stack(render_stack * rstack)
 }
 
 static render_stack* push_inline(render_stack* rstack,
-				 node_inl* inl,
+				 cmark_node* inl,
 				 char* literal)
 {
 	render_stack* newstack;
@@ -49,7 +49,7 @@ static render_stack* push_inline(render_stack* rstack,
 }
 
 static render_stack* push_block(render_stack* rstack,
-				node_block* block,
+				cmark_node* block,
 				char* literal,
 				bool tight,
 				bool trim)
@@ -80,7 +80,7 @@ static render_stack* pop_render_stack(render_stack* rstack)
 	return rstack;
 }
 
-// Functions to convert node_block and inline lists to HTML strings.
+// Functions to convert cmark_node and inline lists to HTML strings.
 
 static void escape_html(strbuf *dest, const unsigned char *source, int length)
 {
@@ -105,38 +105,35 @@ static inline void cr(strbuf *html)
 }
 
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
-static void inlines_to_plain_html(strbuf *html, node_inl* ils)
+static void inlines_to_plain_html(strbuf *html, cmark_node* ils)
 {
-	node_inl* children;
+	cmark_node* children;
 	bool visit_children;
 	render_stack* rstack = NULL;
 
 	while(ils != NULL) {
 		visit_children = false;
-		switch(ils->tag) {
-		case INL_STRING:
-		case INL_CODE:
-		case INL_RAW_HTML:
-			escape_html(html, ils->content.literal.data, ils->content.literal.len);
+		switch(ils->type) {
+		case NODE_STRING:
+		case NODE_INLINE_CODE:
+		case NODE_INLINE_HTML:
+			escape_html(html, ils->as.literal.data, ils->as.literal.len);
 			break;
 
-		case INL_LINEBREAK:
-		case INL_SOFTBREAK:
+		case NODE_LINEBREAK:
+		case NODE_SOFTBREAK:
 			strbuf_putc(html, '\n');
 			break;
 
-		case INL_LINK:
-		case INL_IMAGE:
-			children = ils->content.linkable.label;
+		case NODE_LINK:
+		case NODE_IMAGE:
+		case NODE_STRONG:
+		case NODE_EMPH:
+			children = ils->first_child;
 			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "");
 			break;
-
-		case INL_STRONG:
-		case INL_EMPH:
-			children = ils->content.inlines;
-			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "");
+		default:
 			break;
 		}
 		if (visit_children) {
@@ -156,79 +153,81 @@ static void inlines_to_plain_html(strbuf *html, node_inl* ils)
 
 
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
-static void inlines_to_html(strbuf *html, node_inl* ils)
+static void inlines_to_html(strbuf *html, cmark_node* ils)
 {
-	node_inl* children;
+	cmark_node* children;
 	render_stack* rstack = NULL;
 
 	while(ils != NULL) {
 	        children = NULL;
-		switch(ils->tag) {
-		case INL_STRING:
-			escape_html(html, ils->content.literal.data, ils->content.literal.len);
+		switch(ils->type) {
+		case NODE_STRING:
+			escape_html(html, ils->as.literal.data, ils->as.literal.len);
 			break;
 
-		case INL_LINEBREAK:
+		case NODE_LINEBREAK:
 			strbuf_puts(html, "<br />\n");
 			break;
 
-		case INL_SOFTBREAK:
+		case NODE_SOFTBREAK:
 			strbuf_putc(html, '\n');
 			break;
 
-		case INL_CODE:
+		case NODE_INLINE_CODE:
 			strbuf_puts(html, "<code>");
-			escape_html(html, ils->content.literal.data, ils->content.literal.len);
+			escape_html(html, ils->as.literal.data, ils->as.literal.len);
 			strbuf_puts(html, "</code>");
 			break;
 
-		case INL_RAW_HTML:
+		case NODE_INLINE_HTML:
 			strbuf_put(html,
-				   ils->content.literal.data,
-				   ils->content.literal.len);
+				   ils->as.literal.data,
+				   ils->as.literal.len);
 			break;
 
-		case INL_LINK:
+		case NODE_LINK:
 			strbuf_puts(html, "<a href=\"");
-			if (ils->content.linkable.url)
-				escape_href(html, ils->content.linkable.url, -1);
+			if (ils->as.link.url)
+				escape_href(html, ils->as.link.url, -1);
 
-			if (ils->content.linkable.title) {
+			if (ils->as.link.title) {
 				strbuf_puts(html, "\" title=\"");
-				escape_html(html, ils->content.linkable.title, -1);
+				escape_html(html, ils->as.link.title, -1);
 			}
 
 			strbuf_puts(html, "\">");
-			children = ils->content.linkable.label;
+			children = ils->first_child;
 			rstack = push_inline(rstack, ils->next, "</a>");
 			break;
 
-		case INL_IMAGE:
+		case NODE_IMAGE:
 			strbuf_puts(html, "<img src=\"");
-			if (ils->content.linkable.url)
-				escape_href(html, ils->content.linkable.url, -1);
+			if (ils->as.link.url)
+				escape_href(html, ils->as.link.url, -1);
 
 			strbuf_puts(html, "\" alt=\"");
-			inlines_to_plain_html(html, ils->content.inlines);
+			inlines_to_plain_html(html, ils->first_child);
 
-			if (ils->content.linkable.title) {
+			if (ils->as.link.title) {
 				strbuf_puts(html, "\" title=\"");
-				escape_html(html, ils->content.linkable.title, -1);
+				escape_html(html, ils->as.link.title, -1);
 			}
 
 			strbuf_puts(html, "\"/>");
 			break;
 
-		case INL_STRONG:
+		case NODE_STRONG:
 			strbuf_puts(html, "<strong>");
-			children = ils->content.inlines;
+			children = ils->first_child;
 			rstack = push_inline(rstack, ils->next, "</strong>");
 			break;
 
-		case INL_EMPH:
+		case NODE_EMPH:
 			strbuf_puts(html, "<em>");
-			children = ils->content.inlines;
+			children = ils->first_child;
 			rstack = push_inline(rstack, ils->next, "</em>");
+			break;
+		default:
 			break;
 		}
 		if (children) {
@@ -246,34 +245,34 @@ static void inlines_to_html(strbuf *html, node_inl* ils)
 	free_render_stack(rstack);
 }
 
-// Convert a node_block list to HTML.  Returns 0 on success, and sets result.
-static void blocks_to_html(strbuf *html, node_block *b)
+// Convert a cmark_node list to HTML.  Returns 0 on success, and sets result.
+static void blocks_to_html(strbuf *html, cmark_node *b)
 {
-	struct ListData *data;
+	cmark_list *data;
 	render_stack* rstack = NULL;
 	bool visit_children = false;
 	bool tight = false;
 
 	while(b != NULL) {
 		visit_children = false;
-		switch(b->tag) {
-		case BLOCK_DOCUMENT:
+		switch(b->type) {
+		case NODE_DOCUMENT:
 			rstack = push_block(rstack, b->next, "", false, false);
 			visit_children = true;
 			break;
 
-		case BLOCK_PARAGRAPH:
+		case NODE_PARAGRAPH:
 			if (tight) {
-				inlines_to_html(html, b->inline_content);
+				inlines_to_html(html, b->first_child);
 			} else {
 				cr(html);
 				strbuf_puts(html, "<p>");
-				inlines_to_html(html, b->inline_content);
+				inlines_to_html(html, b->first_child);
 				strbuf_puts(html, "</p>\n");
 			}
 			break;
 
-		case BLOCK_BQUOTE:
+		case NODE_BQUOTE:
 			cr(html);
 			strbuf_puts(html, "<blockquote>\n");
 			rstack = push_block(rstack, b->next, "</blockquote>\n", tight, false);
@@ -281,14 +280,14 @@ static void blocks_to_html(strbuf *html, node_block *b)
 			visit_children = true;
 			break;
 
-		case BLOCK_LIST_ITEM:
+		case NODE_LIST_ITEM:
 			cr(html);
 			strbuf_puts(html, "<li>");
 			rstack = push_block(rstack, b->next, "</li>\n", tight, true);
 			visit_children = true;
 			break;
 
-		case BLOCK_LIST:
+		case NODE_LIST:
 			// make sure a list starts at the beginning of the line:
 			cr(html);
 			data = &(b->as.list);
@@ -308,21 +307,21 @@ static void blocks_to_html(strbuf *html, node_block *b)
 			visit_children = true;
 			break;
 
-		case BLOCK_ATX_HEADER:
-		case BLOCK_SETEXT_HEADER:
+		case NODE_ATX_HEADER:
+		case NODE_SETEXT_HEADER:
 			cr(html);
 			strbuf_printf(html, "<h%d>", b->as.header.level);
-			inlines_to_html(html, b->inline_content);
+			inlines_to_html(html, b->first_child);
 			strbuf_printf(html, "</h%d>\n", b->as.header.level);
 			break;
 
-		case BLOCK_INDENTED_CODE:
-		case BLOCK_FENCED_CODE:
+		case NODE_INDENTED_CODE:
+		case NODE_FENCED_CODE:
 			cr(html);
 
 			strbuf_puts(html, "<pre><code");
 
-			if (b->tag == BLOCK_FENCED_CODE) {
+			if (b->type == NODE_FENCED_CODE) {
 				strbuf *info = &b->as.code.info;
 
 				if (strbuf_len(info) > 0) {
@@ -341,22 +340,22 @@ static void blocks_to_html(strbuf *html, node_block *b)
 			strbuf_puts(html, "</code></pre>\n");
 			break;
 
-		case BLOCK_HTML:
+		case NODE_HTML:
 			strbuf_put(html, b->string_content.ptr, b->string_content.size);
 			break;
 
-		case BLOCK_HRULE:
+		case NODE_HRULE:
 			strbuf_puts(html, "<hr />\n");
 			break;
 
-		case BLOCK_REFERENCE_DEF:
+		case NODE_REFERENCE_DEF:
 			break;
 
 		default:
 			assert(false);
 		}
 		if (visit_children) {
-			b = b->children;
+			b = b->first_child;
 		} else {
 			b = b->next;
 		}
@@ -374,7 +373,7 @@ static void blocks_to_html(strbuf *html, node_block *b)
 	free_render_stack(rstack);
 }
 
-unsigned char *cmark_render_html(node_block *root)
+unsigned char *cmark_render_html(cmark_node *root)
 {
 	unsigned char *result;
 	strbuf html = GH_BUF_INIT;
