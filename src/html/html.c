@@ -13,10 +13,7 @@
 typedef struct RenderStack {
 	struct RenderStack *previous;
 	char* literal;
-	union {
-		cmark_node *inl;
-		cmark_node *block;
-	} next_sibling;
+	cmark_node* next_sibling;
 	bool tight;
 	bool trim;
 } render_stack;
@@ -41,7 +38,7 @@ static render_stack* push_inline(render_stack* rstack,
 		return NULL;
 	}
 	newstack->previous = rstack;
-	newstack->next_sibling.inl = inl;
+	newstack->next_sibling = inl;
 	newstack->literal = literal;
 	newstack->tight = false;
 	newstack->trim = false;
@@ -60,7 +57,7 @@ static render_stack* push_block(render_stack* rstack,
 		return NULL;
 	}
 	newstack->previous = rstack;
-	newstack->next_sibling.block = block;
+	newstack->next_sibling = block;
 	newstack->literal = literal;
 	newstack->tight = tight;
 	newstack->trim = trim;
@@ -143,7 +140,7 @@ static void inlines_to_plain_html(strbuf *html, cmark_node* ils)
 		}
 		while (ils == NULL && rstack != NULL) {
 			strbuf_puts(html, rstack->literal);
-			ils = rstack->next_sibling.inl;
+			ils = rstack->next_sibling;
 			rstack = pop_render_stack(rstack);
 		}
 	}
@@ -237,7 +234,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 		}
 		while (ils == NULL && rstack != NULL) {
 			strbuf_puts(html, rstack->literal);
-			ils = rstack->next_sibling.inl;
+			ils = rstack->next_sibling;
 			rstack = pop_render_stack(rstack);
 		}
 	}
@@ -365,7 +362,7 @@ static void blocks_to_html(strbuf *html, cmark_node *b)
 				strbuf_rtrim(html);
 			}
 			tight = rstack->tight;
-			b = rstack->next_sibling.block;
+			b = rstack->next_sibling;
 			rstack = pop_render_stack(rstack);
 		}
 	}
