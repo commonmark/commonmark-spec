@@ -63,6 +63,9 @@ add_compiler_export_flags()
 set_target_properties(${PROGRAM} PROPERTIES
   COMPILE_FLAGS -DCMARK_STATIC_DEFINE)
 
+# Check integrity of node structure when compiled as debug:
+set(CMAKE_C_FLAGS_DEBUG "-DCMARK_DEBUG_NODES")
+
 if (${CMAKE_MAJOR_VERSION} GREATER 1 AND ${CMAKE_MINOR_VERSION} GREATER 8)
   set(CMAKE_C_VISIBILITY_PRESET hidden)
   set(CMAKE_VISIBILITY_INLINES_HIDDEN 1)
