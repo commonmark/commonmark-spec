@@ -5,7 +5,10 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 |Implementation |  Time (sec)| Factor  |
 |---------------|-----------:|--------:|
 | Markdown.pl   | 2921.30    | 14606.5 |
+| kramdown      | 20.76      |   103.8 |
 | PHP markdown  | 20.475     |   102.4 |
+| lunamark      | 6.195      |    40.0 |
+| cheapskate    | 5.645      |    28.2 |
 | peg-markdown  | 5.330      |    26.7 |
 | commonmark.js | 2.730      |    13.6 |
 | marked        | 1.870      |     9.4 |
