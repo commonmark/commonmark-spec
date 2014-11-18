@@ -3,10 +3,40 @@
 #include "config.h"
 #include "node.h"
 
-CMARK_EXPORT cmark_node_type
+cmark_node_type
 cmark_node_get_type(cmark_node *node)
 {
 	return node->type;
+}
+
+static const char*
+S_type_string(cmark_node *node)
+{
+	switch (node->type) {
+	case CMARK_NODE_DOCUMENT:      return "DOCUMENT";
+	case CMARK_NODE_BQUOTE:        return "BQUOTE";
+	case CMARK_NODE_LIST:          return "LIST";
+	case CMARK_NODE_LIST_ITEM:     return "LIST_ITEM";
+	case CMARK_NODE_FENCED_CODE:   return "FENCED_CODE";
+	case CMARK_NODE_INDENTED_CODE: return "INDENTED_CODE";
+	case CMARK_NODE_HTML:          return "HTML";
+	case CMARK_NODE_PARAGRAPH:     return "PARAGRAPH";
+	case CMARK_NODE_ATX_HEADER:    return "ATX_HEADER";
+	case CMARK_NODE_SETEXT_HEADER: return "SETEXT_HEADER";
+	case CMARK_NODE_HRULE:         return "HRULE";
+	case CMARK_NODE_REFERENCE_DEF: return "REFERENCE_DEF";
+	case CMARK_NODE_STRING:        return "STRING";
+	case CMARK_NODE_SOFTBREAK:     return "SOFTBREAK";
+	case CMARK_NODE_LINEBREAK:     return "LINEBREAK";
+	case CMARK_NODE_INLINE_CODE:   return "INLINE_CODE";
+	case CMARK_NODE_INLINE_HTML:   return "INLINE_HTML";
+	case CMARK_NODE_EMPH:          return "EMPH";
+	case CMARK_NODE_STRONG:        return "STRONG";
+	case CMARK_NODE_LINK:          return "LINK";
+	case CMARK_NODE_IMAGE:         return "IMAGE";
+	}
+
+	return "<unknown>";
 }
 
 cmark_node*
@@ -233,17 +263,23 @@ cmark_node_append_child(cmark_node *node, cmark_node *child)
 	return 1;
 }
 
+static void
+S_print_error(cmark_node *node, const char *elem)
+{
+	fprintf(stderr, "Invalid '%s' in node type %s at %d:%d\n", elem,
+		S_type_string(node), node->start_line, node->start_column);
+}
+
 int
-cmark_node_check(cmark_node *node) {
+cmark_node_check(cmark_node *node)
+{
 	cmark_node *cur = node;
 	int errors = 0;
 
 	while (cur) {
 		if (cur->first_child) {
 			if (cur->first_child->parent != cur) {
-				fprintf(stderr,
-					"Invalid 'parent' in node type %d\n",
-					cur->first_child->type);
+				S_print_error(cur->first_child, "parent");
 				cur->first_child->parent = cur;
 				++errors;
 			}
@@ -251,16 +287,12 @@ cmark_node_check(cmark_node *node) {
 		}
 		else if (cur->next) {
 			if (cur->next->prev != cur) {
-				fprintf(stderr,
-					"Invalid 'prev' in node type %d\n",
-					cur->next->type);
+				S_print_error(cur->next, "prev");
 				cur->next->prev = cur;
 				++errors;
 			}
 			if (cur->next->parent != cur->parent) {
-				fprintf(stderr,
-					"Invalid 'parent' in node type %d\n",
-					cur->next->type);
+				S_print_error(cur->next, "parent");
 				cur->next->parent = cur->parent;
 				++errors;
 			}
@@ -268,9 +300,7 @@ cmark_node_check(cmark_node *node) {
 		}
 		else {
 			if (cur->parent->last_child != cur) {
-				fprintf(stderr,
-					"Invalid 'last_child' in node type %d\n",
-					cur->parent->type);
+				S_print_error(cur->parent, "last_child");
 				cur->parent->last_child = cur;
 				++errors;
 			}
