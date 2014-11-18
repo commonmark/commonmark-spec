@@ -13,23 +13,7 @@ The implementations
 The C implementation provides both a shared library (`libcmark`) and a
 standalone program `cmark` that converts CommonMark to HTML.  It is
 written in standard C99 and has no library dependencies.  The parser is
-very fast, on par with [sundown](https://github.com/vmg/sundown).  Some
-benchmarks (on an ancient Thinkpad running Intel Core 2 Duo at 2GHz,
-measured using `time` and parsing a ~500K book, the English version of
-the 1st edition of
-[*Pro Git*](https://github.com/progit/progit/tree/master/en) by Scott
-Chacon):
-
-|Implementation | Time  |  Factor|
-|---------------|-------|--------|
-| Markdown.pl   | 5.162s|   286.8|
-| PHP Markdown  | 1.021s|    56.7|
-| commonmark.js | 0.292s|    16.2|
-| peg-markdown  | 0.279s|    15.5|
-| marked        | 0.239s|    13.3|
-| discount      | 0.090s|     5.0|
-| **cmark**     | 0.020s|     1.1|
-| sundown       | 0.018s|     1.0|
+very fast (see [benchmarks](benchmarks.md)).
 
 It is easy to use `libcmark` in python or ruby code:  see `wrapper.py`
 and `wrapper.rb` in the repository for simple examples.
