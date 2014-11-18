@@ -9,6 +9,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | peg-markdown  | 5.330      |    26.7 |
 | commonmark.js | 2.730      |    13.6 |
 | marked        | 1.870      |     9.4 |
+| remarkable.js | 1.790      |     8.9 |
 | discount      | 1.660      |     8.3 |
 | **cmark**     | 0.320      |     1.6 |
 | sundown       | 0.200      |     1.0 |
