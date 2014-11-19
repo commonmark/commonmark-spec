@@ -210,7 +210,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 				escape_html(html, ils->as.link.title, -1);
 			}
 
-			strbuf_puts(html, "\"/>");
+			strbuf_puts(html, "\" />");
 			break;
 
 		case NODE_STRONG:
