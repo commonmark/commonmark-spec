@@ -58,7 +58,7 @@ archive: spec.html $(BUILDDIR)
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
-	cp -a README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
+	cp -a README.md LICENSE spec.txt runtests.py $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
@@ -85,9 +85,6 @@ man/man1/cmark.1: man/cmark.1.md
 
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test ARGS="-V"
-
-testlib: $(SPEC)
-	perl runtests.pl $< ./wrapper.py
 
 $(TARBALL): archive
 

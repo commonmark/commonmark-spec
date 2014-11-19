@@ -22,8 +22,12 @@ endif(UNIX)
 enable_testing()
 
 # To get verbose output: cmake --build build --target "test" -- ARGS='-V'
-add_test(spectest
-   perl "${CMAKE_SOURCE_DIR}/runtests.pl" "${CMAKE_SOURCE_DIR}/spec.txt" "${CMAKE_BINARY_DIR}/src/cmark"
+add_test(spectest_library
+   python "${CMAKE_SOURCE_DIR}/runtests.py" "--spec"
+   "${CMAKE_SOURCE_DIR}/spec.txt" "--library_dir" "${CMAKE_BINARY_DIR}/src"
+)
+add_test(spectest_executable
+   python "${CMAKE_SOURCE_DIR}/runtests.py" "--spec" "${CMAKE_SOURCE_DIR}/spec.txt" "--program" "${CMAKE_BINARY_DIR}/src/cmark"
 )
 add_test(NAME api_test COMMAND api_test)
 

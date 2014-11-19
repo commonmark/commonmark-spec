@@ -170,10 +170,10 @@ as a "syntax error," the divergence often isn't discovered right away.
 This document attempts to specify Markdown syntax unambiguously.
 It contains many examples with side-by-side Markdown and
 HTML.  These are intended to double as conformance tests.  An
-accompanying script `runtests.pl` can be used to run the tests
+accompanying script `runtests.py` can be used to run the tests
 against any Markdown program:
 
-    perl runtests.pl spec.txt PROGRAM
+    python runtests.py --spec spec.txt --program PROGRAM
 
 Since this document describes how Markdown is to be parsed into
 an abstract syntax tree, it would have made sense to use an abstract

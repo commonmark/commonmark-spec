@@ -75,13 +75,9 @@ Or, to create Xcode project files on OSX:
 
 Tests can also be run manually on any executable `$PROG` using:
 
-    perl runtests.pl spec.txt $PROG
+    python runtests.py --program $PROG
 
 The GNU Makefile also provides a few other targets for developers.
-To test the shared library via a python wrapper:
-
-    make testlib
-
 To run a "fuzz test" against ten long randomly generated inputs:
 
     make fuzztest
@@ -93,6 +89,10 @@ To run a test for memory leaks using valgrind:
 To make a release tarball and zip archive:
 
     make archive
+
+To test the archives:
+
+    make testarchive
 
 Compiling for Windows
 ---------------------
