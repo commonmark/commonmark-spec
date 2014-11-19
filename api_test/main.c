@@ -201,6 +201,15 @@ accessors(test_batch_runner *runner)
 	OK(runner, !cmark_node_set_title(header, "title"),
 	   "set_title error");
 
+	OK(runner, !cmark_node_set_header_level(header, 0),
+	   "set_header_level too small");
+	OK(runner, !cmark_node_set_header_level(header, 7),
+	   "set_header_level too large");
+	OK(runner, !cmark_node_set_list_type(bullet_list, CMARK_NO_LIST),
+	   "set_list_type invalid");
+	OK(runner, !cmark_node_set_list_start(bullet_list, -1),
+	   "set_list_start negative");
+
 	cmark_node_destroy(doc);
 }
 

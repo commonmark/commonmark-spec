@@ -153,6 +153,10 @@ cmark_node_get_header_level(cmark_node *node) {
 
 int
 cmark_node_set_header_level(cmark_node *node, int level) {
+	if (level < 1 || level > 6) {
+		return 0;
+	}
+
 	switch (node->type) {
 	case CMARK_NODE_ATX_HEADER:
 	case CMARK_NODE_SETEXT_HEADER:
@@ -178,6 +182,10 @@ cmark_node_get_list_type(cmark_node *node) {
 
 int
 cmark_node_set_list_type(cmark_node *node, cmark_list_type type) {
+	if (!(type == CMARK_BULLET_LIST || type == CMARK_ORDERED_LIST)) {
+		return 0;
+	}
+
 	if (node->type == CMARK_NODE_LIST) {
 		node->as.list.list_type = type;
 		return 1;
@@ -199,6 +207,10 @@ cmark_node_get_list_start(cmark_node *node) {
 
 int
 cmark_node_set_list_start(cmark_node *node, int start) {
+	if (start < 0) {
+		return 0;
+	}
+
 	if (node->type == CMARK_NODE_LIST) {
 		node->as.list.start = start;
 		return 1;
