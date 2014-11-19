@@ -90,7 +90,7 @@ test_print_summary(test_batch_runner *runner)
 	int num_failed  = runner->num_failed;
 
 	fprintf(stderr, "%d tests passed, %d failed, %d skipped\n",
-		num_passed, num_skipped, num_failed);
+		num_passed, num_failed, num_skipped);
 
 	if (test_ok(runner)) {
 		fprintf(stderr, "PASS\n");
