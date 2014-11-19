@@ -98,6 +98,11 @@ S_strdup(const char *str) {
 const char*
 cmark_node_get_string_content(cmark_node *node) {
 	switch (node->type) {
+	case NODE_INDENTED_CODE:
+	case NODE_FENCED_CODE:
+	case NODE_HTML:
+		return cmark_strbuf_cstr(&node->string_content);
+
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
@@ -112,6 +117,11 @@ cmark_node_get_string_content(cmark_node *node) {
 int
 cmark_node_set_string_content(cmark_node *node, const char *content) {
 	switch (node->type) {
+	case NODE_INDENTED_CODE:
+	case NODE_FENCED_CODE:
+	case NODE_HTML:
+		cmark_strbuf_sets(&node->string_content, content);
+
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
