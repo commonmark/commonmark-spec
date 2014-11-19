@@ -163,6 +163,69 @@ cmark_node_set_header_level(cmark_node *node, int level) {
 	return 0;
 }
 
+cmark_list_type
+cmark_node_get_list_type(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.list_type;
+	}
+	else {
+		return CMARK_NO_LIST;
+	}
+}
+
+int
+cmark_node_set_list_type(cmark_node *node, cmark_list_type type) {
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.list_type = type;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_get_list_start(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.start;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_set_list_start(cmark_node *node, int start) {
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.start = start;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_get_list_tight(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.tight;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_set_list_tight(cmark_node *node, int tight) {
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.tight = tight;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
 const char*
 cmark_node_get_url(cmark_node *node) {
 	switch (node->type) {

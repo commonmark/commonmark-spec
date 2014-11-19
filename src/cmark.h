@@ -44,6 +44,7 @@ typedef enum {
 } cmark_node_type;
 
 typedef enum {
+	CMARK_NO_LIST,
 	CMARK_BULLET_LIST,
 	CMARK_ORDERED_LIST
 }  cmark_list_type;
@@ -100,6 +101,24 @@ cmark_node_get_header_level(cmark_node *node);
 
 CMARK_EXPORT int
 cmark_node_set_header_level(cmark_node *node, int level);
+
+CMARK_EXPORT cmark_list_type
+cmark_node_get_list_type(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_type(cmark_node *node, cmark_list_type type);
+
+CMARK_EXPORT int
+cmark_node_get_list_start(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_start(cmark_node *node, int start);
+
+CMARK_EXPORT int
+cmark_node_get_list_tight(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_tight(cmark_node *node, int tight);
 
 CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);
