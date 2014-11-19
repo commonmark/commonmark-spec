@@ -83,8 +83,8 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 man/man1/cmark.1: man/cmark.1.md
 	pandoc $< -o $@ -s -t man
 
-test: $(SPEC)
-	perl runtests.pl $< $(PROG)
+test: $(SPEC) $(BUILDDIR)
+	make -C $(BUILDDIR) test ARGS="-V"
 
 testlib: $(SPEC)
 	perl runtests.pl $< ./wrapper.py
