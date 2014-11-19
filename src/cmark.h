@@ -90,10 +90,10 @@ CMARK_EXPORT cmark_node_type
 cmark_node_get_type(cmark_node *node);
 
 CMARK_EXPORT const char*
-cmark_node_get_content(cmark_node *node);
+cmark_node_get_string_content(cmark_node *node);
 
 CMARK_EXPORT int
-cmark_node_set_content(cmark_node *node, const char *content);
+cmark_node_set_string_content(cmark_node *node, const char *content);
 
 CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);

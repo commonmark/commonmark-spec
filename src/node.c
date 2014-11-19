@@ -96,7 +96,7 @@ S_strdup(const char *str) {
 }
 
 const char*
-cmark_node_get_content(cmark_node *node) {
+cmark_node_get_string_content(cmark_node *node) {
 	switch (node->type) {
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
@@ -110,7 +110,7 @@ cmark_node_get_content(cmark_node *node) {
 }
 
 int
-cmark_node_set_content(cmark_node *node, const char *content) {
+cmark_node_set_string_content(cmark_node *node, const char *content) {
 	switch (node->type) {
 	case NODE_STRING:
 	case NODE_INLINE_HTML:

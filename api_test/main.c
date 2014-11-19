@@ -22,17 +22,17 @@ create_tree(test_batch_runner *runner)
 	INT_EQ(runner, cmark_node_check(doc), 0, "prepend1 consistent");
 
 	cmark_node *str1 = cmark_node_new(CMARK_NODE_STRING);
-	cmark_node_set_content(str1, "Hello, ");
+	cmark_node_set_string_content(str1, "Hello, ");
 	OK(runner, cmark_node_prepend_child(p, str1), "prepend2");
 	INT_EQ(runner, cmark_node_check(doc), 0, "prepend2 consistent");
 
 	cmark_node *str3 = cmark_node_new(CMARK_NODE_STRING);
-	cmark_node_set_content(str3, "!");
+	cmark_node_set_string_content(str3, "!");
 	OK(runner, cmark_node_append_child(p, str3), "append2");
 	INT_EQ(runner, cmark_node_check(doc), 0, "append2 consistent");
 
 	cmark_node *str2 = cmark_node_new(CMARK_NODE_STRING);
-	cmark_node_set_content(str2, "world");
+	cmark_node_set_string_content(str2, "world");
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc), 0, "append3 consistent");
 
