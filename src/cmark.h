@@ -110,7 +110,7 @@ CMARK_EXPORT int
 cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
 
 CMARK_EXPORT int
-cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
+cmark_node_insert_after(cmark_node *node, cmark_node *sibling);
 
 CMARK_EXPORT int
 cmark_node_prepend_child(cmark_node *node, cmark_node *child);
