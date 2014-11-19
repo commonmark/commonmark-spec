@@ -132,6 +132,12 @@ cmark_node_get_url(cmark_node *node);
 CMARK_EXPORT int
 cmark_node_set_url(cmark_node *node, const char *url);
 
+CMARK_EXPORT const char*
+cmark_node_get_title(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_title(cmark_node *node, const char *title);
+
 // Tree manipulation
 
 CMARK_EXPORT void

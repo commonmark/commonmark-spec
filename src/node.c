@@ -275,6 +275,34 @@ cmark_node_set_url(cmark_node *node, const char *url) {
 	return 0;
 }
 
+const char*
+cmark_node_get_title(cmark_node *node) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		return (char *)node->as.link.title;
+	default:
+		break;
+	}
+
+	return NULL;
+}
+
+int
+cmark_node_set_title(cmark_node *node, const char *title) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		free(node->as.link.title);
+		node->as.link.title = (unsigned char *)S_strdup(title);
+		return 1;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
 static inline bool
 S_is_block(cmark_node *node) {
 	return node->type >= CMARK_NODE_FIRST_BLOCK
