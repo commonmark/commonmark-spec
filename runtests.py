@@ -22,6 +22,8 @@ if __name__ == "__main__":
             default=None, help='limit to sections matching regex pattern')
     parser.add_argument('--library-dir', dest='library_dir', nargs='?',
             default=None, help='directory containing dynamic library')
+    parser.add_argument('--no-normalize', dest='normalize',
+            action='store_const', const=False, default=True)
     parser.add_argument('--debug-normalization', dest='debug_normalization',
             action='store_const', const=True,
             default=False, help='filter stdin through normalizer for testing')
@@ -160,7 +162,7 @@ class MyHTMLParser(HTMLParser):
             'th', 'figure', 'thead', 'footer', 'tr', 'form', 'ul',
             'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video', 'script', 'style'])
 
-def normalize(html):
+def normalize_html(html):
     r"""
     Return normalized form of HTML which ignores insignificant output
     differences:
@@ -187,13 +189,17 @@ def print_test_header(headertext, example_number, start_line, end_line):
     print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
 
 def do_test(markdown_lines, expected_html_lines, headertext,
-            example_number, start_line, end_line, prog=None):
+            example_number, start_line, end_line, prog, normalize):
     real_markdown_text = ''.join(markdown_lines).replace('→','\t')
     [retcode, actual_html, err] = md2html(real_markdown_text, prog)
     if retcode == 0:
         actual_html_lines = actual_html.splitlines(True)
         expected_html = ''.join(expected_html_lines)
-        if normalize(actual_html) == normalize(expected_html):
+        if normalize:
+            passed = normalize_html(actual_html) == normalize_html(expected_html)
+        else:
+            passed = actual_html == expected_html
+        if passed:
             return 'pass'
         else:
             print_test_header(headertext, example_number,start_line,end_line)
@@ -209,7 +215,7 @@ def do_test(markdown_lines, expected_html_lines, headertext,
         print(err)
         return 'error'
 
-def do_tests(specfile, prog, pattern):
+def do_tests(specfile, prog, pattern, normalize):
     line_number = 0
     start_line = 0
     end_line = 0
@@ -245,7 +251,8 @@ def do_tests(specfile, prog, pattern):
                     if active:
                         result = do_test(markdown_lines, html_lines,
                                          headertext, example_number,
-                                         start_line, end_line, prog)
+                                         start_line, end_line, prog,
+                                         normalize)
                         if result == 'pass':
                             passed = passed + 1
                         elif result == 'fail':
@@ -266,8 +273,8 @@ def do_tests(specfile, prog, pattern):
 
 if __name__ == "__main__":
     if args.debug_normalization:
-        print normalize(sys.stdin.read())
-    elif do_tests(args.spec, args.program, args.pattern):
+        print normalize_html(sys.stdin.read())
+    elif do_tests(args.spec, args.program, args.pattern, args.normalize):
         exit(0)
     else:
         exit(1)
