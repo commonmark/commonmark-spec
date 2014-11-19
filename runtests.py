@@ -10,6 +10,7 @@ import argparse
 from HTMLParser import HTMLParser
 from htmlentitydefs import name2codepoint
 import re
+import cgi
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run cmark tests.')
@@ -54,112 +55,126 @@ def md2html(text, prog):
 # https://github.com/karlcow/markdown-testsuite/
 significant_attrs = ["alt", "href", "src", "title"]
 normalize_whitespace_re = re.compile('\s+')
+normalize_newline_re = re.compile('^\s*')
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
         self.last = "starttag"
         self.in_pre = False
         self.output = u""
+        self.last_tag = ""
     def handle_data(self, data):
-        if self.in_pre:
-            self.output += data
-        else:
+        after_tag = self.last == "endtag" or self.last == "starttag"
+        after_block_tag = after_tag and self.is_block_tag(self.last_tag)
+        if after_block_tag and not self.in_pre:
             data = normalize_whitespace_re.sub(' ', data)
-            data_strip = data.strip()
-            if (self.last == "ref") and data_strip and data[0] == " ":
-                self.output += " "
-            self.data_end_in_space_not_empty = (data[-1] == ' ' and data_strip)
-            self.output += data_strip
-            self.last = "data"
+            if self.last == "starttag":
+                data = data.lstrip()
+            elif self.last == "endtag":
+                data = data.strip()
+        elif after_tag and self.last_tag == "br":
+            data = normalize_newline_re.sub('\n', data)
+        self.output += data
+        self.last = "data"
     def handle_endtag(self, tag):
         if tag == "pre":
             self.in_pre = False
+        if self.is_block_tag(tag):
+            self.output = self.output.rstrip()
         self.output += "</" + tag + ">"
+        self.last_tag = tag
         self.last = "endtag"
     def handle_starttag(self, tag, attrs):
         if tag == "pre":
             self.in_pre = True
         self.output += "<" + tag
-        attrs = filter(lambda attr: attr[0] in significant_attrs, attrs)
+        # For now we don't strip out 'extra' attributes, because of
+        # raw HTML test cases.
+        # attrs = filter(lambda attr: attr[0] in significant_attrs, attrs)
         if attrs:
             attrs.sort()
-            for attr in attrs:
-                self.output += " " + attr[0] + "=" + '"' + attr[1] + '"'
+            for (k,v) in attrs:
+                self.output += " " + k
+                if v != None:
+                    self.output += ("=" + '"' + cgi.escape(v,quote=True) + '"')
         self.output += ">"
+        self.last_tag = tag
         self.last = "starttag"
     def handle_startendtag(self, tag, attrs):
-        """Ignore closing tag for self-closing void elements."""
+        """Ignore closing tag for self-closing """
         self.handle_starttag(tag, attrs)
+        self.last_tag = tag
+        self.last = "endtag"
+    def handle_comment(self, data):
+        self.output += '<!--' + data + '-->'
+        self.last = "comment"
+    def handle_decl(self, data):
+        self.output += '<!' + data + '>'
+        self.last = "decl"
+    def handle_unknown_decl(self, data):
+        self.output += '<!' + data + '>'
+        self.last = "decl"
+    def handle_pi(self,data):
+        self.output += '<?' + data + '>'
+        self.last = "pi"
     def handle_entityref(self, name):
-        self.add_space_from_last_data()
         try:
-            self.output += unichr(name2codepoint[name])
+            c = unichr(name2codepoint[name])
         except KeyError:
-            self.output += name
+            c = None
+        self.output_char(c, '&' + name + ';')
         self.last = "ref"
     def handle_charref(self, name):
-        self.add_space_from_last_data()
         try:
             if name.startswith("x"):
                 c = unichr(int(name[1:], 16))
             else:
                 c = unichr(int(name))
-            self.output += c
         except ValueError:
-            self.output += name
+                c = None
+        self.output_char(c, '&' + name + ';')
         self.last = "ref"
     # Helpers.
-    def add_space_from_last_data(self):
-        """Maintain the space at: `a <span>b</span>`"""
-        if self.last == 'data' and self.data_end_in_space_not_empty:
-            self.output += ' '
+    def output_char(self, c, fallback):
+        if c == u'<':
+            self.output += "&lt;"
+        elif c == u'>':
+            self.output += "&gt;"
+        elif c == u'&':
+            self.output += "&amp;"
+        elif c == u'"':
+            self.output += "&quot;"
+        elif c == None:
+            self.output += fallback
+        else:
+            self.output += c
+
+    def is_block_tag(self,tag):
+        return (tag in ['article', 'header', 'aside', 'hgroup', 'blockquote',
+            'hr', 'iframe', 'body', 'li', 'map', 'button', 'object', 'canvas',
+            'ol', 'caption', 'output', 'col', 'p', 'colgroup', 'pre', 'dd',
+            'progress', 'div', 'section', 'dl', 'table', 'td', 'dt',
+            'tbody', 'embed', 'textarea', 'fieldset', 'tfoot', 'figcaption',
+            'th', 'figure', 'thead', 'footer', 'tr', 'form', 'ul',
+            'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'video', 'script', 'style'])
 
 def normalize(html):
     r"""
-    Return normalized form of HTML which igores insignificant output differences.
-    Multiple inner whitespaces to a single space
-        >>> normalize("<p>a  \t\nb</p>")
-        u'<p>a b</p>'
-    Surrounding whitespaces are removed:
-        >>> normalize("<p> a</p>")
-        u'<p>a</p>'
-        >>> normalize("<p>a </p>")
-        u'<p>a</p>'
-    TODO: how to deal with the following cases without a full list of the void tags?
-        >>> normalize("<p>a <b>b</b></p>")
-        u'<p>a<b>b</b></p>'
-        >>> normalize("<p><b>b</b> c</p>")
-        u'<p><b>b</b>c</p>'
-        >>> normalize("<p>a <br></p>")
-        u'<p>a<br></p>'
-    `pre` elements preserve whitespace:
-        >>> normalize("<pre>a  \t\nb</pre>")
-        u'<pre>a  \t\nb</pre>'
-    Self-closing tags:
-        >>> normalize("<p><br /></p>")
-        u'<p><br></p>'
-    References are converted to Unicode:
-        >>> normalize("<p>&lt;</p>")
-        u'<p><</p>'
-        >>> normalize("<p>&#60;</p>")
-        u'<p><</p>'
-        >>> normalize("<p>&#x3C;</p>")
-        u'<p><</p>'
-        >>> normalize("<p>&#x4E2D;</p>")
-        u'<p>\u4e2d</p>'
-    Spaces around entities are kept:
-        >>> normalize("<p>a &lt; b</p>")
-        u'<p>a < b</p>'
-        >>> normalize("<p>a&lt;b</p>")
-        u'<p>a<b</p>'
-    Most attributes are ignored:
-        >>> normalize('<p id="a"></p>')
-        u'<p></p>'
-    Critical attributes are considered and sorted alphabetically:
-        >>> normalize('<a href="a"></a>')
-        u'<a href="a"></a>'
-        >>> normalize('<img src="a" alt="a">')
-        u'<img alt="a" src="a">'
+    Return normalized form of HTML which ignores insignificant output
+    differences:
+
+    * Multiple inner whitespaces are collapsed to a single space (except
+      in pre tags).
+    * Outer whitespace (outside block-level tags) is removed.
+    * Self-closing tags are converted to open tags.
+    * Attributes are sorted and lowercased.
+    * References are converted to unicode, except that '<', '>', '&', and
+      '&' are rendered using entities.
+
+    Known limitations:
+
+    * HTMLParser just swallows CDATA.
+    * HTMLParser seems to treat unknown declarations as comments.
     """
     parser = MyHTMLParser()
     parser.feed(html.decode(encoding='UTF-8'))
@@ -208,7 +223,7 @@ def do_tests(specfile, prog, pattern):
 
     header_re = re.compile('#+ ')
     if pattern:
-        pattern_re = re.compile(pattern)
+        pattern_re = re.compile(pattern, re.IGNORECASE)
 
     with open(specfile, 'r') as specf:
         for line in specf:
