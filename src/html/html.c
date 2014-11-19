@@ -152,11 +152,11 @@ static void inlines_to_plain_html(strbuf *html, cmark_node* ils)
 // Convert an inline list to HTML.  Returns 0 on success, and sets result.
 static void inlines_to_html(strbuf *html, cmark_node* ils)
 {
-	cmark_node* children;
+	bool visit_children;
 	render_stack* rstack = NULL;
 
 	while(ils != NULL) {
-	        children = NULL;
+	        visit_children = false;
 		switch(ils->type) {
 		case NODE_STRING:
 			escape_html(html, ils->as.literal.data, ils->as.literal.len);
@@ -193,7 +193,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 			}
 
 			strbuf_puts(html, "\">");
-			children = ils->first_child;
+			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "</a>");
 			break;
 
@@ -215,20 +215,20 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 
 		case NODE_STRONG:
 			strbuf_puts(html, "<strong>");
-			children = ils->first_child;
+			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "</strong>");
 			break;
 
 		case NODE_EMPH:
 			strbuf_puts(html, "<em>");
-			children = ils->first_child;
+			visit_children = true;
 			rstack = push_inline(rstack, ils->next, "</em>");
 			break;
 		default:
 			break;
 		}
-		if (children) {
-			ils = children;
+		if (visit_children) {
+			ils = ils->first_child;
 		} else {
 			ils = ils->next;
 		}

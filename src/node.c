@@ -1,7 +1,25 @@
-#include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "config.h"
 #include "node.h"
+
+static void
+S_node_unlink(cmark_node *node);
+
+cmark_node*
+cmark_node_new(cmark_node_type type) {
+	cmark_node *node = (cmark_node *)calloc(1, sizeof(*node));
+	node->type = type;
+	return node;
+}
+
+void
+cmark_node_destroy(cmark_node *node) {
+	S_node_unlink(node);
+	node->next = NULL;
+	cmark_free_nodes(node);
+}
 
 cmark_node_type
 cmark_node_get_type(cmark_node *node)
@@ -67,6 +85,71 @@ cmark_node*
 cmark_node_last_child(cmark_node *node)
 {
 	return node->last_child;
+}
+
+static char*
+S_strdup(const char *str) {
+	size_t size = strlen(str) + 1;
+	char *dup = (char *)malloc(size);
+	memcpy(dup, str, size);
+	return dup;
+}
+
+const char*
+cmark_node_get_content(cmark_node *node) {
+	switch (node->type) {
+	case NODE_STRING:
+	case NODE_INLINE_HTML:
+	case NODE_INLINE_CODE:
+		return cmark_chunk_to_cstr(&node->as.literal);
+	default:
+		break;
+	}
+
+	return NULL;
+}
+
+int
+cmark_node_set_content(cmark_node *node, const char *content) {
+	switch (node->type) {
+	case NODE_STRING:
+	case NODE_INLINE_HTML:
+	case NODE_INLINE_CODE:
+		cmark_chunk_set_cstr(&node->as.literal, content);
+		return 1;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+const char*
+cmark_node_get_url(cmark_node *node) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		return (char *)node->as.link.url;
+	default:
+		break;
+	}
+
+	return NULL;
+}
+
+int
+cmark_node_set_url(cmark_node *node, const char *url) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		free(node->as.link.url);
+		node->as.link.url = (unsigned char *)S_strdup(url);
+		return 1;
+	default:
+		break;
+	}
+
+	return 0;
 }
 
 static inline bool

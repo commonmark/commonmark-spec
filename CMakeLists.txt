@@ -13,6 +13,7 @@ set(PROJECT_VERSION_PATCH 1)
 set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH} )
 
 add_subdirectory(src)
+add_subdirectory(api_test)
 
 if(UNIX)
   INSTALL(FILES man/man1/cmark.1 DESTINATION share/man/man1)
@@ -24,6 +25,7 @@ enable_testing()
 add_test(spectest
    perl "${CMAKE_SOURCE_DIR}/runtests.pl" "${CMAKE_SOURCE_DIR}/spec.txt" "${CMAKE_BINARY_DIR}/src/cmark"
 )
+add_test(NAME api_test COMMAND api_test)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING
