@@ -49,15 +49,16 @@ archive: spec.html $(BUILDDIR)
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
-	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR)`; \
+	mkdir -p $(PKGDIR)/api_test; \
+	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR) api_test`; \
 	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
-	cp spec.html $(PKGDIR); \
+	cp -a spec.html $(PKGDIR); \
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
-	cp Makefile.nmake nmake.bat $(PKGDIR); \
-	cp man/man1/cmark.1 $(PKGDIR)/man/man1/; \
-	cp README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
+	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
+	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
+	cp -a README.md LICENSE spec.txt runtests.pl $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
