@@ -20,8 +20,11 @@ if __name__ == "__main__":
             help='path to spec')
     parser.add_argument('--pattern', dest='pattern', nargs='?',
             default=None, help='limit to sections matching regex pattern')
-    parser.add_argument('--library_dir', dest='library_dir', nargs='?',
+    parser.add_argument('--library-dir', dest='library_dir', nargs='?',
             default=None, help='directory containing dynamic library')
+    parser.add_argument('--test-normalization', dest='test_normalization',
+            action='store_const', const=True,
+            default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
 
 if not args.program:
@@ -55,7 +58,6 @@ def md2html(text, prog):
 # https://github.com/karlcow/markdown-testsuite/
 significant_attrs = ["alt", "href", "src", "title"]
 normalize_whitespace_re = re.compile('\s+')
-normalize_newline_re = re.compile('^\s*')
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
@@ -66,14 +68,14 @@ class MyHTMLParser(HTMLParser):
     def handle_data(self, data):
         after_tag = self.last == "endtag" or self.last == "starttag"
         after_block_tag = after_tag and self.is_block_tag(self.last_tag)
+        if after_tag and self.last_tag == "br":
+            data = data.lstrip('\n')
+        data = normalize_whitespace_re.sub(' ', data)
         if after_block_tag and not self.in_pre:
-            data = normalize_whitespace_re.sub(' ', data)
             if self.last == "starttag":
                 data = data.lstrip()
             elif self.last == "endtag":
                 data = data.strip()
-        elif after_tag and self.last_tag == "br":
-            data = normalize_newline_re.sub('\n', data)
         self.output += data
         self.last = "data"
     def handle_endtag(self, tag):
@@ -263,7 +265,9 @@ def do_tests(specfile, prog, pattern):
     return (failed == 0 and errored == 0)
 
 if __name__ == "__main__":
-    if do_tests(args.spec, args.program, args.pattern):
+    if args.test_normalization:
+        print normalize(sys.stdin.read())
+    elif do_tests(args.spec, args.program, args.pattern):
         exit(0)
     else:
         exit(1)
