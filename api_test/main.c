@@ -197,7 +197,7 @@ accessors(test_batch_runner *runner)
 		"<p>Item 2</p>\n"
 		"</li>\n"
 		"</ol>\n"
-		"<ul start=\"2\">\n"
+		"<ul>\n"
 		"<li>Item 1</li>\n"
 		"<li>Item 2</li>\n"
 		"</ul>\n"
@@ -439,6 +439,35 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 	cmark_node_destroy(node);
 }
 
+void render_html(test_batch_runner *runner)
+{
+	char *html;
+
+	static const unsigned char markdown[] =
+		"foo *bar*\n"
+		"\n"
+		"paragraph 2\n";
+	cmark_node *doc = cmark_parse_document(markdown, sizeof(markdown) - 1);
+
+	cmark_node *paragraph = cmark_node_first_child(doc);
+	html = (char *)cmark_render_html(paragraph);
+	STR_EQ(runner, html, "<p>foo <em>bar</em></p>\n",
+	       "render single paragraph");
+	free(html);
+
+	cmark_node *string = cmark_node_first_child(paragraph);
+	html = (char *)cmark_render_html(string);
+	STR_EQ(runner, html, "foo ", "render single inline");
+	free(html);
+
+	cmark_node *emph = cmark_node_next(string);
+	html = (char *)cmark_render_html(emph);
+	STR_EQ(runner, html, "<em>bar</em>", "render inline with children");
+	free(html);
+
+	cmark_node_destroy(doc);
+}
+
 int main() {
 	int retval;
 	test_batch_runner *runner = test_batch_runner_new();
@@ -448,6 +477,7 @@ int main() {
 	node_check(runner);
 	create_tree(runner);
 	hierarchy(runner);
+	render_html(runner);
 
 	test_print_summary(runner);
 	retval =  test_ok(runner) ? 0 : 1;
