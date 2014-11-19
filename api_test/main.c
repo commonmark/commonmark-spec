@@ -10,6 +10,7 @@
 static void
 create_tree(test_batch_runner *runner)
 {
+	char *html;
 	cmark_node *doc = cmark_node_new(CMARK_NODE_DOCUMENT);
 
 	cmark_node *p = cmark_node_new(CMARK_NODE_PARAGRAPH);
@@ -35,9 +36,34 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc), 0, "append3 consistent");
 
-	char *html = (char *)cmark_render_html(doc);
+	html = (char *)cmark_render_html(doc);
 	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
 	       "render_html");
+	free(html);
+
+	OK(runner, cmark_node_insert_before(str1, str3), "ins before1");
+	INT_EQ(runner, cmark_node_check(doc), 0, "ins before1 consistent");
+	// 31e
+	OK(runner, cmark_node_first_child(p) == str3, "ins before1 works");
+
+	OK(runner, cmark_node_insert_before(str1, emph), "ins before2");
+	INT_EQ(runner, cmark_node_check(doc), 0, "ins before2 consistent");
+	// 3e1
+	OK(runner, cmark_node_last_child(p) == str1, "ins before2 works");
+
+	OK(runner, cmark_node_insert_after(str1, str3), "ins after1");
+	INT_EQ(runner, cmark_node_check(doc), 0, "ins after1 consistent");
+	// e13
+	OK(runner, cmark_node_last_child(p) == str3, "ins after1 works");
+
+	OK(runner, cmark_node_insert_after(str1, emph), "ins after2");
+	INT_EQ(runner, cmark_node_check(doc), 0, "ins after2 consistent");
+	// 1e3
+	OK(runner, cmark_node_first_child(p) == str1, "ins after2 works");
+
+	html = (char *)cmark_render_html(doc);
+	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
+	       "render_html after shuffling");
 	free(html);
 
 	cmark_node_destroy(doc);
