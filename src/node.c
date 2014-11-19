@@ -303,6 +303,21 @@ cmark_node_set_title(cmark_node *node, const char *title) {
 	return 0;
 }
 
+int
+cmark_node_get_start_line(cmark_node *node) {
+	return node->start_line;
+}
+
+int
+cmark_node_get_start_column(cmark_node *node) {
+	return node->start_column;
+}
+
+int
+cmark_node_get_end_line(cmark_node *node) {
+	return node->end_line;
+}
+
 static inline bool
 S_is_block(cmark_node *node) {
 	return node->type >= CMARK_NODE_FIRST_BLOCK

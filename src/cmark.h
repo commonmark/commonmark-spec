@@ -138,6 +138,15 @@ cmark_node_get_title(cmark_node *node);
 CMARK_EXPORT int
 cmark_node_set_title(cmark_node *node, const char *title);
 
+CMARK_EXPORT int
+cmark_node_get_start_line(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_get_start_column(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_get_end_line(cmark_node *node);
+
 // Tree manipulation
 
 CMARK_EXPORT void
