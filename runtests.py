@@ -22,7 +22,7 @@ if __name__ == "__main__":
             default=None, help='limit to sections matching regex pattern')
     parser.add_argument('--library-dir', dest='library_dir', nargs='?',
             default=None, help='directory containing dynamic library')
-    parser.add_argument('--test-normalization', dest='test_normalization',
+    parser.add_argument('--debug-normalization', dest='debug_normalization',
             action='store_const', const=True,
             default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
@@ -265,7 +265,7 @@ def do_tests(specfile, prog, pattern):
     return (failed == 0 and errored == 0)
 
 if __name__ == "__main__":
-    if args.test_normalization:
+    if args.debug_normalization:
         print normalize(sys.stdin.read())
     elif do_tests(args.spec, args.program, args.pattern):
         exit(0)
