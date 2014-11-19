@@ -107,6 +107,7 @@ cmark_node_get_string_content(cmark_node *node) {
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
 		return cmark_chunk_to_cstr(&node->as.literal);
+
 	default:
 		break;
 	}
@@ -121,12 +122,14 @@ cmark_node_set_string_content(cmark_node *node, const char *content) {
 	case NODE_FENCED_CODE:
 	case NODE_HTML:
 		cmark_strbuf_sets(&node->string_content, content);
+		return 1;
 
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
 		cmark_chunk_set_cstr(&node->as.literal, content);
 		return 1;
+
 	default:
 		break;
 	}
