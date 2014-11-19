@@ -134,6 +134,35 @@ cmark_node_set_string_content(cmark_node *node, const char *content) {
 	return 0;
 }
 
+int
+cmark_node_get_header_level(cmark_node *node) {
+	switch (node->type) {
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
+		return node->as.header.level;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int
+cmark_node_set_header_level(cmark_node *node, int level) {
+	switch (node->type) {
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
+		node->as.header.level = level;
+		return 1;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
 const char*
 cmark_node_get_url(cmark_node *node) {
 	switch (node->type) {

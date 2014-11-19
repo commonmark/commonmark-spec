@@ -95,6 +95,12 @@ cmark_node_get_string_content(cmark_node *node);
 CMARK_EXPORT int
 cmark_node_set_string_content(cmark_node *node, const char *content);
 
+CMARK_EXPORT int
+cmark_node_get_header_level(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_header_level(cmark_node *node, int level);
+
 CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);
 
