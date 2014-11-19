@@ -227,6 +227,27 @@ cmark_node_set_list_tight(cmark_node *node, int tight) {
 }
 
 const char*
+cmark_node_get_fence_info(cmark_node *node) {
+	if (node->type == NODE_FENCED_CODE) {
+		return cmark_strbuf_cstr(&node->as.code.info);
+	}
+	else {
+		return NULL;
+	}
+}
+
+int
+cmark_node_set_fence_info(cmark_node *node, const char *info) {
+	if (node->type == NODE_FENCED_CODE) {
+		cmark_strbuf_sets(&node->as.code.info, info);
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+const char*
 cmark_node_get_url(cmark_node *node) {
 	switch (node->type) {
 	case NODE_LINK:

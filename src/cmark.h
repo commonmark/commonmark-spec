@@ -121,6 +121,12 @@ CMARK_EXPORT int
 cmark_node_set_list_tight(cmark_node *node, int tight);
 
 CMARK_EXPORT const char*
+cmark_node_get_fence_info(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_fence_info(cmark_node *node, const char *info);
+
+CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);
 
 CMARK_EXPORT int
