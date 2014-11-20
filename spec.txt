@@ -468,7 +468,8 @@ If you want a horizontal rule in a list item, use a different bullet:
 .
 <ul>
 <li>Foo</li>
-<li><hr /></li>
+<li><hr />
+</li>
 </ul>
 .
 
@@ -2530,13 +2531,15 @@ and the same contents as *Ls*:
     > A block quote.
 .
 <ol>
-<li><p>A paragraph
+<li>
+<p>A paragraph
 with two lines.</p>
 <pre><code>indented code
 </code></pre>
 <blockquote>
 <p>A block quote.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2568,8 +2571,10 @@ put under the list item:
   two
 .
 <ul>
-<li><p>one</p>
-<p>two</p></li>
+<li>
+<p>one</p>
+<p>two</p>
+</li>
 </ul>
 .
 
@@ -2591,8 +2596,10 @@ put under the list item:
       two
 .
 <ul>
-<li><p>one</p>
-<p>two</p></li>
+<li>
+<p>one</p>
+<p>two</p>
+</li>
 </ul>
 .
 
@@ -2612,8 +2619,10 @@ this example:
 <blockquote>
 <blockquote>
 <ol>
-<li><p>one</p>
-<p>two</p></li>
+<li>
+<p>one</p>
+<p>two</p>
+</li>
 </ol>
 </blockquote>
 </blockquote>
@@ -2665,17 +2674,23 @@ two blanks are contained in a [fenced code block](#fenced-code-block).
   ```
 .
 <ul>
-<li><p>foo</p>
-<p>bar</p></li>
-<li><p>foo</p></li>
+<li>
+<p>foo</p>
+<p>bar</p>
+</li>
+<li>
+<p>foo</p>
+</li>
 </ul>
 <p>bar</p>
 <ul>
-<li><pre><code>foo
+<li>
+<pre><code>foo
 
 
 bar
-</code></pre></li>
+</code></pre>
+</li>
 </ul>
 .
 
@@ -2693,13 +2708,15 @@ A list item may contain any kind of block:
     > bam
 .
 <ol>
-<li><p>foo</p>
+<li>
+<p>foo</p>
 <pre><code>bar
 </code></pre>
 <p>baz</p>
 <blockquote>
 <p>bam</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2725,9 +2742,11 @@ In the following case that is 6 spaces:
       bar
 .
 <ul>
-<li><p>foo</p>
+<li>
+<p>foo</p>
 <pre><code>bar
-</code></pre></li>
+</code></pre>
+</li>
 </ul>
 .
 
@@ -2739,9 +2758,11 @@ And in this case it is 11 spaces:
            bar
 .
 <ol start="10">
-<li><p>foo</p>
+<li>
+<p>foo</p>
 <pre><code>bar
-</code></pre></li>
+</code></pre>
+</li>
 </ol>
 .
 
@@ -2771,11 +2792,13 @@ paragraph
        more code
 .
 <ol>
-<li><pre><code>indented code
+<li>
+<pre><code>indented code
 </code></pre>
 <p>paragraph</p>
 <pre><code>more code
-</code></pre></li>
+</code></pre>
+</li>
 </ol>
 .
 
@@ -2790,11 +2813,13 @@ inside the code block:
        more code
 .
 <ol>
-<li><pre><code> indented code
+<li>
+<pre><code> indented code
 </code></pre>
 <p>paragraph</p>
 <pre><code>more code
-</code></pre></li>
+</code></pre>
+</li>
 </ol>
 .
 
@@ -2836,8 +2861,10 @@ the above case:
    bar
 .
 <ul>
-<li><p>foo</p>
-<p>bar</p></li>
+<li>
+<p>foo</p>
+<p>bar</p>
+</li>
 </ul>
 .
 
@@ -2859,13 +2886,15 @@ Indented one space:
      > A block quote.
 .
 <ol>
-<li><p>A paragraph
+<li>
+<p>A paragraph
 with two lines.</p>
 <pre><code>indented code
 </code></pre>
 <blockquote>
 <p>A block quote.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2880,13 +2909,15 @@ Indented two spaces:
       > A block quote.
 .
 <ol>
-<li><p>A paragraph
+<li>
+<p>A paragraph
 with two lines.</p>
 <pre><code>indented code
 </code></pre>
 <blockquote>
 <p>A block quote.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2901,13 +2932,15 @@ Indented three spaces:
        > A block quote.
 .
 <ol>
-<li><p>A paragraph
+<li>
+<p>A paragraph
 with two lines.</p>
 <pre><code>indented code
 </code></pre>
 <blockquote>
 <p>A block quote.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2952,13 +2985,15 @@ with two lines.
       > A block quote.
 .
 <ol>
-<li><p>A paragraph
+<li>
+<p>A paragraph
 with two lines.</p>
 <pre><code>indented code
 </code></pre>
 <blockquote>
 <p>A block quote.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 .
 
@@ -2982,10 +3017,12 @@ continued here.
 .
 <blockquote>
 <ol>
-<li><blockquote>
+<li>
+<blockquote>
 <p>Blockquote
 continued here.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 </blockquote>
 .
@@ -2996,10 +3033,12 @@ continued here.</p>
 .
 <blockquote>
 <ol>
-<li><blockquote>
+<li>
+<blockquote>
 <p>Blockquote
 continued here.</p>
-</blockquote></li>
+</blockquote>
+</li>
 </ol>
 </blockquote>
 .
@@ -3025,8 +3064,10 @@ So, in this case we need two spaces indent:
 <li>bar
 <ul>
 <li>baz</li>
-</ul></li>
-</ul></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 .
 
@@ -3054,7 +3095,8 @@ Here we need four, because the list marker is wider:
 <li>foo
 <ul>
 <li>bar</li>
-</ul></li>
+</ul>
+</li>
 </ol>
 .
 
@@ -3078,9 +3120,11 @@ A list may be the first block in a list item:
 - - foo
 .
 <ul>
-<li><ul>
+<li>
+<ul>
 <li>foo</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 .
 
@@ -3088,11 +3132,15 @@ A list may be the first block in a list item:
 1. - 2. foo
 .
 <ol>
-<li><ul>
-<li><ol start="2">
+<li>
+<ul>
+<li>
+<ol start="2">
 <li>foo</li>
-</ol></li>
-</ul></li>
+</ol>
+</li>
+</ul>
+</li>
 </ol>
 .
 
@@ -3127,9 +3175,13 @@ A list item can contain a header:
   baz
 .
 <ul>
-<li><h1>Foo</h1></li>
-<li><h2>Bar</h2>
-<p>baz</p></li>
+<li>
+<h1>Foo</h1>
+</li>
+<li>
+<h2>Bar</h2>
+<p>baz</p>
+</li>
 </ul>
 .
 
@@ -3224,11 +3276,13 @@ as the four-space rule demands, rather than a single list,
 
 ``` html
 <ul>
-<li><p>foo</p>
+<li>
+<p>foo</p>
 <p>bar</p>
 <ul>
 <li>baz</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 ```
 
@@ -3251,8 +3305,10 @@ as a single list item, with `two` a continuation paragraph:
 
 ``` html
 <ul>
-<li><p>one</p>
-<p>two</p></li>
+<li>
+<p>one</p>
+<p>two</p>
+</li>
 </ul>
 ```
 
@@ -3269,8 +3325,10 @@ as
 ``` html
 <blockquote>
 <ul>
-<li><p>one</p>
-<p>two</p></li>
+<li>
+<p>one</p>
+<p>two</p>
+</li>
 </ul>
 </blockquote>
 ```
@@ -3468,8 +3526,12 @@ a list:
 - baz
 .
 <ul>
-<li><p>foo</p></li>
-<li><p>bar</p></li>
+<li>
+<p>foo</p>
+</li>
+<li>
+<p>bar</p>
+</li>
 </ul>
 <ul>
 <li>baz</li>
@@ -3512,8 +3574,10 @@ Indeed, two blank lines will end *all* containing lists:
 <li>bar
 <ul>
 <li>baz</li>
-</ul></li>
-</ul></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 <pre><code>  bim
 </code></pre>
@@ -3553,9 +3617,13 @@ item:
     code
 .
 <ul>
-<li><p>foo</p>
-<p>notcode</p></li>
-<li><p>foo</p></li>
+<li>
+<p>foo</p>
+<p>notcode</p>
+</li>
+<li>
+<p>foo</p>
+</li>
 </ul>
 <pre><code>code
 </code></pre>
@@ -3596,9 +3664,15 @@ two of the list items:
 - c
 .
 <ul>
-<li><p>a</p></li>
-<li><p>b</p></li>
-<li><p>c</p></li>
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+</li>
+<li>
+<p>c</p>
+</li>
 </ul>
 .
 
@@ -3611,9 +3685,13 @@ So is this, with a empty second item:
 * c
 .
 <ul>
-<li><p>a</p></li>
+<li>
+<p>a</p>
+</li>
 <li></li>
-<li><p>c</p></li>
+<li>
+<p>c</p>
+</li>
 </ul>
 .
 
@@ -3629,10 +3707,16 @@ with a blank line between them:
 - d
 .
 <ul>
-<li><p>a</p></li>
-<li><p>b</p>
-<p>c</p></li>
-<li><p>d</p></li>
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+<p>c</p>
+</li>
+<li>
+<p>d</p>
+</li>
 </ul>
 .
 
@@ -3644,9 +3728,15 @@ with a blank line between them:
 - d
 .
 <ul>
-<li><p>a</p></li>
-<li><p>b</p></li>
-<li><p>d</p></li>
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+</li>
+<li>
+<p>d</p>
+</li>
 </ul>
 .
 
@@ -3663,10 +3753,12 @@ This is a tight list, because the blank lines are in a code block:
 .
 <ul>
 <li>a</li>
-<li><pre><code>b
+<li>
+<pre><code>b
 
 
-</code></pre></li>
+</code></pre>
+</li>
 <li>c</li>
 </ul>
 .
@@ -3685,9 +3777,12 @@ the outer list is tight:
 <ul>
 <li>a
 <ul>
-<li><p>b</p>
-<p>c</p></li>
-</ul></li>
+<li>
+<p>b</p>
+<p>c</p>
+</li>
+</ul>
+</li>
 <li>d</li>
 </ul>
 .
@@ -3705,7 +3800,8 @@ block quote:
 <li>a
 <blockquote>
 <p>b</p>
-</blockquote></li>
+</blockquote>
+</li>
 <li>c</li>
 </ul>
 .
@@ -3727,7 +3823,8 @@ are not separated by blank lines:
 <p>b</p>
 </blockquote>
 <pre><code>c
-</code></pre></li>
+</code></pre>
+</li>
 <li>d</li>
 </ul>
 .
@@ -3750,7 +3847,8 @@ A single-paragraph list is tight:
 <li>a
 <ul>
 <li>b</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 .
 
@@ -3763,11 +3861,13 @@ Here the outer list is loose, the inner list tight:
   baz
 .
 <ul>
-<li><p>foo</p>
+<li>
+<p>foo</p>
 <ul>
 <li>bar</li>
 </ul>
-<p>baz</p></li>
+<p>baz</p>
+</li>
 </ul>
 .
 
@@ -3781,16 +3881,20 @@ Here the outer list is loose, the inner list tight:
   - f
 .
 <ul>
-<li><p>a</p>
+<li>
+<p>a</p>
 <ul>
 <li>b</li>
 <li>c</li>
-</ul></li>
-<li><p>d</p>
+</ul>
+</li>
+<li>
+<p>d</p>
 <ul>
 <li>e</li>
 <li>f</li>
-</ul></li>
+</ul>
+</li>
 </ul>
 .
 
