@@ -7,7 +7,7 @@ import platform
 from difflib import unified_diff
 from subprocess import *
 import argparse
-from HTMLParser import HTMLParser
+from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
 import re
 import cgi
@@ -180,10 +180,14 @@ def normalize_html(html):
     * HTMLParser just swallows CDATA.
     * HTMLParser seems to treat unknown declarations as comments.
     """
-    parser = MyHTMLParser()
-    parser.feed(html.decode(encoding='UTF-8'))
-    parser.close()
-    return parser.output
+    try:
+        parser = MyHTMLParser()
+        parser.feed(html.decode(encoding='UTF-8'))
+        parser.close()
+        return parser.output
+    except HTMLParseError as e:
+        sys.stderr.write("Normalization error: " + e.msg + "\n")
+        return html  # on error, return unnormalized HTML
 
 def print_test_header(headertext, example_number, start_line, end_line):
     print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
