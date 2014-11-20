@@ -348,6 +348,17 @@ S_is_inline(cmark_node *node) {
 static bool
 S_can_contain(cmark_node *node, cmark_node *child)
 {
+	cmark_node *cur;
+
+	// Verify that child is not an ancestor of node or equal to node.
+	cur = node;
+	do {
+		if (cur == child) {
+			return false;
+		}
+		cur = cur->parent;
+	} while (cur != NULL);
+
 	if (child->type == CMARK_NODE_DOCUMENT) {
 		return false;
 	}

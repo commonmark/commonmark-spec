@@ -7,6 +7,35 @@
 
 #include "harness.h"
 
+static const cmark_node_type node_types[] = {
+	CMARK_NODE_DOCUMENT,
+	CMARK_NODE_BQUOTE,
+	CMARK_NODE_LIST,
+	CMARK_NODE_LIST_ITEM,
+	CMARK_NODE_FENCED_CODE,
+	CMARK_NODE_INDENTED_CODE,
+	CMARK_NODE_HTML,
+	CMARK_NODE_PARAGRAPH,
+	CMARK_NODE_ATX_HEADER,
+	CMARK_NODE_SETEXT_HEADER,
+	CMARK_NODE_HRULE,
+	CMARK_NODE_REFERENCE_DEF,
+	CMARK_NODE_STRING,
+	CMARK_NODE_SOFTBREAK,
+	CMARK_NODE_LINEBREAK,
+	CMARK_NODE_INLINE_CODE,
+	CMARK_NODE_INLINE_HTML,
+	CMARK_NODE_EMPH,
+	CMARK_NODE_STRONG,
+	CMARK_NODE_LINK,
+	CMARK_NODE_IMAGE
+};
+static const int num_node_types = sizeof(node_types) / sizeof(*node_types);
+
+static void
+test_content(test_batch_runner *runner, cmark_node_type type,
+	     int allowed_content);
+
 static void
 accessors(test_batch_runner *runner)
 {
@@ -275,12 +304,103 @@ create_tree(test_batch_runner *runner)
 	cmark_node_destroy(doc);
 }
 
+void
+hierarchy(test_batch_runner *runner)
+{
+	cmark_node *bquote1 = cmark_node_new(CMARK_NODE_BQUOTE);
+	cmark_node *bquote2 = cmark_node_new(CMARK_NODE_BQUOTE);
+	cmark_node *bquote3 = cmark_node_new(CMARK_NODE_BQUOTE);
+
+	OK(runner, cmark_node_append_child(bquote1, bquote2),
+	   "append bquote2");
+	OK(runner, cmark_node_append_child(bquote2, bquote3),
+	   "append bquote3");
+	OK(runner, !cmark_node_append_child(bquote3, bquote3),
+	   "adding a node as child of itself fails");
+	OK(runner, !cmark_node_append_child(bquote3, bquote1),
+	   "adding a parent as child fails");
+
+	cmark_node_destroy(bquote1);
+
+	int max_node_type = CMARK_NODE_LAST_BLOCK > CMARK_NODE_LAST_INLINE
+			    ? CMARK_NODE_LAST_BLOCK : CMARK_NODE_LAST_INLINE;
+	OK(runner, max_node_type < 32, "all node types < 32");
+
+	int list_item_flag = 1 << CMARK_NODE_LIST_ITEM;
+	int top_level_blocks =
+		(1 << CMARK_NODE_BQUOTE) |
+		(1 << CMARK_NODE_LIST) |
+		(1 << CMARK_NODE_FENCED_CODE) |
+		(1 << CMARK_NODE_INDENTED_CODE) |
+		(1 << CMARK_NODE_HTML) |
+		(1 << CMARK_NODE_PARAGRAPH) |
+		(1 << CMARK_NODE_ATX_HEADER) |
+		(1 << CMARK_NODE_SETEXT_HEADER) |
+		(1 << CMARK_NODE_HRULE) |
+		(1 << CMARK_NODE_REFERENCE_DEF);
+	int all_inlines =
+		(1 << CMARK_NODE_STRING) |
+		(1 << CMARK_NODE_SOFTBREAK) |
+		(1 << CMARK_NODE_LINEBREAK) |
+		(1 << CMARK_NODE_INLINE_CODE) |
+		(1 << CMARK_NODE_INLINE_HTML) |
+		(1 << CMARK_NODE_EMPH) |
+		(1 << CMARK_NODE_STRONG) |
+		(1 << CMARK_NODE_LINK) |
+		(1 << CMARK_NODE_IMAGE);
+
+	test_content(runner, CMARK_NODE_DOCUMENT,      top_level_blocks);
+	test_content(runner, CMARK_NODE_BQUOTE,        top_level_blocks);
+	test_content(runner, CMARK_NODE_LIST,          list_item_flag);
+	test_content(runner, CMARK_NODE_LIST_ITEM,     top_level_blocks);
+	test_content(runner, CMARK_NODE_FENCED_CODE,   0);
+	test_content(runner, CMARK_NODE_INDENTED_CODE, 0);
+	test_content(runner, CMARK_NODE_HTML,          0);
+	test_content(runner, CMARK_NODE_PARAGRAPH,     all_inlines);
+	test_content(runner, CMARK_NODE_ATX_HEADER,    all_inlines);
+	test_content(runner, CMARK_NODE_SETEXT_HEADER, all_inlines);
+	test_content(runner, CMARK_NODE_HRULE,         0);
+	test_content(runner, CMARK_NODE_REFERENCE_DEF, 0);
+	test_content(runner, CMARK_NODE_STRING,        0);
+	test_content(runner, CMARK_NODE_SOFTBREAK,     0);
+	test_content(runner, CMARK_NODE_LINEBREAK,     0);
+	test_content(runner, CMARK_NODE_INLINE_CODE,   0);
+	test_content(runner, CMARK_NODE_INLINE_HTML,   0);
+	test_content(runner, CMARK_NODE_EMPH,          all_inlines);
+	test_content(runner, CMARK_NODE_STRONG,        all_inlines);
+	test_content(runner, CMARK_NODE_LINK,          all_inlines);
+	test_content(runner, CMARK_NODE_IMAGE,         all_inlines);
+}
+
+static void
+test_content(test_batch_runner *runner, cmark_node_type type,
+	     int allowed_content)
+{
+	cmark_node *node = cmark_node_new(type);
+
+	for (int i = 0; i < num_node_types; ++i) {
+		cmark_node_type child_type = node_types[i];
+		cmark_node *child = cmark_node_new(child_type);
+
+		int got = cmark_node_append_child(node, child);
+		int expected = (allowed_content >> i) & 1;
+
+		INT_EQ(runner, got, expected,
+		       "add %d as child of %d", child_type, type);
+
+		cmark_node_destroy(child);
+	}
+
+	cmark_node_destroy(node);
+}
+
 int main() {
 	int retval;
 	test_batch_runner *runner = test_batch_runner_new();
 
 	accessors(runner);
 	create_tree(runner);
+	hierarchy(runner);
 
 	test_print_summary(runner);
 	retval =  test_ok(runner) ? 0 : 1;
