@@ -96,12 +96,18 @@ S_strdup(const char *str) {
 }
 
 const char*
-cmark_node_get_content(cmark_node *node) {
+cmark_node_get_string_content(cmark_node *node) {
 	switch (node->type) {
+	case NODE_INDENTED_CODE:
+	case NODE_FENCED_CODE:
+	case NODE_HTML:
+		return cmark_strbuf_cstr(&node->string_content);
+
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
 		return cmark_chunk_to_cstr(&node->as.literal);
+
 	default:
 		break;
 	}
@@ -110,18 +116,150 @@ cmark_node_get_content(cmark_node *node) {
 }
 
 int
-cmark_node_set_content(cmark_node *node, const char *content) {
+cmark_node_set_string_content(cmark_node *node, const char *content) {
 	switch (node->type) {
+	case NODE_INDENTED_CODE:
+	case NODE_FENCED_CODE:
+	case NODE_HTML:
+		cmark_strbuf_sets(&node->string_content, content);
+		return 1;
+
 	case NODE_STRING:
 	case NODE_INLINE_HTML:
 	case NODE_INLINE_CODE:
 		cmark_chunk_set_cstr(&node->as.literal, content);
 		return 1;
+
 	default:
 		break;
 	}
 
 	return 0;
+}
+
+int
+cmark_node_get_header_level(cmark_node *node) {
+	switch (node->type) {
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
+		return node->as.header.level;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int
+cmark_node_set_header_level(cmark_node *node, int level) {
+	if (level < 1 || level > 6) {
+		return 0;
+	}
+
+	switch (node->type) {
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
+		node->as.header.level = level;
+		return 1;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+cmark_list_type
+cmark_node_get_list_type(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.list_type;
+	}
+	else {
+		return CMARK_NO_LIST;
+	}
+}
+
+int
+cmark_node_set_list_type(cmark_node *node, cmark_list_type type) {
+	if (!(type == CMARK_BULLET_LIST || type == CMARK_ORDERED_LIST)) {
+		return 0;
+	}
+
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.list_type = type;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_get_list_start(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.start;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_set_list_start(cmark_node *node, int start) {
+	if (start < 0) {
+		return 0;
+	}
+
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.start = start;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_get_list_tight(cmark_node *node) {
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.tight;
+	}
+	else {
+		return 0;
+	}
+}
+
+int
+cmark_node_set_list_tight(cmark_node *node, int tight) {
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.tight = tight;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
+const char*
+cmark_node_get_fence_info(cmark_node *node) {
+	if (node->type == NODE_FENCED_CODE) {
+		return cmark_strbuf_cstr(&node->as.code.info);
+	}
+	else {
+		return NULL;
+	}
+}
+
+int
+cmark_node_set_fence_info(cmark_node *node, const char *info) {
+	if (node->type == NODE_FENCED_CODE) {
+		cmark_strbuf_sets(&node->as.code.info, info);
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 const char*
@@ -150,6 +288,49 @@ cmark_node_set_url(cmark_node *node, const char *url) {
 	}
 
 	return 0;
+}
+
+const char*
+cmark_node_get_title(cmark_node *node) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		return (char *)node->as.link.title;
+	default:
+		break;
+	}
+
+	return NULL;
+}
+
+int
+cmark_node_set_title(cmark_node *node, const char *title) {
+	switch (node->type) {
+	case NODE_LINK:
+	case NODE_IMAGE:
+		free(node->as.link.title);
+		node->as.link.title = (unsigned char *)S_strdup(title);
+		return 1;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+int
+cmark_node_get_start_line(cmark_node *node) {
+	return node->start_line;
+}
+
+int
+cmark_node_get_start_column(cmark_node *node) {
+	return node->start_column;
+}
+
+int
+cmark_node_get_end_line(cmark_node *node) {
+	return node->end_line;
 }
 
 static inline bool

@@ -44,6 +44,7 @@ typedef enum {
 } cmark_node_type;
 
 typedef enum {
+	CMARK_NO_LIST,
 	CMARK_BULLET_LIST,
 	CMARK_ORDERED_LIST
 }  cmark_list_type;
@@ -90,16 +91,61 @@ CMARK_EXPORT cmark_node_type
 cmark_node_get_type(cmark_node *node);
 
 CMARK_EXPORT const char*
-cmark_node_get_content(cmark_node *node);
+cmark_node_get_string_content(cmark_node *node);
 
 CMARK_EXPORT int
-cmark_node_set_content(cmark_node *node, const char *content);
+cmark_node_set_string_content(cmark_node *node, const char *content);
+
+CMARK_EXPORT int
+cmark_node_get_header_level(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_header_level(cmark_node *node, int level);
+
+CMARK_EXPORT cmark_list_type
+cmark_node_get_list_type(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_type(cmark_node *node, cmark_list_type type);
+
+CMARK_EXPORT int
+cmark_node_get_list_start(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_start(cmark_node *node, int start);
+
+CMARK_EXPORT int
+cmark_node_get_list_tight(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_list_tight(cmark_node *node, int tight);
+
+CMARK_EXPORT const char*
+cmark_node_get_fence_info(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_fence_info(cmark_node *node, const char *info);
 
 CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);
 
 CMARK_EXPORT int
 cmark_node_set_url(cmark_node *node, const char *url);
+
+CMARK_EXPORT const char*
+cmark_node_get_title(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_set_title(cmark_node *node, const char *title);
+
+CMARK_EXPORT int
+cmark_node_get_start_line(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_get_start_column(cmark_node *node);
+
+CMARK_EXPORT int
+cmark_node_get_end_line(cmark_node *node);
 
 // Tree manipulation
 
@@ -110,7 +156,7 @@ CMARK_EXPORT int
 cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
 
 CMARK_EXPORT int
-cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
+cmark_node_insert_after(cmark_node *node, cmark_node *sibling);
 
 CMARK_EXPORT int
 cmark_node_prepend_child(cmark_node *node, cmark_node *child);
