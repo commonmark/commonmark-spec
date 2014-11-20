@@ -9,71 +9,61 @@ module CMark
                     :atx_header, :setext_header, :hrule, :reference_def,
                     :str, :softbreak, :linebreak, :code, :inline_html,
                     :emph, :strong, :link, :image]
-  enum :node_type, []
+
+  attach_function :cmark_free_nodes, [:node], :void
+  attach_function :cmark_node_unlink, [:node], :void
+
   attach_function :cmark_markdown_to_html, [:string, :int], :string
   attach_function :cmark_parse_document, [:string, :int], :node
   attach_function :cmark_node_first_child, [:node], :node
+  attach_function :cmark_node_parent, [:node], :node
   attach_function :cmark_node_next, [:node], :node
+  attach_function :cmark_node_previous, [:node], :node
   attach_function :cmark_node_get_type, [:node], :node_type
-end
+  attach_function :cmark_node_get_string_content, [:node], :string
 
-def pointer_to_block(pointer)
-  if pointer.null?
-    raise NullPointer
-  else
-    node_type = CMark::cmark_node_get_type(pointer)
-    if node_type == 0 # document
-      children = []
-      b = CMark::cmark_node_first_child(pointer)
+  class Node
+    attr_accessor :type, :children, :string_content
+    def initialize(pointer)
+      if pointer.null?
+        return nil
+      end
+      @pointer = pointer
+      @type = CMark::cmark_node_get_type(pointer)
+      @children = []
+      first_child = CMark::cmark_node_first_child(pointer)
+      b = first_child
       while !b.null?
-        children << pointer_to_block(b)
+        @children << Node.new(b)
         b = CMark::cmark_node_next(b)
       end
-      return Document.new(children)
-    elsif node_type == 7 # paragraph
-      return Paragraph.new("TODO")
-    else
-      raise UnknownNodeType, node_type
+      @string_content = CMark::cmark_node_get_string_content(pointer)
+      # Free?
+    end
+
+    def print
+      printf("%s\n", self.type)
+      if self.string_content
+        printf("'%s'\n", self.string_content)
+      end
+      for child in self.children do
+        child.print
+      end
+    end
+
+    def self.from_markdown(s)
+      len = s.bytes.length
+      Node.new(CMark::cmark_parse_document(s, len))
     end
   end
+
 end
 
-class Block
-  def initialize
-  end
-end
+doc = CMark::Node.from_markdown(STDIN.read())
+doc.print
 
-class Document < Block
-  attr_accessor :children
-  def initialize(children)
-    @children = children
-  end
-end
-
-class Paragraph < Block
-  def initialize(inlines)
-    @contents = "inlines" # TODO
-  end
-  def to_html
-    "<p>" + @contents + "</p>"
-  end
-end
-
-class Inline
-end
-
-def parse_markdown(s)
-  len = s.bytes.length
-  pointer_to_block(CMark::cmark_parse_document(s, len))
-end
-
-def markdown_to_html(s)
-  len = s.bytes.length
-  CMark::cmark_markdown_to_html(s, len)
-end
-
-doc = parse_markdown(STDIN.read())
-doc.children.each do |b|
-  print(b)
-end
+# def markdown_to_html(s)
+#   len = s.bytes.length
+#   CMark::cmark_markdown_to_html(s, len)
+# end
 # print markdown_to_html(STDIN.read())
