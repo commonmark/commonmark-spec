@@ -7,4 +7,3 @@ before_install:
  - sudo apt-get install -qq re2c pandoc valgrind
 script:
  - make testtarball
- - valgrind --leak-check=full --dysmutil=yes --error-exitcode=1 ./build/src/cmark leakcheck.md
