@@ -115,7 +115,7 @@ class MyHTMLParser(HTMLParser):
     def handle_decl(self, data):
         self.output += '<!' + data + '>'
         self.last = "decl"
-    def handle_unknown_decl(self, data):
+    def unknown_decl(self, data):
         self.output += '<!' + data + '>'
         self.last = "decl"
     def handle_pi(self,data):
@@ -174,15 +174,18 @@ def normalize_html(html):
     * Attributes are sorted and lowercased.
     * References are converted to unicode, except that '<', '>', '&', and
       '&' are rendered using entities.
-
-    Known limitations:
-
-    * HTMLParser just swallows CDATA.
-    * HTMLParser seems to treat unknown declarations as comments.
     """
+    html_chunk_re = re.compile("(\<!\[CDATA\[.*?\]\]\>|\<[^>]*\>|[^<]+)")
     try:
         parser = MyHTMLParser()
-        parser.feed(html.decode(encoding='UTF-8'))
+        # We work around HTMLParser's limitations parsing CDATA
+        # by breaking the input into chunks and passing CDATA chunks
+        # through verbatim.
+        for chunk in re.finditer(html_chunk_re, html):
+            if chunk.group(0)[:8] == "<![CDATA":
+                parser.output += chunk.group(0)
+            else:
+                parser.feed(chunk.group(0).decode(encoding='UTF-8'))
         parser.close()
         return parser.output
     except HTMLParseError as e:
