@@ -269,6 +269,7 @@ create_tree(test_batch_runner *runner)
 	cmark_node *p = cmark_node_new(CMARK_NODE_PARAGRAPH);
 	OK(runner, cmark_node_append_child(doc, p), "append1");
 	INT_EQ(runner, cmark_node_check(doc), 0, "append1 consistent");
+	OK(runner, cmark_node_parent(p) == doc, "node_parent");
 
 	cmark_node *emph = cmark_node_new(CMARK_NODE_EMPH);
 	OK(runner, cmark_node_prepend_child(p, emph), "prepend1");
@@ -307,19 +308,25 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_insert_after(str1, str3), "ins after1");
 	INT_EQ(runner, cmark_node_check(doc), 0, "ins after1 consistent");
 	// e13
-	OK(runner, cmark_node_last_child(p) == str3, "ins after1 works");
+	OK(runner, cmark_node_next(str1) == str3, "ins after1 works");
 
 	OK(runner, cmark_node_insert_after(str1, emph), "ins after2");
 	INT_EQ(runner, cmark_node_check(doc), 0, "ins after2 consistent");
 	// 1e3
-	OK(runner, cmark_node_first_child(p) == str1, "ins after2 works");
+	OK(runner, cmark_node_previous(emph) == str1, "ins after2 works");
+
+	cmark_node_unlink(emph);
 
 	html = (char *)cmark_render_html(doc);
-	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
+	STR_EQ(runner, html, "<p>Hello, !</p>\n",
 	       "render_html after shuffling");
 	free(html);
 
 	cmark_node_destroy(doc);
+
+	// TODO: Test that the contents of an unlinked inline are valid
+	// after the parent block was destroyed. This doesn't work so far.
+	cmark_node_destroy(emph);
 }
 
 void
