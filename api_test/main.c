@@ -43,6 +43,8 @@ constructor(test_batch_runner *runner)
 		cmark_node_type type = node_types[i];
 		cmark_node *node = cmark_node_new(type);
 		OK(runner, node != NULL, "new type %d", type);
+		INT_EQ(runner, cmark_node_get_type(node), type,
+		       "get_type %d", type);
 
 		switch (node->type) {
 		case CMARK_NODE_ATX_HEADER:
@@ -99,22 +101,16 @@ accessors(test_batch_runner *runner)
 	// Getters
 
 	cmark_node *header = cmark_node_first_child(doc);
-	INT_EQ(runner, cmark_node_get_type(header), CMARK_NODE_ATX_HEADER,
-	       "get_type header");
 	INT_EQ(runner, cmark_node_get_header_level(header), 2,
 	       "get_header_level");
 
 	cmark_node *bullet_list = cmark_node_next(header);
-	INT_EQ(runner, cmark_node_get_type(bullet_list), CMARK_NODE_LIST,
-	       "get_type bullet list");
 	INT_EQ(runner, cmark_node_get_list_type(bullet_list),
 	       CMARK_BULLET_LIST, "get_list_type bullet");
 	INT_EQ(runner, cmark_node_get_list_tight(bullet_list), 1,
 	       "get_list_tight tight");
 
 	cmark_node *ordered_list = cmark_node_next(bullet_list);
-	INT_EQ(runner, cmark_node_get_type(ordered_list), CMARK_NODE_LIST,
-	       "get_type ordered list");
 	INT_EQ(runner, cmark_node_get_list_type(ordered_list),
 	       CMARK_ORDERED_LIST, "get_list_type ordered");
 	INT_EQ(runner, cmark_node_get_list_start(ordered_list), 2,
@@ -123,28 +119,20 @@ accessors(test_batch_runner *runner)
 	       "get_list_tight loose");
 
 	cmark_node *code = cmark_node_next(ordered_list);
-	INT_EQ(runner, cmark_node_get_type(code), CMARK_NODE_INDENTED_CODE,
-	       "get_type indented code");
 	STR_EQ(runner, cmark_node_get_string_content(code), "code\n",
 	       "get_string_content indented code");
 
 	cmark_node *fenced = cmark_node_next(code);
-	INT_EQ(runner, cmark_node_get_type(fenced), CMARK_NODE_FENCED_CODE,
-	       "get_type fenced code");
 	STR_EQ(runner, cmark_node_get_string_content(fenced), "fenced\n",
 	       "get_string_content fenced code");
 	STR_EQ(runner, cmark_node_get_fence_info(fenced), "lang",
 	       "get_fence_info");
 
 	cmark_node *html = cmark_node_next(fenced);
-	INT_EQ(runner, cmark_node_get_type(html), CMARK_NODE_HTML,
-	       "get_type html");
 	STR_EQ(runner, cmark_node_get_string_content(html),
 	       "<div>html</div>\n", "get_string_content html");
 
 	cmark_node *paragraph = cmark_node_next(html);
-	INT_EQ(runner, cmark_node_get_type(paragraph), CMARK_NODE_PARAGRAPH,
-	       "get_type paragraph");
 	INT_EQ(runner, cmark_node_get_start_line(paragraph), 19,
 	       "get_start_line");
 	INT_EQ(runner, cmark_node_get_start_column(paragraph), 1,
@@ -153,16 +141,12 @@ accessors(test_batch_runner *runner)
 	       "get_end_line");
 
 	cmark_node *link = cmark_node_first_child(paragraph);
-	INT_EQ(runner, cmark_node_get_type(link), CMARK_NODE_LINK,
-	       "get_type link");
 	STR_EQ(runner, cmark_node_get_url(link), "url",
 	       "get_url");
 	STR_EQ(runner, cmark_node_get_title(link), "title",
 	       "get_title");
 
 	cmark_node *string = cmark_node_first_child(link);
-	INT_EQ(runner, cmark_node_get_type(string), CMARK_NODE_STRING,
-	       "get_type string");
 	STR_EQ(runner, cmark_node_get_string_content(string), "link",
 	       "get_string_content string");
 
