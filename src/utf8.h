@@ -13,6 +13,7 @@ void utf8proc_encode_char(int32_t uc, cmark_strbuf *buf);
 int utf8proc_iterate(const uint8_t *str, int str_len, int32_t *dst);
 int utf8proc_charlen(const uint8_t *str, int str_len);
 void utf8proc_detab(cmark_strbuf *dest, const uint8_t *line, size_t size);
+int utf8proc_is_space(int32_t uc);
 int utf8proc_is_punctuation(int32_t uc);
 
 #ifdef __cplusplus
