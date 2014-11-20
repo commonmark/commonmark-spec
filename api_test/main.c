@@ -37,6 +37,40 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 	     int allowed_content);
 
 static void
+constructor(test_batch_runner *runner)
+{
+	for (int i = 0; i < num_node_types; ++i) {
+		cmark_node_type type = node_types[i];
+		cmark_node *node = cmark_node_new(type);
+		OK(runner, node != NULL, "new type %d", type);
+
+		switch (node->type) {
+		case CMARK_NODE_ATX_HEADER:
+		case CMARK_NODE_SETEXT_HEADER:
+			INT_EQ(runner, cmark_node_get_header_level(node), 1,
+			       "default header level is 1");
+			node->as.header.level = 1;
+			break;
+
+		case CMARK_NODE_LIST:
+			INT_EQ(runner, cmark_node_get_list_type(node),
+			       CMARK_BULLET_LIST,
+			       "default is list type is bullet");
+			INT_EQ(runner, cmark_node_get_list_start(node), 1,
+			       "default is list start is 1");
+			INT_EQ(runner, cmark_node_get_list_tight(node), 0,
+			       "default is list is loose");
+			break;
+
+		default:
+			break;
+		}
+
+		cmark_node_destroy(node);
+	}
+}
+
+static void
 accessors(test_batch_runner *runner)
 {
 	static const unsigned char markdown[] =
@@ -398,6 +432,7 @@ int main() {
 	int retval;
 	test_batch_runner *runner = test_batch_runner_new();
 
+	constructor(runner);
 	accessors(runner);
 	create_tree(runner);
 	hierarchy(runner);

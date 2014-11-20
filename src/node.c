@@ -11,6 +11,25 @@ cmark_node*
 cmark_node_new(cmark_node_type type) {
 	cmark_node *node = (cmark_node *)calloc(1, sizeof(*node));
 	node->type = type;
+
+	switch (node->type) {
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
+		node->as.header.level = 1;
+		break;
+
+	case CMARK_NODE_LIST: {
+		cmark_list *list = &node->as.list;
+		list->list_type = CMARK_BULLET_LIST;
+		list->start     = 1;
+		list->tight     = false;
+		break;
+	}
+
+	default:
+		break;
+	}
+
 	return node;
 }
 
