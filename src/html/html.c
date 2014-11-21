@@ -12,7 +12,7 @@
 
 typedef struct RenderStack {
 	struct RenderStack *previous;
-	char* literal;
+	const char* literal;
 	cmark_node* next_sibling;
 	bool tight;
 	bool trim;
@@ -28,9 +28,9 @@ static void free_render_stack(render_stack * rstack)
 	}
 }
 
-static render_stack* push_inline(render_stack* rstack,
-				 cmark_node* inl,
-				 char* literal)
+static render_stack* push_render_stack(render_stack* rstack,
+				       cmark_node* node,
+				       const char* literal)
 {
 	render_stack* newstack;
 	newstack = (render_stack*)malloc(sizeof(render_stack));
@@ -38,29 +38,10 @@ static render_stack* push_inline(render_stack* rstack,
 		return NULL;
 	}
 	newstack->previous = rstack;
-	newstack->next_sibling = inl;
+	newstack->next_sibling = node;
 	newstack->literal = literal;
 	newstack->tight = false;
 	newstack->trim = false;
-	return newstack;
-}
-
-static render_stack* push_block(render_stack* rstack,
-				cmark_node* block,
-				char* literal,
-				bool tight,
-				bool trim)
-{
-	render_stack* newstack;
-	newstack = (render_stack*)malloc(sizeof(render_stack));
-	if (newstack == NULL) {
-		return NULL;
-	}
-	newstack->previous = rstack;
-	newstack->next_sibling = block;
-	newstack->literal = literal;
-	newstack->tight = tight;
-	newstack->trim = trim;
 	return newstack;
 }
 
@@ -128,7 +109,7 @@ static void inlines_to_plain_html(strbuf *html, cmark_node* ils)
 		case NODE_EMPH:
 			children = ils->first_child;
 			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "");
+			rstack = push_render_stack(rstack, ils->next, "");
 			break;
 		default:
 			break;
@@ -194,7 +175,7 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 
 			strbuf_puts(html, "\">");
 			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "</a>");
+			rstack = push_render_stack(rstack, ils->next, "</a>");
 			break;
 
 		case NODE_IMAGE:
@@ -216,13 +197,13 @@ static void inlines_to_html(strbuf *html, cmark_node* ils)
 		case NODE_STRONG:
 			strbuf_puts(html, "<strong>");
 			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "</strong>");
+			rstack = push_render_stack(rstack, ils->next, "</strong>");
 			break;
 
 		case NODE_EMPH:
 			strbuf_puts(html, "<em>");
 			visit_children = true;
-			rstack = push_inline(rstack, ils->next, "</em>");
+			rstack = push_render_stack(rstack, ils->next, "</em>");
 			break;
 		default:
 			break;
@@ -254,7 +235,9 @@ static void blocks_to_html(strbuf *html, cmark_node *b)
 		visit_children = false;
 		switch(b->type) {
 		case NODE_DOCUMENT:
-			rstack = push_block(rstack, b->next, "", false, false);
+			rstack = push_render_stack(rstack, b->next, "");
+			rstack->tight = false;
+			rstack->trim = false;
 			visit_children = true;
 			break;
 
@@ -272,7 +255,9 @@ static void blocks_to_html(strbuf *html, cmark_node *b)
 		case NODE_BQUOTE:
 			cr(html);
 			strbuf_puts(html, "<blockquote>\n");
-			rstack = push_block(rstack, b->next, "</blockquote>\n", tight, false);
+			rstack = push_render_stack(rstack, b->next, "</blockquote>\n");
+			rstack->tight = tight;
+			rstack->trim = false;
 			tight = false;
 			visit_children = true;
 			break;
@@ -280,7 +265,9 @@ static void blocks_to_html(strbuf *html, cmark_node *b)
 		case NODE_LIST_ITEM:
 			cr(html);
 			strbuf_puts(html, "<li>");
-			rstack = push_block(rstack, b->next, "</li>\n", tight, true);
+			rstack = push_render_stack(rstack, b->next, "</li>\n");
+			rstack->tight = tight;
+			rstack->trim = true;
 			visit_children = true;
 			break;
 
@@ -297,9 +284,11 @@ static void blocks_to_html(strbuf *html, cmark_node *b)
 				strbuf_puts(html, data->list_type == CMARK_BULLET_LIST ? "<ul>\n" : "<ol>\n");
 			}
 
-			rstack = push_block(rstack, b->next,
-					    data->list_type == CMARK_BULLET_LIST ?
-					    "\n</ul>\n" : "\n</ol>\n", tight, false);
+			rstack = push_render_stack(rstack, b->next,
+						   data->list_type == CMARK_BULLET_LIST ?
+						   "\n</ul>\n" : "\n</ol>\n");
+			rstack->tight = tight;
+			rstack->trim = false;
 			tight = data->tight;
 			visit_children = true;
 			break;
