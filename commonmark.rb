@@ -67,6 +67,7 @@ class Renderer
       @stringwriter = true
       @stream = StringIO.new
     end
+    @need_blocksep = false
   end
 
   def outf(format, *args)
@@ -78,33 +79,48 @@ class Renderer
   end
 
   def render(node)
-    case node.type
-    when :document
-      self.document(node.children)
-      if @stringwriter
-        @stream.string
-      end
-    when :paragraph
-      self.paragraph(node.children)
-    when :setext_header, :atx_header
-      self.header(node.header_level, node.children)
-    when :str
-      self.str(node.string_content)
+    if node.kind_of?(Array)
+      node.each { |x| self.render(x) }
     else
-      # raise "unimplemented " + node.type.to_s
+      case node.type
+      when :document
+        self.document(node.children)
+        if @stringwriter
+          return @stream.string
+        end
+      when :paragraph
+        self.blocksep
+        self.paragraph(node.children)
+        @need_blocksep = true
+      when :setext_header, :atx_header
+        self.blocksep
+        self.header(node.header_level, node.children)
+        @need_blocksep = true
+      when :str
+        self.str(node.string_content)
+      else
+        # raise "unimplemented " + node.type.to_s
+      end
+      @last_node = node.type
+    end
+  end
+
+  def blocksep
+    if @need_blocksep
+      self.out("\n\n")
     end
   end
 
   def document(children)
-    children.each { |x| render(x) }
+    self.render(children)
   end
 
   def header(level, children)
-    children.each { |x| render(x) }
+    self.render(children)
   end
 
   def paragraph(children)
-    children.each { |x| render(x) }
+    self.render(children)
   end
 
   def str(content)
@@ -115,14 +131,14 @@ end
 class HtmlRenderer < Renderer
   def header(level, children)
     self.outf("<h%d>", level)
-    children.each { |x| render(x) }
-    self.outf("</h%d>\n", level)
+    self.render(children)
+    self.outf("</h%d>", level)
   end
 
   def paragraph(children)
     self.out("<p>")
-    children.each { |x| render(x) }
-    self.out("</p>\n")
+    self.render(children)
+    self.out("</p>")
   end
 
   def str(content)
