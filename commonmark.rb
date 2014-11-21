@@ -1,6 +1,7 @@
 require 'ffi'
 require 'stringio'
 require 'cgi'
+require 'set'
 
 module CMark
   extend FFI::Library
@@ -48,9 +49,13 @@ class Node
     end
   end
 
-  def self.from_markdown(s)
-    len = s.bytes.length
-    Node.new(CMark::cmark_parse_document(s, len))
+  def self.parse_string(s)
+    Node.new(CMark::cmark_parse_document(s, s.bytesize))
+  end
+
+  def self.parse_file(f)
+    s = f.read()
+    self.parse_string(s)
   end
 
   def free
@@ -59,6 +64,7 @@ class Node
 end
 
 class Renderer
+  attr_reader :warnings
   def initialize(stream = nil)
     if stream
       @stream = stream
@@ -68,6 +74,7 @@ class Renderer
       @stream = StringIO.new
     end
     @need_blocksep = false
+    @warnings = Set.new []
   end
 
   def outf(format, *args)
@@ -82,75 +89,124 @@ class Renderer
         self.render(arg)
       elsif arg.kind_of?(Array)
         arg.each { |x| self.out(x) }
-      else arg.kind_of?(Numeric)
+      else
         @stream.write(arg)
       end
     end
   end
 
   def render(node)
-    case node.type
-    when :document
-      self.document(node.children)
+    @node = node
+    if node.type == :document
+      self.document(node)
+      self.out("\n")
       if @stringwriter
         return @stream.string
       end
-    when :paragraph
-      self.startblock
-      self.paragraph(node.children)
-      self.endblock
-    when :setext_header, :atx_header
-      self.startblock
-      self.header(node.header_level, node.children)
-      self.endblock
-    when :str
-      self.str(node.string_content)
     else
-      # raise "unimplemented " + node.type.to_s
+      begin
+        self.send(node.type, node)
+      rescue NoMethodError
+        @warnings.add("WARNING:  " + node.type.to_s + " not implemented.")
+        self.out(node.children)
+      end
     end
   end
 
-  def document(children)
-    self.out(children)
+  def document(node)
+    self.out(node.children)
   end
 
-  def startblock
-    if @need_blocksep
-      self.blocksep
-    end
+  def indented_code(node)
+    self.code_block(node)
   end
 
-  def endblock
-    @need_blocksep = true
+  def fenced_code(node)
+    self.code_block(node)
+  end
+
+  def setext_header(node)
+    self.header(node)
+  end
+
+  def atx_header(node)
+    self.header(node)
+  end
+
+  def reference_def(node)
   end
 
   def blocksep
     self.out("\n\n")
   end
+
+  def asblock(&blk)
+    if @need_blocksep
+      self.blocksep
+    end
+    blk.call
+    @need_blocksep = true
+  end
 end
 
 class HtmlRenderer < Renderer
-  def blocksep
+  def header(node)
+    asblock do
+      self.out("<h", node.header_level, ">", node.children,
+             "</h", node.header_level, ">")
+    end
+  end
+
+  def paragraph(node)
+    asblock do
+      self.out("<p>", node.children, "</p>")
+    end
+  end
+
+  def hrule(node)
+    asblock do
+      self.out("<hr />")
+    end
+  end
+
+  def code_block(node)
+    asblock do
+      self.out("<pre><code>")
+      self.out(CGI.escapeHTML(node.string_content))
+      self.out("</code></pre>")
+    end
+  end
+
+  def emph(node)
+    self.out("<em>", node.children, "</em>")
+  end
+
+  def strong(node)
+    self.out("<strong>", node.children, "</strong>")
+  end
+
+  def str(node)
+    self.out(CGI.escapeHTML(node.string_content))
+  end
+
+  def code(node)
+    self.out("<code>")
+    self.out(CGI.escapeHTML(node.string_content))
+    self.out("</code>")
+  end
+
+  def softbreak(node)
     self.out("\n")
-  end
-
-  def header(level, children)
-    self.out("<h", level, ">", children, "</h", level, ">")
-  end
-
-  def paragraph(children)
-    self.out("<p>", children, "</p>")
-  end
-
-  def str(content)
-    self.out(CGI.escapeHTML(content))
   end
 end
 
-doc = Node.from_markdown(STDIN.read())
+doc = Node.parse_file(STDIN)
 renderer = HtmlRenderer.new(STDOUT)
 renderer.render(doc)
-
+renderer.warnings.each do |w|
+  STDERR.write(w)
+  STDERR.write("\n")
+end
 # def markdown_to_html(s)
 #   len = s.bytes.length
 #   CMark::cmark_markdown_to_html(s, len)
