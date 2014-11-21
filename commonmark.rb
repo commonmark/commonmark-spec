@@ -1,5 +1,6 @@
 require 'ffi'
 require 'stringio'
+require 'cgi'
 
 module CMark
   extend FFI::Library
@@ -22,63 +23,102 @@ module CMark
   attach_function :cmark_node_previous, [:node], :node
   attach_function :cmark_node_get_type, [:node], :node_type
   attach_function :cmark_node_get_string_content, [:node], :string
+end
 
-  class Node
-    attr_accessor :type, :children, :string_content, :pointer
-    def initialize(pointer)
-      if pointer.null?
-        return nil
-      end
-      @pointer = pointer
-      @type = CMark::cmark_node_get_type(pointer)
-      @children = []
-      first_child = CMark::cmark_node_first_child(pointer)
-      b = first_child
-      while !b.null?
-        @children << Node.new(b)
-        b = CMark::cmark_node_next(b)
-      end
-      @string_content = CMark::cmark_node_get_string_content(pointer)
-      if @type == :document
-        self.free
-      end
+class Node
+  attr_accessor :type, :children, :string_content, :pointer
+  def initialize(pointer)
+    if pointer.null?
+      return nil
     end
-
-    def to_html_stream(file)
-      file.printf("[%s]\n", self.type.to_s)
-      case self.type
-      when :document
-        self.children.each do |child|
-          child.to_html_stream(file)
-        end
-      when :paragraph
-        self.children.each do |child|
-          child.to_html_stream(file)
-        end
-      when :str
-        file.puts(self.string_content)
-      else
-      end
+    @pointer = pointer
+    @type = CMark::cmark_node_get_type(pointer)
+    @children = []
+    first_child = CMark::cmark_node_first_child(pointer)
+    b = first_child
+    while !b.null?
+      @children << Node.new(b)
+      b = CMark::cmark_node_next(b)
     end
-
-    def to_html
-      self.to_html_stream(StringIO.new)
-    end
-
-    def self.from_markdown(s)
-      len = s.bytes.length
-      Node.new(CMark::cmark_parse_document(s, len))
-    end
-
-    def free
-        CMark::cmark_free_nodes(@pointer)
+    @string_content = CMark::cmark_node_get_string_content(pointer)
+    if @type == :document
+      self.free
     end
   end
 
+  def self.from_markdown(s)
+    len = s.bytes.length
+    Node.new(CMark::cmark_parse_document(s, len))
+  end
+
+  def free
+      CMark::cmark_free_nodes(@pointer)
+  end
 end
 
-doc = CMark::Node.from_markdown(STDIN.read())
-doc.to_html_stream(STDOUT)
+class Renderer
+  def initialize(stream = nil)
+    if stream
+      @stream = stream
+      @stringwriter = false
+    else
+      @stringwriter = true
+      @stream = StringIO.new
+    end
+  end
+
+  def outf(format, *args)
+    @stream.printf(format, *args)
+  end
+
+  def out(arg)
+    @stream.puts(arg)
+  end
+
+  def render(node)
+    case node.type
+    when :document
+      self.document(node.children)
+      if @stringwriter
+        @stream.string
+      end
+    when :paragraph
+      self.paragraph(node.children)
+    when :str
+      self.str(node.string_content)
+    else
+      # raise "unimplemented " + node.type.to_s
+    end
+  end
+
+  def document(children)
+    children.each { |x| render(x) }
+  end
+
+  def paragraph(children)
+    children.each { |x| render(x) }
+  end
+
+  def str(content)
+    self.out(content)
+  end
+end
+
+class HtmlRenderer < Renderer
+  def paragraph(children)
+    self.out("<p>")
+    children.each { |x| render(x) }
+    self.out("</p>\n")
+  end
+
+  def str(content)
+    self.out(CGI.escapeHTML(content))
+  end
+end
+
+doc = Node.from_markdown(STDIN.read())
+renderer = HtmlRenderer.new(STDOUT)
+renderer.render(doc)
 
 # def markdown_to_html(s)
 #   len = s.bytes.length
