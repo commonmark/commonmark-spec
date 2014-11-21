@@ -23,10 +23,11 @@ module CMark
   attach_function :cmark_node_previous, [:node], :node
   attach_function :cmark_node_get_type, [:node], :node_type
   attach_function :cmark_node_get_string_content, [:node], :string
+  attach_function :cmark_node_get_header_level, [:node], :int
 end
 
 class Node
-  attr_accessor :type, :children, :string_content, :pointer
+  attr_accessor :type, :children, :string_content, :header_level
   def initialize(pointer)
     if pointer.null?
       return nil
@@ -41,6 +42,7 @@ class Node
       b = CMark::cmark_node_next(b)
     end
     @string_content = CMark::cmark_node_get_string_content(pointer)
+    @header_level = CMark::cmark_node_get_header_level(pointer)
     if @type == :document
       self.free
     end
@@ -72,7 +74,7 @@ class Renderer
   end
 
   def out(arg)
-    @stream.puts(arg)
+    @stream.write(arg)
   end
 
   def render(node)
@@ -84,6 +86,8 @@ class Renderer
       end
     when :paragraph
       self.paragraph(node.children)
+    when :setext_header, :atx_header
+      self.header(node.header_level, node.children)
     when :str
       self.str(node.string_content)
     else
@@ -92,6 +96,10 @@ class Renderer
   end
 
   def document(children)
+    children.each { |x| render(x) }
+  end
+
+  def header(level, children)
     children.each { |x| render(x) }
   end
 
@@ -105,6 +113,12 @@ class Renderer
 end
 
 class HtmlRenderer < Renderer
+  def header(level, children)
+    self.outf("<h%d>", level)
+    children.each { |x| render(x) }
+    self.outf("</h%d>\n", level)
+  end
+
   def paragraph(children)
     self.out("<p>")
     children.each { |x| render(x) }
