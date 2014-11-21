@@ -1,4 +1,5 @@
 require 'ffi'
+require 'stringio'
 
 module CMark
   extend FFI::Library
@@ -23,7 +24,7 @@ module CMark
   attach_function :cmark_node_get_string_content, [:node], :string
 
   class Node
-    attr_accessor :type, :children, :string_content
+    attr_accessor :type, :children, :string_content, :pointer
     def initialize(pointer)
       if pointer.null?
         return nil
@@ -38,29 +39,46 @@ module CMark
         b = CMark::cmark_node_next(b)
       end
       @string_content = CMark::cmark_node_get_string_content(pointer)
-      # Free?
+      if @type == :document
+        self.free
+      end
     end
 
-    def print
-      printf("%s\n", self.type)
-      if self.string_content
-        printf("'%s'\n", self.string_content)
+    def to_html_stream(file)
+      file.printf("[%s]\n", self.type.to_s)
+      case self.type
+      when :document
+        self.children.each do |child|
+          child.to_html_stream(file)
+        end
+      when :paragraph
+        self.children.each do |child|
+          child.to_html_stream(file)
+        end
+      when :str
+        file.puts(self.string_content)
+      else
       end
-      for child in self.children do
-        child.print
-      end
+    end
+
+    def to_html
+      self.to_html_stream(StringIO.new)
     end
 
     def self.from_markdown(s)
       len = s.bytes.length
       Node.new(CMark::cmark_parse_document(s, len))
     end
+
+    def free
+        CMark::cmark_free_nodes(@pointer)
+    end
   end
 
 end
 
 doc = CMark::Node.from_markdown(STDIN.read())
-doc.print
+doc.to_html_stream(STDOUT)
 
 # def markdown_to_html(s)
 #   len = s.bytes.length
