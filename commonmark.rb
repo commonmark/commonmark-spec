@@ -74,71 +74,72 @@ class Renderer
     @stream.printf(format, *args)
   end
 
-  def out(arg)
-    @stream.write(arg)
-  end
-
-  def render(node)
-    if node.kind_of?(Array)
-      node.each { |x| self.render(x) }
-    else
-      case node.type
-      when :document
-        self.document(node.children)
-        if @stringwriter
-          return @stream.string
-        end
-      when :paragraph
-        self.blocksep
-        self.paragraph(node.children)
-        @need_blocksep = true
-      when :setext_header, :atx_header
-        self.blocksep
-        self.header(node.header_level, node.children)
-        @need_blocksep = true
-      when :str
-        self.str(node.string_content)
-      else
-        # raise "unimplemented " + node.type.to_s
+  def out(*args)
+    args.each do |arg|
+      if arg.kind_of?(String)
+        @stream.write(arg)
+      elsif arg.kind_of?(Node)
+        self.render(arg)
+      elsif arg.kind_of?(Array)
+        arg.each { |x| self.out(x) }
+      else arg.kind_of?(Numeric)
+        @stream.write(arg)
       end
-      @last_node = node.type
     end
   end
 
-  def blocksep
-    if @need_blocksep
-      self.out("\n\n")
+  def render(node)
+    case node.type
+    when :document
+      self.document(node.children)
+      if @stringwriter
+        return @stream.string
+      end
+    when :paragraph
+      self.startblock
+      self.paragraph(node.children)
+      self.endblock
+    when :setext_header, :atx_header
+      self.startblock
+      self.header(node.header_level, node.children)
+      self.endblock
+    when :str
+      self.str(node.string_content)
+    else
+      # raise "unimplemented " + node.type.to_s
     end
   end
 
   def document(children)
-    self.render(children)
+    self.out(children)
   end
 
-  def header(level, children)
-    self.render(children)
+  def startblock
+    if @need_blocksep
+      self.blocksep
+    end
   end
 
-  def paragraph(children)
-    self.render(children)
+  def endblock
+    @need_blocksep = true
   end
 
-  def str(content)
-    self.out(content)
+  def blocksep
+    self.out("\n\n")
   end
 end
 
 class HtmlRenderer < Renderer
+  def blocksep
+    self.out("\n")
+  end
+
   def header(level, children)
-    self.outf("<h%d>", level)
-    self.render(children)
-    self.outf("</h%d>", level)
+    self.out("<h", level, ">", children, "</h", level, ">")
   end
 
   def paragraph(children)
-    self.out("<p>")
-    self.render(children)
-    self.out("</p>")
+    self.out("<p>", children, "</p>")
   end
 
   def str(content)
