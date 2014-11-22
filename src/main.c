@@ -17,7 +17,7 @@ void print_usage()
 
 static void print_document(cmark_node *document, bool ast)
 {
-	unsigned char *result;
+	char *result;
 	if (ast) {
 		cmark_debug_print(document);
 	} else {
@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	int i, numfps = 0;
 	bool ast = false;
 	int *files;
-	unsigned char buffer[4096];
+	char buffer[4096];
 	cmark_doc_parser *parser;
 	size_t offset;
 	cmark_node *document;
