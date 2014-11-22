@@ -26,7 +26,7 @@ Git*](https://github.com/progit/progit/tree/master/en) by Scott Chacon.
 `time` is used to measure execution speed.  The reported
 time is the *difference* between the time to run the program
 with the benchmark input and the time to run it with no input.
-(This procedure ensures that implementation dynamic languages are
+(This procedure ensures that implementations in dynamic languages are
 not prenalized by startup time.) A median of ten runs is taken.  The
 process is reniced to a high priority so that the system doesn't
 interrupt runs.
