@@ -166,7 +166,7 @@ class Renderer
   end
 
   def blocksep
-    self.out("\n\n")
+    self.out("\n")
   end
 
   def containersep
@@ -287,7 +287,7 @@ class HtmlRenderer < Renderer
 
   def link(node)
     self.out('<a href="', URI.escape(node.url), '"')
-    if node.title
+    if node.title && node.title.length > 0
       self.out(' title="', CGI.escapeHTML(node.title), '"')
     end
     self.out('>', node.children, '</a>')
@@ -295,7 +295,7 @@ class HtmlRenderer < Renderer
 
   def image(node)
     self.out('<img src="', URI.escape(node.url), '"')
-    if node.title
+    if node.title && node.title.length > 0
       self.out(' title="', CGI.escapeHTML(node.title), '"')
     end
     plain do
