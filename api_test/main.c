@@ -76,7 +76,7 @@ constructor(test_batch_runner *runner)
 static void
 accessors(test_batch_runner *runner)
 {
-	static const unsigned char markdown[] =
+	static const char markdown[] =
 		"## Header\n"
 		"\n"
 		"* Item 1\n"
@@ -445,7 +445,7 @@ render_html(test_batch_runner *runner)
 {
 	char *html;
 
-	static const unsigned char markdown[] =
+	static const char markdown[] =
 		"foo *bar*\n"
 		"\n"
 		"paragraph 2\n";

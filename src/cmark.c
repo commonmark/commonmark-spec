@@ -7,7 +7,7 @@
 #include "cmark.h"
 #include "buffer.h"
 
-char *cmark_markdown_to_html(unsigned char *text, int len)
+char *cmark_markdown_to_html(const char *text, int len)
 {
 	cmark_node *blocks;
 	char *result;

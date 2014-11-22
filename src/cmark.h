@@ -176,10 +176,10 @@ CMARK_EXPORT
 cmark_node *cmark_finish(cmark_doc_parser *parser);
 
 CMARK_EXPORT
-void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer, size_t bytes);
+void cmark_process_line(cmark_doc_parser *parser, const char *buffer, size_t bytes);
 
 CMARK_EXPORT
-cmark_node *cmark_parse_document(const unsigned char *buffer, size_t len);
+cmark_node *cmark_parse_document(const char *buffer, size_t len);
 
 CMARK_EXPORT
 cmark_node *cmark_parse_file(FILE *f);
@@ -193,7 +193,7 @@ CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
 
 CMARK_EXPORT
-char *cmark_markdown_to_html(unsigned char *text, int len);
+char *cmark_markdown_to_html(const char *text, int len);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT

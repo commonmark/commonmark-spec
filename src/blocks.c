@@ -416,13 +416,13 @@ static cmark_node *finalize_document(cmark_doc_parser *parser)
 
 extern cmark_node *cmark_parse_file(FILE *f)
 {
-	unsigned char buffer[4096];
+	char buffer[4096];
 	cmark_doc_parser *parser = cmark_new_doc_parser();
 	size_t offset;
 	cmark_node *document;
 
-	while (fgets((char *)buffer, sizeof(buffer), f)) {
-		offset = strlen((char *)buffer);
+	while (fgets(buffer, sizeof(buffer), f)) {
+		offset = strlen(buffer);
 		cmark_process_line(parser, buffer, offset);
 	}
 
@@ -431,16 +431,16 @@ extern cmark_node *cmark_parse_file(FILE *f)
 	return document;
 }
 
-extern cmark_node *cmark_parse_document(const unsigned char *buffer, size_t len)
+extern cmark_node *cmark_parse_document(const char *buffer, size_t len)
 {
 	int linenum = 1;
-	const unsigned char *end = buffer + len;
+	const char *end = buffer + len;
 	size_t offset;
 	cmark_doc_parser *parser = cmark_new_doc_parser();
 	cmark_node *document;
 
 	while (buffer < end) {
-		const unsigned char *eol = (unsigned char *)memchr(buffer, '\n', end - buffer);
+		const char *eol = memchr(buffer, '\n', end - buffer);
 		offset = eol ? (eol - buffer) + 1 : eol - buffer;
 		cmark_process_line(parser, buffer, offset);
 		buffer += offset;
@@ -470,7 +470,7 @@ static void chop_trailing_hashtags(chunk *ch)
 	}
 }
 
-void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer,
+void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		 size_t bytes)
 {
 	cmark_node* last_matched_container;
@@ -487,7 +487,7 @@ void cmark_process_line(cmark_doc_parser *parser, const unsigned char *buffer,
 	int indent;
 	chunk input;
 
-	utf8proc_detab(parser->curline, buffer, bytes);
+	utf8proc_detab(parser->curline, (unsigned char *)buffer, bytes);
 
 	// Add a newline to the end if not present:
 	// TODO this breaks abstraction:

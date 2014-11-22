@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	int i, numfps = 0;
 	bool ast = false;
 	int *files;
-	unsigned char buffer[4096];
+	char buffer[4096];
 	cmark_doc_parser *parser;
 	size_t offset;
 	cmark_node *document;
