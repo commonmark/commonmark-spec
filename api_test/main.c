@@ -428,7 +428,7 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 		cmark_node *child = cmark_node_new(child_type);
 
 		int got = cmark_node_append_child(node, child);
-		int expected = (allowed_content >> i) & 1;
+		int expected = (allowed_content >> child_type) & 1;
 
 		INT_EQ(runner, got, expected,
 		       "add %d as child of %d", child_type, type);
