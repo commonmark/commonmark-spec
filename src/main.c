@@ -17,7 +17,7 @@ void print_usage()
 
 static void print_document(cmark_node *document, bool ast)
 {
-	unsigned char *result;
+	char *result;
 	if (ast) {
 		cmark_debug_print(document);
 	} else {

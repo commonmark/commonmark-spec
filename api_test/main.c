@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define CMARK_NO_SHORT_NAMES
 #include "cmark.h"
 #include "node.h"
 
@@ -186,7 +187,7 @@ accessors(test_batch_runner *runner)
 	OK(runner, cmark_node_set_string_content(string, "LINK"),
 	   "set_string_content string");
 
-	char *rendered_html = (char *)cmark_render_html(doc);
+	char *rendered_html = cmark_render_html(doc);
 	static const char expected_html[] =
 		"<h3>Header</h3>\n"
 		"<ol start=\"3\">\n"
@@ -306,7 +307,7 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append3 consistent");
 
-	html = (char *)cmark_render_html(doc);
+	html = cmark_render_html(doc);
 	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
 	       "render_html");
 	free(html);
@@ -337,7 +338,7 @@ create_tree(test_batch_runner *runner)
 
 	cmark_node_unlink(emph);
 
-	html = (char *)cmark_render_html(doc);
+	html = cmark_render_html(doc);
 	STR_EQ(runner, html, "<p>Hello, !</p>\n",
 	       "render_html after shuffling");
 	free(html);
@@ -439,7 +440,8 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 	cmark_node_destroy(node);
 }
 
-void render_html(test_batch_runner *runner)
+static void
+render_html(test_batch_runner *runner)
 {
 	char *html;
 
@@ -450,18 +452,18 @@ void render_html(test_batch_runner *runner)
 	cmark_node *doc = cmark_parse_document(markdown, sizeof(markdown) - 1);
 
 	cmark_node *paragraph = cmark_node_first_child(doc);
-	html = (char *)cmark_render_html(paragraph);
+	html = cmark_render_html(paragraph);
 	STR_EQ(runner, html, "<p>foo <em>bar</em></p>\n",
 	       "render single paragraph");
 	free(html);
 
 	cmark_node *string = cmark_node_first_child(paragraph);
-	html = (char *)cmark_render_html(string);
+	html = cmark_render_html(string);
 	STR_EQ(runner, html, "foo ", "render single inline");
 	free(html);
 
 	cmark_node *emph = cmark_node_next(string);
-	html = (char *)cmark_render_html(emph);
+	html = cmark_render_html(emph);
 	STR_EQ(runner, html, "<em>bar</em>", "render inline with children");
 	free(html);
 

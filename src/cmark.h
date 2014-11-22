@@ -190,10 +190,10 @@ CMARK_EXPORT
 void cmark_debug_print(cmark_node *root);
 
 CMARK_EXPORT
-unsigned char *cmark_render_html(cmark_node *root);
+char *cmark_render_html(cmark_node *root);
 
 CMARK_EXPORT
-unsigned char *cmark_markdown_to_html(unsigned char *text, int len);
+char *cmark_markdown_to_html(unsigned char *text, int len);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT

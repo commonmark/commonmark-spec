@@ -348,12 +348,12 @@ finish_node(strbuf *html, cmark_node *node, bool tight)
 	return tight;
 }
 
-unsigned char *cmark_render_html(cmark_node *root)
+char *cmark_render_html(cmark_node *root)
 {
-	unsigned char *result;
+	char *result;
 	strbuf html = GH_BUF_INIT;
 	node_to_html(&html, root);
-	result = strbuf_detach(&html);
+	result = (char *)strbuf_detach(&html);
 	strbuf_free(&html);
 	return result;
 }
