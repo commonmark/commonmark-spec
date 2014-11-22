@@ -36,7 +36,7 @@ module CMark
 end
 
 class Node
-  attr_accessor :type, :children, :string_content, :header_level,
+  attr_accessor :type, :children, :parent, :string_content, :header_level,
                 :list_type, :list_start, :list_tight, :url, :title
   def initialize(pointer)
     if pointer.null?
@@ -45,10 +45,13 @@ class Node
     @pointer = pointer
     @type = CMark::cmark_node_get_type(pointer)
     @children = []
+    @parent = nil
     first_child = CMark::cmark_node_first_child(pointer)
     b = first_child
     while !b.null?
-      @children << Node.new(b)
+      child = Node.new(b)
+      child.parent = self
+      @children << child
       b = CMark::cmark_node_next(b)
     end
     @string_content = CMark::cmark_node_get_string_content(pointer)
@@ -71,6 +74,13 @@ class Node
     end
   end
 
+  def walk(&blk)
+    yield self
+    self.children.each do |child|
+      child.walk(&blk)
+    end
+  end
+
   def self.parse_string(s)
     Node.new(CMark::cmark_parse_document(s, s.bytesize))
   end
@@ -80,6 +90,7 @@ class Node
     self.parse_string(s)
   end
 
+  protected
   def free
       CMark::cmark_free_nodes(@pointer)
   end
@@ -324,6 +335,13 @@ class HtmlRenderer < Renderer
 end
 
 doc = Node.parse_file(ARGF)
+doc.walk do |node|
+  if node.type == :link
+    printf("URL = %s\n", node.url)
+    printf("parent is %s\n", node.parent.type)
+  end
+end
+
 renderer = HtmlRenderer.new(STDOUT)
 renderer.render(doc)
 renderer.warnings.each do |w|
