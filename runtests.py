@@ -217,7 +217,7 @@ def do_test(markdown_lines, expected_html_lines, headertext,
             sys.stdout.write('\n')
             return 'fail'
     else:
-        print_test_header(example_number,start_line,end_line)
+        print_test_header(headertext, example_number, start_line, end_line)
         print "program returned error code %d" % retcode
         print(err)
         return 'error'
