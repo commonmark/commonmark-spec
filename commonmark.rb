@@ -335,10 +335,22 @@ class HtmlRenderer < Renderer
 end
 
 doc = Node.parse_file(ARGF)
+
+# Walk tree and print URLs for links
 doc.walk do |node|
   if node.type == :link
     printf("URL = %s\n", node.url)
-    printf("parent is %s\n", node.parent.type)
+  end
+end
+
+# Walk tree and transform links to regular text
+doc.walk do |node|
+  if node.type == :link
+    parent = node.parent
+    index = parent.children.index(node)
+    len = parent.children.length
+    parent.children.replace(parent.children.slice(0,index) + node.children +
+                            parent.children.slice(index + 1, len))
   end
 end
 
