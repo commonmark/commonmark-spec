@@ -558,58 +558,63 @@ cmark_node_append_child(cmark_node *node, cmark_node *child)
 }
 
 static void
-S_print_error(cmark_node *node, const char *elem)
+S_print_error(FILE *out, cmark_node *node, const char *elem)
 {
-	fprintf(stderr, "Invalid '%s' in node type %s at %d:%d\n", elem,
+	if (out == NULL) {
+		return;
+	}
+	fprintf(out, "Invalid '%s' in node type %s at %d:%d\n", elem,
 		S_type_string(node), node->start_line, node->start_column);
 }
 
 int
-cmark_node_check(cmark_node *node)
+cmark_node_check(cmark_node *node, FILE *out)
 {
-	cmark_node *cur = node;
+	cmark_node *cur;
 	int errors = 0;
 
-	while (cur) {
+	if (!node) {
+		return 0;
+	}
+
+	cur = node;
+	while (true) {
 		if (cur->first_child) {
 			if (cur->first_child->parent != cur) {
-				S_print_error(cur->first_child, "parent");
+				S_print_error(out, cur->first_child, "parent");
 				cur->first_child->parent = cur;
 				++errors;
 			}
 			cur = cur->first_child;
+			continue;
 		}
-		else if (cur->next) {
+
+	next_sibling:
+		if (cur == node) {
+			break;
+		}
+		if (cur->next) {
 			if (cur->next->prev != cur) {
-				S_print_error(cur->next, "prev");
+				S_print_error(out, cur->next, "prev");
 				cur->next->prev = cur;
 				++errors;
 			}
 			if (cur->next->parent != cur->parent) {
-				S_print_error(cur->next, "parent");
+				S_print_error(out, cur->next, "parent");
 				cur->next->parent = cur->parent;
 				++errors;
 			}
 			cur = cur->next;
+			continue;
 		}
-		else {
-			if (cur->parent->last_child != cur) {
-				S_print_error(cur->parent, "last_child");
-				cur->parent->last_child = cur;
-				++errors;
-			}
 
-			cmark_node *ancestor = cur->parent;
-			cur = NULL;
-
-			while (ancestor != node->parent) {
-				if (ancestor->next) {
-					cur = ancestor->next;
-					break;
-				}
-				ancestor = ancestor->parent;
-			}
+		if (cur->parent->last_child != cur) {
+			S_print_error(out, cur->parent, "last_child");
+			cur->parent->last_child = cur;
+			++errors;
 		}
+		cur = cur->parent;
+		goto next_sibling;
 	}
 
 	return errors;

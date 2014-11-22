@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include <stdio.h>
+
 #include "cmark.h"
 #include "buffer.h"
 #include "chunk.h"
@@ -62,7 +64,7 @@ struct cmark_node {
 };
 
 CMARK_EXPORT int
-cmark_node_check(cmark_node *node);
+cmark_node_check(cmark_node *node, FILE *out);
 
 #ifdef __cplusplus
 }

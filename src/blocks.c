@@ -818,7 +818,7 @@ cmark_node *cmark_finish(cmark_doc_parser *parser)
 	finalize_document(parser);
 	strbuf_free(parser->curline);
 #if CMARK_DEBUG_NODES
-	if (cmark_node_check(parser->root)) {
+	if (cmark_node_check(parser->root, stderr)) {
 		abort();
 	}
 #endif
