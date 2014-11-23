@@ -16,8 +16,7 @@ typedef enum {
     CMARK_NODE_BLOCK_QUOTE,
     CMARK_NODE_LIST,
     CMARK_NODE_LIST_ITEM,
-    CMARK_NODE_FENCED_CODE,
-    CMARK_NODE_INDENTED_CODE,
+    CMARK_NODE_CODE_BLOCK,
     CMARK_NODE_HTML,
     CMARK_NODE_PARAGRAPH,
     CMARK_NODE_HEADER,
@@ -199,8 +198,7 @@ char *cmark_markdown_to_html(const char *text, int len);
   #define NODE_BLOCK_QUOTE          CMARK_NODE_BLOCK_QUOTE
   #define NODE_LIST                 CMARK_NODE_LIST
   #define NODE_LIST_ITEM            CMARK_NODE_LIST_ITEM
-  #define NODE_FENCED_CODE          CMARK_NODE_FENCED_CODE
-  #define NODE_INDENTED_CODE        CMARK_NODE_INDENTED_CODE
+  #define NODE_CODE_BLOCK           CMARK_NODE_CODE_BLOCK
   #define NODE_HTML                 CMARK_NODE_HTML
   #define NODE_PARAGRAPH            CMARK_NODE_PARAGRAPH
   #define NODE_HEADER		    CMARK_NODE_HEADER

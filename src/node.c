@@ -53,8 +53,7 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_BLOCK_QUOTE:   return "BLOCK_QUOTE";
 	case CMARK_NODE_LIST:          return "LIST";
 	case CMARK_NODE_LIST_ITEM:     return "LIST_ITEM";
-	case CMARK_NODE_FENCED_CODE:   return "FENCED_CODE";
-	case CMARK_NODE_INDENTED_CODE: return "INDENTED_CODE";
+	case CMARK_NODE_CODE_BLOCK:    return "CODE_BLOCK";
 	case CMARK_NODE_HTML:          return "HTML";
 	case CMARK_NODE_PARAGRAPH:     return "PARAGRAPH";
 	case CMARK_NODE_HEADER:	       return "HEADER";
@@ -115,8 +114,7 @@ S_strdup(const char *str) {
 const char*
 cmark_node_get_string_content(cmark_node *node) {
 	switch (node->type) {
-	case NODE_INDENTED_CODE:
-	case NODE_FENCED_CODE:
+	case NODE_CODE_BLOCK:
 	case NODE_HTML:
 		return cmark_strbuf_cstr(&node->string_content);
 
@@ -135,8 +133,7 @@ cmark_node_get_string_content(cmark_node *node) {
 int
 cmark_node_set_string_content(cmark_node *node, const char *content) {
 	switch (node->type) {
-	case NODE_INDENTED_CODE:
-	case NODE_FENCED_CODE:
+	case NODE_CODE_BLOCK:
 	case NODE_HTML:
 		cmark_strbuf_sets(&node->string_content, content);
 		return 1;
@@ -258,7 +255,7 @@ cmark_node_set_list_tight(cmark_node *node, int tight) {
 
 const char*
 cmark_node_get_fence_info(cmark_node *node) {
-	if (node->type == NODE_FENCED_CODE) {
+	if (node->type == NODE_CODE_BLOCK) {
 		return cmark_strbuf_cstr(&node->as.code.info);
 	}
 	else {
@@ -268,7 +265,7 @@ cmark_node_get_fence_info(cmark_node *node) {
 
 int
 cmark_node_set_fence_info(cmark_node *node, const char *info) {
-	if (node->type == NODE_FENCED_CODE) {
+	if (node->type == NODE_CODE_BLOCK) {
 		cmark_strbuf_sets(&node->as.code.info, info);
 		return 1;
 	}
@@ -622,7 +619,7 @@ void cmark_free_nodes(cmark_node *e)
 	while (e != NULL) {
 		strbuf_free(&e->string_content);
 		switch (e->type){
-		case NODE_FENCED_CODE:
+		case NODE_CODE_BLOCK:
 			strbuf_free(&e->as.code.info);
 			break;
 		case NODE_STRING:

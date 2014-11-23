@@ -98,8 +98,7 @@ static inline bool accepts_lines(cmark_node_type block_type)
 {
 	return (block_type == NODE_PARAGRAPH ||
 		block_type == NODE_HEADER ||
-		block_type == NODE_INDENTED_CODE ||
-		block_type == NODE_FENCED_CODE);
+		block_type == NODE_CODE_BLOCK);
 }
 
 static void add_line(cmark_node* cmark_node, chunk *ch, int offset)
@@ -194,27 +193,28 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 			}
 			break;
 
-		case NODE_INDENTED_CODE:
-			remove_trailing_blank_lines(&b->string_content);
-			strbuf_putc(&b->string_content, '\n');
-			break;
+		case NODE_CODE_BLOCK:
+			if (b->as.code.fence_length == 0) { // indented code
+				remove_trailing_blank_lines(&b->string_content);
+				strbuf_putc(&b->string_content, '\n');
+				break;
+			} else {
 
-		case NODE_FENCED_CODE:
-			// first line of contents becomes info
-			firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
+				// first line of contents becomes info
+				firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
-			strbuf_init(&b->as.code.info, 0);
-			houdini_unescape_html_f(
-					&b->as.code.info,
-					b->string_content.ptr,
-					firstlinelen
-					);
+				houdini_unescape_html_f(
+						&b->as.code.info,
+						b->string_content.ptr,
+						firstlinelen
+						);
 
-			strbuf_drop(&b->string_content, firstlinelen + 1);
+				strbuf_drop(&b->string_content, firstlinelen + 1);
 
-			strbuf_trim(&b->as.code.info);
-			strbuf_unescape(&b->as.code.info);
-			break;
+				strbuf_trim(&b->as.code.info);
+				strbuf_unescape(&b->as.code.info);
+				break;
+			}
 
 		case NODE_LIST: // determine tight/loose status
 			b->as.list.tight = true; // tight by default
@@ -537,14 +537,23 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 				all_matched = false;
 			}
 
-		} else if (container->type == NODE_INDENTED_CODE) {
+		} else if (container->type == NODE_CODE_BLOCK) {
 
-			if (indent >= CODE_INDENT) {
-				offset += CODE_INDENT;
-			} else if (blank) {
-				offset = first_nonspace;
+			if (container->as.code.fence_length == 0) { // indented
+				if (indent >= CODE_INDENT) {
+					offset += CODE_INDENT;
+				} else if (blank) {
+					offset = first_nonspace;
+				} else {
+					all_matched = false;
+				}
 			} else {
-				all_matched = false;
+				// skip optional spaces of fence offset
+				i = container->as.code.fence_offset;
+				while (i > 0 && peek_at(&input, offset) == ' ') {
+					offset++;
+					i--;
+				}
 			}
 
 		} else if (container->type == NODE_HEADER) {
@@ -553,15 +562,6 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 			all_matched = false;
 			if (blank) {
 				container->last_line_blank = true;
-			}
-
-		} else if (container->type == NODE_FENCED_CODE) {
-
-			// skip optional spaces of fence offset
-			i = container->as.code.fence_offset;
-			while (i > 0 && peek_at(&input, offset) == ' ') {
-				offset++;
-				i--;
 			}
 
 		} else if (container->type == NODE_HTML) {
@@ -594,7 +594,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 	}
 
 	// unless last matched container is code cmark_node, try new container starts:
-	while (container->type != NODE_FENCED_CODE && container->type != NODE_INDENTED_CODE &&
+	while (container->type != NODE_CODE_BLOCK &&
 			container->type != NODE_HTML) {
 
 		first_nonspace = offset;
@@ -607,7 +607,11 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		if (indent >= CODE_INDENT) {
 			if (cur->type != NODE_PARAGRAPH && !blank) {
 				offset += CODE_INDENT;
-				container = add_child(parser, container, NODE_INDENTED_CODE, parser->line_number, offset + 1);
+				container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, offset + 1);
+				container->as.code.fence_char = 0;
+				container->as.code.fence_length = 0;
+				container->as.code.fence_offset = 0;
+				strbuf_init(&container->as.code.info, 0);
 			} else { // indent > 4 in lazy line
 				break;
 			}
@@ -636,10 +640,11 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
-			container = add_child(parser, container, NODE_FENCED_CODE, parser->line_number, first_nonspace + 1);
+			container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, first_nonspace + 1);
 			container->as.code.fence_char = peek_at(&input, first_nonspace);
 			container->as.code.fence_length = matched;
 			container->as.code.fence_offset = first_nonspace - offset;
+			strbuf_init(&container->as.code.info, 0);
 			offset = first_nonspace + matched;
 
 		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {
@@ -731,7 +736,8 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 	container->last_line_blank = (blank &&
 			container->type != NODE_BLOCK_QUOTE &&
 			container->type != NODE_HEADER &&
-			container->type != NODE_FENCED_CODE &&
+			(container->type != NODE_CODE_BLOCK &&
+			 container->as.code.fence_length != 0) &&
 			!(container->type == NODE_LIST_ITEM &&
 				container->first_child == NULL &&
 				container->start_line == parser->line_number));
@@ -759,11 +765,13 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 			assert(cur != NULL);
 		}
 
-		if (container->type == NODE_INDENTED_CODE) {
+		if (container->type == NODE_CODE_BLOCK &&
+		    container->as.code.fence_length == 0) {
 
 			add_line(container, &input, offset);
 
-		} else if (container->type == NODE_FENCED_CODE) {
+		} else if (container->type == NODE_CODE_BLOCK &&
+			   container->as.code.fence_length != 0) {
 			matched = 0;
 
 			if (indent <= 3 &&

@@ -10,7 +10,7 @@ module CMark
   ffi_lib ['libcmark', 'cmark']
   typedef :pointer, :node
   enum :node_type, [:document, :blockquote, :list, :list_item,
-                    :fenced_code, :indented_code, :html, :paragraph,
+                    :code_block, :html, :paragraph,
                     :header, :hrule, :reference_def,
                     :str, :softbreak, :linebreak, :code, :inline_html,
                     :emph, :strong, :link, :image]
@@ -187,11 +187,7 @@ class Renderer
     self.out(node.children)
   end
 
-  def indented_code(node)
-    self.code_block(node)
-  end
-
-  def fenced_code(node)
+  def code_block(node)
     self.code_block(node)
   end
 

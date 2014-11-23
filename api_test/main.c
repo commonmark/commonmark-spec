@@ -13,8 +13,7 @@ static const cmark_node_type node_types[] = {
 	CMARK_NODE_BLOCK_QUOTE,
 	CMARK_NODE_LIST,
 	CMARK_NODE_LIST_ITEM,
-	CMARK_NODE_FENCED_CODE,
-	CMARK_NODE_INDENTED_CODE,
+	CMARK_NODE_CODE_BLOCK,
 	CMARK_NODE_HTML,
 	CMARK_NODE_PARAGRAPH,
 	CMARK_NODE_HEADER,
@@ -374,8 +373,7 @@ hierarchy(test_batch_runner *runner)
 	int top_level_blocks =
 		(1 << CMARK_NODE_BLOCK_QUOTE) |
 		(1 << CMARK_NODE_LIST) |
-		(1 << CMARK_NODE_FENCED_CODE) |
-		(1 << CMARK_NODE_INDENTED_CODE) |
+		(1 << CMARK_NODE_CODE_BLOCK) |
 		(1 << CMARK_NODE_HTML) |
 		(1 << CMARK_NODE_PARAGRAPH) |
 		(1 << CMARK_NODE_HEADER) |
@@ -396,8 +394,7 @@ hierarchy(test_batch_runner *runner)
 	test_content(runner, CMARK_NODE_BLOCK_QUOTE,   top_level_blocks);
 	test_content(runner, CMARK_NODE_LIST,          list_item_flag);
 	test_content(runner, CMARK_NODE_LIST_ITEM,     top_level_blocks);
-	test_content(runner, CMARK_NODE_FENCED_CODE,   0);
-	test_content(runner, CMARK_NODE_INDENTED_CODE, 0);
+	test_content(runner, CMARK_NODE_CODE_BLOCK ,   0);
 	test_content(runner, CMARK_NODE_HTML,          0);
 	test_content(runner, CMARK_NODE_PARAGRAPH,     all_inlines);
 	test_content(runner, CMARK_NODE_HEADER,        all_inlines);

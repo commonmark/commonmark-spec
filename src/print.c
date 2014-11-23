@@ -143,14 +143,8 @@ static void print_blocks(cmark_node* b, int indent)
 		case NODE_HRULE:
 			printf("hrule\n");
 			break;
-		case NODE_INDENTED_CODE:
-			printf("indented_code ");
-			print_str(b->string_content.ptr, -1);
-			putchar('\n');
-			break;
-		case NODE_FENCED_CODE:
-			printf("fenced_code length=%d info=",
-			       b->as.code.fence_length);
+		case NODE_CODE_BLOCK:
+			printf("code block info=");
 			print_str(b->as.code.info.ptr, -1);
 			putchar(' ');
 			print_str(b->string_content.ptr, -1);

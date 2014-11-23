@@ -88,6 +88,7 @@ static void node_to_html(strbuf *html, cmark_node *node)
 	char start_header[] = "<h0>";
 	bool tight = false;
 	bool visit_children;
+	strbuf *info;
 
 	if (node == NULL) {
 		return;
@@ -155,12 +156,11 @@ static void node_to_html(strbuf *html, cmark_node *node)
 			strbuf_puts(html, start_header);
 			break;
 
-		case NODE_INDENTED_CODE:
-		case NODE_FENCED_CODE: {
-			strbuf *info = &cur->as.code.info;
+		case NODE_CODE_BLOCK:
+			info = &cur->as.code.info;
 			cr(html);
 
-			if (cur->type != NODE_FENCED_CODE
+			if (&cur->as.code.fence_length == 0
 			    || strbuf_len(info) == 0) {
 				strbuf_puts(html, "<pre><code>");
 			}
@@ -177,7 +177,6 @@ static void node_to_html(strbuf *html, cmark_node *node)
 
 			escape_html(html, cur->string_content.ptr, cur->string_content.size);
 			break;
-		}
 
 		case NODE_HTML:
 			cr(html);
@@ -320,8 +319,7 @@ finish_node(strbuf *html, cmark_node *node, bool tight)
 		strbuf_puts(html, end_header);
 		break;
 
-	case NODE_INDENTED_CODE:
-	case NODE_FENCED_CODE:
+	case NODE_CODE_BLOCK:
 		strbuf_puts(html, "</code></pre>\n");
 		break;
 
