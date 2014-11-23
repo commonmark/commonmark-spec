@@ -658,6 +658,7 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 	cmark_node *link_text;
 	cmark_node *inl;
 	chunk raw_label;
+	int found_label;
 
 	advance(subj);  // advance past ]
 	initial_pos = subj->pos;
@@ -717,10 +718,17 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 	// skip spaces
 	subj->pos = subj->pos + scan_spacechars(&subj->input, subj->pos);
 	raw_label = chunk_literal("");
-	if (!link_label(subj, &raw_label) || raw_label.len == 0) {
+	found_label = link_label(subj, &raw_label);
+	if (!found_label || raw_label.len == 0) {
 		chunk_free(&raw_label);
 		raw_label = chunk_dup(&subj->input, opener->position,
 				      initial_pos - opener->position - 1);
+	}
+
+	if (!found_label) {
+		// If we have a shortcut reference link, back up
+		// to before the spacse we skipped.
+		subj->pos = initial_pos;
 	}
 
 	ref = reference_lookup(subj->refmap, &raw_label);

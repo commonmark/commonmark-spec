@@ -575,6 +575,10 @@ var parseCloseBracket = function(inlines) {
         } else {
             reflabel = this.subject.slice(beforelabel, beforelabel + n);
         }
+        if (n === 0) {
+            // If shortcut reference link, rewind before spaces we skipped.
+            this.pos = savepos;
+        }
 
         // lookup rawlabel in refmap
         var link = this.refmap[normalizeReference(reflabel)];
