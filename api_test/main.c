@@ -17,8 +17,7 @@ static const cmark_node_type node_types[] = {
 	CMARK_NODE_INDENTED_CODE,
 	CMARK_NODE_HTML,
 	CMARK_NODE_PARAGRAPH,
-	CMARK_NODE_ATX_HEADER,
-	CMARK_NODE_SETEXT_HEADER,
+	CMARK_NODE_HEADER,
 	CMARK_NODE_HRULE,
 	CMARK_NODE_REFERENCE_DEF,
 	CMARK_NODE_STRING,
@@ -48,8 +47,7 @@ constructor(test_batch_runner *runner)
 		       "get_type %d", type);
 
 		switch (node->type) {
-		case CMARK_NODE_ATX_HEADER:
-		case CMARK_NODE_SETEXT_HEADER:
+		case CMARK_NODE_HEADER:
 			INT_EQ(runner, cmark_node_get_header_level(node), 1,
 			       "default header level is 1");
 			node->as.header.level = 1;
@@ -380,8 +378,7 @@ hierarchy(test_batch_runner *runner)
 		(1 << CMARK_NODE_INDENTED_CODE) |
 		(1 << CMARK_NODE_HTML) |
 		(1 << CMARK_NODE_PARAGRAPH) |
-		(1 << CMARK_NODE_ATX_HEADER) |
-		(1 << CMARK_NODE_SETEXT_HEADER) |
+		(1 << CMARK_NODE_HEADER) |
 		(1 << CMARK_NODE_HRULE) |
 		(1 << CMARK_NODE_REFERENCE_DEF);
 	int all_inlines =
@@ -403,8 +400,7 @@ hierarchy(test_batch_runner *runner)
 	test_content(runner, CMARK_NODE_INDENTED_CODE, 0);
 	test_content(runner, CMARK_NODE_HTML,          0);
 	test_content(runner, CMARK_NODE_PARAGRAPH,     all_inlines);
-	test_content(runner, CMARK_NODE_ATX_HEADER,    all_inlines);
-	test_content(runner, CMARK_NODE_SETEXT_HEADER, all_inlines);
+	test_content(runner, CMARK_NODE_HEADER,        all_inlines);
 	test_content(runner, CMARK_NODE_HRULE,         0);
 	test_content(runner, CMARK_NODE_REFERENCE_DEF, 0);
 	test_content(runner, CMARK_NODE_STRING,        0);
