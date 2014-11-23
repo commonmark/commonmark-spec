@@ -441,6 +441,18 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 }
 
 static void
+parser(test_batch_runner *runner)
+{
+	static const char markdown[] = "No newline";
+	cmark_node *doc = cmark_parse_document(markdown, sizeof(markdown) - 1);
+	char *html = cmark_render_html(doc);
+	STR_EQ(runner, html, "<p>No newline</p>\n",
+	       "document without trailing newline");
+	free(html);
+	cmark_node_destroy(doc);
+}
+
+static void
 render_html(test_batch_runner *runner)
 {
 	char *html;
@@ -479,6 +491,7 @@ int main() {
 	node_check(runner);
 	create_tree(runner);
 	hierarchy(runner);
+	parser(runner);
 	render_html(runner);
 
 	test_print_summary(runner);

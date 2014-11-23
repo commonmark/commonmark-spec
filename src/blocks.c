@@ -441,7 +441,7 @@ extern cmark_node *cmark_parse_document(const char *buffer, size_t len)
 
 	while (buffer < end) {
 		const char *eol = memchr(buffer, '\n', end - buffer);
-		offset = eol ? (eol - buffer) + 1 : eol - buffer;
+		offset = eol ? (eol - buffer) + 1 : end - buffer;
 		cmark_process_line(parser, buffer, offset);
 		buffer += offset;
 		linenum++;
