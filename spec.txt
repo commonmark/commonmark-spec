@@ -5907,6 +5907,16 @@ The link labels are case-insensitive:
 <p><a href="/url" title="title">Foo</a></p>
 .
 
+A space after the link text should be preserved:
+
+.
+[foo] bar
+
+[foo]: /url
+.
+<p><a href="/url">foo</a> bar</p>
+.
+
 If you just want bracketed text, you can backslash-escape the
 opening bracket to avoid links:
 
