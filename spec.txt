@@ -3181,8 +3181,7 @@ A list item can contain a header:
 </li>
 <li>
 <h2>Bar</h2>
-<p>baz</p>
-</li>
+baz</li>
 </ul>
 .
 
