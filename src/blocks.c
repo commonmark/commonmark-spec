@@ -728,6 +728,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 	// on an empty list item.
 	container->last_line_blank = (blank &&
 			container->type != NODE_BQUOTE &&
+			container->type != NODE_SETEXT_HEADER &&
 			container->type != NODE_FENCED_CODE &&
 			!(container->type == NODE_LIST_ITEM &&
 				container->first_child == NULL &&

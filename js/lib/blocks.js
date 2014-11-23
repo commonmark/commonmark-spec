@@ -465,6 +465,7 @@ var incorporateLine = function(ln, line_number) {
         // on an empty list item.
         container.last_line_blank = blank &&
             !(container.t == 'BlockQuote' ||
+              container.t == 'SetextHeader' ||
               container.t == 'FencedCode' ||
               (container.t == 'ListItem' &&
                container.children.length === 0 &&
