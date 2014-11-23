@@ -11,6 +11,7 @@ from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
 import re
 import cgi
+import json
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run cmark tests.')
@@ -23,7 +24,11 @@ if __name__ == "__main__":
     parser.add_argument('--library-dir', dest='library_dir', nargs='?',
             default=None, help='directory containing dynamic library')
     parser.add_argument('--no-normalize', dest='normalize',
-            action='store_const', const=False, default=True)
+            action='store_const', const=False, default=True,
+            help='do not normalize HTML')
+    parser.add_argument('--dump-tests', dest='dump_tests',
+            action='store_const', const=True, default=False,
+            help='dump tests in JSON format')
     parser.add_argument('--debug-normalization', dest='debug_normalization',
             action='store_const', const=True,
             default=False, help='filter stdin through normalizer for testing')
@@ -222,7 +227,7 @@ def do_test(markdown_lines, expected_html_lines, headertext,
         print(err)
         return 'error'
 
-def do_tests(specfile, prog, pattern, normalize):
+def do_tests(specfile, prog, pattern, normalize, dump_tests):
     line_number = 0
     start_line = 0
     end_line = 0
@@ -235,6 +240,7 @@ def do_tests(specfile, prog, pattern, normalize):
     active = True
     state = 0  # 0 regular text, 1 markdown example, 2 html output
     headertext = ''
+    tests_json = []
 
     header_re = re.compile('#+ ')
     if pattern:
@@ -256,32 +262,45 @@ def do_tests(specfile, prog, pattern, normalize):
                     example_number = example_number + 1
                     end_line = line_number
                     if active:
-                        result = do_test(markdown_lines, html_lines,
-                                         headertext, example_number,
-                                         start_line, end_line, prog,
-                                         normalize)
-                        if result == 'pass':
-                            passed = passed + 1
-                        elif result == 'fail':
-                            failed = failed + 1
+                        if dump_tests:
+                            tests_json.append({
+                                 "markdown":''.join(markdown_lines),
+                                 "html":''.join(html_lines),
+                                 "example": example_number,
+                                 "start_line": start_line,
+                                 "end_line": end_line,
+                                 "section": headertext})
                         else:
-                            errored = errored + 1
+                            result = do_test(markdown_lines, html_lines,
+                                             headertext, example_number,
+                                             start_line, end_line, prog,
+                                             normalize)
+                            if result == 'pass':
+                                passed = passed + 1
+                            elif result == 'fail':
+                                failed = failed + 1
+                            else:
+                                errored = errored + 1
                     start_line = 0
                     markdown_lines = []
                     html_lines = []
             elif state == 1:
                 if start_line == 0:
-                    start_line = line_number
+                    start_line = line_number - 1
                 markdown_lines.append(line)
             elif state == 2:
                 html_lines.append(line)
-    print "%d passed, %d failed, %d errored" % (passed, failed, errored)
-    return (failed == 0 and errored == 0)
+    if dump_tests:
+        print json.dumps(tests_json, ensure_ascii=False, indent=2)
+    else:
+        print "%d passed, %d failed, %d errored" % (passed, failed, errored)
+        return (failed == 0 and errored == 0)
 
 if __name__ == "__main__":
     if args.debug_normalization:
         print normalize_html(sys.stdin.read())
-    elif do_tests(args.spec, args.program, args.pattern, args.normalize):
+    elif do_tests(args.spec, args.program, args.pattern, args.normalize,
+                  args.dump_tests):
         exit(0)
     else:
         exit(1)
