@@ -566,6 +566,7 @@ var finalize = function(block, line_number) {
 
     case 'IndentedCode':
         block.string_content = block.strings.join('\n').replace(/(\n *)*$/,'\n');
+        block.t = 'CodeBlock';
         break;
 
     case 'FencedCode':
@@ -576,6 +577,7 @@ var finalize = function(block, line_number) {
         } else {
             block.string_content = block.strings.slice(1).join('\n') + '\n';
         }
+        block.t = 'CodeBlock';
         break;
 
     case 'List':
@@ -638,11 +640,10 @@ var processInlines = function(block) {
         newblock.list_data = block.list_data;
         newblock.tight = block.tight;
         break;
-    case 'FencedCode':
+    case 'CodeBlock':
         newblock.string_content = block.string_content;
         newblock.info = block.info;
         break;
-    case 'IndentedCode':
     case 'HtmlBlock':
         newblock.string_content = block.string_content;
         break;

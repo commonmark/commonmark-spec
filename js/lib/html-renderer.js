@@ -106,14 +106,10 @@ var renderBlock = function(block, in_tight_list) {
     case 'Header':
         tag = 'h' + block.level;
         return inTags(tag, [], this.renderInlines(block.inline_content));
-    case 'IndentedCode':
-        return inTags('pre', [],
-                      inTags('code', [], this.escape(block.string_content)));
-    case 'FencedCode':
-        info_words = block.info.split(/ +/);
-        attr = info_words.length === 0 || info_words[0].length === 0 ?
-            [] : [['class','language-' +
-                   this.escape(info_words[0],true)]];
+    case 'CodeBlock':
+        info_words = block.info ? block.info.split(/ +/) : [];
+        attr = (info_words.length === 0 || info_words[0].length === 0) ?
+            [] : [['class','language-' + this.escape(info_words[0],true)]];
         return inTags('pre', [],
                       inTags('code', attr, this.escape(block.string_content)));
     case 'HtmlBlock':
