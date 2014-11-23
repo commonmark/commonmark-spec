@@ -30,6 +30,7 @@ typedef struct {
 
 typedef struct {
 	int level;
+	bool setext;
 } cmark_header;
 
 typedef struct {

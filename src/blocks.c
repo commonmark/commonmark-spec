@@ -637,6 +637,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 				hashpos++;
 			}
 			container->as.header.level = level;
+			container->as.header.setext = false;
 
 		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
@@ -660,6 +661,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 			container->type = NODE_HEADER;
 			container->as.header.level = lev;
+			container->as.header.setext = true;
 			offset = input.len - 1;
 
 		} else if (!(container->type == NODE_PARAGRAPH && !all_matched) &&
