@@ -181,10 +181,12 @@ static void node_to_html(strbuf *html, cmark_node *node)
 		}
 
 		case NODE_HTML:
+			cr(html);
 			strbuf_put(html, cur->string_content.ptr, cur->string_content.size);
 			break;
 
 		case NODE_HRULE:
+			cr(html);
 			strbuf_puts(html, "<hr />\n");
 			break;
 
