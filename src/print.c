@@ -132,7 +132,11 @@ static void print_blocks(cmark_node* b, int indent)
 			}
 			print_blocks(b->first_child, indent + 2);
 			break;
-		case NODE_HEADER:
+		case NODE_ATX_HEADER:
+			printf("atx_header (level=%d)\n", b->as.header.level);
+			print_inlines(b->first_child, indent + 2);
+			break;
+		case NODE_SETEXT_HEADER:
 			printf("setext_header (level=%d)\n", b->as.header.level);
 			print_inlines(b->first_child, indent + 2);
 			break;

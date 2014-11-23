@@ -13,7 +13,8 @@ cmark_node_new(cmark_node_type type) {
 	node->type = type;
 
 	switch (node->type) {
-	case CMARK_NODE_HEADER:
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
 		node->as.header.level = 1;
 		break;
 
@@ -57,7 +58,8 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_INDENTED_CODE: return "INDENTED_CODE";
 	case CMARK_NODE_HTML:          return "HTML";
 	case CMARK_NODE_PARAGRAPH:     return "PARAGRAPH";
-	case CMARK_NODE_HEADER:	       return "HEADER";
+	case CMARK_NODE_ATX_HEADER:    return "ATX_HEADER";
+	case CMARK_NODE_SETEXT_HEADER: return "SETEXT_HEADER";
 	case CMARK_NODE_HRULE:         return "HRULE";
 	case CMARK_NODE_REFERENCE_DEF: return "REFERENCE_DEF";
 	case CMARK_NODE_STRING:        return "STRING";
@@ -157,7 +159,8 @@ cmark_node_set_string_content(cmark_node *node, const char *content) {
 int
 cmark_node_get_header_level(cmark_node *node) {
 	switch (node->type) {
-	case CMARK_NODE_HEADER:
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
 		return node->as.header.level;
 
 	default:
@@ -174,7 +177,8 @@ cmark_node_set_header_level(cmark_node *node, int level) {
 	}
 
 	switch (node->type) {
-	case CMARK_NODE_HEADER:
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
 		node->as.header.level = level;
 		return 1;
 
@@ -389,7 +393,8 @@ S_can_contain(cmark_node *node, cmark_node *child)
 		return child->type == CMARK_NODE_LIST_ITEM;
 
 	case CMARK_NODE_PARAGRAPH:
-	case CMARK_NODE_HEADER:
+	case CMARK_NODE_ATX_HEADER:
+	case CMARK_NODE_SETEXT_HEADER:
 	case CMARK_NODE_EMPH:
 	case CMARK_NODE_STRONG:
 	case CMARK_NODE_LINK:

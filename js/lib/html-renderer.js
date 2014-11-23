@@ -103,7 +103,8 @@ var renderBlock = function(block, in_tight_list) {
         return inTags(tag, attr, this.innersep +
                       this.renderBlocks(block.children, block.tight) +
                       this.innersep);
-    case 'Header':
+    case 'ATXHeader':
+    case 'SetextHeader':
         tag = 'h' + block.level;
         return inTags(tag, [], this.renderInlines(block.inline_content));
     case 'IndentedCode':

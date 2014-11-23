@@ -261,7 +261,8 @@ var incorporateLine = function(ln, line_number) {
             }
             break;
 
-        case 'Header':
+        case 'ATXHeader':
+        case 'SetextHeader':
         case 'HorizontalRule':
             // a header can never container > 1 line, so fail to match:
             all_matched = false;
@@ -365,7 +366,7 @@ var incorporateLine = function(ln, line_number) {
             // ATX header
             offset = first_nonspace + match[0].length;
             closeUnmatchedBlocks(this);
-            container = this.addChild('Header', line_number, first_nonspace);
+            container = this.addChild('ATXHeader', line_number, first_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
             container.strings =
@@ -395,7 +396,7 @@ var incorporateLine = function(ln, line_number) {
                    ((match = ln.slice(first_nonspace).match(/^(?:=+|-+) *$/)))) {
             // setext header line
             closeUnmatchedBlocks(this);
-            container.t = 'Header'; // convert Paragraph to SetextHeader
+            container.t = 'SetextHeader'; // convert Paragraph to SetextHeader
             container.level = match[0][0] === '=' ? 1 : 2;
             offset = ln.length;
 
@@ -468,7 +469,7 @@ var incorporateLine = function(ln, line_number) {
         // on an empty list item.
         container.last_line_blank = blank &&
             !(container.t == 'BlockQuote' ||
-              container.t == 'Header' ||
+              container.t == 'SetextHeader' ||
               container.t == 'FencedCode' ||
               (container.t == 'ListItem' &&
                container.children.length === 0 &&
@@ -499,7 +500,8 @@ var incorporateLine = function(ln, line_number) {
             }
             break;
 
-        case 'Header':
+        case 'ATXHeader':
+        case 'SetextHeader':
         case 'HorizontalRule':
             // nothing to do; we already added the contents.
             break;
@@ -510,7 +512,7 @@ var incorporateLine = function(ln, line_number) {
             } else if (blank) {
                 // do nothing
             } else if (container.t != 'HorizontalRule' &&
-                       container.t != 'Header') {
+                       container.t != 'SetextHeader') {
                 // create paragraph container for line
                 container = this.addChild('Paragraph', line_number, first_nonspace);
                 this.addLine(ln, first_nonspace);
@@ -559,7 +561,8 @@ var finalize = function(block, line_number) {
         }
         break;
 
-    case 'Header':
+    case 'ATXHeader':
+    case 'SetextHeader':
     case 'HtmlBlock':
         block.string_content = block.strings.join('\n');
         break;
@@ -629,7 +632,8 @@ var processInlines = function(block) {
         newblock.inline_content =
             this.inlineParser.parse(block.string_content.trim(), this.refmap);
         break;
-    case 'Header':
+    case 'SetextHeader':
+    case 'ATXHeader':
         newblock.inline_content =
             this.inlineParser.parse(block.string_content.trim(), this.refmap);
         newblock.level = block.level;
