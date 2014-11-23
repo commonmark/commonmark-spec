@@ -11,7 +11,7 @@ module CMark
   typedef :pointer, :node
   enum :node_type, [:document, :blockquote, :list, :list_item,
                     :fenced_code, :indented_code, :html, :paragraph,
-                    :atx_header, :setext_header, :hrule, :reference_def,
+                    :header, :hrule, :reference_def,
                     :str, :softbreak, :linebreak, :code, :inline_html,
                     :emph, :strong, :link, :image]
   enum :list_type, [:no_list, :bullet_list, :ordered_list]
@@ -55,7 +55,7 @@ class Node
       b = CMark::cmark_node_next(b)
     end
     @string_content = CMark::cmark_node_get_string_content(pointer)
-    if @type == :atx_header || @type == :setext_header
+    if @type == :header
       @header_level = CMark::cmark_node_get_header_level(pointer)
     end
     if @type == :list
@@ -193,14 +193,6 @@ class Renderer
 
   def fenced_code(node)
     self.code_block(node)
-  end
-
-  def setext_header(node)
-    self.header(node)
-  end
-
-  def atx_header(node)
-    self.header(node)
   end
 
   def reference_def(node)
@@ -375,7 +367,7 @@ end
 
 # Capitalize strings in headers
 doc.walk do |node|
-  if node.type == :setext_header or node.type == :atx_header
+  if node.type == :header
     node.walk do |subnode|
       if subnode.type == :str
         subnode.string_content = subnode.string_content.upcase

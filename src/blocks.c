@@ -97,9 +97,9 @@ static inline bool can_contain(cmark_node_type parent_type, cmark_node_type chil
 static inline bool accepts_lines(cmark_node_type block_type)
 {
 	return (block_type == NODE_PARAGRAPH ||
-			block_type == NODE_ATX_HEADER ||
-			block_type == NODE_INDENTED_CODE ||
-			block_type == NODE_FENCED_CODE);
+		block_type == NODE_HEADER ||
+		block_type == NODE_INDENTED_CODE ||
+		block_type == NODE_FENCED_CODE);
 }
 
 static void add_line(cmark_node* cmark_node, chunk *ch, int offset)
@@ -293,8 +293,7 @@ static void process_inlines(cmark_node* cur, reference_map *refmap)
 	while (cur != NULL) {
 		switch (cur->type) {
 			case NODE_PARAGRAPH:
-			case NODE_ATX_HEADER:
-			case NODE_SETEXT_HEADER:
+			case NODE_HEADER:
 				parse_inlines(cur, refmap);
 				break;
 
@@ -548,8 +547,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 				all_matched = false;
 			}
 
-		} else if (container->type == NODE_ATX_HEADER ||
-				container->type == NODE_SETEXT_HEADER) {
+		} else if (container->type == NODE_HEADER) {
 
 			// a header can never contain more than one line
 			all_matched = false;
@@ -625,7 +623,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		} else if ((matched = scan_atx_header_start(&input, first_nonspace))) {
 
 			offset = first_nonspace + matched;
-			container = add_child(parser, container, NODE_ATX_HEADER, parser->line_number, offset + 1);
+			container = add_child(parser, container, NODE_HEADER, parser->line_number, offset + 1);
 
 			int hashpos = chunk_strchr(&input, '#', first_nonspace);
 			int level = 0;
@@ -655,7 +653,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 				strbuf_strrchr(&container->string_content, '\n',
 					strbuf_len(&container->string_content) - 2) < 0) {
 
-			container->type = NODE_SETEXT_HEADER;
+			container->type = NODE_HEADER;
 			container->as.header.level = lev;
 			offset = input.len - 1;
 
@@ -732,7 +730,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 	// on an empty list item.
 	container->last_line_blank = (blank &&
 			container->type != NODE_BLOCK_QUOTE &&
-			container->type != NODE_SETEXT_HEADER &&
+			container->type != NODE_HEADER &&
 			container->type != NODE_FENCED_CODE &&
 			!(container->type == NODE_LIST_ITEM &&
 				container->first_child == NULL &&
@@ -791,7 +789,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 			// ??? do nothing
 
-		} else if (container->type == NODE_ATX_HEADER) {
+		} else if (container->type == NODE_HEADER) {
 
 			chop_trailing_hashtags(&input);
 			add_line(container, &input, first_nonspace);
@@ -802,7 +800,8 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 			add_line(container, &input, first_nonspace);
 
-		} else if (container->type != NODE_HRULE && container->type != NODE_SETEXT_HEADER) {
+		} else if (container->type != NODE_HRULE &&
+			   container->type != NODE_HEADER) {
 
 			// create paragraph container for line
 			container = add_child(parser, container, NODE_PARAGRAPH, parser->line_number, first_nonspace + 1);

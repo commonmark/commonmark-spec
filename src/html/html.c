@@ -149,8 +149,7 @@ static void node_to_html(strbuf *html, cmark_node *node)
 			break;
 		}
 
-		case NODE_ATX_HEADER:
-		case NODE_SETEXT_HEADER:
+		case NODE_HEADER:
 			cr(html);
 			start_header[2] = '0' + cur->as.header.level;
 			strbuf_puts(html, start_header);
@@ -316,8 +315,7 @@ finish_node(strbuf *html, cmark_node *node, bool tight)
 		break;
 	}
 
-	case NODE_ATX_HEADER:
-	case NODE_SETEXT_HEADER:
+	case NODE_HEADER:
 		end_header[3] = '0' + node->as.header.level;
 		strbuf_puts(html, end_header);
 		break;
