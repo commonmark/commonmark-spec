@@ -468,7 +468,8 @@ If you want a horizontal rule in a list item, use a different bullet:
 .
 <ul>
 <li>Foo</li>
-<li><hr />
+<li>
+<hr />
 </li>
 </ul>
 .
