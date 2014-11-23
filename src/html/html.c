@@ -109,10 +109,10 @@ static void node_to_html(strbuf *html, cmark_node *node)
 			}
 			break;
 
-		case NODE_BQUOTE:
+		case NODE_BLOCK_QUOTE:
 			cr(html);
 			strbuf_puts(html, "<blockquote>\n");
-			// BQUOTE doesn't use any of the 'as' structs,
+			// BLOCK_QUOTE doesn't use any of the 'as' structs,
 			// so the 'list' member can be used to store the
 			// current value of 'tight'.
 			cur->as.list.tight = tight;
@@ -290,7 +290,7 @@ finish_node(strbuf *html, cmark_node *node, bool tight)
 		}
 		break;
 
-	case NODE_BQUOTE: {
+	case NODE_BLOCK_QUOTE: {
 		cmark_list *list = &node->as.list;
 		strbuf_puts(html, "</blockquote>\n");
 		// Restore old 'tight' value.

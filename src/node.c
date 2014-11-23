@@ -51,7 +51,7 @@ S_type_string(cmark_node *node)
 {
 	switch (node->type) {
 	case CMARK_NODE_DOCUMENT:      return "DOCUMENT";
-	case CMARK_NODE_BQUOTE:        return "BQUOTE";
+	case CMARK_NODE_BLOCK_QUOTE:   return "BLOCK_QUOTE";
 	case CMARK_NODE_LIST:          return "LIST";
 	case CMARK_NODE_LIST_ITEM:     return "LIST_ITEM";
 	case CMARK_NODE_FENCED_CODE:   return "FENCED_CODE";
@@ -384,7 +384,7 @@ S_can_contain(cmark_node *node, cmark_node *child)
 
 	switch (node->type) {
 	case CMARK_NODE_DOCUMENT:
-	case CMARK_NODE_BQUOTE:
+	case CMARK_NODE_BLOCK_QUOTE:
 	case CMARK_NODE_LIST_ITEM:
 		return S_is_block(child)
 		       && child->type != CMARK_NODE_LIST_ITEM;

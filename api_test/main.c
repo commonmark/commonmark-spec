@@ -10,7 +10,7 @@
 
 static const cmark_node_type node_types[] = {
 	CMARK_NODE_DOCUMENT,
-	CMARK_NODE_BQUOTE,
+	CMARK_NODE_BLOCK_QUOTE,
 	CMARK_NODE_LIST,
 	CMARK_NODE_LIST_ITEM,
 	CMARK_NODE_FENCED_CODE,
@@ -353,9 +353,9 @@ create_tree(test_batch_runner *runner)
 void
 hierarchy(test_batch_runner *runner)
 {
-	cmark_node *bquote1 = cmark_node_new(CMARK_NODE_BQUOTE);
-	cmark_node *bquote2 = cmark_node_new(CMARK_NODE_BQUOTE);
-	cmark_node *bquote3 = cmark_node_new(CMARK_NODE_BQUOTE);
+	cmark_node *bquote1 = cmark_node_new(CMARK_NODE_BLOCK_QUOTE);
+	cmark_node *bquote2 = cmark_node_new(CMARK_NODE_BLOCK_QUOTE);
+	cmark_node *bquote3 = cmark_node_new(CMARK_NODE_BLOCK_QUOTE);
 
 	OK(runner, cmark_node_append_child(bquote1, bquote2),
 	   "append bquote2");
@@ -374,7 +374,7 @@ hierarchy(test_batch_runner *runner)
 
 	int list_item_flag = 1 << CMARK_NODE_LIST_ITEM;
 	int top_level_blocks =
-		(1 << CMARK_NODE_BQUOTE) |
+		(1 << CMARK_NODE_BLOCK_QUOTE) |
 		(1 << CMARK_NODE_LIST) |
 		(1 << CMARK_NODE_FENCED_CODE) |
 		(1 << CMARK_NODE_INDENTED_CODE) |
@@ -396,7 +396,7 @@ hierarchy(test_batch_runner *runner)
 		(1 << CMARK_NODE_IMAGE);
 
 	test_content(runner, CMARK_NODE_DOCUMENT,      top_level_blocks);
-	test_content(runner, CMARK_NODE_BQUOTE,        top_level_blocks);
+	test_content(runner, CMARK_NODE_BLOCK_QUOTE,   top_level_blocks);
 	test_content(runner, CMARK_NODE_LIST,          list_item_flag);
 	test_content(runner, CMARK_NODE_LIST_ITEM,     top_level_blocks);
 	test_content(runner, CMARK_NODE_FENCED_CODE,   0);

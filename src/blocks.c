@@ -89,7 +89,7 @@ static bool is_blank(strbuf *s, int offset)
 static inline bool can_contain(cmark_node_type parent_type, cmark_node_type child_type)
 {
 	return ( parent_type == NODE_DOCUMENT ||
-			parent_type == NODE_BQUOTE ||
+			parent_type == NODE_BLOCK_QUOTE ||
 			parent_type == NODE_LIST_ITEM ||
 			(parent_type == NODE_LIST && child_type == NODE_LIST_ITEM) );
 }
@@ -516,7 +516,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		indent = first_nonspace - offset;
 		blank = peek_at(&input, first_nonspace) == '\n';
 
-		if (container->type == NODE_BQUOTE) {
+		if (container->type == NODE_BLOCK_QUOTE) {
 			matched = indent <= 3 && peek_at(&input, first_nonspace) == '>';
 			if (matched) {
 				offset = first_nonspace + 1;
@@ -620,7 +620,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 			// optional following character
 			if (peek_at(&input, offset) == ' ')
 				offset++;
-			container = add_child(parser, container, NODE_BQUOTE, parser->line_number, offset + 1);
+			container = add_child(parser, container, NODE_BLOCK_QUOTE, parser->line_number, offset + 1);
 
 		} else if ((matched = scan_atx_header_start(&input, first_nonspace))) {
 
@@ -731,7 +731,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 	// lists or breaking out of lists.  we also don't set last_line_blank
 	// on an empty list item.
 	container->last_line_blank = (blank &&
-			container->type != NODE_BQUOTE &&
+			container->type != NODE_BLOCK_QUOTE &&
 			container->type != NODE_SETEXT_HEADER &&
 			container->type != NODE_FENCED_CODE &&
 			!(container->type == NODE_LIST_ITEM &&

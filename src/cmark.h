@@ -13,7 +13,7 @@ extern "C" {
 typedef enum {
     // Block
     CMARK_NODE_DOCUMENT,
-    CMARK_NODE_BQUOTE,
+    CMARK_NODE_BLOCK_QUOTE,
     CMARK_NODE_LIST,
     CMARK_NODE_LIST_ITEM,
     CMARK_NODE_FENCED_CODE,
@@ -197,7 +197,7 @@ char *cmark_markdown_to_html(const char *text, int len);
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
-  #define NODE_BQUOTE               CMARK_NODE_BQUOTE
+  #define NODE_BLOCK_QUOTE          CMARK_NODE_BLOCK_QUOTE
   #define NODE_LIST                 CMARK_NODE_LIST
   #define NODE_LIST_ITEM            CMARK_NODE_LIST_ITEM
   #define NODE_FENCED_CODE          CMARK_NODE_FENCED_CODE
