@@ -194,7 +194,7 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 			break;
 
 		case NODE_CODE_BLOCK:
-			if (b->as.code.fence_length == 0) { // indented code
+			if (!b->as.code.fenced) { // indented code
 				remove_trailing_blank_lines(&b->string_content);
 				strbuf_putc(&b->string_content, '\n');
 				break;
@@ -539,7 +539,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 		} else if (container->type == NODE_CODE_BLOCK) {
 
-			if (container->as.code.fence_length == 0) { // indented
+			if (!container->as.code.fenced) { // indented
 				if (indent >= CODE_INDENT) {
 					offset += CODE_INDENT;
 				} else if (blank) {
@@ -608,6 +608,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 			if (cur->type != NODE_PARAGRAPH && !blank) {
 				offset += CODE_INDENT;
 				container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, offset + 1);
+				container->as.code.fenced = false;
 				container->as.code.fence_char = 0;
 				container->as.code.fence_length = 0;
 				container->as.code.fence_offset = 0;
@@ -642,6 +643,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
 			container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, first_nonspace + 1);
+			container->as.code.fenced = true;
 			container->as.code.fence_char = peek_at(&input, first_nonspace);
 			container->as.code.fence_length = matched;
 			container->as.code.fence_offset = first_nonspace - offset;
@@ -739,7 +741,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 			container->type != NODE_BLOCK_QUOTE &&
 			container->type != NODE_HEADER &&
 			(container->type != NODE_CODE_BLOCK &&
-			 container->as.code.fence_length != 0) &&
+			 container->as.code.fenced) &&
 			!(container->type == NODE_LIST_ITEM &&
 				container->first_child == NULL &&
 				container->start_line == parser->line_number));
@@ -768,12 +770,12 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		}
 
 		if (container->type == NODE_CODE_BLOCK &&
-		    container->as.code.fence_length == 0) {
+		    !container->as.code.fenced) {
 
 			add_line(container, &input, offset);
 
 		} else if (container->type == NODE_CODE_BLOCK &&
-			   container->as.code.fence_length != 0) {
+			   container->as.code.fenced) {
 			matched = 0;
 
 			if (indent <= 3 &&

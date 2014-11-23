@@ -22,11 +22,12 @@ typedef struct {
 } cmark_list;
 
 typedef struct {
+	bool              fenced;
 	int               fence_length;
 	int               fence_offset;
 	unsigned char     fence_char;
 	cmark_strbuf      info;
-} cmark_fenced_code;
+} cmark_code;
 
 typedef struct {
 	int level;
@@ -58,7 +59,7 @@ struct cmark_node {
 	union {
 		cmark_chunk       literal;
 		cmark_list        list;
-		cmark_fenced_code code;
+		cmark_code        code;
 		cmark_header      header;
 		cmark_link        link;
 	} as;
