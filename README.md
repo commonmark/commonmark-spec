@@ -159,22 +159,22 @@ Because John Gruber's [canonical syntax
 description](http://daringfireball.net/projects/markdown/syntax) leaves
 many aspects of the syntax undetermined, writing a precise spec requires
 making a large number of decisions, many of them somewhat arbitrary.
-In making them, I have appealed to existing conventions and
+In making them, we have appealed to existing conventions and
 considerations of simplicity, readability, expressive power, and
-consistency.  I have tried to ensure that "normal" documents in the many
+consistency.  We have tried to ensure that "normal" documents in the many
 incompatible existing implementations of Markdown will render, as far as
-possible, as their authors intended.  And I have tried to make the rules
+possible, as their authors intended.  And we have tried to make the rules
 for different elements work together harmoniously.  In places where
 different decisions could have been made (for example, the rules
-governing list indentation), I have explained the rationale for
-my choices.  In a few cases, I have departed slightly from the canonical
-syntax description, in ways that I think further the goals of Markdown
+governing list indentation), we have explained the rationale for
+my choices.  In a few cases, we have departed slightly from the canonical
+syntax description, in ways that we think further the goals of Markdown
 as stated in that description.
 
-For the most part, I have limited myself to the basic elements
+For the most part, we have limited ourselves to the basic elements
 described in Gruber's canonical syntax description, eschewing extensions
 like footnotes and definition lists.  It is important to get the core
-right before considering such things. However, I have included a visible
+right before considering such things. However, we have included a visible
 syntax for line breaks and fenced code blocks.
 
 Differences from original Markdown
@@ -185,7 +185,7 @@ the canonical syntax description:
 
 -   It [allows all punctuation symbols to be
     backslash-escaped](http://jgm.github.io/CommonMark/spec.html#backslash-escapes),
-    not just the symbols with special meanings in Markdown. I found
+    not just the symbols with special meanings in Markdown. We found
     that it was just too hard to remember which symbols could be
     escaped.
 
@@ -225,9 +225,9 @@ the canonical syntax description:
     HTML blocks), most lists in existing documents should render as
     intended. There is some discussion of the choice points and
     differences [here](http://jgm.github.io/CommonMark/spec.html#motivation).
-    I think that the spec's proposal does better than any existing
+    We think that the spec's proposal does better than any existing
     implementation in rendering lists the way a human writer or reader
-    would intuitively understand them. (I could give numerous examples
+    would intuitively understand them. (We could give numerous examples
     of perfectly natural looking lists that nearly every existing
     implementation flubs up.)
 
@@ -237,7 +237,7 @@ the canonical syntax description:
     an indented code block.
 
 -   Changing bullet characters, or changing from bullets to numbers or
-    vice versa, starts a new list. I think that is almost always going
+    vice versa, starts a new list. We think that is almost always going
     to be the writer's intent.
 
 -   The number that begins an ordered list item may be followed by
@@ -249,22 +249,6 @@ the canonical syntax description:
 -   [Fenced code blocks](http://jgm.github.io/CommonMark/spec.html#fenced-code-blocks) are supported, delimited by either
     backticks (```` ``` ```` or tildes (` ~~~ `).
 
-In all of this, I have been guided by eight years experience writing
-Markdown implementations in several languages, including the first
-Markdown parser not based on regular expression substitutions
-([pandoc](http://github.com/jgm/pandoc)) and the first markdown parsers
-based on PEG grammars
-([peg-markdown](http://github.com/jgm/peg-markdown),
-[lunamark](http://github.com/jgm/lunamark)). Maintaining these projects
-and responding to years of user feedback have given me a good sense of
-the complexities involved in parsing Markdown, and of the various design
-decisions that can be made.  I have also explored differences between
-Markdown implementations extensively using [BabelMark
-2](http://johnmacfarlane.net/babelmark2/).  In the early phases of
-working out the spec, I benefited greatly from collaboration with David
-Greenspan, and from feedback from several industrial users of Markdown,
-including Jeff Atwood, Vincent Marti, and Neil Williams.
-
 Contributing
 ------------
 
@@ -274,8 +258,33 @@ github issues for questions and possibly open-ended discussions.
 Use the [github issue tracker](http://github.com/jgm/CommonMark/issues)
 only for simple, clear, actionable issues.
 
+Authors
+-------
 
+The spec was written by John MacFarlane, drawing on
+
+- his experience writing and maintaining Markdown implementations in several
+  languages, including the first Markdown parser not based on regular
+  expression substitutions ([pandoc](http://github.com/jgm/pandoc)) and
+  the first markdown parsers based on PEG grammars
+  ([peg-markdown](http://github.com/jgm/peg-markdown),
+  [lunamark](http://github.com/jgm/lunamark))
+- a detailed examination of the differences between existing Markdown
+  implementations using [BabelMark 2](http://johnmacfarlane.net/babelmark2/),
+  and
+- extensive discussions with David Greenspan, Jeff Atwood, Vicent
+  Marti, Neil Williams, and Benjamin Dumke-von der Ehe.
+
+John MacFarlane was also responsible for the original versions of the
+C and JavaScript implementations.  The block parsing algorithm was
+worked out together with David Greenspan.  Vicent Marti
+optimized the C implementation for performance, increasing its speed
+tenfold.  Kārlis Gaņģis helped work out a better parsing algorithm
+for links and emphasis, eliminating several worst-case performance
+issues.  Nick Wellnhofer contributed many improvements, including
+most of the C library's API and its test harness.
 
 [cmake]: http://www.cmake.org/download/
 [pandoc]: http://johnmacfarlane.net/pandoc/
 [re2c]: http://re2c.org
+
