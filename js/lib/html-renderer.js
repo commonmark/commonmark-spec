@@ -88,7 +88,14 @@ var renderBlock = function(block, in_tight_list) {
         return inTags('blockquote', [], filling === '' ? this.innersep :
                       this.innersep + filling + this.innersep);
     case 'ListItem':
-        return inTags('li', [], this.renderBlocks(block.children, in_tight_list).trim());
+        var contents = this.renderBlocks(block.children, in_tight_list);
+        if (/^[<]/.test(contents)) {
+            contents = '\n' + contents;
+        }
+        if (/[>]$/.test(contents)) {
+            contents = contents + '\n';
+        }
+        return inTags('li', [], contents, false).trim();
     case 'List':
         tag = block.list_data.type == 'Bullet' ? 'ul' : 'ol';
         attr = (!block.list_data.start || block.list_data.start == 1) ?
