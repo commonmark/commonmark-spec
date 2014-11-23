@@ -77,6 +77,13 @@ Tests can also be run manually on any executable `$PROG` using:
 
     python runtests.py --program $PROG
 
+If you want to extract the raw test data from the spec without
+actually running the tests, you can do:
+
+    python runtests.py --dump-tests
+
+and you'll get all the tests in JSON format.
+
 The GNU Makefile also provides a few other targets for developers.
 To run a "fuzz test" against ten long randomly generated inputs:
 
