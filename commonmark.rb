@@ -74,10 +74,40 @@ class Node
     end
   end
 
+  # An iterator that "walks the tree," returning each node
   def walk(&blk)
     yield self
     self.children.each do |child|
       child.walk(&blk)
+    end
+  end
+
+  # Walk the tree and transform it.  blk should take one argument,
+  # a node.  If its value is a node, that node replaces the node being
+  # visited. If its value is an array of nodes, those nodes are spliced
+  # in place of the node being visited (so, to delete a node, use an
+  # empty array).  Otherwise the node is left as it is.
+  def transform(&blk)
+    self.walk do |node|
+      skip = false
+      res = blk.call(node)
+      if res.kind_of?(Array)
+        splice = res
+      elsif res.kind_of?(Node)
+        splice = [res]
+      else
+        skip = true
+      end
+      unless skip
+        parent = node.parent
+        if parent
+          siblings = node.parent.children
+          index = siblings.index(node)
+          siblings.replace(siblings.slice(0,index) + splice +
+                           siblings.slice(index + 1, siblings.length))
+        else # at the document root, just skip
+        end
+      end
     end
   end
 
@@ -343,14 +373,21 @@ doc.walk do |node|
   end
 end
 
-# Walk tree and transform links to regular text
+# Capitalize strings in headers
 doc.walk do |node|
+  if node.type == :setext_header or node.type == :atx_header
+    node.walk do |subnode|
+      if subnode.type == :str
+        subnode.string_content = subnode.string_content.upcase
+      end
+    end
+  end
+end
+
+# Walk tree and transform links to regular text
+doc.transform do |node|
   if node.type == :link
-    parent = node.parent
-    index = parent.children.index(node)
-    len = parent.children.length
-    parent.children.replace(parent.children.slice(0,index) + node.children +
-                            parent.children.slice(index + 1, len))
+    node.children
   end
 end
 
