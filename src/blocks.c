@@ -553,6 +553,9 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 			// a header can never contain more than one line
 			all_matched = false;
+			if (blank) {
+				container->last_line_blank = true;
+			}
 
 		} else if (container->type == NODE_FENCED_CODE) {
 
@@ -566,6 +569,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 		} else if (container->type == NODE_HTML) {
 
 			if (blank) {
+				container->last_line_blank = true;
 				all_matched = false;
 			}
 

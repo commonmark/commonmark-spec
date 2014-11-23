@@ -266,6 +266,9 @@ var incorporateLine = function(ln, line_number) {
         case 'HorizontalRule':
             // a header can never container > 1 line, so fail to match:
             all_matched = false;
+            if (blank) {
+                container.last_line_blank = true;
+            }
             break;
 
         case 'FencedCode':
@@ -279,6 +282,7 @@ var incorporateLine = function(ln, line_number) {
 
         case 'HtmlBlock':
             if (blank) {
+                container.last_line_blank = true;
                 all_matched = false;
             }
             break;
