@@ -223,6 +223,9 @@ Line endings are replaced by newline characters (LF).
 A line containing no characters, or a line containing only spaces (after
 tab expansion), is called a [blank line](@blank-line).
 
+For security reasons, a conforming parser must strip or replace the
+Unicode character `U+0000`.
+
 # Blocks and inlines
 
 We can think of a document as a sequence of
