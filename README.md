@@ -104,6 +104,10 @@ To test the archives:
 Compiling for Windows
 ---------------------
 
+To compile with MSVC and NMAKE:
+
+    nmake
+
 You can cross-compile a Windows binary and dll on linux if you have the
 `mingw32` compiler:
 
