@@ -522,6 +522,14 @@ utf8(test_batch_runner *runner)
 	test_continuation_byte(runner, "\xC2\x80");
 	test_continuation_byte(runner, "\xE0\xA0\x80");
 	test_continuation_byte(runner, "\xF0\x90\x80\x80");
+
+	// Test string containing null character
+	static const char string_with_null[] = "((((\0))))";
+	char *html = cmark_markdown_to_html(string_with_null,
+					    sizeof(string_with_null) - 1);
+	STR_EQ(runner, html, "<p>((((" UTF8_REPL "))))</p>\n",
+	       "utf8 with U+0000");
+	free(html);
 }
 
 static void
