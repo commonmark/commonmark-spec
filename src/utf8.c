@@ -28,7 +28,7 @@ static void encode_unknown(strbuf *buf)
 	strbuf_put(buf, repl, 3);
 }
 
-int utf8proc_charlen(const uint8_t *str, int str_len)
+static int utf8proc_charlen(const uint8_t *str, int str_len)
 {
 	int length, i;
 
@@ -51,6 +51,64 @@ int utf8proc_charlen(const uint8_t *str, int str_len)
 	return length;
 }
 
+// Validate a single UTF-8 character according to RFC 3629.
+static int utf8proc_valid(const uint8_t *str, int str_len)
+{
+	int length = utf8proc_charlen(str, str_len);
+
+	if (length <= 0)
+		return length;
+
+	switch (length) {
+	case 1:
+		if (str[0] == 0x00) {
+			// ASCII NUL is technically valid but rejected
+			// for security reasons.
+			return -length;
+		}
+		break;
+
+	case 2:
+		if (str[0] < 0xC2) {
+			// Overlong
+			return -length;
+		}
+		break;
+
+	case 3:
+		if (str[0] == 0xE0) {
+			if (str[1] < 0xA0) {
+				// Overlong
+				return -length;
+			}
+		}
+		else if (str[0] == 0xED) {
+			if (str[1] >= 0xA0) {
+				// Surrogate
+				return -length;
+			}
+		}
+		break;
+
+	case 4:
+		if (str[0] == 0xF0) {
+			if (str[1] < 0x90) {
+				// Overlong
+				return -length;
+			}
+		}
+		else if (str[0] >= 0xF4) {
+			if (str[0] > 0xF4 || str[1] >= 0x90) {
+				// Above 0x10FFFF
+				return -length;
+			}
+		}
+		break;
+	}
+
+	return length;
+}
+
 void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 {
 	static const uint8_t whitespace[] = "    ";
@@ -60,7 +118,8 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 	while (i < size) {
 		size_t org = i;
 
-		while (i < size && line[i] != '\t' && line[i] < 0x80) {
+		while (i < size && line[i] != '\t' && line[i] != '\0'
+		       && line[i] < 0x80) {
 			i++; tab++;
 		}
 
@@ -76,7 +135,7 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 			i += 1;
 			tab += numspaces;
 		} else {
-			int charlen = utf8proc_charlen(line + i, size - i);
+			int charlen = utf8proc_valid(line + i, size - i);
 
 			if (charlen >= 0) {
 				strbuf_put(ob, line + i, charlen);
