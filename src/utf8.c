@@ -60,7 +60,7 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 	while (i < size) {
 		size_t org = i;
 
-		while (i < size && line[i] != '\t' && line[i] <= 0x80) {
+		while (i < size && line[i] != '\t' && line[i] < 0x80) {
 			i++; tab++;
 		}
 
