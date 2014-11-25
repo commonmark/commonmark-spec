@@ -185,7 +185,7 @@ cmark_node *cmark_parse_file(FILE *f);
 // Renderer
 
 CMARK_EXPORT
-void cmark_debug_print(cmark_node *root);
+char *cmark_render_ast(cmark_node *root);
 
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);

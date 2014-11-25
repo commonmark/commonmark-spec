@@ -158,9 +158,12 @@ static void render_nodes(strbuf* buffer, cmark_node* node, int indent)
 	}
 }
 
-void cmark_debug_print(cmark_node *root)
+char *cmark_render_ast(cmark_node *root)
 {
+	char* result;
 	strbuf buffer = GH_BUF_INIT;
 	render_nodes(&buffer, root, -2);
-	printf("%s", buffer.ptr);
+	result = (char *)strbuf_detach(&buffer);
+	strbuf_free(&buffer);
+	return result;
 }

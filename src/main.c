@@ -19,13 +19,13 @@ static void print_document(cmark_node *document, bool ast)
 {
 	char *result;
 	if (ast) {
-		cmark_debug_print(document);
+		result = cmark_render_ast(document);
 	} else {
 
 		result = cmark_render_html(document);
-		printf("%s", result);
-		free(result);
 	}
+	printf("%s", result);
+	free(result);
 }
 
 int main(int argc, char *argv[])
