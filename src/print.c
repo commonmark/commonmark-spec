@@ -107,8 +107,7 @@ static void print_blocks(cmark_node* b, int indent)
 
 		switch(b->type) {
 		case NODE_DOCUMENT:
-			printf("document\n");
-			print_blocks(b->first_child, indent + 2);
+			print_blocks(b->first_child, 0);
 			break;
 		case NODE_BLOCK_QUOTE:
 			printf("block_quote\n");
