@@ -142,10 +142,6 @@ class Renderer
     @in_plain = false
   end
 
-  def outf(format, *args)
-    @stream.printf(format, *args)
-  end
-
   def out(*args)
     args.each do |arg|
       if arg.kind_of?(String)
