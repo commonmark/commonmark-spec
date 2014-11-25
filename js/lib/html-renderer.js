@@ -23,7 +23,7 @@ var inTags = function(tag, attribs, contents, selfclosing) {
 var renderInline = function(inline) {
     var attrs;
     switch (inline.t) {
-    case 'Str':
+    case 'Text':
         return this.escape(inline.c);
     case 'Softbreak':
         return this.softbreak;

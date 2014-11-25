@@ -15,7 +15,7 @@
 
 
 // Macros for creating various kinds of simple.
-#define make_str(s) make_literal(CMARK_NODE_STRING, s)
+#define make_str(s) make_literal(CMARK_NODE_TEXT, s)
 #define make_code(s) make_literal(CMARK_NODE_INLINE_CODE, s)
 #define make_raw_html(s) make_literal(CMARK_NODE_INLINE_HTML, s)
 #define make_linebreak() make_simple(CMARK_NODE_LINEBREAK)

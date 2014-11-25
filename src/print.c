@@ -43,8 +43,8 @@ static void print_inlines(cmark_node* ils, int indent)
 			putchar(' ');
 		}
 		switch(ils->type) {
-		case NODE_STRING:
-			printf("str ");
+		case NODE_TEXT:
+			printf("text ");
 			print_str(ils->as.literal.data, ils->as.literal.len);
 			putchar('\n');
 			break;

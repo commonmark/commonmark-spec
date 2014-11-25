@@ -47,7 +47,7 @@ static void inlines_to_plain_html(strbuf *html, cmark_node* node)
 
 	while (true) {
 		switch(cur->type) {
-		case NODE_STRING:
+		case NODE_TEXT:
 		case NODE_INLINE_CODE:
 		case NODE_INLINE_HTML:
 			escape_html(html, cur->as.literal.data, cur->as.literal.len);
@@ -191,7 +191,7 @@ static void node_to_html(strbuf *html, cmark_node *node)
 		case NODE_REFERENCE_DEF:
 			break;
 
-		case NODE_STRING:
+		case NODE_TEXT:
 			escape_html(html, cur->as.literal.data, cur->as.literal.len);
 			break;
 

@@ -21,7 +21,7 @@ static const cmark_node_type node_types[] = {
 	CMARK_NODE_HEADER,
 	CMARK_NODE_HRULE,
 	CMARK_NODE_REFERENCE_DEF,
-	CMARK_NODE_STRING,
+	CMARK_NODE_TEXT,
 	CMARK_NODE_SOFTBREAK,
 	CMARK_NODE_LINEBREAK,
 	CMARK_NODE_INLINE_CODE,
@@ -306,17 +306,17 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_prepend_child(p, emph), "prepend1");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "prepend1 consistent");
 
-	cmark_node *str1 = cmark_node_new(CMARK_NODE_STRING);
+	cmark_node *str1 = cmark_node_new(CMARK_NODE_TEXT);
 	cmark_node_set_string_content(str1, "Hello, ");
 	OK(runner, cmark_node_prepend_child(p, str1), "prepend2");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "prepend2 consistent");
 
-	cmark_node *str3 = cmark_node_new(CMARK_NODE_STRING);
+	cmark_node *str3 = cmark_node_new(CMARK_NODE_TEXT);
 	cmark_node_set_string_content(str3, "!");
 	OK(runner, cmark_node_append_child(p, str3), "append2");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append2 consistent");
 
-	cmark_node *str2 = cmark_node_new(CMARK_NODE_STRING);
+	cmark_node *str2 = cmark_node_new(CMARK_NODE_TEXT);
 	cmark_node_set_string_content(str2, "world");
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append3 consistent");
@@ -397,7 +397,7 @@ hierarchy(test_batch_runner *runner)
 		(1 << CMARK_NODE_HRULE) |
 		(1 << CMARK_NODE_REFERENCE_DEF);
 	int all_inlines =
-		(1 << CMARK_NODE_STRING) |
+		(1 << CMARK_NODE_TEXT) |
 		(1 << CMARK_NODE_SOFTBREAK) |
 		(1 << CMARK_NODE_LINEBREAK) |
 		(1 << CMARK_NODE_INLINE_CODE) |
@@ -417,7 +417,7 @@ hierarchy(test_batch_runner *runner)
 	test_content(runner, CMARK_NODE_HEADER,        all_inlines);
 	test_content(runner, CMARK_NODE_HRULE,         0);
 	test_content(runner, CMARK_NODE_REFERENCE_DEF, 0);
-	test_content(runner, CMARK_NODE_STRING,        0);
+	test_content(runner, CMARK_NODE_TEXT,	       0);
 	test_content(runner, CMARK_NODE_SOFTBREAK,     0);
 	test_content(runner, CMARK_NODE_LINEBREAK,     0);
 	test_content(runner, CMARK_NODE_INLINE_CODE,   0);

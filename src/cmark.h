@@ -27,7 +27,7 @@ typedef enum {
     CMARK_NODE_LAST_BLOCK  = CMARK_NODE_REFERENCE_DEF,
 
     // Inline
-    CMARK_NODE_STRING,
+    CMARK_NODE_TEXT,
     CMARK_NODE_SOFTBREAK,
     CMARK_NODE_LINEBREAK,
     CMARK_NODE_INLINE_CODE,
@@ -37,7 +37,7 @@ typedef enum {
     CMARK_NODE_LINK,
     CMARK_NODE_IMAGE,
 
-    CMARK_NODE_FIRST_INLINE = CMARK_NODE_STRING,
+    CMARK_NODE_FIRST_INLINE = CMARK_NODE_TEXT,
     CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
 } cmark_node_type;
 
@@ -204,7 +204,7 @@ char *cmark_markdown_to_html(const char *text, int len);
   #define NODE_HEADER		    CMARK_NODE_HEADER
   #define NODE_HRULE                CMARK_NODE_HRULE
   #define NODE_REFERENCE_DEF        CMARK_NODE_REFERENCE_DEF
-  #define NODE_STRING               CMARK_NODE_STRING
+  #define NODE_TEXT                 CMARK_NODE_TEXT
   #define NODE_SOFTBREAK            CMARK_NODE_SOFTBREAK
   #define NODE_LINEBREAK            CMARK_NODE_LINEBREAK
   #define NODE_INLINE_CODE          CMARK_NODE_INLINE_CODE

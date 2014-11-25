@@ -149,7 +149,7 @@ var parseBackticks = function(inlines) {
     }
     // If we got here, we didn't match a closing backtick sequence.
     this.pos = afterOpenTicks;
-    inlines.push({ t: 'Str', c: ticks });
+    inlines.push({ t: 'Text', c: ticks });
     return true;
 };
 
@@ -165,10 +165,10 @@ var parseBackslash = function(inlines) {
             inlines.push({ t: 'Hardbreak' });
         } else if (reEscapable.test(subj.charAt(pos + 1))) {
             this.pos = this.pos + 2;
-            inlines.push({ t: 'Str', c: subj.charAt(pos + 1) });
+            inlines.push({ t: 'Text', c: subj.charAt(pos + 1) });
         } else {
             this.pos++;
-            inlines.push({t: 'Str', c: '\\'});
+            inlines.push({t: 'Text', c: '\\'});
         }
         return true;
     } else {
@@ -184,14 +184,14 @@ var parseAutolink = function(inlines) {
         dest = m.slice(1,-1);
         inlines.push(
                 {t: 'Link',
-                 label: [{ t: 'Str', c: dest }],
+                 label: [{ t: 'Text', c: dest }],
                  destination: 'mailto:' + encodeURI(unescape(dest)) });
         return true;
     } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
         dest = m.slice(1,-1);
         inlines.push({
                   t: 'Link',
-                  label: [{ t: 'Str', c: dest }],
+                  label: [{ t: 'Text', c: dest }],
                   destination: encodeURI(unescape(dest)) });
         return true;
     } else {
@@ -256,7 +256,7 @@ var Strong = function(ils) {
 };
 
 var Str = function(s) {
-    return {t: 'Str', c: s};
+    return {t: 'Text', c: s};
 };
 
 // Attempt to parse emphasis or strong emphasis.
@@ -638,7 +638,7 @@ var parseCloseBracket = function(inlines) {
 var parseEntity = function(inlines) {
     var m;
     if ((m = this.match(reEntityHere))) {
-        inlines.push({ t: 'Str', c: entityToChar(m) });
+        inlines.push({ t: 'Text', c: entityToChar(m) });
         return true;
     } else {
         return false;
@@ -650,7 +650,7 @@ var parseEntity = function(inlines) {
 var parseString = function(inlines) {
     var m;
     if ((m = this.match(reMain))) {
-        inlines.push({ t: 'Str', c: m });
+        inlines.push({ t: 'Text', c: m });
         return true;
     } else {
         return false;
@@ -681,7 +681,7 @@ var parseImage = function(inlines) {
             inlines[inlines.length - 1].t = 'Image';
             return true;
         } else {
-            inlines.push({ t: 'Str', c: '!' });
+            inlines.push({ t: 'Text', c: '!' });
             return true;
         }
     } else {
@@ -797,7 +797,7 @@ var parseInline = function(inlines) {
     }
     if (!res) {
         this.pos += 1;
-        inlines.push({t: 'Str', c: fromCodePoint(c)});
+        inlines.push({t: 'Text', c: fromCodePoint(c)});
     }
 
     return true;

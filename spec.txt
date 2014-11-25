@@ -6755,10 +6755,10 @@ line break or as a space.
 A renderer may also provide an option to render soft line breaks
 as hard line breaks.
 
-## Strings
+## Textual content
 
 Any characters not given an interpretation by the above rules will
-be parsed as string content.
+be parsed as plain textual content.
 
 .
 hello $.;'there
