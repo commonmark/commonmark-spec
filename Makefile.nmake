@@ -33,7 +33,7 @@ man\man1\cmark.1: man\cmark.1.md
 	pandoc $? -o $@ -s -t man
 
 test: $(SPEC) all
-	@pushd $(BUILDDIR) && $(MAKE) test ARGS="-V" && popd
+	@pushd $(BUILDDIR) && $(MAKE) /nologo test ARGS="-V" && popd
 
 distclean: clean
 	del /q src\scanners.c 2> nul
