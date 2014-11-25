@@ -2,142 +2,144 @@
 #include <stdio.h>
 #include <string.h>
 #include "cmark.h"
+#include "buffer.h"
 #include "node.h"
 
 #define INDENT 2
 
-static void print_str(const unsigned char *s, int len)
+static void print_str(strbuf* buffer, const unsigned char *s, int len)
 {
 	int i;
 
 	if (len < 0)
 		len = strlen((char *)s);
 
-	putchar('"');
+	strbuf_putc(buffer, '"');
 	for (i = 0; i < len; ++i) {
 		unsigned char c = s[i];
 
 		switch (c) {
 		case '\n':
-			printf("\\n");
+			strbuf_printf(buffer, "\\n");
 			break;
 		case '"':
-			printf("\\\"");
+			strbuf_printf(buffer, "\\\"");
 			break;
 		case '\\':
-			printf("\\\\");
+			strbuf_printf(buffer, "\\\\");
 			break;
 		default:
-			putchar((int)c);
+			strbuf_putc(buffer, (int)c);
 		}
 	}
-	putchar('"');
+	strbuf_putc(buffer, '"');
 }
 
 // Prettyprint an inline list, for debugging.
-static void print_nodes(cmark_node* node, int indent)
+static void render_nodes(strbuf* buffer, cmark_node* node, int indent)
 {
 	int i;
 	cmark_list *data;
 
 	while(node != NULL) {
 		for (i=0; i < indent; i++) {
-			putchar(' ');
+			strbuf_putc(buffer, ' ');
 		}
 		switch(node->type) {
 		case NODE_DOCUMENT:
-			print_nodes(node->first_child, 0);
+			render_nodes(buffer, node->first_child, 0);
 			break;
 		case NODE_BLOCK_QUOTE:
-			printf("block_quote\n");
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "block_quote\n");
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_LIST_ITEM:
-			printf("list_item\n");
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "list_item\n");
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_LIST:
 			data = &(node->as.list);
 			if (data->list_type == CMARK_ORDERED_LIST) {
-				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
+				strbuf_printf(buffer, "list (type=ordered tight=%s start=%d delim=%s)\n",
 				       (data->tight ? "true" : "false"),
 				       data->start,
 				       (data->delimiter == CMARK_PAREN_DELIM ? "parens" : "period"));
 			} else {
-				printf("list (type=bullet tight=%s bullet_char=%c)\n",
+				strbuf_printf(buffer, "list (type=bullet tight=%s bullet_char=%c)\n",
 				       (data->tight ? "true" : "false"),
 				       data->bullet_char);
 			}
-			print_nodes(node->first_child, indent + INDENT);
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_HEADER:
-			printf("setext_header (level=%d)\n", node->as.header.level);
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "setext_header (level=%d)\n", node->as.header.level);
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_PARAGRAPH:
-			printf("paragraph\n");
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "paragraph\n");
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_HRULE:
-			printf("hrule\n");
+			strbuf_printf(buffer, "hrule\n");
 			break;
 		case NODE_CODE_BLOCK:
-			printf("code block info=");
-			print_str(node->as.code.info.ptr, -1);
-			putchar(' ');
-			print_str(node->string_content.ptr, -1);
-			putchar('\n');
+			strbuf_printf(buffer, "code block info=");
+			print_str(buffer, node->as.code.info.ptr, -1);
+			strbuf_putc(buffer, ' ');
+			print_str(buffer, node->string_content.ptr, -1);
+			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_HTML:
-			printf("html_block ");
-			print_str(node->string_content.ptr, -1);
-			putchar('\n');
+			strbuf_printf(buffer, "html_block ");
+			print_str(buffer, node->string_content.ptr, -1);
+			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_REFERENCE_DEF:
-			printf("reference_def\n");
+			// skip
+			// strbuf_printf(buffer, "reference_def\n");
 			break;
 		case NODE_TEXT:
-			printf("text ");
-			print_str(node->as.literal.data, node->as.literal.len);
-			putchar('\n');
+			strbuf_printf(buffer, "text ");
+			print_str(buffer, node->as.literal.data, node->as.literal.len);
+			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_LINEBREAK:
-			printf("linebreak\n");
+			strbuf_printf(buffer, "linebreak\n");
 			break;
 		case NODE_SOFTBREAK:
-			printf("softbreak\n");
+			strbuf_printf(buffer, "softbreak\n");
 			break;
 		case NODE_INLINE_CODE:
-			printf("code ");
-			print_str(node->as.literal.data, node->as.literal.len);
-			putchar('\n');
+			strbuf_printf(buffer, "code ");
+			print_str(buffer, node->as.literal.data, node->as.literal.len);
+			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_INLINE_HTML:
-			printf("html ");
-			print_str(node->as.literal.data, node->as.literal.len);
-			putchar('\n');
+			strbuf_printf(buffer, "html ");
+			print_str(buffer, node->as.literal.data, node->as.literal.len);
+			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_LINK:
 		case NODE_IMAGE:
-			printf("%s url=", node->type == NODE_LINK ? "link" : "image");
+			strbuf_printf(buffer, "%s url=", node->type == NODE_LINK ? "link" : "image");
 
 			if (node->as.link.url)
-				print_str(node->as.link.url, -1);
+				print_str(buffer, node->as.link.url, -1);
 
 			if (node->as.link.title) {
-				printf(" title=");
-				print_str(node->as.link.title, -1);
+				strbuf_printf(buffer, " title=");
+				print_str(buffer, node->as.link.title, -1);
 			}
-			putchar('\n');
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_putc(buffer, '\n');
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_STRONG:
-			printf("strong\n");
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "strong\n");
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		case NODE_EMPH:
-			printf("emph\n");
-			print_nodes(node->first_child, indent + INDENT);
+			strbuf_printf(buffer, "emph\n");
+			render_nodes(buffer, node->first_child, indent + INDENT);
 			break;
 		default:
 			break;
@@ -148,5 +150,7 @@ static void print_nodes(cmark_node* node, int indent)
 
 void cmark_debug_print(cmark_node *root)
 {
-	print_nodes(root, 0);
+	strbuf buffer = GH_BUF_INIT;
+	render_nodes(&buffer, root, 0);
+	printf("%s", buffer.ptr);
 }
