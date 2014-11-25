@@ -13,6 +13,7 @@ ZIPARCHIVE?=cmark-$(SPECVERSION).zip
 FUZZCHARS?=2000000  # for fuzztest
 BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
+ALLTESTS=alltests.md
 NUMRUNS?=10
 PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
@@ -106,8 +107,11 @@ testziparchive: $(ZIPARCHIVE)
 	cd $(PKGDIR); \
 	mkdir build && cd build && cmake .. && make && ctest -V
 
-leakcheck: $(PROG)
-	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
+$(ALLTESTS): spec.txt
+	python runtests.py --spec $< --dump-tests | python -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print "\n".join([test["markdown"] for test in tests]).encode("utf-8")' > $@
+
+leakcheck: $(ALLTESTS) $(PROG)
+	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
 
 fuzztest:
 	{ for i in `seq 1 10`; do \
@@ -141,7 +145,7 @@ distclean: clean
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
-	-rm -rf $(BENCHFILE) progit
+	-rm -rf $(BENCHFILE) $(ALLTESTS) progit
 
 ### JavaScript ###
 
