@@ -34,7 +34,7 @@ if __name__ == "__main__":
             default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
 
-if not args.program:
+if not (args.program or args.dump_tests or args.debug_normalization):
     sysname = platform.system()
     libname = "libcmark"
     if sysname == 'Darwin':
