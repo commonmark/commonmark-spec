@@ -3,7 +3,8 @@
 #include <string.h>
 #include "cmark.h"
 #include "node.h"
-#include "debug.h"
+
+#define INDENT 2
 
 static void print_str(const unsigned char *s, int len)
 {
@@ -34,91 +35,29 @@ static void print_str(const unsigned char *s, int len)
 }
 
 // Prettyprint an inline list, for debugging.
-static void print_inlines(cmark_node* ils, int indent)
+static void print_nodes(cmark_node* node, int indent)
 {
 	int i;
-
-	while(ils != NULL) {
-		for (i=0; i < indent; i++) {
-			putchar(' ');
-		}
-		switch(ils->type) {
-		case NODE_TEXT:
-			printf("text ");
-			print_str(ils->as.literal.data, ils->as.literal.len);
-			putchar('\n');
-			break;
-		case NODE_LINEBREAK:
-			printf("linebreak\n");
-			break;
-		case NODE_SOFTBREAK:
-			printf("softbreak\n");
-			break;
-		case NODE_INLINE_CODE:
-			printf("code ");
-			print_str(ils->as.literal.data, ils->as.literal.len);
-			putchar('\n');
-			break;
-		case NODE_INLINE_HTML:
-			printf("html ");
-			print_str(ils->as.literal.data, ils->as.literal.len);
-			putchar('\n');
-			break;
-		case NODE_LINK:
-		case NODE_IMAGE:
-			printf("%s url=", ils->type == NODE_LINK ? "link" : "image");
-
-			if (ils->as.link.url)
-				print_str(ils->as.link.url, -1);
-
-			if (ils->as.link.title) {
-				printf(" title=");
-				print_str(ils->as.link.title, -1);
-			}
-			putchar('\n');
-			print_inlines(ils->first_child, indent + 2);
-			break;
-		case NODE_STRONG:
-			printf("strong\n");
-			print_inlines(ils->first_child, indent + 2);
-			break;
-		case NODE_EMPH:
-			printf("emph\n");
-			print_inlines(ils->first_child, indent + 2);
-			break;
-		default:
-			break;
-		}
-		ils = ils->next;
-	}
-}
-
-// Functions to pretty-print inline and cmark_node lists, for debugging.
-// Prettyprint an inline list, for debugging.
-static void print_blocks(cmark_node* b, int indent)
-{
 	cmark_list *data;
-	int i;
 
-	while(b != NULL) {
+	while(node != NULL) {
 		for (i=0; i < indent; i++) {
 			putchar(' ');
 		}
-
-		switch(b->type) {
+		switch(node->type) {
 		case NODE_DOCUMENT:
-			print_blocks(b->first_child, 0);
+			print_nodes(node->first_child, 0);
 			break;
 		case NODE_BLOCK_QUOTE:
 			printf("block_quote\n");
-			print_blocks(b->first_child, indent + 2);
+			print_nodes(node->first_child, indent + INDENT);
 			break;
 		case NODE_LIST_ITEM:
 			printf("list_item\n");
-			print_blocks(b->first_child, indent + 2);
+			print_nodes(node->first_child, indent + INDENT);
 			break;
 		case NODE_LIST:
-			data = &(b->as.list);
+			data = &(node->as.list);
 			if (data->list_type == CMARK_ORDERED_LIST) {
 				printf("list (type=ordered tight=%s start=%d delim=%s)\n",
 				       (data->tight ? "true" : "false"),
@@ -129,43 +68,85 @@ static void print_blocks(cmark_node* b, int indent)
 				       (data->tight ? "true" : "false"),
 				       data->bullet_char);
 			}
-			print_blocks(b->first_child, indent + 2);
+			print_nodes(node->first_child, indent + INDENT);
 			break;
 		case NODE_HEADER:
-			printf("setext_header (level=%d)\n", b->as.header.level);
-			print_inlines(b->first_child, indent + 2);
+			printf("setext_header (level=%d)\n", node->as.header.level);
+			print_nodes(node->first_child, indent + INDENT);
 			break;
 		case NODE_PARAGRAPH:
 			printf("paragraph\n");
-			print_inlines(b->first_child, indent + 2);
+			print_nodes(node->first_child, indent + INDENT);
 			break;
 		case NODE_HRULE:
 			printf("hrule\n");
 			break;
 		case NODE_CODE_BLOCK:
 			printf("code block info=");
-			print_str(b->as.code.info.ptr, -1);
+			print_str(node->as.code.info.ptr, -1);
 			putchar(' ');
-			print_str(b->string_content.ptr, -1);
+			print_str(node->string_content.ptr, -1);
 			putchar('\n');
 			break;
 		case NODE_HTML:
 			printf("html_block ");
-			print_str(b->string_content.ptr, -1);
+			print_str(node->string_content.ptr, -1);
 			putchar('\n');
 			break;
 		case NODE_REFERENCE_DEF:
 			printf("reference_def\n");
 			break;
+		case NODE_TEXT:
+			printf("text ");
+			print_str(node->as.literal.data, node->as.literal.len);
+			putchar('\n');
+			break;
+		case NODE_LINEBREAK:
+			printf("linebreak\n");
+			break;
+		case NODE_SOFTBREAK:
+			printf("softbreak\n");
+			break;
+		case NODE_INLINE_CODE:
+			printf("code ");
+			print_str(node->as.literal.data, node->as.literal.len);
+			putchar('\n');
+			break;
+		case NODE_INLINE_HTML:
+			printf("html ");
+			print_str(node->as.literal.data, node->as.literal.len);
+			putchar('\n');
+			break;
+		case NODE_LINK:
+		case NODE_IMAGE:
+			printf("%s url=", node->type == NODE_LINK ? "link" : "image");
+
+			if (node->as.link.url)
+				print_str(node->as.link.url, -1);
+
+			if (node->as.link.title) {
+				printf(" title=");
+				print_str(node->as.link.title, -1);
+			}
+			putchar('\n');
+			print_nodes(node->first_child, indent + INDENT);
+			break;
+		case NODE_STRONG:
+			printf("strong\n");
+			print_nodes(node->first_child, indent + INDENT);
+			break;
+		case NODE_EMPH:
+			printf("emph\n");
+			print_nodes(node->first_child, indent + INDENT);
+			break;
 		default:
-			printf("# NOT IMPLEMENTED (%d)\n", b->type);
 			break;
 		}
-		b = b->next;
+		node = node->next;
 	}
 }
 
 void cmark_debug_print(cmark_node *root)
 {
-	print_blocks(root, 0);
+	print_nodes(root, 0);
 }
