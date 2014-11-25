@@ -7,3 +7,5 @@ before_install:
  - sudo apt-get install -qq re2c pandoc valgrind
 script:
  - make testtarball
+ - export PROG=`ls cmark-*.*/build/src/cmark`
+ - make leakcheck

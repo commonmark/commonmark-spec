@@ -107,7 +107,7 @@ testziparchive: $(ZIPARCHIVE)
 	mkdir build && cd build && cmake .. && make && ctest -V
 
 leakcheck: $(PROG)
-	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG)
+	cat leakcheck.md | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
 
 fuzztest:
 	{ for i in `seq 1 10`; do \
