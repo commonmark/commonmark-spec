@@ -133,7 +133,7 @@ bench: $(BENCHFILE)
 	{ sudo renice 99 $$$$; \
 	  for x in `seq 1 $(NUMRUNS)` ; do \
 	  /usr/bin/env time -p ${PROG} </dev/null >/dev/null ; \
-	  /usr/bin/env time -p ${PROG} $< >/dev/null ; \
+	  /usr/bin/env time -p ${PROG} <$< >/dev/null ; \
 		  done \
 	} 2>&1  | grep 'real' | awk '{print $$2}' | python3 'bench/stats.py'
 
