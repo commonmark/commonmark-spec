@@ -436,7 +436,7 @@ cmark_node_unlink(cmark_node *node) {
 int
 cmark_node_insert_before(cmark_node *node, cmark_node *sibling)
 {
-	if (!S_can_contain(node->parent, sibling)) {
+	if (!node->parent || !S_can_contain(node->parent, sibling)) {
 		return 0;
 	}
 
@@ -467,7 +467,7 @@ cmark_node_insert_before(cmark_node *node, cmark_node *sibling)
 int
 cmark_node_insert_after(cmark_node *node, cmark_node *sibling)
 {
-	if (!S_can_contain(node->parent, sibling)) {
+	if (!node->parent || !S_can_contain(node->parent, sibling)) {
 		return 0;
 	}
 

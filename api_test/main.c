@@ -298,6 +298,10 @@ create_tree(test_batch_runner *runner)
 	cmark_node *doc = cmark_node_new(CMARK_NODE_DOCUMENT);
 
 	cmark_node *p = cmark_node_new(CMARK_NODE_PARAGRAPH);
+	OK(runner, !cmark_node_insert_before(doc, p),
+	   "insert before root fails");
+	OK(runner, !cmark_node_insert_after(doc, p),
+	   "insert after root fails");
 	OK(runner, cmark_node_append_child(doc, p), "append1");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append1 consistent");
 	OK(runner, cmark_node_parent(p) == doc, "node_parent");
