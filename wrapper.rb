@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 require 'ffi'
 
 module CMark
@@ -7,9 +8,8 @@ module CMark
 end
 
 def markdown_to_html(s)
-  len = s.bytes.length
+  len = s.bytesize
   CMark::cmark_markdown_to_html(s, len)
 end
 
-print markdown_to_html(STDIN.read());
-
+STDOUT.write(markdown_to_html(ARGF.read()))
