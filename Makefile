@@ -60,7 +60,7 @@ archive: spec.html $(BUILDDIR)
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
-	cp -a README.md LICENSE spec.txt runtests.py $(PKGDIR)/; \
+	cp -a README.md LICENSE spec.txt spec_tests.py $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
@@ -108,7 +108,7 @@ testziparchive: $(ZIPARCHIVE)
 	mkdir build && cd build && cmake .. && make && ctest -V
 
 $(ALLTESTS): spec.txt
-	python runtests.py --spec $< --dump-tests | python -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print "\n".join([test["markdown"] for test in tests]).encode("utf-8")' > $@
+	python spec_tests.py --spec $< --dump-tests | python -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print "\n".join([test["markdown"] for test in tests]).encode("utf-8")' > $@
 
 leakcheck: $(ALLTESTS) $(PROG)
 	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
