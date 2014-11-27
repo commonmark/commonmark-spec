@@ -55,7 +55,7 @@ if not (args.program or args.dump_tests or args.debug_normalization):
 
 def md2html(text, prog):
     if prog:
-        p1 = Popen([prog], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
         [result, err] = p1.communicate(input=text)
         return [p1.returncode, result, err]
     else:
