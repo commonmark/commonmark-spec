@@ -60,7 +60,7 @@ archive: spec.html $(BUILDDIR)
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
-	cp -a README.md LICENSE spec.txt spec_tests.py $(PKGDIR)/; \
+	cp -a README.md LICENSE spec.txt spec_tests.py pathological_tests.py $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
