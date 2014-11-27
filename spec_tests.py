@@ -293,6 +293,7 @@ def do_tests(specfile, prog, pattern, normalize, dump_tests):
 
     if dump_tests:
         print json.dumps(tests_json, ensure_ascii=False, indent=2)
+        return True
     else:
         print "%d passed, %d failed, %d errored" % (passed, failed, errored)
         return (failed == 0 and errored == 0)
