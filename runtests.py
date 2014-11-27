@@ -64,7 +64,7 @@ def md2html(text, prog):
 # Normalization code, adapted from
 # https://github.com/karlcow/markdown-testsuite/
 significant_attrs = ["alt", "href", "src", "title"]
-normalize_whitespace_re = re.compile('\s+')
+whitespace_re = re.compile('/s+/')
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
@@ -77,7 +77,7 @@ class MyHTMLParser(HTMLParser):
         after_block_tag = after_tag and self.is_block_tag(self.last_tag)
         if after_tag and self.last_tag == "br":
             data = data.lstrip('\n')
-        data = normalize_whitespace_re.sub(' ', data)
+        data = whitespace_re.sub(' ', data)
         if after_block_tag and not self.in_pre:
             if self.last == "starttag":
                 data = data.lstrip()
@@ -290,6 +290,7 @@ def do_tests(specfile, prog, pattern, normalize, dump_tests):
                 markdown_lines.append(line)
             elif state == 2:
                 html_lines.append(line)
+
     if dump_tests:
         print json.dumps(tests_json, ensure_ascii=False, indent=2)
     else:
