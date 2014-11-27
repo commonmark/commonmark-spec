@@ -264,7 +264,7 @@ def do_tests(specfile, prog, pattern, normalize, dump_tests):
                     if active:
                         if dump_tests:
                             tests_json.append({
-                                 "markdown":''.join(markdown_lines),
+                                 "markdown":''.join(markdown_lines).replace('→',"\t"),
                                  "html":''.join(html_lines),
                                  "example": example_number,
                                  "start_line": start_line,
