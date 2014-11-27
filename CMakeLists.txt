@@ -23,7 +23,7 @@ enable_testing()
 
 # To get verbose output: cmake --build build --target "test" -- ARGS='-V'
 add_test(spectest_library
-   python "${CMAKE_SOURCE_DIR}/runtests.py" "--no-normalize" "--spec"
+   python "${CMAKE_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec"
    "${CMAKE_SOURCE_DIR}/spec.txt" "--library-dir" "${CMAKE_BINARY_DIR}/src"
 )
 add_test(pathological_tests_library
@@ -38,7 +38,7 @@ if (WIN32)
   )
 endif(WIN32)
 add_test(spectest_executable
-   python "${CMAKE_SOURCE_DIR}/runtests.py" "--no-normalize" "--spec" "${CMAKE_SOURCE_DIR}/spec.txt" "--program" "${CMAKE_BINARY_DIR}/src/cmark"
+   python "${CMAKE_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec" "${CMAKE_SOURCE_DIR}/spec.txt" "--program" "${CMAKE_BINARY_DIR}/src/cmark"
 )
 
 if(NOT CMAKE_BUILD_TYPE)
