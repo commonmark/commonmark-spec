@@ -26,6 +26,10 @@ add_test(spectest_library
    python "${CMAKE_SOURCE_DIR}/runtests.py" "--no-normalize" "--spec"
    "${CMAKE_SOURCE_DIR}/spec.txt" "--library-dir" "${CMAKE_BINARY_DIR}/src"
 )
+add_test(pathological_tests_library
+   python "${CMAKE_SOURCE_DIR}/pathological_tests.py"
+   "--library-dir" "${CMAKE_BINARY_DIR}/src"
+)
 add_test(NAME api_test COMMAND api_test)
 if (WIN32)
   file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR}/src WIN_DLL_DIR)
