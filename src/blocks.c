@@ -182,7 +182,6 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 
 	switch (b->type) {
 		case NODE_PARAGRAPH:
-			pos = 0;
 			while (strbuf_at(&b->string_content, 0) == '[' &&
 					(pos = cmark_parse_reference_inline(&b->string_content, parser->refmap))) {
 
