@@ -302,7 +302,7 @@ static void process_inlines(cmark_node* cur, cmark_reference_map *refmap)
 
 		if (cur->first_child) {
 			newstack = (block_stack*)malloc(sizeof(block_stack));
-			if (newstack == NULL) return;
+			if (newstack == NULL) break;
 			newstack->previous = stack;
 			stack = newstack;
 			stack->next_sibling = cur->next;
@@ -840,4 +840,3 @@ cmark_node *cmark_finish(cmark_doc_parser *parser)
 #endif
 	return parser->root;
 }
-
