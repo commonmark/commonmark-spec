@@ -136,40 +136,39 @@ void cmark_strbuf_normalize_whitespace(cmark_strbuf *s);
 CMARK_EXPORT
 void cmark_strbuf_unescape(cmark_strbuf *s);
 
-#ifndef CMARK_NO_SHORT_NAMES
-  #define strbuf                        cmark_strbuf
-  #define strbuf__initbuf               cmark_strbuf__initbuf
-  #define strbuf__oom                   cmark_strbuf__oom
-  #define GH_BUF_INIT                   CMARK_GH_BUF_INIT
-  #define strbuf_init                   cmark_strbuf_init
-  #define strbuf_try_grow               cmark_strbuf_try_grow
-  #define strbuf_grow                   cmark_strbuf_grow
-  #define strbuf_free                   cmark_strbuf_free
-  #define strbuf_swap                   cmark_strbuf_swap
-  #define strbuf_oom                    cmark_strbuf_oom
-  #define strbuf_len                    cmark_strbuf_len
-  #define strbuf_cmp                    cmark_strbuf_cmp
-  #define strbuf_attach                 cmark_strbuf_attach
-  #define strbuf_detach                 cmark_strbuf_detach
-  #define strbuf_copy_cstr              cmark_strbuf_copy_cstr
-  #define strbuf_at                     cmark_strbuf_at
-  #define strbuf_set                    cmark_strbuf_set
-  #define strbuf_sets                   cmark_strbuf_sets
-  #define strbuf_putc                   cmark_strbuf_putc
-  #define strbuf_put                    cmark_strbuf_put
-  #define strbuf_puts                   cmark_strbuf_puts
-  #define strbuf_printf                 cmark_strbuf_printf
-  #define strbuf_vprintf                cmark_strbuf_vprintf
-  #define strbuf_clear                  cmark_strbuf_clear
-  #define strbuf_strchr                 cmark_strbuf_strchr
-  #define strbuf_strrchr                cmark_strbuf_strrchr
-  #define strbuf_drop                   cmark_strbuf_drop
-  #define strbuf_truncate               cmark_strbuf_truncate
-  #define strbuf_rtrim                  cmark_strbuf_rtrim
-  #define strbuf_trim                   cmark_strbuf_trim
-  #define strbuf_normalize_whitespace   cmark_strbuf_normalize_whitespace
-  #define strbuf_unescape               cmark_strbuf_unescape
-#endif
+// Convenience macros
+#define strbuf                        cmark_strbuf
+#define strbuf__initbuf               cmark_strbuf__initbuf
+#define strbuf__oom                   cmark_strbuf__oom
+#define GH_BUF_INIT                   CMARK_GH_BUF_INIT
+#define strbuf_init                   cmark_strbuf_init
+#define strbuf_try_grow               cmark_strbuf_try_grow
+#define strbuf_grow                   cmark_strbuf_grow
+#define strbuf_free                   cmark_strbuf_free
+#define strbuf_swap                   cmark_strbuf_swap
+#define strbuf_oom                    cmark_strbuf_oom
+#define strbuf_len                    cmark_strbuf_len
+#define strbuf_cmp                    cmark_strbuf_cmp
+#define strbuf_attach                 cmark_strbuf_attach
+#define strbuf_detach                 cmark_strbuf_detach
+#define strbuf_copy_cstr              cmark_strbuf_copy_cstr
+#define strbuf_at                     cmark_strbuf_at
+#define strbuf_set                    cmark_strbuf_set
+#define strbuf_sets                   cmark_strbuf_sets
+#define strbuf_putc                   cmark_strbuf_putc
+#define strbuf_put                    cmark_strbuf_put
+#define strbuf_puts                   cmark_strbuf_puts
+#define strbuf_printf                 cmark_strbuf_printf
+#define strbuf_vprintf                cmark_strbuf_vprintf
+#define strbuf_clear                  cmark_strbuf_clear
+#define strbuf_strchr                 cmark_strbuf_strchr
+#define strbuf_strrchr                cmark_strbuf_strrchr
+#define strbuf_drop                   cmark_strbuf_drop
+#define strbuf_truncate               cmark_strbuf_truncate
+#define strbuf_rtrim                  cmark_strbuf_rtrim
+#define strbuf_trim                   cmark_strbuf_trim
+#define strbuf_normalize_whitespace   cmark_strbuf_normalize_whitespace
+#define strbuf_unescape               cmark_strbuf_unescape
 
 #ifdef __cplusplus
 }

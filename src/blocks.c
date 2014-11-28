@@ -49,7 +49,7 @@ cmark_doc_parser *cmark_new_doc_parser()
 	strbuf *line = (strbuf*)malloc(sizeof(strbuf));
 	cmark_strbuf_init(line, 256);
 
-	parser->refmap = reference_map_new();
+	parser->refmap = cmark_reference_map_new();
 	parser->root = document;
 	parser->current = document;
 	parser->line_number = 0;
@@ -184,7 +184,7 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 		case NODE_PARAGRAPH:
 			pos = 0;
 			while (strbuf_at(&b->string_content, 0) == '[' &&
-					(pos = parse_reference_inline(&b->string_content, parser->refmap))) {
+					(pos = cmark_parse_reference_inline(&b->string_content, parser->refmap))) {
 
 				strbuf_drop(&b->string_content, pos);
 			}
@@ -285,7 +285,7 @@ typedef struct BlockStack {
 
 // Walk through cmark_node and all children, recursively, parsing
 // string content into inline content where appropriate.
-static void process_inlines(cmark_node* cur, reference_map *refmap)
+static void process_inlines(cmark_node* cur, cmark_reference_map *refmap)
 {
 	block_stack* stack = NULL;
 	block_stack* newstack = NULL;
@@ -294,7 +294,7 @@ static void process_inlines(cmark_node* cur, reference_map *refmap)
 		switch (cur->type) {
 			case NODE_PARAGRAPH:
 			case NODE_HEADER:
-				parse_inlines(cur, refmap);
+				cmark_parse_inlines(cur, refmap);
 				break;
 
 			default:
