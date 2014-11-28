@@ -86,8 +86,8 @@ extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk
 	if(ref != NULL) {
 		ref->label = reflabel;
 		ref->hash = refhash(ref->label);
-		ref->url = clean_url(url);
-		ref->title = clean_title(title);
+		ref->url = cmark_clean_url(url);
+		ref->title = cmark_clean_title(title);
 		ref->next = NULL;
 
 		add_reference(map, ref);

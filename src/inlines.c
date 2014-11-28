@@ -514,7 +514,7 @@ static cmark_node *make_str_with_entities(chunk *content)
 
 // Clean a URL: remove surrounding whitespace and surrounding <>,
 // and remove \ that escape punctuation.
-unsigned char *clean_url(chunk *url)
+unsigned char *cmark_clean_url(chunk *url)
 {
 	strbuf buf = GH_BUF_INIT;
 
@@ -533,7 +533,7 @@ unsigned char *clean_url(chunk *url)
 	return strbuf_detach(&buf);
 }
 
-unsigned char *clean_title(chunk *title)
+unsigned char *cmark_clean_title(chunk *title)
 {
        strbuf buf = GH_BUF_INIT;
        unsigned char first, last;
@@ -703,8 +703,8 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 
 			urlchunk = chunk_dup(&subj->input, starturl, endurl - starturl);
 			titlechunk = chunk_dup(&subj->input, starttitle, endtitle - starttitle);
-			url = clean_url(&urlchunk);
-			title = clean_title(&titlechunk);
+			url = cmark_clean_url(&urlchunk);
+			title = cmark_clean_title(&titlechunk);
 			chunk_free(&urlchunk);
 			chunk_free(&titlechunk);
 			goto match;
@@ -933,7 +933,7 @@ static void spnl(subject* subj)
 // Modify refmap if a reference is encountered.
 // Return 0 if no reference found, otherwise position of subject
 // after reference is parsed.
-int parse_reference_inline(strbuf *input, reference_map *refmap)
+int cmark_parse_reference_inline(strbuf *input, reference_map *refmap)
 {
 	subject subj;
 

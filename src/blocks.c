@@ -184,7 +184,7 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 		case NODE_PARAGRAPH:
 			pos = 0;
 			while (strbuf_at(&b->string_content, 0) == '[' &&
-					(pos = parse_reference_inline(&b->string_content, parser->refmap))) {
+					(pos = cmark_parse_reference_inline(&b->string_content, parser->refmap))) {
 
 				strbuf_drop(&b->string_content, pos);
 			}
@@ -294,7 +294,7 @@ static void process_inlines(cmark_node* cur, reference_map *refmap)
 		switch (cur->type) {
 			case NODE_PARAGRAPH:
 			case NODE_HEADER:
-				parse_inlines(cur, refmap);
+				cmark_parse_inlines(cur, refmap);
 				break;
 
 			default:
