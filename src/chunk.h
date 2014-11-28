@@ -107,17 +107,16 @@ static inline cmark_chunk cmark_chunk_buf_detach(cmark_strbuf *buf)
 	return c;
 }
 
-#ifndef CMARK_NO_SHORT_NAMES
-  #define chunk             cmark_chunk
-  #define chunk_free        cmark_chunk_free
-  #define chunk_ltrim       cmark_chunk_ltrim
-  #define chunk_rtrim       cmark_chunk_rtrim
-  #define chunk_trim        cmark_chunk_trim
-  #define chunk_strchr      cmark_chunk_strchr
-  #define chunk_to_cstr     cmark_chunk_to_cstr
-  #define chunk_literal     cmark_chunk_literal
-  #define chunk_dup         cmark_chunk_dup
-  #define chunk_buf_detach  cmark_chunk_buf_detach
-#endif
+// Convenience macros
+#define chunk             cmark_chunk
+#define chunk_free        cmark_chunk_free
+#define chunk_ltrim       cmark_chunk_ltrim
+#define chunk_rtrim       cmark_chunk_rtrim
+#define chunk_trim        cmark_chunk_trim
+#define chunk_strchr      cmark_chunk_strchr
+#define chunk_to_cstr     cmark_chunk_to_cstr
+#define chunk_literal     cmark_chunk_literal
+#define chunk_dup         cmark_chunk_dup
+#define chunk_buf_detach  cmark_chunk_buf_detach
 
 #endif
