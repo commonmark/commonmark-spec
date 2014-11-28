@@ -218,20 +218,6 @@ char *cmark_markdown_to_html(const char *text, int len);
   #define ORDERED_LIST              CMARK_ORDERED_LIST
   #define PERIOD_DELIM              CMARK_PERIOD_DELIM
   #define PAREN_DELIM               CMARK_PAREN_DELIM
-  #define free_simple               cmark_free_simple
-  #define free_blocks               cmark_free_blocks
-  #define doc_parser                cmark_doc_parser
-  #define new_doc_parser            cmark_new_doc_parser
-  #define free_doc_parser           cmark_free_doc_parser
-  #define process_line              cmark_process_line
-  #define finish                    cmark_finish
-  #define block_next                cmark_block_next
-  #define block_previous            cmark_block_previous
-  #define block_parent              cmark_block_parent
-  #define block_children            cmark_block_children
-  #define block_delete              cmark_block_delete
-  #define block_insert_before       cmark_block_insert_before
-  #define block_insert_after        cmark_block_insert_after
 #endif
 
 #ifdef __cplusplus
