@@ -1,6 +1,10 @@
 #ifndef CMARK_API_TEST_HARNESS_H
 #define CMARK_API_TEST_HARNESS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
 	int test_num;
 	int num_passed;
@@ -29,6 +33,10 @@ test_ok(test_batch_runner *runner);
 
 void
 test_print_summary(test_batch_runner *runner);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

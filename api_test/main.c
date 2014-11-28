@@ -10,6 +10,9 @@
 
 #define UTF8_REPL "\xEF\xBF\xBD"
 
+void
+test_cplusplus(test_batch_runner *runner);
+
 static const cmark_node_type node_types[] = {
 	CMARK_NODE_DOCUMENT,
 	CMARK_NODE_BLOCK_QUOTE,
@@ -608,6 +611,7 @@ int main() {
 	parser(runner);
 	render_html(runner);
 	utf8(runner);
+	test_cplusplus(runner);
 
 	test_print_summary(runner);
 	retval =  test_ok(runner) ? 0 : 1;
