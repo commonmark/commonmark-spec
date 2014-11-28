@@ -1,4 +1,5 @@
 add_executable(api_test
+  cplusplus.cpp
   harness.c
   harness.h
   main.c
