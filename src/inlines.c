@@ -37,13 +37,14 @@ typedef struct DelimiterStack {
 typedef struct Subject {
 	chunk input;
 	int pos;
-	reference_map *refmap;
+	cmark_reference_map *refmap;
 	delimiter_stack *delimiters;
 } subject;
 
 static int parse_inline(subject* subj, cmark_node * parent);
 
-static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap);
+static void subject_from_buf(subject *e, strbuf *buffer,
+			     cmark_reference_map *refmap);
 static int subject_find_special_char(subject *subj);
 
 static unsigned char *cmark_clean_autolink(chunk *url, int is_email)
@@ -154,7 +155,8 @@ static unsigned char *bufdup(const unsigned char *buf)
 	return new_buf;
 }
 
-static void subject_from_buf(subject *e, strbuf *buffer, reference_map *refmap)
+static void subject_from_buf(subject *e, strbuf *buffer,
+			     cmark_reference_map *refmap)
 {
 	e->input.data = buffer->ptr;
 	e->input.len = buffer->size;
@@ -649,7 +651,7 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 	int starturl, endurl, starttitle, endtitle, endall;
 	int n;
 	int sps;
-	reference *ref;
+	cmark_reference *ref;
 	bool is_image = false;
 	chunk urlchunk, titlechunk;
 	unsigned char *url, *title;
@@ -731,7 +733,7 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 		subj->pos = initial_pos;
 	}
 
-	ref = reference_lookup(subj->refmap, &raw_label);
+	ref = cmark_reference_lookup(subj->refmap, &raw_label);
 	chunk_free(&raw_label);
 
 	if (ref != NULL) { // found
@@ -933,7 +935,7 @@ static void spnl(subject* subj)
 // Modify refmap if a reference is encountered.
 // Return 0 if no reference found, otherwise position of subject
 // after reference is parsed.
-int cmark_parse_reference_inline(strbuf *input, reference_map *refmap)
+int cmark_parse_reference_inline(strbuf *input, cmark_reference_map *refmap)
 {
 	subject subj;
 
@@ -988,6 +990,6 @@ int cmark_parse_reference_inline(strbuf *input, reference_map *refmap)
 		return 0;
 	}
 	// insert reference into refmap
-	reference_create(refmap, &lab, &url, &title);
+	cmark_reference_create(refmap, &lab, &url, &title);
 	return subj.pos;
 }

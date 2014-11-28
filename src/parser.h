@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 #include "node.h"
-#include "references.h"
 #include "buffer.h"
 
 #ifdef __cplusplus

@@ -16,7 +16,7 @@ refhash(const unsigned char *link_ref)
 	return hash;
 }
 
-static void reference_free(reference *ref)
+static void reference_free(cmark_reference *ref)
 {
 	if(ref != NULL) {
 		free(ref->label);
@@ -56,9 +56,9 @@ static unsigned char *normalize_reference(chunk *ref)
 	return result;
 }
 
-static void add_reference(reference_map *map, reference* ref)
+static void add_reference(cmark_reference_map *map, cmark_reference* ref)
 {
-	reference *t = ref->next = map->table[ref->hash % REFMAP_SIZE];
+	cmark_reference *t = ref->next = map->table[ref->hash % REFMAP_SIZE];
 
 	while (t) {
 		if (t->hash == ref->hash &&
@@ -73,16 +73,17 @@ static void add_reference(reference_map *map, reference* ref)
 	map->table[ref->hash % REFMAP_SIZE] = ref;
 }
 
-extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk *title)
+void cmark_reference_create(cmark_reference_map *map, chunk *label, chunk *url,
+			    chunk *title)
 {
-	reference *ref;
+	cmark_reference *ref;
 	unsigned char *reflabel = normalize_reference(label);
 
 	/* empty reference name, or composed from only whitespace */
 	if (reflabel == NULL)
 		return;
 
-	ref = (reference *)calloc(1, sizeof(*ref));
+	ref = (cmark_reference *)calloc(1, sizeof(*ref));
 	if(ref != NULL) {
 		ref->label = reflabel;
 		ref->hash = refhash(ref->label);
@@ -96,9 +97,9 @@ extern void reference_create(reference_map *map, chunk *label, chunk *url, chunk
 
 // Returns reference if refmap contains a reference with matching
 // label, otherwise NULL.
-reference* reference_lookup(reference_map *map, chunk *label)
+cmark_reference* cmark_reference_lookup(cmark_reference_map *map, chunk *label)
 {
-	reference *ref = NULL;
+	cmark_reference *ref = NULL;
 	unsigned char *norm;
 	unsigned int hash;
 
@@ -126,7 +127,7 @@ reference* reference_lookup(reference_map *map, chunk *label)
 	return ref;
 }
 
-void reference_map_free(reference_map *map)
+void cmark_reference_map_free(cmark_reference_map *map)
 {
 	unsigned int i;
 
@@ -134,8 +135,8 @@ void reference_map_free(reference_map *map)
 		return;
 
 	for (i = 0; i < REFMAP_SIZE; ++i) {
-		reference *ref = map->table[i];
-		reference *next;
+		cmark_reference *ref = map->table[i];
+		cmark_reference *next;
 
 		while (ref) {
 			next = ref->next;
@@ -147,7 +148,7 @@ void reference_map_free(reference_map *map)
 	free(map);
 }
 
-reference_map *reference_map_new(void)
+cmark_reference_map *cmark_reference_map_new(void)
 {
-	return (reference_map *)calloc(1, sizeof(reference_map));
+	return (cmark_reference_map *)calloc(1, sizeof(cmark_reference_map));
 }

@@ -2,7 +2,6 @@
 #include <assert.h>
 #include <stdio.h>
 #include "node.h"
-#include "references.h"
 #include "html/houdini.h"
 #include "cmark.h"
 #include "buffer.h"

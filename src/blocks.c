@@ -49,7 +49,7 @@ cmark_doc_parser *cmark_new_doc_parser()
 	strbuf *line = (strbuf*)malloc(sizeof(strbuf));
 	cmark_strbuf_init(line, 256);
 
-	parser->refmap = reference_map_new();
+	parser->refmap = cmark_reference_map_new();
 	parser->root = document;
 	parser->current = document;
 	parser->line_number = 0;
@@ -285,7 +285,7 @@ typedef struct BlockStack {
 
 // Walk through cmark_node and all children, recursively, parsing
 // string content into inline content where appropriate.
-static void process_inlines(cmark_node* cur, reference_map *refmap)
+static void process_inlines(cmark_node* cur, cmark_reference_map *refmap)
 {
 	block_stack* stack = NULL;
 	block_stack* newstack = NULL;
