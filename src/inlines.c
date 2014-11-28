@@ -294,13 +294,19 @@ static void print_delimiters(subject *subj)
 
 static void remove_delimiter(subject *subj, delimiter_stack *stack)
 {
-	if (stack->previous != NULL) {
-		stack->previous->next = stack->next;
-	}
+	if (stack == NULL) return;
 	if (stack->next == NULL) {
-		// top of stack
+		// top of stack:
+		assert(stack == subj->delimiters);
+		if (stack->previous != NULL) {
+			stack->previous->next = NULL;
+		}
 		subj->delimiters = stack->previous;
-	} else {
+	} else if (stack->previous == NULL) {
+		// bottom of stack, with something above it
+		stack->next->previous = NULL;
+	} else { // neither top nor bottom:
+		stack->previous->next = stack->next;
 		stack->next->previous = stack->previous;
 	}
 	free(stack);
