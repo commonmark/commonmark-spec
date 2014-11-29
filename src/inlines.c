@@ -450,8 +450,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 					if (tmp->next) {
 						tmp->next->prev = emph;
 					}
-					cmark_node_unlink(tmp);
-					cmark_free_nodes(tmp);
+					cmark_node_free(tmp);
 					// remove closer from stack
 					tempstack = closer->next;
 					remove_delimiter(subj, closer);

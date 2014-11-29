@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	end_timer("print_document");
 
 	start_timer();
-	cmark_free_nodes(document);
+	cmark_node_free(document);
 	end_timer("free_blocks");
 
 	free(files);

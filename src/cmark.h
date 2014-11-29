@@ -63,9 +63,6 @@ cmark_node_new(cmark_node_type type);
 CMARK_EXPORT void
 cmark_node_free(cmark_node *node);
 
-CMARK_EXPORT void
-cmark_free_nodes(cmark_node *e);
-
 // Tree traversal
 
 CMARK_EXPORT cmark_node*

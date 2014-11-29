@@ -32,11 +32,46 @@ cmark_node_new(cmark_node_type type) {
 	return node;
 }
 
+// Free a cmark_node list and any children.
+static
+void S_free_nodes(cmark_node *e)
+{
+	cmark_node *next;
+	while (e != NULL) {
+		strbuf_free(&e->string_content);
+		switch (e->type){
+		case NODE_CODE_BLOCK:
+			strbuf_free(&e->as.code.info);
+			break;
+		case NODE_TEXT:
+		case NODE_INLINE_HTML:
+		case NODE_INLINE_CODE:
+			cmark_chunk_free(&e->as.literal);
+			break;
+		case NODE_LINK:
+		case NODE_IMAGE:
+			free(e->as.link.url);
+			free(e->as.link.title);
+			break;
+		default:
+			break;
+		}
+		if (e->last_child) {
+			// Splice children into list
+			e->last_child->next = e->next;
+			e->next = e->first_child;
+		}
+		next = e->next;
+		free(e);
+		e = next;
+	}
+}
+
 void
 cmark_node_free(cmark_node *node) {
 	S_node_unlink(node);
 	node->next = NULL;
-	cmark_free_nodes(node);
+	S_free_nodes(node);
 }
 
 cmark_node_type
@@ -610,40 +645,6 @@ cmark_node_check(cmark_node *node, FILE *out)
 	}
 
 	return errors;
-}
-
-// Free a cmark_node list and any children.
-void cmark_free_nodes(cmark_node *e)
-{
-	cmark_node *next;
-	while (e != NULL) {
-		strbuf_free(&e->string_content);
-		switch (e->type){
-		case NODE_CODE_BLOCK:
-			strbuf_free(&e->as.code.info);
-			break;
-		case NODE_TEXT:
-		case NODE_INLINE_HTML:
-		case NODE_INLINE_CODE:
-			cmark_chunk_free(&e->as.literal);
-			break;
-		case NODE_LINK:
-		case NODE_IMAGE:
-			free(e->as.link.url);
-			free(e->as.link.title);
-			break;
-		default:
-			break;
-		}
-		if (e->last_child) {
-			// Splice children into list
-			e->last_child->next = e->next;
-			e->next = e->first_child;
-		}
-		next = e->next;
-		free(e);
-		e = next;
-	}
 }
 
 
