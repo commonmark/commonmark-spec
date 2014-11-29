@@ -404,7 +404,9 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 {
 	delimiter_stack *tempstack, *nextstack;
 	int use_delims;
-	cmark_node *inl, *tmp, *emph;
+	cmark_node *opener_inl = opener->first_inline;
+	cmark_node *closer_inl = closer->first_inline;
+	cmark_node *tmp, *emph;
 
 	// calculate the actual number of delimeters used from this closer
 	if (closer->delim_count < 3 || opener->delim_count < 3) {
@@ -414,13 +416,11 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 		use_delims = closer->delim_count % 2 == 0 ? 2 : 1;
 	}
 
-	inl = opener->first_inline;
-
 	// remove used delimiters from stack elements and associated inlines.
 	opener->delim_count -= use_delims;
 	closer->delim_count -= use_delims;
-	inl->as.literal.len = opener->delim_count;
-	closer->first_inline->as.literal.len = closer->delim_count;
+	opener_inl->as.literal.len = opener->delim_count;
+	closer_inl->as.literal.len = closer->delim_count;
 
 	// free delimiters between opener and closer
 	tempstack = closer->previous;
@@ -433,28 +433,29 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 	// if opener has 0 delims, remove it and its associated inline
 	if (opener->delim_count == 0) {
 		// replace empty opener inline with emph
-		chunk_free(&(inl->as.literal));
-		emph = inl;
+		chunk_free(&(opener_inl->as.literal));
+		emph = opener_inl;
 		emph->type = use_delims == 1 ? NODE_EMPH : NODE_STRONG;
-		emph->first_child = inl->next;
+		emph->first_child = opener_inl->next;
 		// remove opener from stack
 		remove_delimiter(subj, opener);
 	}
 	else {
 		// create new emph or strong, and splice it in to our inlines
 		// between the opener and closer
-		emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
-		emph->parent = inl->parent;
-		emph->prev = inl;
-		inl->next = emph;
+		emph = use_delims == 1 ? make_emph(opener_inl->next)
+				       : make_strong(opener_inl->next);
+		emph->parent = opener_inl->parent;
+		emph->prev = opener_inl;
+		opener_inl->next = emph;
 	}
 
-	emph->next = closer->first_inline;
+	emph->next = closer_inl;
 
 	// fix tree structure
 	tmp = emph->first_child;
 	tmp->prev = NULL;
-	while (tmp->next != NULL && tmp->next != closer->first_inline) {
+	while (tmp->next != NULL && tmp->next != closer_inl) {
 		tmp->parent = emph;
 		tmp = tmp->next;
 	}
@@ -468,7 +469,7 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 	// if closer has 0 delims, remove it and its associated inline
 	if (closer->delim_count == 0) {
 		// remove empty closer inline
-		cmark_node_free(closer->first_inline);
+		cmark_node_free(closer_inl);
 		// remove closer from stack
 		tempstack = closer->next;
 		remove_delimiter(subj, closer);
