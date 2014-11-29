@@ -430,26 +430,26 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 		tempstack = nextstack;
 	}
 
-	// create new emph or strong, and splice it in to our inlines
-	// between the opener and closer
-	emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
-	emph->next = closer->first_inline;
-	emph->prev = inl;
-	emph->parent = inl->parent;
-	inl->next = emph;
-
 	// if opener has 0 delims, remove it and its associated inline
 	if (opener->delim_count == 0) {
 		// replace empty opener inline with emph
 		chunk_free(&(inl->as.literal));
-		inl->type = emph->type;
-		inl->next = emph->next;
-		inl->first_child = emph->first_child;
-		free(emph);
 		emph = inl;
+		emph->type = use_delims == 1 ? NODE_EMPH : NODE_STRONG;
+		emph->first_child = inl->next;
 		// remove opener from stack
 		remove_delimiter(subj, opener);
 	}
+	else {
+		// create new emph or strong, and splice it in to our inlines
+		// between the opener and closer
+		emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+		emph->parent = inl->parent;
+		emph->prev = inl;
+		inl->next = emph;
+	}
+
+	emph->next = closer->first_inline;
 
 	// fix tree structure
 	tmp = emph->first_child;
