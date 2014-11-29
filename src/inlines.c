@@ -431,6 +431,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 
 				// fix tree structure
 				tmp = emph->first_child;
+				tmp->prev = NULL;
 				while (tmp->next != NULL && tmp->next != closer->first_inline) {
 					tmp->parent = emph;
 					tmp = tmp->next;
