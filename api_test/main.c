@@ -86,7 +86,7 @@ constructor(test_batch_runner *runner)
 			break;
 		}
 
-		cmark_node_destroy(node);
+		cmark_node_free(node);
 	}
 }
 
@@ -275,7 +275,7 @@ accessors(test_batch_runner *runner)
 	OK(runner, !cmark_node_set_list_start(bullet_list, -1),
 	   "set_list_start negative");
 
-	cmark_node_destroy(doc);
+	cmark_node_free(doc);
 }
 
 static void
@@ -291,7 +291,7 @@ node_check(test_batch_runner *runner) {
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0,
 	       "node_check fixes tree");
 
-	cmark_node_destroy(doc);
+	cmark_node_free(doc);
 }
 
 static void
@@ -364,11 +364,11 @@ create_tree(test_batch_runner *runner)
 	       "render_html after shuffling");
 	free(html);
 
-	cmark_node_destroy(doc);
+	cmark_node_free(doc);
 
 	// TODO: Test that the contents of an unlinked inline are valid
 	// after the parent block was destroyed. This doesn't work so far.
-	cmark_node_destroy(emph);
+	cmark_node_free(emph);
 }
 
 void
@@ -387,7 +387,7 @@ hierarchy(test_batch_runner *runner)
 	OK(runner, !cmark_node_append_child(bquote3, bquote1),
 	   "adding a parent as child fails");
 
-	cmark_node_destroy(bquote1);
+	cmark_node_free(bquote1);
 
 	int max_node_type = CMARK_NODE_LAST_BLOCK > CMARK_NODE_LAST_INLINE
 			    ? CMARK_NODE_LAST_BLOCK : CMARK_NODE_LAST_INLINE;
@@ -451,10 +451,10 @@ test_content(test_batch_runner *runner, cmark_node_type type,
 		INT_EQ(runner, got, expected,
 		       "add %d as child of %d", child_type, type);
 
-		cmark_node_destroy(child);
+		cmark_node_free(child);
 	}
 
-	cmark_node_destroy(node);
+	cmark_node_free(node);
 }
 
 static void
@@ -491,7 +491,7 @@ render_html(test_batch_runner *runner)
 	STR_EQ(runner, html, "<em>bar</em>", "render inline with children");
 	free(html);
 
-	cmark_node_destroy(doc);
+	cmark_node_free(doc);
 }
 
 static void

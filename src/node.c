@@ -33,7 +33,7 @@ cmark_node_new(cmark_node_type type) {
 }
 
 void
-cmark_node_destroy(cmark_node *node) {
+cmark_node_free(cmark_node *node) {
 	S_node_unlink(node);
 	node->next = NULL;
 	cmark_free_nodes(node);

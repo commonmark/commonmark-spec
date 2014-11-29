@@ -53,7 +53,7 @@ typedef enum {
 } cmark_delim_type;
 
 typedef struct cmark_node cmark_node;
-typedef struct cmark_doc_parser cmark_doc_parser;
+typedef struct cmark_parser cmark_parser;
 
 // Construction and destruction
 
@@ -61,7 +61,7 @@ CMARK_EXPORT cmark_node*
 cmark_node_new(cmark_node_type type);
 
 CMARK_EXPORT void
-cmark_node_destroy(cmark_node *node);
+cmark_node_free(cmark_node *node);
 
 CMARK_EXPORT void
 cmark_free_nodes(cmark_node *e);
@@ -165,16 +165,16 @@ cmark_node_append_child(cmark_node *node, cmark_node *child);
 // Parser
 
 CMARK_EXPORT
-cmark_doc_parser *cmark_new_doc_parser();
+cmark_parser *cmark_parser_new();
 
 CMARK_EXPORT
-void cmark_free_doc_parser(cmark_doc_parser *parser);
+void cmark_parser_free(cmark_parser *parser);
 
 CMARK_EXPORT
-cmark_node *cmark_finish(cmark_doc_parser *parser);
+cmark_node *cmark_parser_finish(cmark_parser *parser);
 
 CMARK_EXPORT
-void cmark_process_line(cmark_doc_parser *parser, const char *buffer, size_t bytes);
+void cmark_parser_process_line(cmark_parser *parser, const char *buffer, size_t bytes);
 
 CMARK_EXPORT
 cmark_node *cmark_parse_document(const char *buffer, size_t len);

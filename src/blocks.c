@@ -42,9 +42,9 @@ static cmark_node* make_document()
 	return e;
 }
 
-cmark_doc_parser *cmark_new_doc_parser()
+cmark_parser *cmark_parser_new()
 {
-	cmark_doc_parser *parser = (cmark_doc_parser*)malloc(sizeof(cmark_doc_parser));
+	cmark_parser *parser = (cmark_parser*)malloc(sizeof(cmark_parser));
 	cmark_node *document = make_document();
 	strbuf *line = (strbuf*)malloc(sizeof(strbuf));
 	cmark_strbuf_init(line, 256);
@@ -58,7 +58,7 @@ cmark_doc_parser *cmark_new_doc_parser()
 	return parser;
 }
 
-void cmark_free_doc_parser(cmark_doc_parser *parser)
+void cmark_parser_free(cmark_parser *parser)
 {
 	cmark_strbuf_free(parser->curline);
 	free(parser->curline);
@@ -66,7 +66,7 @@ void cmark_free_doc_parser(cmark_doc_parser *parser)
 	free(parser);
 }
 
-static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number);
+static void finalize(cmark_parser *parser, cmark_node* b, int line_number);
 
 // Returns true if line has only space characters, else false.
 static bool is_blank(strbuf *s, int offset)
@@ -143,7 +143,7 @@ static bool ends_with_blank_line(cmark_node* cmark_node)
 }
 
 // Break out of all containing lists
-static int break_out_of_lists(cmark_doc_parser *parser, cmark_node ** bptr, int line_number)
+static int break_out_of_lists(cmark_parser *parser, cmark_node ** bptr, int line_number)
 {
 	cmark_node *container = *bptr;
 	cmark_node *b = parser->root;
@@ -163,7 +163,7 @@ static int break_out_of_lists(cmark_doc_parser *parser, cmark_node ** bptr, int 
 }
 
 
-static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
+static void finalize(cmark_parser *parser, cmark_node* b, int line_number)
 {
 	int firstlinelen;
 	int pos;
@@ -250,7 +250,7 @@ static void finalize(cmark_doc_parser *parser, cmark_node* b, int line_number)
 }
 
 // Add a cmark_node as child of another.  Return pointer to child.
-static cmark_node* add_child(cmark_doc_parser *parser, cmark_node* parent,
+static cmark_node* add_child(cmark_parser *parser, cmark_node* parent,
 		cmark_node_type block_type, int start_line, int start_column)
 {
 	assert(parent);
@@ -399,7 +399,7 @@ static int lists_match(cmark_list *list_data, cmark_list *item_data)
 			list_data->bullet_char == item_data->bullet_char);
 }
 
-static cmark_node *finalize_document(cmark_doc_parser *parser)
+static cmark_node *finalize_document(cmark_parser *parser)
 {
 	while (parser->current != parser->root) {
 		finalize(parser, parser->current, parser->line_number);
@@ -415,17 +415,17 @@ static cmark_node *finalize_document(cmark_doc_parser *parser)
 extern cmark_node *cmark_parse_file(FILE *f)
 {
 	char buffer[4096];
-	cmark_doc_parser *parser = cmark_new_doc_parser();
+	cmark_parser *parser = cmark_parser_new();
 	size_t offset;
 	cmark_node *document;
 
 	while (fgets(buffer, sizeof(buffer), f)) {
 		offset = strlen(buffer);
-		cmark_process_line(parser, buffer, offset);
+		cmark_parser_process_line(parser, buffer, offset);
 	}
 
-	document = cmark_finish(parser);
-	cmark_free_doc_parser(parser);
+	document = cmark_parser_finish(parser);
+	cmark_parser_free(parser);
 	return document;
 }
 
@@ -434,20 +434,20 @@ extern cmark_node *cmark_parse_document(const char *buffer, size_t len)
 	int linenum = 1;
 	const char *end = buffer + len;
 	size_t offset;
-	cmark_doc_parser *parser = cmark_new_doc_parser();
+	cmark_parser *parser = cmark_parser_new();
 	cmark_node *document;
 
 	while (buffer < end) {
 		const char *eol
 			= (const char *)memchr(buffer, '\n', end - buffer);
 		offset = eol ? (eol - buffer) + 1 : end - buffer;
-		cmark_process_line(parser, buffer, offset);
+		cmark_parser_process_line(parser, buffer, offset);
 		buffer += offset;
 		linenum++;
 	}
 
-	document = cmark_finish(parser);
-	cmark_free_doc_parser(parser);
+	document = cmark_parser_finish(parser);
+	cmark_parser_free(parser);
 	return document;
 }
 
@@ -469,7 +469,7 @@ static void chop_trailing_hashtags(chunk *ch)
 	}
 }
 
-void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
+void cmark_parser_process_line(cmark_parser *parser, const char *buffer,
 		 size_t bytes)
 {
 	cmark_node* last_matched_container;
@@ -829,7 +829,7 @@ void cmark_process_line(cmark_doc_parser *parser, const char *buffer,
 
 }
 
-cmark_node *cmark_finish(cmark_doc_parser *parser)
+cmark_node *cmark_parser_finish(cmark_parser *parser)
 {
 	finalize_document(parser);
 	strbuf_free(parser->curline);

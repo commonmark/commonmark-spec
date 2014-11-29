@@ -11,7 +11,7 @@ extern "C" {
 
 #define MAX_LINK_LABEL_LENGTH 1000
 
-struct cmark_doc_parser {
+struct cmark_parser {
 	struct cmark_reference_map *refmap;
 	struct cmark_node* root;
 	struct cmark_node* current;

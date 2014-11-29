@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
 	bool ast = false;
 	int *files;
 	char buffer[4096];
-	cmark_doc_parser *parser;
+	cmark_parser *parser;
 	size_t offset;
 	cmark_node *document;
 
-	parser = cmark_new_doc_parser();
+	parser = cmark_parser_new();
 	files = (int *)malloc(argc * sizeof(*files));
 
 	for (i = 1; i < argc; i++) {
@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
 		start_timer();
 		while (fgets((char *)buffer, sizeof(buffer), fp)) {
 			offset = strlen((char *)buffer);
-			cmark_process_line(parser, buffer, offset);
+			cmark_parser_process_line(parser, buffer, offset);
 		}
 		end_timer("processing lines");
 
@@ -87,14 +87,14 @@ int main(int argc, char *argv[])
 
 		while (fgets((char *)buffer, sizeof(buffer), stdin)) {
 			offset = strlen((char *)buffer);
-			cmark_process_line(parser, buffer, offset);
+			cmark_parser_process_line(parser, buffer, offset);
 		}
 	}
 
 	start_timer();
-	document = cmark_finish(parser);
+	document = cmark_parser_finish(parser);
 	end_timer("finishing document");
-	cmark_free_doc_parser(parser);
+	cmark_parser_free(parser);
 
 	start_timer();
 	print_document(document, ast);
