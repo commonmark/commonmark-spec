@@ -26,7 +26,7 @@
 typedef struct delimiter {
 	struct delimiter *previous;
 	struct delimiter *next;
-	cmark_node *first_inline;
+	cmark_node *inl_text;
 	unsigned char delim_char;
 	int position;
 	bool can_open;
@@ -303,7 +303,7 @@ static void push_delimiter(subject *subj, unsigned char c, bool can_open,
 	delim->delim_char = c;
 	delim->can_open = can_open;
 	delim->can_close = can_close;
-	delim->first_inline = inl_text;
+	delim->inl_text = inl_text;
 	delim->previous = subj->last_delim;
 	delim->next = NULL;
 	if (delim->previous != NULL) {
@@ -375,8 +375,8 @@ S_insert_emph(subject *subj, delimiter *opener, delimiter *closer)
 {
 	delimiter *delim, *tmp_delim;
 	int use_delims;
-	cmark_node *opener_inl = opener->first_inline;
-	cmark_node *closer_inl = closer->first_inline;
+	cmark_node *opener_inl = opener->inl_text;
+	cmark_node *closer_inl = closer->inl_text;
 	int opener_num_chars = opener_inl->as.literal.len;
 	int closer_num_chars = closer_inl->as.literal.len;
 	cmark_node *tmp, *emph, *first_child, *last_child;
@@ -672,7 +672,7 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 
 	// If we got here, we matched a potential link/image text.
 	is_image = opener->delim_char == '!';
-	link_text = opener->first_inline->next;
+	link_text = opener->inl_text->next;
 
 	// Now we check to see if it's a link/image.
 
@@ -743,7 +743,7 @@ noMatch:
 	return make_str(chunk_literal("]"));
 
 match:
-	inl = opener->first_inline;
+	inl = opener->inl_text;
 	inl->type = is_image ? NODE_IMAGE : NODE_LINK;
 	chunk_free(&inl->as.literal);
 	inl->first_child = link_text;
