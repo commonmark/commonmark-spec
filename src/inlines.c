@@ -20,8 +20,8 @@
 #define make_raw_html(s) make_literal(CMARK_NODE_INLINE_HTML, s)
 #define make_linebreak() make_simple(CMARK_NODE_LINEBREAK)
 #define make_softbreak() make_simple(CMARK_NODE_SOFTBREAK)
-#define make_emph(contents) make_inlines(CMARK_NODE_EMPH, contents)
-#define make_strong(contents) make_inlines(CMARK_NODE_STRONG, contents)
+#define make_emph() make_simple(CMARK_NODE_EMPH)
+#define make_strong() make_simple(CMARK_NODE_STRONG)
 
 typedef struct DelimiterStack {
 	struct DelimiterStack *previous;
@@ -84,24 +84,6 @@ static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsig
 static inline cmark_node* make_autolink(cmark_node* label, cmark_chunk url, int is_email)
 {
 	return make_link(label, cmark_clean_autolink(&url, is_email), NULL);
-}
-
-// Setting 'last_child' and the parent of 'contents' is up to the caller.
-static inline cmark_node* make_inlines(cmark_node_type t, cmark_node* contents)
-{
-	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
-	if(e != NULL) {
-		e->type = t;
-		e->first_child = contents;
-		e->next = NULL;
-                e->prev = NULL;
-                e->parent = NULL;
-                // These fields aren't used for inlines:
-                e->start_line = 0;
-                e->start_column = 0;
-                e->end_line = 0;
-	}
-	return e;
 }
 
 // Create an inline with a literal string value.
@@ -406,7 +388,7 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 	int use_delims;
 	cmark_node *opener_inl = opener->first_inline;
 	cmark_node *closer_inl = closer->first_inline;
-	cmark_node *tmp, *emph;
+	cmark_node *tmp, *emph, *first_child, *last_child;
 
 	// calculate the actual number of delimeters used from this closer
 	if (closer->delim_count < 3 || opener->delim_count < 3) {
@@ -430,41 +412,39 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 		tempstack = nextstack;
 	}
 
+	first_child = opener_inl->next;
+	last_child  = closer_inl->prev;
+
 	// if opener has 0 delims, remove it and its associated inline
 	if (opener->delim_count == 0) {
 		// replace empty opener inline with emph
 		chunk_free(&(opener_inl->as.literal));
 		emph = opener_inl;
 		emph->type = use_delims == 1 ? NODE_EMPH : NODE_STRONG;
-		emph->first_child = opener_inl->next;
 		// remove opener from stack
 		remove_delimiter(subj, opener);
 	}
 	else {
 		// create new emph or strong, and splice it in to our inlines
 		// between the opener and closer
-		emph = use_delims == 1 ? make_emph(opener_inl->next)
-				       : make_strong(opener_inl->next);
+		emph = use_delims == 1 ? make_emph() : make_strong();
 		emph->parent = opener_inl->parent;
 		emph->prev = opener_inl;
 		opener_inl->next = emph;
 	}
 
+	// push children below emph
 	emph->next = closer_inl;
+	closer_inl->prev = emph;
+	emph->first_child = first_child;
+	emph->last_child  = last_child;
 
-	// fix tree structure
-	tmp = emph->first_child;
-	tmp->prev = NULL;
-	while (tmp->next != NULL && tmp->next != closer_inl) {
+	// fix children pointers
+	first_child->prev = NULL;
+	last_child->next  = NULL;
+	for (tmp = first_child; tmp != NULL; tmp = tmp->next) {
 		tmp->parent = emph;
-		tmp = tmp->next;
 	}
-	tmp->parent = emph;
-	if (tmp->next) {
-		tmp->next->prev = emph;
-	}
-	tmp->next = NULL;
-	emph->last_child = tmp;
 
 	// if closer has 0 delims, remove it and its associated inline
 	if (closer->delim_count == 0) {
