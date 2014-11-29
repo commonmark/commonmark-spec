@@ -32,7 +32,7 @@ $(BUILDDIR): check
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
-install: $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
+install: $(BUILDDIR)
 	make -C $(BUILDDIR) install
 
 debug:
@@ -47,10 +47,8 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(BUILDDIR) man/man3/cmark.3 man/man1/cmark.1
+archive: spec.html $(BUILDDIR)
 	@rm -rf $(PKGDIR); \
-	mkdir -p $(PKGDIR)/man/man1; \
-	mkdir -p $(PKGDIR)/man/man3; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
 	mkdir -p $(PKGDIR)/api_test; \
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR) api_test`; \
@@ -60,9 +58,9 @@ archive: spec.html $(BUILDDIR) man/man3/cmark.3 man/man1/cmark.1
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
-	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
-	cp -a man/man3/cmark.3 $(PKGDIR)/man/man3/; \
-	cp -a README.md LICENSE spec.txt spec_tests.py pathological_tests.py $(PKGDIR)/; \
+	cp -r man $(PKGDIR)/; \
+	cp -r test $(PKGDIR)/; \
+	cp -a README.md LICENSE spec.txt $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
@@ -86,12 +84,6 @@ $(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
 # normally need to be generated.
 $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
-
-man/man1/cmark.1: man/cmark.1.md
-	pandoc $< -o $@ -s -t man
-
-man/man3:
-	mkdir -p $@
 
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test ARGS="-V"
