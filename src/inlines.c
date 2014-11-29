@@ -41,6 +41,9 @@ typedef struct Subject {
 	delimiter_stack *delimiters;
 } subject;
 
+static delimiter_stack*
+S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer);
+
 static int parse_inline(subject* subj, cmark_node * parent);
 
 static void subject_from_buf(subject *e, strbuf *buffer,
@@ -361,9 +364,7 @@ static cmark_node* handle_strong_emph(subject* subj, unsigned char c)
 static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 {
 	delimiter_stack *closer = subj->delimiters;
-	delimiter_stack *opener, *tempstack, *nextstack;
-	int use_delims;
-	cmark_node *inl, *tmp, *emph;
+	delimiter_stack *opener;
 
 	// move back to first relevant delim.
 	while (closer != NULL && closer->previous != stack_bottom) {
@@ -384,79 +385,7 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 				opener = opener->previous;
 			}
 			if (opener != NULL && opener != stack_bottom) {
-				// calculate the actual number of delimeters used from this closer
-				if (closer->delim_count < 3 || opener->delim_count < 3) {
-					use_delims = closer->delim_count <= opener->delim_count ?
-						closer->delim_count : opener->delim_count;
-				} else { // closer and opener both have >= 3 delims
-					use_delims = closer->delim_count % 2 == 0 ? 2 : 1;
-				}
-
-				inl = opener->first_inline;
-
-				// remove used delimiters from stack elements and associated inlines.
-				opener->delim_count -= use_delims;
-				closer->delim_count -= use_delims;
-				inl->as.literal.len = opener->delim_count;
-				closer->first_inline->as.literal.len = closer->delim_count;
-
-				// free delimiters between opener and closer
-				tempstack = closer->previous;
-				while (tempstack != NULL && tempstack != opener) {
-					nextstack = tempstack->previous;
-					remove_delimiter(subj, tempstack);
-					tempstack = nextstack;
-				}
-
-				// create new emph or strong, and splice it in to our inlines
-				// between the opener and closer
-				emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
-				emph->next = closer->first_inline;
-				emph->prev = inl;
-				emph->parent = inl->parent;
-				inl->next = emph;
-
-				// if opener has 0 delims, remove it and its associated inline
-				if (opener->delim_count == 0) {
-					// replace empty opener inline with emph
-					chunk_free(&(inl->as.literal));
-					inl->type = emph->type;
-					inl->next = emph->next;
-					inl->first_child = emph->first_child;
-					free(emph);
-					emph = inl;
-					// remove opener from stack
-					remove_delimiter(subj, opener);
-				}
-
-				// fix tree structure
-				tmp = emph->first_child;
-				tmp->prev = NULL;
-				while (tmp->next != NULL && tmp->next != closer->first_inline) {
-					tmp->parent = emph;
-					tmp = tmp->next;
-				}
-				tmp->parent = emph;
-				if (tmp->next) {
-					tmp->next->prev = emph;
-				}
-				tmp->next = NULL;
-				emph->last_child = tmp;
-
-				// if closer has 0 delims, remove it and its associated inline
-				if (closer->delim_count == 0) {
-					// remove empty closer inline
-					tmp = closer->first_inline;
-					emph->next = tmp->next;
-					if (tmp->next) {
-						tmp->next->prev = emph;
-					}
-					cmark_node_free(tmp);
-					// remove closer from stack
-					tempstack = closer->next;
-					remove_delimiter(subj, closer);
-					closer = tempstack;
-				}
+				closer = S_insert_emph(subj, opener, closer);
 			} else {
 				closer = closer->next;
 			}
@@ -468,6 +397,90 @@ static void process_emphasis(subject *subj, delimiter_stack *stack_bottom)
 	while (subj->delimiters != stack_bottom) {
 		remove_delimiter(subj, subj->delimiters);
 	}
+}
+
+static delimiter_stack*
+S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
+{
+	delimiter_stack *tempstack, *nextstack;
+	int use_delims;
+	cmark_node *inl, *tmp, *emph;
+
+	// calculate the actual number of delimeters used from this closer
+	if (closer->delim_count < 3 || opener->delim_count < 3) {
+		use_delims = closer->delim_count <= opener->delim_count ?
+			closer->delim_count : opener->delim_count;
+	} else { // closer and opener both have >= 3 delims
+		use_delims = closer->delim_count % 2 == 0 ? 2 : 1;
+	}
+
+	inl = opener->first_inline;
+
+	// remove used delimiters from stack elements and associated inlines.
+	opener->delim_count -= use_delims;
+	closer->delim_count -= use_delims;
+	inl->as.literal.len = opener->delim_count;
+	closer->first_inline->as.literal.len = closer->delim_count;
+
+	// free delimiters between opener and closer
+	tempstack = closer->previous;
+	while (tempstack != NULL && tempstack != opener) {
+		nextstack = tempstack->previous;
+		remove_delimiter(subj, tempstack);
+		tempstack = nextstack;
+	}
+
+	// create new emph or strong, and splice it in to our inlines
+	// between the opener and closer
+	emph = use_delims == 1 ? make_emph(inl->next) : make_strong(inl->next);
+	emph->next = closer->first_inline;
+	emph->prev = inl;
+	emph->parent = inl->parent;
+	inl->next = emph;
+
+	// if opener has 0 delims, remove it and its associated inline
+	if (opener->delim_count == 0) {
+		// replace empty opener inline with emph
+		chunk_free(&(inl->as.literal));
+		inl->type = emph->type;
+		inl->next = emph->next;
+		inl->first_child = emph->first_child;
+		free(emph);
+		emph = inl;
+		// remove opener from stack
+		remove_delimiter(subj, opener);
+	}
+
+	// fix tree structure
+	tmp = emph->first_child;
+	tmp->prev = NULL;
+	while (tmp->next != NULL && tmp->next != closer->first_inline) {
+		tmp->parent = emph;
+		tmp = tmp->next;
+	}
+	tmp->parent = emph;
+	if (tmp->next) {
+		tmp->next->prev = emph;
+	}
+	tmp->next = NULL;
+	emph->last_child = tmp;
+
+	// if closer has 0 delims, remove it and its associated inline
+	if (closer->delim_count == 0) {
+		// remove empty closer inline
+		tmp = closer->first_inline;
+		emph->next = tmp->next;
+		if (tmp->next) {
+			tmp->next->prev = emph;
+		}
+		cmark_node_free(tmp);
+		// remove closer from stack
+		tempstack = closer->next;
+		remove_delimiter(subj, closer);
+		closer = tempstack;
+	}
+
+	return closer;
 }
 
 // Parse backslash-escape or just a backslash, returning an inline.
