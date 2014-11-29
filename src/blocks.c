@@ -18,6 +18,14 @@
 #define CODE_INDENT 4
 #define peek_at(i, n) (i)->data[n]
 
+static void
+S_parser_push(cmark_parser *parser, const unsigned char *buffer, size_t len,
+	      bool eof);
+
+static void
+S_process_line(cmark_parser *parser, const unsigned char *buffer,
+	       size_t bytes);
+
 static cmark_node* make_block(cmark_node_type tag, int start_line, int start_column)
 {
 	cmark_node* e;
@@ -47,13 +55,16 @@ cmark_parser *cmark_parser_new()
 	cmark_parser *parser = (cmark_parser*)malloc(sizeof(cmark_parser));
 	cmark_node *document = make_document();
 	strbuf *line = (strbuf*)malloc(sizeof(strbuf));
+	strbuf *buf  = (strbuf*)malloc(sizeof(strbuf));
 	cmark_strbuf_init(line, 256);
+	cmark_strbuf_init(buf, 0);
 
 	parser->refmap = cmark_reference_map_new();
 	parser->root = document;
 	parser->current = document;
 	parser->line_number = 0;
 	parser->curline = line;
+	parser->linebuf = buf;
 
 	return parser;
 }
@@ -62,6 +73,8 @@ void cmark_parser_free(cmark_parser *parser)
 {
 	cmark_strbuf_free(parser->curline);
 	free(parser->curline);
+	cmark_strbuf_free(parser->linebuf);
+	free(parser->linebuf);
 	cmark_reference_map_free(parser->refmap);
 	free(parser);
 }
@@ -412,16 +425,16 @@ static cmark_node *finalize_document(cmark_parser *parser)
 	return parser->root;
 }
 
-extern cmark_node *cmark_parse_file(FILE *f)
+cmark_node *cmark_parse_file(FILE *f)
 {
-	char buffer[4096];
+	unsigned char buffer[4096];
 	cmark_parser *parser = cmark_parser_new();
-	size_t offset;
+	size_t bytes;
 	cmark_node *document;
 
-	while (fgets(buffer, sizeof(buffer), f)) {
-		offset = strlen(buffer);
-		cmark_parser_process_line(parser, buffer, offset);
+	while ((bytes = fread(buffer, 1, sizeof(buffer), f)) > 0) {
+		bool eof = bytes < sizeof(buffer);
+		S_parser_push(parser, buffer, bytes, eof);
 	}
 
 	document = cmark_parser_finish(parser);
@@ -429,26 +442,59 @@ extern cmark_node *cmark_parse_file(FILE *f)
 	return document;
 }
 
-extern cmark_node *cmark_parse_document(const char *buffer, size_t len)
+cmark_node *cmark_parse_document(const char *buffer, size_t len)
 {
-	int linenum = 1;
-	const char *end = buffer + len;
-	size_t offset;
 	cmark_parser *parser = cmark_parser_new();
 	cmark_node *document;
 
-	while (buffer < end) {
-		const char *eol
-			= (const char *)memchr(buffer, '\n', end - buffer);
-		offset = eol ? (eol - buffer) + 1 : end - buffer;
-		cmark_parser_process_line(parser, buffer, offset);
-		buffer += offset;
-		linenum++;
-	}
+	S_parser_push(parser, (const unsigned char *)buffer, len, true);
 
 	document = cmark_parser_finish(parser);
 	cmark_parser_free(parser);
 	return document;
+}
+
+void
+cmark_parser_push(cmark_parser *parser, const char *buffer, size_t len)
+{
+	S_parser_push(parser, (const unsigned char *)buffer, len, false);
+}
+
+static void
+S_parser_push(cmark_parser *parser, const unsigned char *buffer, size_t len,
+	      bool eof)
+{
+	const unsigned char *end = buffer + len;
+
+	while (buffer < end) {
+		const unsigned char *eol
+			= (const unsigned char *)memchr(buffer, '\n',
+							end - buffer);
+		size_t line_len;
+
+		if (eol) {
+			line_len = eol + 1 - buffer;
+		}
+		else if (eof) {
+			line_len = end - buffer;
+		}
+		else {
+			strbuf_put(parser->linebuf, buffer, end - buffer);
+			break;
+		}
+
+		if (parser->linebuf->size > 0) {
+			strbuf_put(parser->linebuf, buffer, line_len);
+			S_process_line(parser, parser->linebuf->ptr,
+				       parser->linebuf->size);
+			strbuf_clear(parser->linebuf);
+		}
+		else {
+			S_process_line(parser, buffer, line_len);
+		}
+
+		buffer += line_len;
+	}
 }
 
 static void chop_trailing_hashtags(chunk *ch)
@@ -469,8 +515,8 @@ static void chop_trailing_hashtags(chunk *ch)
 	}
 }
 
-void cmark_parser_process_line(cmark_parser *parser, const char *buffer,
-		 size_t bytes)
+static void
+S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 {
 	cmark_node* last_matched_container;
 	int offset = 0;
@@ -486,7 +532,7 @@ void cmark_parser_process_line(cmark_parser *parser, const char *buffer,
 	int indent;
 	chunk input;
 
-	utf8proc_detab(parser->curline, (unsigned char *)buffer, bytes);
+	utf8proc_detab(parser->curline, buffer, bytes);
 
 	// Add a newline to the end if not present:
 	// TODO this breaks abstraction:
@@ -831,6 +877,12 @@ void cmark_parser_process_line(cmark_parser *parser, const char *buffer,
 
 cmark_node *cmark_parser_finish(cmark_parser *parser)
 {
+	if (parser->linebuf->size) {
+		S_process_line(parser, parser->linebuf->ptr,
+			     parser->linebuf->size);
+		strbuf_clear(parser->linebuf);
+	}
+
 	finalize_document(parser);
 	strbuf_free(parser->curline);
 #if CMARK_DEBUG_NODES

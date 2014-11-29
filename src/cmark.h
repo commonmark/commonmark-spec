@@ -176,7 +176,7 @@ CMARK_EXPORT
 cmark_node *cmark_parser_finish(cmark_parser *parser);
 
 CMARK_EXPORT
-void cmark_parser_process_line(cmark_parser *parser, const char *buffer, size_t bytes);
+void cmark_parser_push(cmark_parser *parser, const char *buffer, size_t len);
 
 CMARK_EXPORT
 cmark_node *cmark_parse_document(const char *buffer, size_t len);
