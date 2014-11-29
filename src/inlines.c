@@ -617,9 +617,15 @@ static int link_label(subject* subj, chunk *raw_label)
 {
 	int startpos = subj->pos;
 	int length = 0;
-
-	advance(subj);  // advance past [
 	unsigned char c;
+
+	// advance past [
+	if (peek_char(subj) == '[') {
+		advance(subj);
+	} else {
+		return 0;
+	}
+
 	while ((c = peek_char(subj)) && c != '[' && c != ']') {
 		if (c == '\\') {
 			advance(subj);
