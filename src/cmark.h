@@ -8,6 +8,11 @@
 extern "C" {
 #endif
 
+/** @file cmark.h
+ * Functions for parsing CommonMark to an AST, manipulating
+ * the AST, and rendering the AST to HTML.
+ */
+
 #define CMARK_VERSION "0.1"
 
 typedef enum {

@@ -17,6 +17,7 @@ add_subdirectory(api_test)
 
 if(UNIX)
   INSTALL(FILES man/man1/cmark.1 DESTINATION share/man/man1)
+  INSTALL(FILES man/man3/cmark.3 DESTINATION share/man/man3)
 endif(UNIX)
 
 enable_testing()

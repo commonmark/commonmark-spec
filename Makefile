@@ -1,4 +1,5 @@
 SRCDIR?=src
+DOCDIR=doc
 DATADIR?=data
 BUILDDIR?=build
 GENERATOR?=Unix Makefiles
@@ -19,7 +20,7 @@ PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench apidoc
 
 all: $(BUILDDIR) $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	@make -C $(BUILDDIR)
@@ -32,7 +33,7 @@ $(BUILDDIR): check
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
-install: $(BUILDDIR) man/man1/cmark.1
+install: $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 	make -C $(BUILDDIR) install
 
 debug:
@@ -60,6 +61,7 @@ archive: spec.html $(BUILDDIR)
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1/; \
+	cp -a man/man3/cmark.3 $(PKGDIR)/man/man3/; \
 	cp -a README.md LICENSE spec.txt spec_tests.py pathological_tests.py $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
@@ -67,9 +69,15 @@ archive: spec.html $(BUILDDIR)
 	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR) $(DOCDIR)
 
 $(PROG): all
+
+apidoc: src/cmark.h
+	doxygen Doxyfile
+
+$(DOCDIR)/man/man3/cmark.h.3: src/cmark.h
+	doxygen Doxyfile
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
@@ -84,6 +92,12 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 
 man/man1/cmark.1: man/cmark.1.md
 	pandoc $< -o $@ -s -t man
+
+man/man3:
+	mkdir -p $@
+
+man/man3/cmark.3: $(DOCDIR)/man/man3/cmark.h.3 man/man3
+	cp $< $@
 
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test ARGS="-V"
