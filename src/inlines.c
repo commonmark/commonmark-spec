@@ -27,7 +27,6 @@ typedef struct delimiter {
 	struct delimiter *previous;
 	struct delimiter *next;
 	cmark_node *first_inline;
-	int delim_count;
 	unsigned char delim_char;
 	int position;
 	bool can_open;
@@ -268,8 +267,8 @@ static void print_delimiters(subject *subj)
 	delimiter *delim;
 	delim = subj->last_delim;
 	while (delim != NULL) {
-		printf("Item at %p: %d %d %d %d next(%p) prev(%p)\n",
-		       delim, delim->delim_count, delim->delim_char,
+		printf("Item at %p: %d %d %d next(%p) prev(%p)\n",
+		       delim, delim->delim_char,
 		       delim->can_open, delim->can_close,
 		       delim->next, delim->previous);
 		delim = delim->previous;
@@ -293,15 +292,14 @@ static void remove_delimiter(subject *subj, delimiter *delim)
 	free(delim);
 }
 
-static void push_delimiter(subject *subj, int numdelims, unsigned char c,
-			   bool can_open, bool can_close, cmark_node *inl_text)
+static void push_delimiter(subject *subj, unsigned char c, bool can_open,
+			   bool can_close, cmark_node *inl_text)
 {
 	delimiter *delim =
 		(delimiter*)malloc(sizeof(delimiter));
 	if (delim == NULL) {
 		return;
 	}
-	delim->delim_count = numdelims;
 	delim->delim_char = c;
 	delim->can_open = can_open;
 	delim->can_close = can_close;
@@ -328,8 +326,7 @@ static cmark_node* handle_strong_emph(subject* subj, unsigned char c)
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
 	if (can_open || can_close) {
-		push_delimiter(subj, numdelims, c, can_open, can_close,
-			       inl_text);
+		push_delimiter(subj, c, can_open, can_close, inl_text);
 	}
 
 	return inl_text;
@@ -380,21 +377,23 @@ S_insert_emph(subject *subj, delimiter *opener, delimiter *closer)
 	int use_delims;
 	cmark_node *opener_inl = opener->first_inline;
 	cmark_node *closer_inl = closer->first_inline;
+	int opener_num_chars = opener_inl->as.literal.len;
+	int closer_num_chars = closer_inl->as.literal.len;
 	cmark_node *tmp, *emph, *first_child, *last_child;
 
-	// calculate the actual number of delimeters used from this closer
-	if (closer->delim_count < 3 || opener->delim_count < 3) {
-		use_delims = closer->delim_count <= opener->delim_count ?
-			closer->delim_count : opener->delim_count;
-	} else { // closer and opener both have >= 3 delims
-		use_delims = closer->delim_count % 2 == 0 ? 2 : 1;
+	// calculate the actual number of characters used from this closer
+	if (closer_num_chars < 3 || opener_num_chars < 3) {
+		use_delims = closer_num_chars <= opener_num_chars ?
+			closer_num_chars : opener_num_chars;
+	} else { // closer and opener both have >= 3 characters
+		use_delims = closer_num_chars % 2 == 0 ? 2 : 1;
 	}
 
-	// remove used characters from delimiters and associated inlines.
-	opener->delim_count -= use_delims;
-	closer->delim_count -= use_delims;
-	opener_inl->as.literal.len = opener->delim_count;
-	closer_inl->as.literal.len = closer->delim_count;
+	// remove used characters from associated inlines.
+	opener_num_chars -= use_delims;
+	closer_num_chars -= use_delims;
+	opener_inl->as.literal.len = opener_num_chars;
+	closer_inl->as.literal.len = closer_num_chars;
 
 	// free delimiters between opener and closer
 	delim = closer->previous;
@@ -407,8 +406,8 @@ S_insert_emph(subject *subj, delimiter *opener, delimiter *closer)
 	first_child = opener_inl->next;
 	last_child  = closer_inl->prev;
 
-	// if opener has 0 delims, remove it and its associated inline
-	if (opener->delim_count == 0) {
+	// if opener has 0 characters, remove it and its associated inline
+	if (opener_num_chars == 0) {
 		// replace empty opener inline with emph
 		chunk_free(&(opener_inl->as.literal));
 		emph = opener_inl;
@@ -438,8 +437,8 @@ S_insert_emph(subject *subj, delimiter *opener, delimiter *closer)
 		tmp->parent = emph;
 	}
 
-	// if closer has 0 delims, remove it and its associated inline
-	if (closer->delim_count == 0) {
+	// if closer has 0 characters, remove it and its associated inline
+	if (closer_num_chars == 0) {
 		// remove empty closer inline
 		cmark_node_free(closer_inl);
 		// remove closer from list
@@ -868,7 +867,7 @@ static int parse_inline(subject* subj, cmark_node * parent)
 	case '[':
 		advance(subj);
 		new_inl = make_str(chunk_literal("["));
-		push_delimiter(subj, 1, '[', true, false, new_inl);
+		push_delimiter(subj, '[', true, false, new_inl);
 		break;
 	case ']':
 		new_inl = handle_close_bracket(subj, parent);
@@ -878,7 +877,7 @@ static int parse_inline(subject* subj, cmark_node * parent)
 		if (peek_char(subj) == '[') {
 			advance(subj);
 			new_inl = make_str(chunk_literal("!["));
-			push_delimiter(subj, 1, '!', false, true, new_inl);
+			push_delimiter(subj, '!', false, true, new_inl);
 		} else {
 			new_inl = make_str(chunk_literal("!"));
 		}
