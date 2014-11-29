@@ -14,11 +14,7 @@ set(PROJECT_VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_
 
 add_subdirectory(src)
 add_subdirectory(api_test)
-
-if(UNIX)
-  INSTALL(FILES man/man1/cmark.1 DESTINATION share/man/man1)
-  INSTALL(FILES man/man3/cmark.3 DESTINATION share/man/man3)
-endif(UNIX)
+add_subdirectory(man)
 
 enable_testing()
 

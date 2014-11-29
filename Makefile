@@ -1,5 +1,4 @@
 SRCDIR?=src
-DOCDIR=doc
 DATADIR?=data
 BUILDDIR?=build
 GENERATOR?=Unix Makefiles
@@ -70,14 +69,11 @@ archive: spec.html $(BUILDDIR) man/man3/cmark.3 man/man1/cmark.1
 	echo "Created $(TARBALL) and $(ZIPARCHIVE)."
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR) $(DOCDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
 
 $(PROG): all
 
 apidoc: src/cmark.h
-	doxygen Doxyfile
-
-$(DOCDIR)/man/man3/cmark.h.3: src/cmark.h
 	doxygen Doxyfile
 
 # We include html_unescape.h in the repository, so this shouldn't
@@ -96,9 +92,6 @@ man/man1/cmark.1: man/cmark.1.md
 
 man/man3:
 	mkdir -p $@
-
-man/man3/cmark.3: $(DOCDIR)/man/man3/cmark.h.3 man/man3
-	cp $< $@
 
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test ARGS="-V"
