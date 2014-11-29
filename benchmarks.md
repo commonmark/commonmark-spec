@@ -13,7 +13,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | **commonmark.js** | 2.675      |    13.4 |
 | marked            | 1.855      |     9.3 |
 | discount          | 1.705      |     8.5 |
-| **cmark**         | 0.315      |     1.6 |
+| **cmark**         | 0.295      |     1.5 |
 | sundown           | 0.200      |     1.0 |
 
 
