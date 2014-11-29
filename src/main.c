@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	int *files;
 	char buffer[4096];
 	cmark_parser *parser;
-	size_t offset;
+	size_t bytes;
 	cmark_node *document;
 
 	parser = cmark_parser_new();
@@ -69,9 +69,8 @@ int main(int argc, char *argv[])
 		}
 
 		start_timer();
-		while (fgets((char *)buffer, sizeof(buffer), fp)) {
-			offset = strlen((char *)buffer);
-			cmark_parser_process_line(parser, buffer, offset);
+		while ((bytes = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+			cmark_parser_push(parser, buffer, bytes);
 		}
 		end_timer("processing lines");
 
@@ -85,9 +84,8 @@ int main(int argc, char *argv[])
 		exit(0);
 		*/
 
-		while (fgets((char *)buffer, sizeof(buffer), stdin)) {
-			offset = strlen((char *)buffer);
-			cmark_parser_process_line(parser, buffer, offset);
+		while ((bytes = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
+			cmark_parser_push(parser, buffer, bytes);
 		}
 	}
 
