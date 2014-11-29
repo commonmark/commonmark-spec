@@ -468,12 +468,7 @@ S_insert_emph(subject *subj, delimiter_stack *opener, delimiter_stack *closer)
 	// if closer has 0 delims, remove it and its associated inline
 	if (closer->delim_count == 0) {
 		// remove empty closer inline
-		tmp = closer->first_inline;
-		emph->next = tmp->next;
-		if (tmp->next) {
-			tmp->next->prev = emph;
-		}
-		cmark_node_free(tmp);
+		cmark_node_free(closer->first_inline);
 		// remove closer from stack
 		tempstack = closer->next;
 		remove_delimiter(subj, closer);
