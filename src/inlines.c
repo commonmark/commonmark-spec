@@ -297,17 +297,13 @@ static void remove_delimiter(subject *subj, delimiter *delim)
 	free(delim);
 }
 
-static delimiter * push_delimiter(subject *subj,
-					int numdelims,
-					unsigned char c,
-					bool can_open,
-					bool can_close,
-					cmark_node *inl_text)
+static void push_delimiter(subject *subj, int numdelims, unsigned char c,
+			   bool can_open, bool can_close, cmark_node *inl_text)
 {
 	delimiter *delim =
 		(delimiter*)malloc(sizeof(delimiter));
 	if (delim == NULL) {
-		return NULL;
+		return;
 	}
 	delim->delim_count = numdelims;
 	delim->delim_char = c;
@@ -320,7 +316,7 @@ static delimiter * push_delimiter(subject *subj,
 		delim->previous->next = delim;
 	}
 	delim->position = subj->pos;
-	return delim;
+	subj->last_delim = delim;
 }
 
 // Parse strong/emph or a fallback.
@@ -336,8 +332,8 @@ static cmark_node* handle_strong_emph(subject* subj, unsigned char c)
 	inl_text = make_str(chunk_dup(&subj->input, subj->pos - numdelims, numdelims));
 
 	if (can_open || can_close) {
-		subj->last_delim = push_delimiter(subj, numdelims, c, can_open, can_close,
-						  inl_text);
+		push_delimiter(subj, numdelims, c, can_open, can_close,
+			       inl_text);
 	}
 
 	return inl_text;
@@ -876,7 +872,7 @@ static int parse_inline(subject* subj, cmark_node * parent)
 	case '[':
 		advance(subj);
 		new_inl = make_str(chunk_literal("["));
-		subj->last_delim = push_delimiter(subj, 1, '[', true, false, new_inl);
+		push_delimiter(subj, 1, '[', true, false, new_inl);
 		break;
 	case ']':
 		new_inl = handle_close_bracket(subj, parent);
@@ -886,7 +882,7 @@ static int parse_inline(subject* subj, cmark_node * parent)
 		if (peek_char(subj) == '[') {
 			advance(subj);
 			new_inl = make_str(chunk_literal("!["));
-			subj->last_delim = push_delimiter(subj, 1, '!', false, true, new_inl);
+			push_delimiter(subj, 1, '!', false, true, new_inl);
 		} else {
 			new_inl = make_str(chunk_literal("!"));
 		}
