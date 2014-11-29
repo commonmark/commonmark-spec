@@ -48,9 +48,10 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(BUILDDIR)
+archive: spec.html $(BUILDDIR) man/man3/cmark.3 man/man1/cmark.1
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/man/man1; \
+	mkdir -p $(PKGDIR)/man/man3; \
 	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
 	mkdir -p $(PKGDIR)/api_test; \
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR) api_test`; \
