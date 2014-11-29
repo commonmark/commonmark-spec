@@ -283,16 +283,12 @@ static void remove_delimiter(subject *subj, delimiter *delim)
 	if (delim->next == NULL) {
 		// end of list:
 		assert(delim == subj->last_delim);
-		if (delim->previous != NULL) {
-			delim->previous->next = NULL;
-		}
 		subj->last_delim = delim->previous;
-	} else if (delim->previous == NULL) {
-		// start of list, with something after it
-		delim->next->previous = NULL;
-	} else { // neither start nor end:
-		delim->previous->next = delim->next;
+	} else {
 		delim->next->previous = delim->previous;
+	}
+	if (delim->previous != NULL) {
+		delim->previous->next = delim->next;
 	}
 	free(delim);
 }
