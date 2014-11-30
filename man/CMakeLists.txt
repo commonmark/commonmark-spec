@@ -1,7 +1,7 @@
 set(MANDEST ${CMAKE_CURRENT_BINARY_DIR})
 file(MAKE_DIRECTORY ${MANDEST}/man1)
 
-add_custom_target(doc ALL
+add_custom_target(manpages ALL
   DEPENDS ${MANDEST}/man1/cmark.1
 )
 
