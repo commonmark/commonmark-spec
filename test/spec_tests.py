@@ -32,7 +32,8 @@ if __name__ == "__main__":
             default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
 
-cmark = CMark(prog=args.program, library_dir=args.library_dir)
+if not args.dump_tests:
+    cmark = CMark(prog=args.program, library_dir=args.library_dir)
 
 # Normalization code, adapted from
 # https://github.com/karlcow/markdown-testsuite/
