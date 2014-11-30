@@ -21,13 +21,13 @@ JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench apidoc
 
-all: $(BUILDDIR) $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc
+all: $(BUILDDIR)
 	@make -C $(BUILDDIR)
 
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check
+$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -70,6 +70,9 @@ clean:
 	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
 
 $(PROG): all
+
+man/man1/cmark.1: man/cmark.1.md
+	mkdir -p man/man1 && pandoc -t man -s $< -o $@
 
 apidoc: src/cmark.h
 	doxygen Doxyfile
