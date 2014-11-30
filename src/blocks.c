@@ -19,7 +19,7 @@
 #define peek_at(i, n) (i)->data[n]
 
 static void
-S_parser_push(cmark_parser *parser, const unsigned char *buffer, size_t len,
+S_parser_feed(cmark_parser *parser, const unsigned char *buffer, size_t len,
 	      bool eof);
 
 static void
@@ -434,7 +434,7 @@ cmark_node *cmark_parse_file(FILE *f)
 
 	while ((bytes = fread(buffer, 1, sizeof(buffer), f)) > 0) {
 		bool eof = bytes < sizeof(buffer);
-		S_parser_push(parser, buffer, bytes, eof);
+		S_parser_feed(parser, buffer, bytes, eof);
 	}
 
 	document = cmark_parser_finish(parser);
@@ -447,7 +447,7 @@ cmark_node *cmark_parse_document(const char *buffer, size_t len)
 	cmark_parser *parser = cmark_parser_new();
 	cmark_node *document;
 
-	S_parser_push(parser, (const unsigned char *)buffer, len, true);
+	S_parser_feed(parser, (const unsigned char *)buffer, len, true);
 
 	document = cmark_parser_finish(parser);
 	cmark_parser_free(parser);
@@ -455,13 +455,13 @@ cmark_node *cmark_parse_document(const char *buffer, size_t len)
 }
 
 void
-cmark_parser_push(cmark_parser *parser, const char *buffer, size_t len)
+cmark_parser_feed(cmark_parser *parser, const char *buffer, size_t len)
 {
-	S_parser_push(parser, (const unsigned char *)buffer, len, false);
+	S_parser_feed(parser, (const unsigned char *)buffer, len, false);
 }
 
 static void
-S_parser_push(cmark_parser *parser, const unsigned char *buffer, size_t len,
+S_parser_feed(cmark_parser *parser, const unsigned char *buffer, size_t len,
 	      bool eof)
 {
 	const unsigned char *end = buffer + len;
