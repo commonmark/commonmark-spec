@@ -1,17 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from ctypes import CDLL, c_char_p, c_long
 import sys
-import platform
 from difflib import unified_diff
-from subprocess import *
 import argparse
 from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
 import re
 import cgi
 import json
+from cmark import CMark
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run cmark tests.')
@@ -34,32 +32,7 @@ if __name__ == "__main__":
             default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
 
-if not (args.program or args.dump_tests or args.debug_normalization):
-    sysname = platform.system()
-    libname = "libcmark"
-    if sysname == 'Darwin':
-        libname += ".dylib"
-    elif sysname == 'Windows':
-        libname += ".dll"
-    else:
-        libname += ".so"
-    if args and args.library_dir:
-        libpath = args.library_dir + "/" + libname
-    else:
-        libpath = "build/src/" + libname
-    cmark = CDLL(libpath)
-
-    markdown = cmark.cmark_markdown_to_html
-    markdown.restype = c_char_p
-    markdown.argtypes = [c_char_p, c_long]
-
-def md2html(text, prog):
-    if prog:
-        p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
-        [result, err] = p1.communicate(input=text)
-        return [p1.returncode, result, err]
-    else:
-        return [0, markdown(text, len(text)), '']
+cmark = CMark(prog=args.program, library_dir=args.library_dir)
 
 # Normalization code, adapted from
 # https://github.com/karlcow/markdown-testsuite/
@@ -201,9 +174,9 @@ def print_test_header(headertext, example_number, start_line, end_line):
     print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
 
 def do_test(markdown_lines, expected_html_lines, headertext,
-            example_number, start_line, end_line, prog, normalize):
+            example_number, start_line, end_line, normalize):
     real_markdown_text = ''.join(markdown_lines).replace('→','\t')
-    [retcode, actual_html, err] = md2html(real_markdown_text, prog)
+    [retcode, actual_html, err] = cmark.to_html(real_markdown_text)
     if retcode == 0:
         actual_html_lines = actual_html.splitlines(True)
         expected_html = ''.join(expected_html_lines)
@@ -227,7 +200,7 @@ def do_test(markdown_lines, expected_html_lines, headertext,
         print(err)
         return 'error'
 
-def do_tests(specfile, prog, pattern, normalize, dump_tests):
+def do_tests(specfile, pattern, normalize, dump_tests):
     line_number = 0
     start_line = 0
     end_line = 0
@@ -273,8 +246,7 @@ def do_tests(specfile, prog, pattern, normalize, dump_tests):
                         else:
                             result = do_test(markdown_lines, html_lines,
                                              headertext, example_number,
-                                             start_line, end_line, prog,
-                                             normalize)
+                                             start_line, end_line, normalize)
                             if result == 'pass':
                                 passed = passed + 1
                             elif result == 'fail':
@@ -301,8 +273,7 @@ def do_tests(specfile, prog, pattern, normalize, dump_tests):
 if __name__ == "__main__":
     if args.debug_normalization:
         print normalize_html(sys.stdin.read())
-    elif do_tests(args.spec, args.program, args.pattern, args.normalize,
-                  args.dump_tests):
+    elif do_tests(args.spec, args.pattern, args.normalize, args.dump_tests):
         exit(0)
     else:
         exit(1)
