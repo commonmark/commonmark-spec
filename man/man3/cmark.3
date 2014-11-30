@@ -14,7 +14,7 @@
 
 Current version of library.
 
-\fIchar *\fR \fBcmark_markdown_to_html\fR(\fIconst char *text\fR\fIint len\fR)
+\fIchar *\fR \fBcmark_markdown_to_html\fR(\fIconst char *text\fR, \fIint len\fR)
 
 Convert
 .Fa text
@@ -117,49 +117,49 @@ typedef enum {
 \fIconst char*\fR \fBcmark_node_get_string_content\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_string_content\fR(\fIcmark_node *node\fR\fIconst char *content\fR)
+\fIint\fR \fBcmark_node_set_string_content\fR(\fIcmark_node *node\fR, \fIconst char *content\fR)
 
 
 \fIint\fR \fBcmark_node_get_header_level\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_header_level\fR(\fIcmark_node *node\fR\fIint level\fR)
+\fIint\fR \fBcmark_node_set_header_level\fR(\fIcmark_node *node\fR, \fIint level\fR)
 
 
 \fIcmark_list_type\fR \fBcmark_node_get_list_type\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_list_type\fR(\fIcmark_node *node\fR\fIcmark_list_type type\fR)
+\fIint\fR \fBcmark_node_set_list_type\fR(\fIcmark_node *node\fR, \fIcmark_list_type type\fR)
 
 
 \fIint\fR \fBcmark_node_get_list_start\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_list_start\fR(\fIcmark_node *node\fR\fIint start\fR)
+\fIint\fR \fBcmark_node_set_list_start\fR(\fIcmark_node *node\fR, \fIint start\fR)
 
 
 \fIint\fR \fBcmark_node_get_list_tight\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_list_tight\fR(\fIcmark_node *node\fR\fIint tight\fR)
+\fIint\fR \fBcmark_node_set_list_tight\fR(\fIcmark_node *node\fR, \fIint tight\fR)
 
 
 \fIconst char*\fR \fBcmark_node_get_fence_info\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_fence_info\fR(\fIcmark_node *node\fR\fIconst char *info\fR)
+\fIint\fR \fBcmark_node_set_fence_info\fR(\fIcmark_node *node\fR, \fIconst char *info\fR)
 
 
 \fIconst char*\fR \fBcmark_node_get_url\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_url\fR(\fIcmark_node *node\fR\fIconst char *url\fR)
+\fIint\fR \fBcmark_node_set_url\fR(\fIcmark_node *node\fR, \fIconst char *url\fR)
 
 
 \fIconst char*\fR \fBcmark_node_get_title\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_set_title\fR(\fIcmark_node *node\fR\fIconst char *title\fR)
+\fIint\fR \fBcmark_node_set_title\fR(\fIcmark_node *node\fR, \fIconst char *title\fR)
 
 
 \fIint\fR \fBcmark_node_get_start_line\fR(\fIcmark_node *node\fR)
@@ -177,16 +177,16 @@ typedef enum {
 \fIvoid\fR \fBcmark_node_unlink\fR(\fIcmark_node *node\fR)
 
 
-\fIint\fR \fBcmark_node_insert_before\fR(\fIcmark_node *node\fR\fIcmark_node *sibling\fR)
+\fIint\fR \fBcmark_node_insert_before\fR(\fIcmark_node *node\fR, \fIcmark_node *sibling\fR)
 
 
-\fIint\fR \fBcmark_node_insert_after\fR(\fIcmark_node *node\fR\fIcmark_node *sibling\fR)
+\fIint\fR \fBcmark_node_insert_after\fR(\fIcmark_node *node\fR, \fIcmark_node *sibling\fR)
 
 
-\fIint\fR \fBcmark_node_prepend_child\fR(\fIcmark_node *node\fR\fIcmark_node *child\fR)
+\fIint\fR \fBcmark_node_prepend_child\fR(\fIcmark_node *node\fR, \fIcmark_node *child\fR)
 
 
-\fIint\fR \fBcmark_node_append_child\fR(\fIcmark_node *node\fR\fIcmark_node *child\fR)
+\fIint\fR \fBcmark_node_append_child\fR(\fIcmark_node *node\fR, \fIcmark_node *child\fR)
 
 
 
@@ -201,10 +201,10 @@ typedef enum {
 \fIcmark_node *\fR \fBcmark_parser_finish\fR(\fIcmark_parser *parser\fR)
 
 
-\fIvoid\fR \fBcmark_parser_feed\fR(\fIcmark_parser *parser\fR\fIconst char *buffer\fR\fIsize_t len\fR)
+\fIvoid\fR \fBcmark_parser_feed\fR(\fIcmark_parser *parser\fR, \fIconst char *buffer\fR, \fIsize_t len\fR)
 
 
-\fIcmark_node *\fR \fBcmark_parse_document\fR(\fIconst char *buffer\fR\fIsize_t len\fR)
+\fIcmark_node *\fR \fBcmark_parse_document\fR(\fIconst char *buffer\fR, \fIsize_t len\fR)
 
 
 \fIcmark_node *\fR \fBcmark_parse_file\fR(\fIFILE *f\fR)

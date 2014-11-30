@@ -72,7 +72,7 @@ with open(sourcefile, 'r') as cmarkh:
                 for argument in re.split(',', m.group('args')):
                     if not first:
                         mdlines.append(', ')
-                        first = False
+                    first = False
                     mdlines.append('\\fI' + argument.strip() + '\\fR')
                 mdlines.append(')\n')
             else:
