@@ -75,12 +75,12 @@ Or, to create Xcode project files on OSX:
 
 Tests can also be run manually on any executable `$PROG` using:
 
-    python spec_tests.py --program $PROG
+    python test/spec_tests.py --program $PROG
 
 If you want to extract the raw test data from the spec without
 actually running the tests, you can do:
 
-    python spec_tests.py --dump-tests
+    python test/spec_tests.py --dump-tests
 
 and you'll get all the tests in JSON format.
 
