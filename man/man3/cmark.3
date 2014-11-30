@@ -1,23 +1,20 @@
-.Dd November 30, 2014
-.Dt cmark 3
-.Sh NAME
+.TH cmark 3 "November 30, 2014" "LOCAL" "Library Functions Manual"
+.SH NAME
 
-.Nm cmark
-.Nd CommonMark parsing, manipulating, and rendering
+.B cmark
+\- CommonMark parsing, manipulating, and rendering
 
-.Sh SIMPLE INTERFACE
+.SH SIMPLE INTERFACE
 
-.Bd -literal
+.nf
+.RS 0n
 #define CMARK_VERSION "0.1"
-.Ed
+.RE
+.fi
 
 Current version of library.
 
-.Ft char *
-.Fo cmark_markdown_to_html
-.Fa const char *text
-.Fa int len
-.Fc
+\fIchar *\fR \fBcmark_markdown_to_html\fR(\fIconst char *text\fR\fIint len\fR)
 
 Convert
 .Fa text
@@ -26,9 +23,10 @@ Convert
 from CommonMark Markdown to HTML, returning a null-terminated,
 UTF-8-encoded string.
 
-.Sh NODE STRUCTURE
+.SH NODE STRUCTURE
 
-.Bd -literal
+.nf
+.RS 0n
 typedef enum {
 	/* Block */
 	CMARK_NODE_DOCUMENT,
@@ -59,299 +57,169 @@ typedef enum {
 	CMARK_NODE_FIRST_INLINE = CMARK_NODE_TEXT,
 	CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
 } cmark_node_type;
-.Ed
+.RE
+.fi
 
 
-.Bd -literal
+.nf
+.RS 0n
 typedef enum {
 	CMARK_NO_LIST,
 	CMARK_BULLET_LIST,
 	CMARK_ORDERED_LIST
 }  cmark_list_type;
-.Ed
+.RE
+.fi
 
 
-.Bd -literal
+.nf
+.RS 0n
 typedef enum {
 	CMARK_PERIOD_DELIM,
 	CMARK_PAREN_DELIM
 } cmark_delim_type;
-.Ed
+.RE
+.fi
 
 
 
-.Sh CREATING AND DESTROYING NODES
+.SH CREATING AND DESTROYING NODES
 
-.Ft cmark_node*
-.Fo cmark_node_new
-.Fa cmark_node_type type
-.Fc
+\fIcmark_node*\fR \fBcmark_node_new\fR(\fIcmark_node_type type\fR)
 
 
-.Ft void
-.Fo cmark_node_free
-.Fa cmark_node *node
-.Fc
+\fIvoid\fR \fBcmark_node_free\fR(\fIcmark_node *node\fR)
 
 
-.Ft cmark_node*
-.Fo cmark_node_next
-.Fa cmark_node *node
-.Fc
+\fIcmark_node*\fR \fBcmark_node_next\fR(\fIcmark_node *node\fR)
 
 
-.Sh TREE TRAVERSAL
+.SH TREE TRAVERSAL
 
-.Ft cmark_node*
-.Fo cmark_node_previous
-.Fa cmark_node *node
-.Fc
+\fIcmark_node*\fR \fBcmark_node_previous\fR(\fIcmark_node *node\fR)
 
 
-.Ft cmark_node*
-.Fo cmark_node_parent
-.Fa cmark_node *node
-.Fc
+\fIcmark_node*\fR \fBcmark_node_parent\fR(\fIcmark_node *node\fR)
 
 
-.Ft cmark_node*
-.Fo cmark_node_first_child
-.Fa cmark_node *node
-.Fc
+\fIcmark_node*\fR \fBcmark_node_first_child\fR(\fIcmark_node *node\fR)
 
 
-.Ft cmark_node*
-.Fo cmark_node_last_child
-.Fa cmark_node *node
-.Fc
+\fIcmark_node*\fR \fBcmark_node_last_child\fR(\fIcmark_node *node\fR)
 
 
 
-.Sh ACCESSORS
+.SH ACCESSORS
 
-.Ft cmark_node_type
-.Fo cmark_node_get_type
-.Fa cmark_node *node
-.Fc
+\fIcmark_node_type\fR \fBcmark_node_get_type\fR(\fIcmark_node *node\fR)
 
 
-.Ft const char*
-.Fo cmark_node_get_string_content
-.Fa cmark_node *node
-.Fc
+\fIconst char*\fR \fBcmark_node_get_string_content\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_string_content
-.Fa cmark_node *node
-.Fa const char *content
-.Fc
+\fIint\fR \fBcmark_node_set_string_content\fR(\fIcmark_node *node\fR\fIconst char *content\fR)
 
 
-.Ft int
-.Fo cmark_node_get_header_level
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_header_level\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_header_level
-.Fa cmark_node *node
-.Fa int level
-.Fc
+\fIint\fR \fBcmark_node_set_header_level\fR(\fIcmark_node *node\fR\fIint level\fR)
 
 
-.Ft cmark_list_type
-.Fo cmark_node_get_list_type
-.Fa cmark_node *node
-.Fc
+\fIcmark_list_type\fR \fBcmark_node_get_list_type\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_list_type
-.Fa cmark_node *node
-.Fa cmark_list_type type
-.Fc
+\fIint\fR \fBcmark_node_set_list_type\fR(\fIcmark_node *node\fR\fIcmark_list_type type\fR)
 
 
-.Ft int
-.Fo cmark_node_get_list_start
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_list_start\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_list_start
-.Fa cmark_node *node
-.Fa int start
-.Fc
+\fIint\fR \fBcmark_node_set_list_start\fR(\fIcmark_node *node\fR\fIint start\fR)
 
 
-.Ft int
-.Fo cmark_node_get_list_tight
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_list_tight\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_list_tight
-.Fa cmark_node *node
-.Fa int tight
-.Fc
+\fIint\fR \fBcmark_node_set_list_tight\fR(\fIcmark_node *node\fR\fIint tight\fR)
 
 
-.Ft const char*
-.Fo cmark_node_get_fence_info
-.Fa cmark_node *node
-.Fc
+\fIconst char*\fR \fBcmark_node_get_fence_info\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_fence_info
-.Fa cmark_node *node
-.Fa const char *info
-.Fc
+\fIint\fR \fBcmark_node_set_fence_info\fR(\fIcmark_node *node\fR\fIconst char *info\fR)
 
 
-.Ft const char*
-.Fo cmark_node_get_url
-.Fa cmark_node *node
-.Fc
+\fIconst char*\fR \fBcmark_node_get_url\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_url
-.Fa cmark_node *node
-.Fa const char *url
-.Fc
+\fIint\fR \fBcmark_node_set_url\fR(\fIcmark_node *node\fR\fIconst char *url\fR)
 
 
-.Ft const char*
-.Fo cmark_node_get_title
-.Fa cmark_node *node
-.Fc
+\fIconst char*\fR \fBcmark_node_get_title\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_set_title
-.Fa cmark_node *node
-.Fa const char *title
-.Fc
+\fIint\fR \fBcmark_node_set_title\fR(\fIcmark_node *node\fR\fIconst char *title\fR)
 
 
-.Ft int
-.Fo cmark_node_get_start_line
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_start_line\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_get_start_column
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_start_column\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_get_end_line
-.Fa cmark_node *node
-.Fc
+\fIint\fR \fBcmark_node_get_end_line\fR(\fIcmark_node *node\fR)
 
 
 
-.Sh TREE MANIPULATION
+.SH TREE MANIPULATION
 
-.Ft void
-.Fo cmark_node_unlink
-.Fa cmark_node *node
-.Fc
+\fIvoid\fR \fBcmark_node_unlink\fR(\fIcmark_node *node\fR)
 
 
-.Ft int
-.Fo cmark_node_insert_before
-.Fa cmark_node *node
-.Fa cmark_node *sibling
-.Fc
+\fIint\fR \fBcmark_node_insert_before\fR(\fIcmark_node *node\fR\fIcmark_node *sibling\fR)
 
 
-.Ft int
-.Fo cmark_node_insert_after
-.Fa cmark_node *node
-.Fa cmark_node *sibling
-.Fc
+\fIint\fR \fBcmark_node_insert_after\fR(\fIcmark_node *node\fR\fIcmark_node *sibling\fR)
 
 
-.Ft int
-.Fo cmark_node_prepend_child
-.Fa cmark_node *node
-.Fa cmark_node *child
-.Fc
+\fIint\fR \fBcmark_node_prepend_child\fR(\fIcmark_node *node\fR\fIcmark_node *child\fR)
 
 
-.Ft int
-.Fo cmark_node_append_child
-.Fa cmark_node *node
-.Fa cmark_node *child
-.Fc
+\fIint\fR \fBcmark_node_append_child\fR(\fIcmark_node *node\fR\fIcmark_node *child\fR)
 
 
 
-.Sh PARSING
+.SH PARSING
 
-.Ft cmark_parser *
-.Fo cmark_parser_new
-.Fa 
-.Fc
+\fIcmark_parser *\fR \fBcmark_parser_new\fR(\fI\fR)
 
 
-.Ft void
-.Fo cmark_parser_free
-.Fa cmark_parser *parser
-.Fc
+\fIvoid\fR \fBcmark_parser_free\fR(\fIcmark_parser *parser\fR)
 
 
-.Ft cmark_node *
-.Fo cmark_parser_finish
-.Fa cmark_parser *parser
-.Fc
+\fIcmark_node *\fR \fBcmark_parser_finish\fR(\fIcmark_parser *parser\fR)
 
 
-.Ft void
-.Fo cmark_parser_feed
-.Fa cmark_parser *parser
-.Fa const char *buffer
-.Fa size_t len
-.Fc
+\fIvoid\fR \fBcmark_parser_feed\fR(\fIcmark_parser *parser\fR\fIconst char *buffer\fR\fIsize_t len\fR)
 
 
-.Ft cmark_node *
-.Fo cmark_parse_document
-.Fa const char *buffer
-.Fa size_t len
-.Fc
+\fIcmark_node *\fR \fBcmark_parse_document\fR(\fIconst char *buffer\fR\fIsize_t len\fR)
 
 
-.Ft cmark_node *
-.Fo cmark_parse_file
-.Fa FILE *f
-.Fc
+\fIcmark_node *\fR \fBcmark_parse_file\fR(\fIFILE *f\fR)
 
 
 
-.Sh RENDERING
+.SH RENDERING
 
-.Ft char *
-.Fo cmark_render_ast
-.Fa cmark_node *root
-.Fc
+\fIchar *\fR \fBcmark_render_ast\fR(\fIcmark_node *root\fR)
 
 
-.Ft char *
-.Fo cmark_render_html
-.Fa cmark_node *root
-.Fc
+\fIchar *\fR \fBcmark_render_html\fR(\fIcmark_node *root\fR)
 
 
-.Sh AUTHORS
+.SH AUTHORS
 
 John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
 

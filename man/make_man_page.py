@@ -66,15 +66,19 @@ with open(sourcefile, 'r') as cmarkh:
             rawsig = ''.join(sig)
             m = function_re.match(rawsig)
             if m:
-                mdlines.append('.Ft ' + m.group('type') + '\n')
-                mdlines.append('.Fo ' + m.group('name') + '\n')
+                mdlines.append('\\fI' + m.group('type') + '\\fR' + ' ')
+                mdlines.append('\\fB' + m.group('name') + '\\fR' + '(')
+                first = True
                 for argument in re.split(',', m.group('args')):
-                    mdlines.append('.Fa ' + argument.strip() + '\n')
-                mdlines.append('.Fc\n')
+                    if not first:
+                        mdlines.append(', ')
+                        first = False
+                    mdlines.append('\\fI' + argument.strip() + '\\fR')
+                mdlines.append(')\n')
             else:
-                mdlines.append('.Bd -literal\n')
+                mdlines.append('.nf\n.RS 0n\n')
                 mdlines += sig
-                mdlines.append('.Ed\n')
+                mdlines.append('.RE\n.fi\n')
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
             mdlines += chunk
@@ -87,6 +91,5 @@ with open(sourcefile, 'r') as cmarkh:
             chunk = []
             mdlines.append('\n')
 
-sys.stdout.write('.Dd ' + date.today().strftime('%B %d, %Y') + '\n')
-sys.stdout.write('.Dt ' + os.path.basename(sourcefile).replace('.h','') + ' 3\n')
+sys.stdout.write('.TH ' + os.path.basename(sourcefile).replace('.h','') + ' 3 "' + date.today().strftime('%B %d, %Y') + '" "LOCAL" "Library Functions Manual"\n')
 sys.stdout.write(''.join(mdlines))
