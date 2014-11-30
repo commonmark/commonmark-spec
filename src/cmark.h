@@ -21,11 +21,8 @@ extern "C" {
  */
 #define CMARK_VERSION "0.1"
 
-/** Convert
- * .Fa text
- * (assumed to be a UTF-8 encoded string with length
- * .Fa len )
- * from CommonMark Markdown to HTML, returning a null-terminated,
+/** Convert 'text' (assumed to be a UTF-8 encoded string with length
+ * 'len' from CommonMark Markdown to HTML, returning a null-terminated,
  * UTF-8-encoded string.
  */
 CMARK_EXPORT

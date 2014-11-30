@@ -2,7 +2,8 @@
 
 # Creates a man page from a C file.
 
-# Comments beginning with `/**` are treated as Groff man.
+# Comments beginning with `/**` are treated as Groff man, except that
+# 'this' is converted to \fIthis\fR, and ''this'' to \fBthis\fR.
 
 # Non-blank lines immediately following a man page comment are treated
 # as function signatures or examples and parsed into .Ft, .Fo, .Fa, .Fc. The
@@ -22,6 +23,11 @@ blank_re = re.compile('^\s*$')
 macro_re = re.compile('CMARK_EXPORT *')
 typedef_start_re = re.compile('typedef.*{$')
 typedef_end_re = re.compile('}')
+single_quote_re = re.compile("(?<!\w)'([^']+)'(?!\w)")
+double_quote_re = re.compile("(?<!\w)''([^']+)''(?!\w)")
+
+def handle_quotes(s):
+    return re.sub(double_quote_re, '\\\\fB\g<1>\\\\fR', re.sub(single_quote_re, '\\\\fI\g<1>\\\\fR', s))
 
 typedef = False
 mdlines = []
@@ -55,7 +61,7 @@ with open(sourcefile, 'r') as cmarkh:
 
         # handle line
         if state == 'man':
-            chunk.append(re.sub(comment_delim_re, '', line))
+            chunk.append(handle_quotes(re.sub(comment_delim_re, '', line)))
         elif state == 'signature':
             ln = re.sub(macro_re, '', line)
             if typedef or not re.match(blank_re, ln):
@@ -76,11 +82,12 @@ with open(sourcefile, 'r') as cmarkh:
                     mdlines.append('\\fI' + argument.strip() + '\\fR')
                 mdlines.append(')\n')
             else:
-                mdlines.append('.nf\n.RS 0n\n')
+                mdlines.append('.nf\n\\f[C]\n.RS 0n\n')
                 mdlines += sig
-                mdlines.append('.RE\n.fi\n')
+                mdlines.append('.RE\n\\f[]\n.fi\n')
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
+            mdlines.append('.PP\n')
             mdlines += chunk
             chunk = []
             sig = []
