@@ -30,9 +30,6 @@ if __name__ == "__main__":
             default=False, help='filter stdin through normalizer for testing')
     args = parser.parse_args(sys.argv[1:])
 
-if not args.dump_tests:
-    cmark = CMark(prog=args.program, library_dir=args.library_dir)
-
 def print_test_header(headertext, example_number, start_line, end_line):
     print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
 
@@ -103,7 +100,7 @@ def get_tests(specfile):
                 html_lines.append(line)
     return tests
 
-def do_tests(tests, pattern, normalize):
+def do_tests(cmark, tests, pattern, normalize):
     passed = 0
     errored = 0
     failed = 0
@@ -135,7 +132,9 @@ if __name__ == "__main__":
     if args.dump_tests:
         print json.dumps(tests, ensure_ascii=False, indent=2)
         exit(0)
-    elif do_tests(tests, args.pattern, args.normalize):
-        exit(0)
     else:
-        exit(1)
+        cmark = CMark(prog=args.program, library_dir=args.library_dir)
+        if do_tests(cmark, tests, args.pattern, args.normalize):
+            exit(0)
+        else:
+            exit(1)
