@@ -8,13 +8,24 @@
 extern "C" {
 #endif
 
-/** @file cmark.h
- * Functions for parsing CommonMark to an AST, manipulating
- * the AST, and rendering the AST to HTML.
- */
+/// # NAME
+///
+/// cmark - CommonMark parsing, manipulating, and rendering
 
+/// # SIMPLE INTERFACE
+
+/// Current version of library.
 #define CMARK_VERSION "0.1"
 
+/// Convert `text` (assumed to be a UTF-8 encoded string with length `len`)
+/// from CommonMark Markdown to HTML, returning a null-terminated,
+/// UTF-8-encoded string.
+CMARK_EXPORT
+char *cmark_markdown_to_html(const char *text, int len);
+
+/// # NODE STRUCTURE
+
+///
 typedef enum {
     // Block
     CMARK_NODE_DOCUMENT,
@@ -46,12 +57,15 @@ typedef enum {
     CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
 } cmark_node_type;
 
+
+///
 typedef enum {
 	CMARK_NO_LIST,
 	CMARK_BULLET_LIST,
 	CMARK_ORDERED_LIST
 }  cmark_list_type;
 
+///
 typedef enum {
 	CMARK_PERIOD_DELIM,
 	CMARK_PAREN_DELIM
@@ -60,140 +74,181 @@ typedef enum {
 typedef struct cmark_node cmark_node;
 typedef struct cmark_parser cmark_parser;
 
-// Construction and destruction
+/// # CREATING AND DESTORYING NODES
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_new(cmark_node_type type);
 
+///
 CMARK_EXPORT void
 cmark_node_free(cmark_node *node);
 
-// Tree traversal
+/// # TREE TRAVERSAL
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_next(cmark_node *node);
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_previous(cmark_node *node);
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_parent(cmark_node *node);
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_first_child(cmark_node *node);
 
+///
 CMARK_EXPORT cmark_node*
 cmark_node_last_child(cmark_node *node);
 
-// Accessors
+/// # ACCESSORS
 
+///
 CMARK_EXPORT cmark_node_type
 cmark_node_get_type(cmark_node *node);
 
+///
 CMARK_EXPORT const char*
 cmark_node_get_string_content(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_string_content(cmark_node *node, const char *content);
 
+///
 CMARK_EXPORT int
 cmark_node_get_header_level(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_header_level(cmark_node *node, int level);
 
+///
 CMARK_EXPORT cmark_list_type
 cmark_node_get_list_type(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_list_type(cmark_node *node, cmark_list_type type);
 
+///
 CMARK_EXPORT int
 cmark_node_get_list_start(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_list_start(cmark_node *node, int start);
 
+///
 CMARK_EXPORT int
 cmark_node_get_list_tight(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_list_tight(cmark_node *node, int tight);
 
+///
 CMARK_EXPORT const char*
 cmark_node_get_fence_info(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_fence_info(cmark_node *node, const char *info);
 
+///
 CMARK_EXPORT const char*
 cmark_node_get_url(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_url(cmark_node *node, const char *url);
 
+///
 CMARK_EXPORT const char*
 cmark_node_get_title(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_set_title(cmark_node *node, const char *title);
 
+///
 CMARK_EXPORT int
 cmark_node_get_start_line(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_get_start_column(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_get_end_line(cmark_node *node);
 
-// Tree manipulation
+/// # TREE MANIPULATION
 
+///
 CMARK_EXPORT void
 cmark_node_unlink(cmark_node *node);
 
+///
 CMARK_EXPORT int
 cmark_node_insert_before(cmark_node *node, cmark_node *sibling);
 
+///
 CMARK_EXPORT int
 cmark_node_insert_after(cmark_node *node, cmark_node *sibling);
 
+///
 CMARK_EXPORT int
 cmark_node_prepend_child(cmark_node *node, cmark_node *child);
 
+///
 CMARK_EXPORT int
 cmark_node_append_child(cmark_node *node, cmark_node *child);
 
-// Parser
+/// # PARSING
 
+///
 CMARK_EXPORT
 cmark_parser *cmark_parser_new();
 
+///
 CMARK_EXPORT
 void cmark_parser_free(cmark_parser *parser);
 
+///
 CMARK_EXPORT
 cmark_node *cmark_parser_finish(cmark_parser *parser);
 
+///
 CMARK_EXPORT
 void cmark_parser_push(cmark_parser *parser, const char *buffer, size_t len);
 
+///
 CMARK_EXPORT
 cmark_node *cmark_parse_document(const char *buffer, size_t len);
 
+///
 CMARK_EXPORT
 cmark_node *cmark_parse_file(FILE *f);
 
-// Renderer
+/// # RENDERING
 
+///
 CMARK_EXPORT
 char *cmark_render_ast(cmark_node *root);
 
+///
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
 
-CMARK_EXPORT
-char *cmark_markdown_to_html(const char *text, int len);
+/// # AUTHORS
+///
+/// John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
 
 #ifndef CMARK_NO_SHORT_NAMES
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
