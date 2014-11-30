@@ -77,8 +77,8 @@ man/man1/cmark.1: man/cmark.1.md
 man/man3/cmark.3: man/cmark.3.md
 	mkdir -p man/man3 && pandoc -t man -s $< -o $@
 
-apidoc: src/cmark.h
-	doxygen Doxyfile
+man/cmark.3.md: src/cmark.h
+	python man/make_man_page.py $< > $@
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.

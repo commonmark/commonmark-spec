@@ -14,14 +14,21 @@
 import sys
 import re
 
-special_comment_re = re.compile('^\/\/\/ ?');
-blank_re = re.compile('^\s*$');
+if len(sys.argv) > 1:
+    sourcefile = sys.argv[1]
+else:
+    print("Usage:  make_man_page.py sourcefile")
+    exit(1)
+
+special_comment_re = re.compile('^\/\/\/ ?')
+blank_re = re.compile('^\s*$')
+macro_re = re.compile('CMARK_EXPORT *')
 
 mdlines = []
 chunk = []
 sig = []
 
-with open('../src/cmark.h', 'r') as cmarkh:
+with open(sourcefile, 'r') as cmarkh:
     state = 'default'
     for line in cmarkh:
         # state transition
@@ -39,7 +46,7 @@ with open('../src/cmark.h', 'r') as cmarkh:
         if state == 'markdown':
             chunk.append(re.sub(special_comment_re, '', line))
         elif state == 'signature':
-            sig.append('    ' + line)
+            sig.append('    ' + re.sub(macro_re, '', line))
         elif oldstate == 'signature' and state != 'signature':
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
