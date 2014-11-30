@@ -2,9 +2,9 @@
 
 # Creates a man page from a C file.
 
-# Lines beginning with /// are treated as Markdown.
+# Comments beginning with `/**` are treated as Markdown.
 
-# Non-blank lines immediately following a /// line are treated
+# Non-blank lines immediately following a Markdown comment are treated
 # as function signatures or examples and included verbatim. The
 # immediately preceding markdown chunk is printed after the example
 # as a comment on it.
@@ -20,7 +20,9 @@ else:
     print("Usage:  make_man_page.py sourcefile")
     exit(1)
 
-special_comment_re = re.compile('^\/\/\/ ?')
+comment_start_re = re.compile('^\/\*\* ?')
+comment_delim_re = re.compile('^[/ ]\** ?')
+comment_end_re = re.compile('^ \**\/')
 blank_re = re.compile('^\s*$')
 macro_re = re.compile('CMARK_EXPORT *')
 
@@ -33,7 +35,11 @@ with open(sourcefile, 'r') as cmarkh:
     for line in cmarkh:
         # state transition
         oldstate = state
-        if special_comment_re.match(line):
+        if comment_start_re.match(line):
+            state = 'markdown'
+        elif comment_end_re.match(line) and state == 'markdown':
+            continue
+        elif comment_delim_re.match(line) and state == 'markdown':
             state = 'markdown'
         elif blank_re.match(line):
             state = 'default'
@@ -41,12 +47,12 @@ with open(sourcefile, 'r') as cmarkh:
             state = 'signature'
 
         # handle line
-        #if oldstate != state and len(mdlines) > 0 and mdlines[-1] != '\n':
-        #    mdlines.append('\n')
         if state == 'markdown':
-            chunk.append(re.sub(special_comment_re, '', line))
+            chunk.append(re.sub(comment_delim_re, '', line))
         elif state == 'signature':
-            sig.append('    ' + re.sub(macro_re, '', line))
+            ln = re.sub(macro_re, '', line)
+            if not re.match(blank_re, ln):
+                sig.append('    ' + ln)
         elif oldstate == 'signature' and state != 'signature':
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')

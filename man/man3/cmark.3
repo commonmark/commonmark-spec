@@ -26,7 +26,7 @@ null\-terminated, UTF\-8\-encoded string.
 .nf
 \f[C]
 typedef\ enum\ {
-\ \ \ \ //\ Block
+\ \ \ \ /*\ Block\ */
 \ \ \ \ CMARK_NODE_DOCUMENT,
 \ \ \ \ CMARK_NODE_BLOCK_QUOTE,
 \ \ \ \ CMARK_NODE_LIST,
@@ -62,16 +62,16 @@ cmark_node_new(cmark_node_type\ type);
 
 void
 cmark_node_free(cmark_node\ *node);
+
+
+cmark_node*
+cmark_node_next(cmark_node\ *node);
 \f[]
 .fi
 .SH TREE TRAVERSAL
 .IP
 .nf
 \f[C]
-cmark_node*
-cmark_node_next(cmark_node\ *node);
-
-
 cmark_node*
 cmark_node_previous(cmark_node\ *node);
 
@@ -203,21 +203,16 @@ cmark_node_append_child(cmark_node\ *node,\ cmark_node\ *child);
 cmark_parser\ *cmark_parser_new();
 
 
-
 void\ cmark_parser_free(cmark_parser\ *parser);
-
 
 
 cmark_node\ *cmark_parser_finish(cmark_parser\ *parser);
 
 
-
 void\ cmark_parser_feed(cmark_parser\ *parser,\ const\ char\ *buffer,\ size_t\ len);
 
 
-
 cmark_node\ *cmark_parse_document(const\ char\ *buffer,\ size_t\ len);
-
 
 
 cmark_node\ *cmark_parse_file(FILE\ *f);
@@ -228,7 +223,6 @@ cmark_node\ *cmark_parse_file(FILE\ *f);
 .nf
 \f[C]
 char\ *cmark_render_ast(cmark_node\ *root);
-
 
 
 char\ *cmark_render_html(cmark_node\ *root);
