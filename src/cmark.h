@@ -87,7 +87,7 @@ typedef struct cmark_node cmark_node;
 typedef struct cmark_parser cmark_parser;
 
 /**
- * .Sh CREATING AND DESTORYING NODES
+ * .Sh CREATING AND DESTROYING NODES
  */
 
 /**

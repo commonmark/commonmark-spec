@@ -68,8 +68,8 @@ with open(sourcefile, 'r') as cmarkh:
             if m:
                 mdlines.append('.Ft ' + m.group('type') + '\n')
                 mdlines.append('.Fo ' + m.group('name') + '\n')
-                for argument in re.split('/s*,/s*', m.group('args')):
-                    mdlines.append('.Fa ' + argument + '\n')
+                for argument in re.split(',', m.group('args')):
+                    mdlines.append('.Fa ' + argument.strip() + '\n')
                 mdlines.append('.Fc\n')
             else:
                 mdlines.append('.Bd -literal\n')

@@ -15,7 +15,8 @@ Current version of library.
 
 .Ft char *
 .Fo cmark_markdown_to_html
-.Fa const char *text, int len
+.Fa const char *text
+.Fa int len
 .Fc
 
 Convert
@@ -79,7 +80,7 @@ typedef enum {
 
 
 
-.Sh CREATING AND DESTORYING NODES
+.Sh CREATING AND DESTROYING NODES
 
 .Ft cmark_node*
 .Fo cmark_node_new
@@ -142,7 +143,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_string_content
-.Fa cmark_node *node, const char *content
+.Fa cmark_node *node
+.Fa const char *content
 .Fc
 
 
@@ -154,7 +156,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_header_level
-.Fa cmark_node *node, int level
+.Fa cmark_node *node
+.Fa int level
 .Fc
 
 
@@ -166,7 +169,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_list_type
-.Fa cmark_node *node, cmark_list_type type
+.Fa cmark_node *node
+.Fa cmark_list_type type
 .Fc
 
 
@@ -178,7 +182,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_list_start
-.Fa cmark_node *node, int start
+.Fa cmark_node *node
+.Fa int start
 .Fc
 
 
@@ -190,7 +195,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_list_tight
-.Fa cmark_node *node, int tight
+.Fa cmark_node *node
+.Fa int tight
 .Fc
 
 
@@ -202,7 +208,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_fence_info
-.Fa cmark_node *node, const char *info
+.Fa cmark_node *node
+.Fa const char *info
 .Fc
 
 
@@ -214,7 +221,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_url
-.Fa cmark_node *node, const char *url
+.Fa cmark_node *node
+.Fa const char *url
 .Fc
 
 
@@ -226,7 +234,8 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_set_title
-.Fa cmark_node *node, const char *title
+.Fa cmark_node *node
+.Fa const char *title
 .Fc
 
 
@@ -259,25 +268,29 @@ typedef enum {
 
 .Ft int
 .Fo cmark_node_insert_before
-.Fa cmark_node *node, cmark_node *sibling
+.Fa cmark_node *node
+.Fa cmark_node *sibling
 .Fc
 
 
 .Ft int
 .Fo cmark_node_insert_after
-.Fa cmark_node *node, cmark_node *sibling
+.Fa cmark_node *node
+.Fa cmark_node *sibling
 .Fc
 
 
 .Ft int
 .Fo cmark_node_prepend_child
-.Fa cmark_node *node, cmark_node *child
+.Fa cmark_node *node
+.Fa cmark_node *child
 .Fc
 
 
 .Ft int
 .Fo cmark_node_append_child
-.Fa cmark_node *node, cmark_node *child
+.Fa cmark_node *node
+.Fa cmark_node *child
 .Fc
 
 
@@ -304,13 +317,16 @@ typedef enum {
 
 .Ft void
 .Fo cmark_parser_feed
-.Fa cmark_parser *parser, const char *buffer, size_t len
+.Fa cmark_parser *parser
+.Fa const char *buffer
+.Fa size_t len
 .Fc
 
 
 .Ft cmark_node *
 .Fo cmark_parse_document
-.Fa const char *buffer, size_t len
+.Fa const char *buffer
+.Fa size_t len
 .Fc
 
 
