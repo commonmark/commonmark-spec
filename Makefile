@@ -74,10 +74,7 @@ $(PROG): all
 man/man1/cmark.1: man/cmark.1.md
 	mkdir -p man/man1 && pandoc -t man -s $< -o $@
 
-man/man3/cmark.3: man/cmark.3.md
-	mkdir -p man/man3 && pandoc -t man -s $< -o $@
-
-man/cmark.3.md: src/cmark.h
+man/man3/cmark.3: src/cmark.h
 	python man/make_man_page.py $< > $@
 
 # We include html_unescape.h in the repository, so this shouldn't

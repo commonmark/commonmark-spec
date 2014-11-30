@@ -1,233 +1,341 @@
-.TH "" "" "" "" ""
-.SH NAME
-.PP
-cmark \- CommonMark parsing, manipulating, and rendering
-.SH SIMPLE INTERFACE
-.IP
-.nf
-\f[C]
-#define\ CMARK_VERSION\ "0.1"
-\f[]
-.fi
-.PP
+.Dd 2014-11-30
+.Dt cmark.h
+.Sh NAME
+
+.Nm cmark
+.Nd CommonMark parsing, manipulating, and rendering
+
+.Sh SIMPLE INTERFACE
+
+.Bd -literal
+#define CMARK_VERSION "0.1"
+.Ed
+
 Current version of library.
-.IP
-.nf
-\f[C]
-char\ *cmark_markdown_to_html(const\ char\ *text,\ int\ len);
-\f[]
-.fi
-.PP
-Convert \f[C]text\f[] (assumed to be a UTF\-8 encoded string with length
-\f[C]len\f[]) from CommonMark Markdown to HTML, returning a
-null\-terminated, UTF\-8\-encoded string.
-.SH NODE STRUCTURE
-.IP
-.nf
-\f[C]
-typedef\ enum\ {
-\ \ \ \ /*\ Block\ */
-\ \ \ \ CMARK_NODE_DOCUMENT,
-\ \ \ \ CMARK_NODE_BLOCK_QUOTE,
-\ \ \ \ CMARK_NODE_LIST,
-\ \ \ \ CMARK_NODE_LIST_ITEM,
-\ \ \ \ CMARK_NODE_CODE_BLOCK,
-\ \ \ \ CMARK_NODE_HTML,
-\ \ \ \ CMARK_NODE_PARAGRAPH,
-\ \ \ \ CMARK_NODE_HEADER,
-\ \ \ \ CMARK_NODE_HRULE,
-\ \ \ \ CMARK_NODE_REFERENCE_DEF,
 
+.Ft char *
+.Fo cmark_markdown_to_html
+.Fa const char *text, int len
+.Fc
+
+Convert
+.Fa text
+(assumed to be a UTF-8 encoded string with length
+.Fa len )
+from CommonMark Markdown to HTML, returning a null-terminated,
+UTF-8-encoded string.
 
-typedef\ enum\ {
-\ \ \ \ CMARK_NO_LIST,
-\ \ \ \ CMARK_BULLET_LIST,
-\ \ \ \ CMARK_ORDERED_LIST
-}\ \ cmark_list_type;
+.Sh NODE STRUCTURE
 
+.Bd -literal
+typedef enum {
+	/* Block */
+	CMARK_NODE_DOCUMENT,
+	CMARK_NODE_BLOCK_QUOTE,
+	CMARK_NODE_LIST,
+	CMARK_NODE_LIST_ITEM,
+	CMARK_NODE_CODE_BLOCK,
+	CMARK_NODE_HTML,
+	CMARK_NODE_PARAGRAPH,
+	CMARK_NODE_HEADER,
+	CMARK_NODE_HRULE,
+	CMARK_NODE_REFERENCE_DEF,
 
-typedef\ enum\ {
-\ \ \ \ CMARK_PERIOD_DELIM,
-\ \ \ \ CMARK_PAREN_DELIM
-}\ cmark_delim_type;
-\f[]
-.fi
-.SH CREATING AND DESTORYING NODES
-.IP
-.nf
-\f[C]
-cmark_node*
-cmark_node_new(cmark_node_type\ type);
+	CMARK_NODE_FIRST_BLOCK = CMARK_NODE_DOCUMENT,
+	CMARK_NODE_LAST_BLOCK  = CMARK_NODE_REFERENCE_DEF,
 
+	/* Inline */
+	CMARK_NODE_TEXT,
+	CMARK_NODE_SOFTBREAK,
+	CMARK_NODE_LINEBREAK,
+	CMARK_NODE_INLINE_CODE,
+	CMARK_NODE_INLINE_HTML,
+	CMARK_NODE_EMPH,
+	CMARK_NODE_STRONG,
+	CMARK_NODE_LINK,
+	CMARK_NODE_IMAGE,
 
-void
-cmark_node_free(cmark_node\ *node);
+	CMARK_NODE_FIRST_INLINE = CMARK_NODE_TEXT,
+	CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
+} cmark_node_type;
+.Ed
 
 
-cmark_node*
-cmark_node_next(cmark_node\ *node);
-\f[]
-.fi
-.SH TREE TRAVERSAL
-.IP
-.nf
-\f[C]
-cmark_node*
-cmark_node_previous(cmark_node\ *node);
+.Bd -literal
+typedef enum {
+	CMARK_NO_LIST,
+	CMARK_BULLET_LIST,
+	CMARK_ORDERED_LIST
+}  cmark_list_type;
+.Ed
 
 
-cmark_node*
-cmark_node_parent(cmark_node\ *node);
+.Bd -literal
+typedef enum {
+	CMARK_PERIOD_DELIM,
+	CMARK_PAREN_DELIM
+} cmark_delim_type;
+.Ed
 
 
-cmark_node*
-cmark_node_first_child(cmark_node\ *node);
 
+.Sh CREATING AND DESTORYING NODES
 
-cmark_node*
-cmark_node_last_child(cmark_node\ *node);
-\f[]
-.fi
-.SH ACCESSORS
-.IP
-.nf
-\f[C]
-cmark_node_type
-cmark_node_get_type(cmark_node\ *node);
+.Ft cmark_node*
+.Fo cmark_node_new
+.Fa cmark_node_type type
+.Fc
 
 
-const\ char*
-cmark_node_get_string_content(cmark_node\ *node);
+.Ft void
+.Fo cmark_node_free
+.Fa cmark_node *node
+.Fc
 
 
-int
-cmark_node_set_string_content(cmark_node\ *node,\ const\ char\ *content);
+.Ft cmark_node*
+.Fo cmark_node_next
+.Fa cmark_node *node
+.Fc
 
 
-int
-cmark_node_get_header_level(cmark_node\ *node);
+.Sh TREE TRAVERSAL
 
+.Ft cmark_node*
+.Fo cmark_node_previous
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_header_level(cmark_node\ *node,\ int\ level);
 
+.Ft cmark_node*
+.Fo cmark_node_parent
+.Fa cmark_node *node
+.Fc
 
-cmark_list_type
-cmark_node_get_list_type(cmark_node\ *node);
 
+.Ft cmark_node*
+.Fo cmark_node_first_child
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_list_type(cmark_node\ *node,\ cmark_list_type\ type);
 
+.Ft cmark_node*
+.Fo cmark_node_last_child
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_get_list_start(cmark_node\ *node);
 
 
-int
-cmark_node_set_list_start(cmark_node\ *node,\ int\ start);
+.Sh ACCESSORS
 
+.Ft cmark_node_type
+.Fo cmark_node_get_type
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_get_list_tight(cmark_node\ *node);
 
+.Ft const char*
+.Fo cmark_node_get_string_content
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_list_tight(cmark_node\ *node,\ int\ tight);
 
+.Ft int
+.Fo cmark_node_set_string_content
+.Fa cmark_node *node, const char *content
+.Fc
 
-const\ char*
-cmark_node_get_fence_info(cmark_node\ *node);
 
+.Ft int
+.Fo cmark_node_get_header_level
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_fence_info(cmark_node\ *node,\ const\ char\ *info);
 
+.Ft int
+.Fo cmark_node_set_header_level
+.Fa cmark_node *node, int level
+.Fc
 
-const\ char*
-cmark_node_get_url(cmark_node\ *node);
 
+.Ft cmark_list_type
+.Fo cmark_node_get_list_type
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_url(cmark_node\ *node,\ const\ char\ *url);
 
+.Ft int
+.Fo cmark_node_set_list_type
+.Fa cmark_node *node, cmark_list_type type
+.Fc
 
-const\ char*
-cmark_node_get_title(cmark_node\ *node);
 
+.Ft int
+.Fo cmark_node_get_list_start
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_set_title(cmark_node\ *node,\ const\ char\ *title);
 
+.Ft int
+.Fo cmark_node_set_list_start
+.Fa cmark_node *node, int start
+.Fc
 
-int
-cmark_node_get_start_line(cmark_node\ *node);
 
+.Ft int
+.Fo cmark_node_get_list_tight
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_get_start_column(cmark_node\ *node);
 
+.Ft int
+.Fo cmark_node_set_list_tight
+.Fa cmark_node *node, int tight
+.Fc
 
-int
-cmark_node_get_end_line(cmark_node\ *node);
-\f[]
-.fi
-.SH TREE MANIPULATION
-.IP
-.nf
-\f[C]
-void
-cmark_node_unlink(cmark_node\ *node);
 
+.Ft const char*
+.Fo cmark_node_get_fence_info
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_insert_before(cmark_node\ *node,\ cmark_node\ *sibling);
 
+.Ft int
+.Fo cmark_node_set_fence_info
+.Fa cmark_node *node, const char *info
+.Fc
 
-int
-cmark_node_insert_after(cmark_node\ *node,\ cmark_node\ *sibling);
 
+.Ft const char*
+.Fo cmark_node_get_url
+.Fa cmark_node *node
+.Fc
 
-int
-cmark_node_prepend_child(cmark_node\ *node,\ cmark_node\ *child);
 
+.Ft int
+.Fo cmark_node_set_url
+.Fa cmark_node *node, const char *url
+.Fc
 
-int
-cmark_node_append_child(cmark_node\ *node,\ cmark_node\ *child);
-\f[]
-.fi
-.SH PARSING
-.IP
-.nf
-\f[C]
-cmark_parser\ *cmark_parser_new();
 
+.Ft const char*
+.Fo cmark_node_get_title
+.Fa cmark_node *node
+.Fc
 
-void\ cmark_parser_free(cmark_parser\ *parser);
 
+.Ft int
+.Fo cmark_node_set_title
+.Fa cmark_node *node, const char *title
+.Fc
 
-cmark_node\ *cmark_parser_finish(cmark_parser\ *parser);
 
+.Ft int
+.Fo cmark_node_get_start_line
+.Fa cmark_node *node
+.Fc
 
-void\ cmark_parser_feed(cmark_parser\ *parser,\ const\ char\ *buffer,\ size_t\ len);
 
+.Ft int
+.Fo cmark_node_get_start_column
+.Fa cmark_node *node
+.Fc
 
-cmark_node\ *cmark_parse_document(const\ char\ *buffer,\ size_t\ len);
 
+.Ft int
+.Fo cmark_node_get_end_line
+.Fa cmark_node *node
+.Fc
 
-cmark_node\ *cmark_parse_file(FILE\ *f);
-\f[]
-.fi
-.SH RENDERING
-.IP
-.nf
-\f[C]
-char\ *cmark_render_ast(cmark_node\ *root);
 
 
-char\ *cmark_render_html(cmark_node\ *root);
-\f[]
-.fi
-.SH AUTHORS
-.PP
-John MacFarlane, Vicent Marti, Kārlis Gaņģis, Nick Wellnhofer.
+.Sh TREE MANIPULATION
+
+.Ft void
+.Fo cmark_node_unlink
+.Fa cmark_node *node
+.Fc
+
+
+.Ft int
+.Fo cmark_node_insert_before
+.Fa cmark_node *node, cmark_node *sibling
+.Fc
+
+
+.Ft int
+.Fo cmark_node_insert_after
+.Fa cmark_node *node, cmark_node *sibling
+.Fc
+
+
+.Ft int
+.Fo cmark_node_prepend_child
+.Fa cmark_node *node, cmark_node *child
+.Fc
+
+
+.Ft int
+.Fo cmark_node_append_child
+.Fa cmark_node *node, cmark_node *child
+.Fc
+
+
+
+.Sh PARSING
+
+.Ft cmark_parser *
+.Fo cmark_parser_new
+.Fa 
+.Fc
+
+
+.Ft void
+.Fo cmark_parser_free
+.Fa cmark_parser *parser
+.Fc
+
+
+.Ft cmark_node *
+.Fo cmark_parser_finish
+.Fa cmark_parser *parser
+.Fc
+
+
+.Ft void
+.Fo cmark_parser_feed
+.Fa cmark_parser *parser, const char *buffer, size_t len
+.Fc
+
+
+.Ft cmark_node *
+.Fo cmark_parse_document
+.Fa const char *buffer, size_t len
+.Fc
+
+
+.Ft cmark_node *
+.Fo cmark_parse_file
+.Fa FILE *f
+.Fc
+
+
+
+.Sh RENDERING
+
+.Ft char *
+.Fo cmark_render_ast
+.Fa cmark_node *root
+.Fc
+
+
+.Ft char *
+.Fo cmark_render_html
+.Fa cmark_node *root
+.Fc
+
+
+.Sh AUTHORS
+
+John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
+
