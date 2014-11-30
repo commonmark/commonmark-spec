@@ -27,7 +27,7 @@ all: $(BUILDDIR)
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1
+$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1 man/man3/cmark.3
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -73,6 +73,9 @@ $(PROG): all
 
 man/man1/cmark.1: man/cmark.1.md
 	mkdir -p man/man1 && pandoc -t man -s $< -o $@
+
+man/man3/cmark.3: man/cmark.3.md
+	mkdir -p man/man3 && pandoc -t man -s $< -o $@
 
 apidoc: src/cmark.h
 	doxygen Doxyfile
