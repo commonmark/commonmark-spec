@@ -304,6 +304,7 @@ CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
 
 /** # AUTHORS
+ *
  * John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
  */
 
