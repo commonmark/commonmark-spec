@@ -87,6 +87,6 @@ with open(sourcefile, 'r') as cmarkh:
             chunk = []
             mdlines.append('\n')
 
-sys.stdout.write('.Dd ' + date.today().isoformat() + '\n')
+sys.stdout.write('.Dd ' + date.today().strftime('%B %d, %Y') + '\n')
 sys.stdout.write('.Dt ' + os.path.basename(sourcefile).replace('.h','') + ' 3\n')
 sys.stdout.write(''.join(mdlines))
