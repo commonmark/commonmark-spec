@@ -133,7 +133,8 @@ ffi.cdef[[
 
         ]]
 
-local doc = cmark.cmark_parse_document("hi *there*", 10)
+local inp = io.read("*all")
+local doc = cmark.cmark_parse_document(inp, string.len(inp))
 
 local cur = doc
 local next
@@ -196,8 +197,5 @@ end
 
 walk(print_type)
 
-local t1 = cmark.cmark_node_get_type(doc)
-print(t1 == cmark.CMARK_NODE_DOCUMENT)
-
-local html = ffi.string(cmark.cmark_render_html(doc))
-print(html)
+-- local html = ffi.string(cmark.cmark_render_html(doc))
+-- print(html)
