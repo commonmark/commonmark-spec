@@ -4,7 +4,7 @@ compiler:
  - gcc
 before_install:
  - sudo apt-get update -qq
- - sudo apt-get install -qq re2c pandoc valgrind doxygen
+ - sudo apt-get install -qq pandoc re2c valgrind
 script:
  - make testtarball
  - PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
