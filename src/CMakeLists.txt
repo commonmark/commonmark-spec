@@ -48,12 +48,14 @@ if (MSVC)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i
+                        --no-generation-date
                         -o ${DOS_CURRENT_SOURCE_DIR}\\scanners.c
                         ${DOS_CURRENT_SOURCE_DIR}\\scanners.re )
 else(MSVC)
     add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
                         COMMAND ${RE2C} --case-insensitive -b -i
+                        --no-generation-date
                         -o ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
                         ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re )
 endif(MSVC)
