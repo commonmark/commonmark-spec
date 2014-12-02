@@ -23,6 +23,7 @@ JSMODULES=$(wildcard js/lib/*.js)
 
 all: $(BUILDDIR)
 	@make -C $(BUILDDIR)
+	@echo "Binaries can be found in $(BUILDDIR)/src"
 
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
