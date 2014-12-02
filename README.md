@@ -51,7 +51,7 @@ the repository to reduce build dependencies.
 If you have GNU make, you can simply `make`, `make test`, and `make
 install`.  This calls [cmake] to create a `Makefile` in the `build`
 directory, then uses that `Makefile` to create the executable and
-library.
+library.  The binaries can be found in `build/src`.
 
 For a more portable method, you can use [cmake] manually. [cmake] knows
 how to create build environments for many build systems.  For example,
