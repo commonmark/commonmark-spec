@@ -435,6 +435,9 @@ cmark_node *cmark_parse_file(FILE *f)
 	while ((bytes = fread(buffer, 1, sizeof(buffer), f)) > 0) {
 		bool eof = bytes < sizeof(buffer);
 		S_parser_feed(parser, buffer, bytes, eof);
+		if (eof) {
+			break;
+		}
 	}
 
 	document = cmark_parser_finish(parser);
