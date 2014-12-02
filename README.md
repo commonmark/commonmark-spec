@@ -43,10 +43,10 @@ Installing (C)
 --------------
 
 Building the C program (`cmark`) and shared library (`libcmark`)
-requires [cmake] and [re2c], which is used to generate `scanners.c` from
-`scanners.re`.  (Note that [re2c] is only a build dependency for
-developers, since `scanners.c` can be provided in a released source
-tarball.)
+requires [cmake].  If you modify `scanners.re`, then you will also
+need [re2c], which is used to generate `scanners.c` from
+`scanners.re`.  We have included a pre-generated `scanners.c` in
+the repository to reduce build dependencies.
 
 If you have GNU make, you can simply `make`, `make test`, and `make
 install`.  This calls [cmake] to create a `Makefile` in the `build`

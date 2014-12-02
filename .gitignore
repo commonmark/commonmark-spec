@@ -26,7 +26,6 @@
 *.bak
 *.diff
 *#
-scanners.c
 *.zip
 bstrlib.txt
 build
