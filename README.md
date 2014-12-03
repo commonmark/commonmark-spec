@@ -15,8 +15,9 @@ standalone program `cmark` that converts CommonMark to HTML.  It is
 written in standard C99 and has no library dependencies.  The parser is
 very fast (see [benchmarks](benchmarks.md)).
 
-It is easy to use `libcmark` in python or ruby code:  see `wrapper.py`
-and `wrapper.rb` in the repository for simple examples.
+It is easy to use `libcmark` in python, lua, ruby, and other dynamic
+languages: see `wrapper.py`, `wrapper.lua`, and `wrapper.rb` in the
+repository for simple examples.
 
 The JavaScript implementation is a single JavaScript file, with
 no dependencies, that can be linked to in an HTML page.  Here
