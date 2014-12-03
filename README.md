@@ -73,17 +73,6 @@ Or, to create Xcode project files on OSX:
     make test
     make install
 
-Tests can also be run manually on any executable `$PROG` using:
-
-    python test/spec_tests.py --program $PROG
-
-If you want to extract the raw test data from the spec without
-actually running the tests, you can do:
-
-    python test/spec_tests.py --dump-tests
-
-and you'll get all the tests in JSON format.
-
 The GNU Makefile also provides a few other targets for developers.
 To run a "fuzz test" against ten long randomly generated inputs:
 
@@ -141,9 +130,16 @@ The spec
 --------
 
 [The spec] contains over 500 embedded examples which serve as conformance
-tests.  To run the tests for `cmark`, do `make test`.  To run them for
-another Markdown program, say `myprog`, do `make test PROG=myprog`.  To
-run the tests for `commonmark.js`, do `make testjs`.
+tests. To run the tests using an executable `$PROG`:
+
+    python test/spec_tests.py --program $PROG
+
+If you want to extract the raw test data from the spec without
+actually running the tests, you can do:
+
+    python test/spec_tests.py --dump-tests
+
+and you'll get all the tests in JSON format.
 
 [The spec]:  http://jgm.github.io/CommonMark/spec.html
 
