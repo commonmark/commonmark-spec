@@ -71,6 +71,9 @@ int main(int argc, char *argv[])
 		start_timer();
 		while ((bytes = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
 			cmark_parser_feed(parser, buffer, bytes);
+			if (bytes < sizeof(buffer)) {
+				break;
+			}
 		}
 		end_timer("processing lines");
 
@@ -86,6 +89,9 @@ int main(int argc, char *argv[])
 
 		while ((bytes = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
 			cmark_parser_feed(parser, buffer, bytes);
+			if (bytes < sizeof(buffer)) {
+				break;
+			}
 		}
 	}
 
