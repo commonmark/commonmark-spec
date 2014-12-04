@@ -60,6 +60,11 @@ else(MSVC)
                         ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re )
 endif(MSVC)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcmark.pc.in
+  ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc @ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc
+  DESTINATION lib/pkgconfig)
+
 include (GenerateExportHeader)
 
 add_executable(${PROGRAM} ${PROGRAM_SOURCES})
