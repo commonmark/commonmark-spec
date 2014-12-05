@@ -88,6 +88,7 @@ static const char*
 S_type_string(cmark_node *node)
 {
 	switch (node->type) {
+	case CMARK_NODE_NONE:          return "NONE";
 	case CMARK_NODE_DOCUMENT:      return "DOCUMENT";
 	case CMARK_NODE_BLOCK_QUOTE:   return "BLOCK_QUOTE";
 	case CMARK_NODE_LIST:          return "LIST";
@@ -107,7 +108,6 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_STRONG:        return "STRONG";
 	case CMARK_NODE_LINK:          return "LINK";
 	case CMARK_NODE_IMAGE:         return "IMAGE";
-	case CMARK_NODE_NONE:          return "NONE";
 	}
 
 	return "<unknown>";

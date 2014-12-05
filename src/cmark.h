@@ -34,6 +34,9 @@ char *cmark_markdown_to_html(const char *text, int len);
 /**
  */
 typedef enum {
+	/* Error status */
+	CMARK_NODE_NONE,
+
 	/* Block */
 	CMARK_NODE_DOCUMENT,
 	CMARK_NODE_BLOCK_QUOTE,
@@ -62,8 +65,6 @@ typedef enum {
 
 	CMARK_NODE_FIRST_INLINE = CMARK_NODE_TEXT,
 	CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
-
-	CMARK_NODE_NONE = -1
 } cmark_node_type;
 
 
