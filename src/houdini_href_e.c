@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "html/houdini.h"
+#include "houdini.h"
 
 /*
  * The following characters will not be escaped:

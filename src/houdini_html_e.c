@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "html/houdini.h"
+#include "houdini.h"
 
 /**
  * According to the OWASP rules:

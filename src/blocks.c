@@ -11,7 +11,7 @@
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"
-#include "html/houdini.h"
+#include "houdini.h"
 #include "buffer.h"
 #include "debug.h"
 

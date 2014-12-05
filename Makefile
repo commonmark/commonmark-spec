@@ -28,7 +28,7 @@ all: $(BUILDDIR)
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1 man/man3/cmark.3
+$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1 man/man3/cmark.3
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -50,7 +50,7 @@ mingw:
 
 archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 	@rm -rf $(PKGDIR); \
-	mkdir -p $(PKGDIR)/$(SRCDIR)/html; \
+	mkdir -p $(PKGDIR)/$(SRCDIR); \
 	mkdir -p $(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 ; \
 	mkdir -p  $(PKGDIR)/test ; \
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR) test api_test`; \
@@ -79,7 +79,7 @@ man/man3/cmark.3: src/cmark.h
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
-$(SRCDIR)/html/html_unescape.h: $(SRCDIR)/html/html_unescape.gperf
+$(SRCDIR)/html_unescape.h: $(SRCDIR)/html_unescape.gperf
 	gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l \
 		--null-strings -m5 $< > $@
 

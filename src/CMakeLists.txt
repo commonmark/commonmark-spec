@@ -12,8 +12,8 @@ set(HEADERS
   utf8.h
   scanners.h
   inlines.h
-  html/html_unescape.h
-  html/houdini.h
+  html_unescape.h
+  houdini.h
   )
 set(LIBRARY_SOURCES
   cmark.c
@@ -26,11 +26,11 @@ set(LIBRARY_SOURCES
   utf8.c
   buffer.c
   references.c
-  html/html.c
-  html/html_unescape.gperf
-  html/houdini_href_e.c
-  html/houdini_html_e.c
-  html/houdini_html_u.c
+  html.c
+  html_unescape.gperf
+  houdini_href_e.c
+  houdini_html_e.c
+  houdini_html_u.c
   ${HEADERS}
   )
 
@@ -40,7 +40,7 @@ set(PROGRAM_SOURCES
   main.c
   )
 
-include_directories(. html ${CMAKE_CURRENT_BINARY_DIR})
+include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 
 set(RE2C re2c)
 if (MSVC)

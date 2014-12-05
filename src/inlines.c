@@ -8,7 +8,7 @@
 #include "parser.h"
 #include "references.h"
 #include "cmark.h"
-#include "html/houdini.h"
+#include "houdini.h"
 #include "utf8.h"
 #include "scanners.h"
 #include "inlines.h"

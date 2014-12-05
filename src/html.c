@@ -7,7 +7,7 @@
 #include "cmark.h"
 #include "node.h"
 #include "buffer.h"
-#include "html/houdini.h"
+#include "houdini.h"
 
 // Functions to convert cmark_nodes to HTML strings.
 
