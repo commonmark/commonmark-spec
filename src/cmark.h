@@ -62,6 +62,8 @@ typedef enum {
 
 	CMARK_NODE_FIRST_INLINE = CMARK_NODE_TEXT,
 	CMARK_NODE_LAST_INLINE  = CMARK_NODE_IMAGE,
+
+	CMARK_NODE_NONE = -1
 } cmark_node_type;
 
 

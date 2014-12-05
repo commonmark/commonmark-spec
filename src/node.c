@@ -77,7 +77,11 @@ cmark_node_free(cmark_node *node) {
 cmark_node_type
 cmark_node_get_type(cmark_node *node)
 {
-	return node->type;
+	if (node == NULL) {
+		return CMARK_NODE_NONE;
+	} else {
+		return node->type;
+	}
 }
 
 static const char*
@@ -103,6 +107,7 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_STRONG:        return "STRONG";
 	case CMARK_NODE_LINK:          return "LINK";
 	case CMARK_NODE_IMAGE:         return "IMAGE";
+	case CMARK_NODE_NONE:          return "NONE";
 	}
 
 	return "<unknown>";
