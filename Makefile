@@ -57,6 +57,7 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
 	cp -a spec.html $(PKGDIR); \
+	cp -a man/CMakeLists.txt $(PKGDIR)/man;\
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1;\
 	cp -a man/man3/cmark.3 $(PKGDIR)/man/man3;\
 	cp CMakeLists.txt $(PKGDIR); \
