@@ -1,4 +1,5 @@
 #include "cmark.h"
+#include "chunk.h"
 
 #ifdef __cplusplus
 extern "C" {
