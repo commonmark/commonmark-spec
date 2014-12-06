@@ -137,6 +137,11 @@ cmark_node_get_type(cmark_node *node);
 
 /**
  */
+CMARK_EXPORT int
+cmark_node_set_type(cmark_node *node, cmark_node_type node_type);
+
+/**
+ */
 CMARK_EXPORT const char*
 cmark_node_get_string_content(cmark_node *node);
 
