@@ -789,8 +789,8 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 	container->last_line_blank = (blank &&
 			container->type != NODE_BLOCK_QUOTE &&
 			container->type != NODE_HEADER &&
-			(container->type != NODE_CODE_BLOCK &&
-			 container->as.code.fenced) &&
+			!(container->type == NODE_CODE_BLOCK &&
+				container->as.code.fenced) &&
 			!(container->type == NODE_LIST_ITEM &&
 				container->first_child == NULL &&
 				container->start_line == parser->line_number));
