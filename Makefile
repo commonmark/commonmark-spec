@@ -81,7 +81,7 @@ man/man3/cmark.3: src/cmark.h
 # normally need to be generated.
 $(SRCDIR)/html_unescape.h: $(SRCDIR)/html_unescape.gperf
 	gperf -L ANSI-C -I -t -N find_entity -H hash_entity -K entity -C -l \
-		--null-strings -m5 $< > $@
+		-F ',0,{0}' --null-strings -m5 $< > $@
 
 # We include case_fold_switch.inc in the repository, so this shouldn't
 # normally need to be generated.
