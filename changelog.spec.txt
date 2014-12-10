@@ -1,4 +1,4 @@
-[since 0.12]
+[0.13]
 
 * Updated path of test program.
 * Use terminology "plain textual content" instead of "string."
@@ -7,4 +7,3 @@
   list as it has no blank lines.
 * Adjusted semantically insignificant formatting of HTML output.
 * Added example to spec of shortcut link with following space (#214).
-
