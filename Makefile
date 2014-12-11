@@ -161,6 +161,9 @@ testjs: $(SPEC)
 jshint:
 	jshint ${JSMODULES}
 
+lint:
+	eslint -c eslint.json ${JSMODULES} js/bin/commonmark
+
 benchjs:
 	node js/bench.js ${BENCHINP}
 
