@@ -209,7 +209,6 @@ var parseHtmlTag = function(inlines) {
 // function for strong/emph parsing.
 var scanDelims = function(cc) {
     var numdelims = 0;
-    var first_close_delims = 0;
     var char_before, char_after, cc_after;
     var startpos = this.pos;
 
@@ -433,16 +432,8 @@ var parseLinkDestination = function() {
 
 // Attempt to parse a link label, returning number of characters parsed.
 var parseLinkLabel = function() {
-    var match = this.match(/^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/);
-    return match === null ? 0 : match.length;
-};
-
-// Parse raw link label, including surrounding [], and return
-// inline contents.  (Note:  this is not a method of InlineParser.)
-var parseRawLabel = function(s) {
-    // note:  parse without a refmap; we don't want links to resolve
-    // in nested brackets!
-    return new InlineParser().parse(s.substr(1, s.length - 2), {});
+    var m = this.match(/^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/);
+    return m === null ? 0 : m.length;
 };
 
 // Add open bracket to delimiter stack and add a Str to inlines.
