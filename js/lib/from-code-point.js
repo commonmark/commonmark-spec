@@ -1,8 +1,8 @@
 // derived from https://github.com/mathiasbynens/String.fromCodePoint
 /*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
 if (String.fromCodePoint) {
-
     module.exports = function (_) {
+        "use strict";
         try {
             return String.fromCodePoint(_);
         } catch (e) {
@@ -11,13 +11,14 @@ if (String.fromCodePoint) {
             }
             throw e;
         }
-    }
+    };
 
 } else {
 
   var stringFromCharCode = String.fromCharCode;
   var floor = Math.floor;
-  var fromCodePoint = function(_) {
+  var fromCodePoint = function() {
+      "use strict";
       var MAX_SIZE = 0x4000;
       var codeUnits = [];
       var highSurrogate;
@@ -34,7 +35,7 @@ if (String.fromCodePoint) {
               !isFinite(codePoint) || // `NaN`, `+Infinity`, or `-Infinity`
                   codePoint < 0 || // not a valid Unicode code point
                   codePoint > 0x10FFFF || // not a valid Unicode code point
-                  floor(codePoint) != codePoint // not an integer
+                  floor(codePoint) !== codePoint // not an integer
           ) {
               return String.fromCharCode(0xFFFD);
           }
@@ -47,7 +48,7 @@ if (String.fromCodePoint) {
               lowSurrogate = (codePoint % 0x400) + 0xDC00;
               codeUnits.push(highSurrogate, lowSurrogate);
           }
-          if (index + 1 == length || codeUnits.length > MAX_SIZE) {
+          if (index + 1 === length || codeUnits.length > MAX_SIZE) {
               result += stringFromCharCode.apply(null, codeUnits);
               codeUnits.length = 0;
           }
