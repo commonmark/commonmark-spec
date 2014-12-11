@@ -12,7 +12,7 @@ var isBlank = function(s) {
 
 // Convert tabs to spaces on each line using a 4-space tab stop.
 var detabLine = function(text) {
-    if (text.indexOf('\t') == -1) {
+    if (text.indexOf('\t') === -1) {
         return text;
     } else {
         var lastStop = 0;
@@ -65,17 +65,17 @@ var makeBlock = function(tag, start_line, start_column) {
 
 // Returns true if parent block can contain child block.
 var canContain = function(parent_type, child_type) {
-    return ( parent_type == 'Document' ||
-             parent_type == 'BlockQuote' ||
-             parent_type == 'ListItem' ||
-             (parent_type == 'List' && child_type == 'ListItem') );
+    return ( parent_type === 'Document' ||
+             parent_type === 'BlockQuote' ||
+             parent_type === 'ListItem' ||
+             (parent_type === 'List' && child_type === 'ListItem') );
 };
 
 // Returns true if block type can accept lines of text.
 var acceptsLines = function(block_type) {
-    return ( block_type == 'Paragraph' ||
-             block_type == 'IndentedCode' ||
-             block_type == 'FencedCode' );
+    return ( block_type === 'Paragraph' ||
+             block_type === 'IndentedCode' ||
+             block_type === 'FencedCode' );
 };
 
 // Returns true if block ends with a blank line, descending if needed
@@ -84,7 +84,7 @@ var endsWithBlankLine = function(block) {
     if (block.last_line_blank) {
         return true;
     }
-    if ((block.t == 'List' || block.t == 'ListItem') && block.children.length > 0) {
+    if ((block.t === 'List' || block.t === 'ListItem') && block.children.length > 0) {
         return endsWithBlankLine(block.children[block.children.length - 1]);
     } else {
         return false;
@@ -106,7 +106,7 @@ var breakOutOfLists = function(block, line_number) {
     } while (b);
 
     if (last_list) {
-        while (block != last_list) {
+        while (block !== last_list) {
             this.finalize(block, line_number);
             block = block.parent;
         }
@@ -311,7 +311,7 @@ var incorporateLine = function(ln, line_number) {
     // use later, when we have more information.
     var closeUnmatchedBlocks = function(mythis) {
         // finalize any blocks not matched
-        while (!already_done && oldtip != last_matched_container) {
+        while (!already_done && oldtip !== last_matched_container) {
             mythis.finalize(oldtip, line_number);
             oldtip = oldtip.parent;
         }
@@ -325,9 +325,9 @@ var incorporateLine = function(ln, line_number) {
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    while (container.t != 'FencedCode' &&
-           container.t != 'IndentedCode' &&
-           container.t != 'HtmlBlock' &&
+    while (container.t !== 'FencedCode' &&
+           container.t !== 'IndentedCode' &&
+           container.t !== 'HtmlBlock' &&
            // this is a little performance optimization:
            matchAt(/^[ #`~*+_=<>0-9-]/,ln,offset) !== -1) {
 
@@ -343,7 +343,7 @@ var incorporateLine = function(ln, line_number) {
 
         if (indent >= CODE_INDENT) {
             // indented code
-            if (this.tip.t != 'Paragraph' && !blank) {
+            if (this.tip.t !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
                 closeUnmatchedBlocks(this);
                 container = this.addChild('IndentedCode', line_number, offset);
@@ -390,7 +390,7 @@ var incorporateLine = function(ln, line_number) {
             // note, we don't adjust offset because the tag is part of the text
             break;
 
-        } else if (container.t == 'Paragraph' &&
+        } else if (container.t === 'Paragraph' &&
                    container.strings.length === 1 &&
                    ((match = ln.slice(first_nonspace).match(/^(?:=+|-+) *$/)))) {
             // setext header line
@@ -450,7 +450,7 @@ var incorporateLine = function(ln, line_number) {
     // First check for a lazy paragraph continuation:
     if (this.tip !== last_matched_container &&
         !blank &&
-        this.tip.t == 'Paragraph' &&
+        this.tip.t === 'Paragraph' &&
         this.tip.strings.length > 0) {
         // lazy paragraph continuation
 
@@ -467,12 +467,12 @@ var incorporateLine = function(ln, line_number) {
         // lists or breaking out of lists.  We also don't set last_line_blank
         // on an empty list item.
         container.last_line_blank = blank &&
-            !(container.t == 'BlockQuote' ||
-              container.t == 'Header' ||
-              container.t == 'FencedCode' ||
-              (container.t == 'ListItem' &&
+            !(container.t === 'BlockQuote' ||
+              container.t === 'Header' ||
+              container.t === 'FencedCode' ||
+              (container.t === 'ListItem' &&
                container.children.length === 0 &&
-               container.start_line == line_number));
+               container.start_line === line_number));
 
         var cont = container;
         while (cont.parent) {
@@ -489,7 +489,7 @@ var incorporateLine = function(ln, line_number) {
         case 'FencedCode':
             // check for closing code fence:
             match = (indent <= 3 &&
-                     ln.charAt(first_nonspace) == container.fence_char &&
+                     ln.charAt(first_nonspace) === container.fence_char &&
                      ln.slice(first_nonspace).match(/^(?:`{3,}|~{3,})(?= *$)/));
             if (match && match[0].length >= container.fence_length) {
                 // don't add closing fence to container; instead, close it:
@@ -509,8 +509,8 @@ var incorporateLine = function(ln, line_number) {
                 this.addLine(ln, first_nonspace);
             } else if (blank) {
                 // do nothing
-            } else if (container.t != 'HorizontalRule' &&
-                       container.t != 'Header') {
+            } else if (container.t !== 'HorizontalRule' &&
+                       container.t !== 'Header') {
                 // create paragraph container for line
                 container = this.addChild('Paragraph', line_number, first_nonspace);
                 this.addLine(ln, first_nonspace);
@@ -572,7 +572,7 @@ var finalize = function(block, line_number) {
     case 'FencedCode':
         // first line becomes info string
         block.info = unescapeString(block.strings[0].trim());
-        if (block.strings.length == 1) {
+        if (block.strings.length === 1) {
             block.string_content = '';
         } else {
             block.string_content = block.strings.slice(1).join('\n') + '\n';
@@ -588,7 +588,7 @@ var finalize = function(block, line_number) {
         while (i < numitems) {
             var item = block.children[i];
             // check for non-final list item ending with blank line:
-            var last_item = i == numitems - 1;
+            var last_item = i === numitems - 1;
             if (endsWithBlankLine(item) && !last_item) {
                 block.tight = false;
                 break;
@@ -599,7 +599,7 @@ var finalize = function(block, line_number) {
             var j = 0;
             while (j < numsubitems) {
                 var subitem = item.children[j];
-                var last_subitem = j == numsubitems - 1;
+                var last_subitem = j === numsubitems - 1;
                 if (endsWithBlankLine(subitem) && !(last_item && last_subitem)) {
                     block.tight = false;
                     break;
