@@ -11,7 +11,6 @@ var C_BACKTICK = 96;
 var C_OPEN_BRACKET = 91;
 var C_CLOSE_BRACKET = 93;
 var C_LESSTHAN = 60;
-var C_GREATERTHAN = 62;
 var C_BANG = 33;
 var C_BACKSLASH = 92;
 var C_AMPERSAND = 38;
@@ -22,9 +21,6 @@ var C_COLON = 58;
 
 var ESCAPABLE = '[!"#$%&\'()*+,./:;<=>?@[\\\\\\]^_`{|}~-]';
 var ESCAPED_CHAR = '\\\\' + ESCAPABLE;
-var IN_DOUBLE_QUOTES = '"(' + ESCAPED_CHAR + '|[^"\\x00])*"';
-var IN_SINGLE_QUOTES = '\'(' + ESCAPED_CHAR + '|[^\'\\x00])*\'';
-var IN_PARENS = '\\((' + ESCAPED_CHAR + '|[^)\\x00])*\\)';
 var REG_CHAR = '[^\\\\()\\x00-\\x20]';
 var IN_PARENS_NOSP = '\\((' + REG_CHAR + '|' + ESCAPED_CHAR + ')*\\)';
 var TAGNAME = '[A-Za-z][A-Za-z0-9]*';
@@ -64,8 +60,6 @@ var reEscapable = new RegExp(ESCAPABLE);
 
 var reAllEscapedChar = new RegExp('\\\\(' + ESCAPABLE + ')', 'g');
 
-var reEscapedChar = new RegExp('^\\\\(' + ESCAPABLE + ')');
-
 var reEntityHere = new RegExp('^' + ENTITY, 'i');
 
 var reEntity = new RegExp(ENTITY, 'gi');
@@ -98,10 +92,10 @@ var normalizeReference = function(s) {
 // If re matches at current position in the subject, advance
 // position in subject and return the match; otherwise return null.
 var match = function(re) {
-    var match = re.exec(this.subject.slice(this.pos));
-    if (match) {
-        this.pos += match.index + match[0].length;
-        return match[0];
+    var m = re.exec(this.subject.slice(this.pos));
+    if (m) {
+        this.pos += m.index + m[0].length;
+        return m[0];
     } else {
         return null;
     }
@@ -130,7 +124,6 @@ var spnl = function() {
 // Attempt to parse backticks, returning either a backtick code span or a
 // literal sequence of backticks.
 var parseBackticks = function(inlines) {
-    var startpos = this.pos;
     var ticks = this.match(/^`+/);
     if (!ticks) {
         return 0;
@@ -315,14 +308,14 @@ var removeGaps = function(inlines) {
 };
 
 var processEmphasis = function(inlines, stack_bottom) {
+    "use strict";
     var opener, closer;
     var opener_inl, closer_inl;
     var nextstack, tempstack;
     var use_delims;
     var contents;
-    var tmp;
     var emph;
-    var i,j;
+    var i;
 
     // find first closer above stack_bottom:
     closer = this.delimiters;
@@ -405,7 +398,7 @@ var processEmphasis = function(inlines, stack_bottom) {
     removeGaps(inlines);
 
     // remove all delimiters
-    while (this.delimiters != stack_bottom) {
+    while (this.delimiters !== stack_bottom) {
         this.removeDelimiter(this.delimiters);
     }
 };
@@ -515,6 +508,7 @@ var parseCloseBracket = function(inlines) {
     var matched = false;
     var link_text;
     var i;
+    var reflabel;
     var opener, closer_above, tempstack;
 
     this.pos += 1;
@@ -568,7 +562,7 @@ var parseCloseBracket = function(inlines) {
         var savepos = this.pos;
         this.spnl();
         var beforelabel = this.pos;
-        n = this.parseLinkLabel();
+        var n = this.parseLinkLabel();
         if (n === 0 || n === 2) {
             // empty or missing second label
             reflabel = this.subject.slice(opener.index, startpos);
@@ -672,23 +666,6 @@ var parseNewline = function(inlines) {
     return false;
 };
 
-// Attempt to parse an image.  If the opening '!' is not followed
-// by a link, return a literal '!'.
-var parseImage = function(inlines) {
-    if (this.match(/^!/)) {
-        var link = this.parseLink(inlines);
-        if (link) {
-            inlines[inlines.length - 1].t = 'Image';
-            return true;
-        } else {
-            inlines.push({ t: 'Text', c: '!' });
-            return true;
-        }
-    } else {
-        return false;
-    }
-};
-
 // Attempt to parse a link reference, modifying refmap.
 var parseReference = function(s, refmap) {
     this.subject = s;
@@ -699,7 +676,7 @@ var parseReference = function(s, refmap) {
     var title;
     var matchChars;
     var startpos = this.pos;
-    var match;
+    var m;
 
     // label:
     matchChars = this.parseLinkLabel();
@@ -753,9 +730,7 @@ var parseReference = function(s, refmap) {
 // On success, add the result to the inlines list, and return true.
 // On failure, return false.
 var parseInline = function(inlines) {
-    var startpos = this.pos;
-    var origlen = inlines.length;
-
+    "use strict";
     var c = this.peek();
     if (c === -1) {
         return false;
@@ -818,6 +793,7 @@ var parseInlines = function(s, refmap) {
 
 // The InlineParser object.
 function InlineParser(){
+    "use strict";
     return {
         subject: '',
         label_nest_level: 0, // used by parseLinkLabel method
