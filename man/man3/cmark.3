@@ -1,4 +1,4 @@
-.TH cmark 3 "December 05, 2014" "LOCAL" "Library Functions Manual"
+.TH cmark 3 "December 12, 2014" "LOCAL" "Library Functions Manual"
 .SH NAME
 
 .B cmark
@@ -269,6 +269,10 @@ typedef enum {
 .PP
 
 \fIchar *\fR \fBcmark_render_html\fR(\fIcmark_node *root\fR)
+
+.PP
+
+\fIint\fR \fBcmark_walk\fR(\fIcmark_node *root\fR, \fIcmark_node_handler handler\fR, \fIvoid *state\fR)
 
 .PP
 

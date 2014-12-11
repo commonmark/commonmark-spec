@@ -767,3 +767,62 @@ cmark_node_check(cmark_node *node, FILE *out)
 
 	return errors;
 }
+
+int S_is_leaf_node(cmark_node *current_node)
+{
+	switch (cmark_node_get_type(current_node)) {
+	case CMARK_NODE_HTML:
+	case CMARK_NODE_HRULE:
+	case CMARK_NODE_REFERENCE_DEF:
+	case CMARK_NODE_TEXT:
+	case CMARK_NODE_SOFTBREAK:
+	case CMARK_NODE_LINEBREAK:
+	case CMARK_NODE_INLINE_CODE:
+	case CMARK_NODE_INLINE_HTML:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state)
+{
+	int begin = 1;
+	cmark_node *current_node = root;
+	int depth = 0;
+	cmark_node *next, *parent, *first_child;
+
+	while (current_node != NULL && depth >= 0) {
+
+		next = current_node->next;
+		parent = current_node->parent;
+
+		if (!handler(current_node, begin, state)) {
+			return 0;
+		}
+
+		if (begin && !S_is_leaf_node(current_node)) {
+			first_child = current_node->first_child;
+			if (first_child == NULL) {
+				begin = 0; // stay on this node
+			} else {
+				depth += 1;
+				current_node = first_child;
+			}
+		} else {
+			if (current_node) {
+				next = current_node->next;
+				parent = current_node->parent;
+			}
+			if (next) {
+				begin = 1;
+				current_node = next;
+			} else {
+				begin = 0;
+				depth -= 1;
+				current_node = parent;
+			}
+		}
+	}
+	return 1;
+}

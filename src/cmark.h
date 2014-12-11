@@ -86,6 +86,8 @@ typedef enum {
 typedef struct cmark_node cmark_node;
 typedef struct cmark_parser cmark_parser;
 
+typedef int (*cmark_node_handler)(cmark_node*, int, void*);
+
 /**
  * .SH CREATING AND DESTROYING NODES
  */
@@ -306,6 +308,11 @@ char *cmark_render_ast(cmark_node *root);
  */
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
+
+/**
+ */
+CMARK_EXPORT
+int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state);
 
 /** .SH AUTHORS
  *
