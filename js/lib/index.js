@@ -9,6 +9,8 @@
 // var renderer = new commonmark.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
 
+"use strict";
+
 var util = require('util');
 
 var renderAST = function(tree) {

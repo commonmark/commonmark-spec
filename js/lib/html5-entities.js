@@ -2125,9 +2125,10 @@ var entities = {
   Zscr: 55349,
   zscr: 55349,
   zwj: 8205,
-  zwnj: 8204 }
+  zwnj: 8204 };
 
 var entityToChar = function(m) {
+    "use strict";
     var isNumeric = /^&#/.test(m);
     var isHex = /^&#[Xx]/.test(m);
     var uchar;
@@ -2135,15 +2136,15 @@ var entityToChar = function(m) {
     if (isNumeric) {
         var num;
         if (isHex) {
-            num = parseInt(m.slice(3,-1), 16);
+            num = parseInt(m.slice(3, -1), 16);
         } else {
-            num = parseInt(m.slice(2,-1), 10);
+            num = parseInt(m.slice(2, -1), 10);
         }
         uchar = fromCodePoint(num);
     } else {
-        ucode = entities[m.slice(1,-1)];
+        ucode = entities[m.slice(1, -1)];
         if (ucode) {
-            uchar = fromCodePoint(entities[m.slice(1,-1)]);
+            uchar = fromCodePoint(entities[m.slice(1, -1)]);
         }
     }
     return (uchar || m);
