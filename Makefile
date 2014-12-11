@@ -165,7 +165,7 @@ lint:
 	eslint -c eslint.json ${JSMODULES} js/bin/commonmark js/test.js js/bench.js
 
 benchjs:
-	node js/bench.js ${BENCHINP}
+	sudo renice 99 $$$$; node js/bench.js ${BENCHINP}
 
 npm:
 	cd js; npm publish
