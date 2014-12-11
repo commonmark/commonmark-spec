@@ -1,17 +1,17 @@
 #!/usr/bin/env node
+"use strict";
+
 var fs = require('fs');
 var util = require('util');
 var commonmark = require('../lib/index.js');
 
-var parser   = new commonmark.DocParser();
+var parser = new commonmark.DocParser();
 var renderer;
 var inps = [];
-
-var output_ast = false;
+var file;
 var files = [];
 
 if (process.argv[2] === '--ast') {
-  output_ast = true;
   files = process.argv.slice(3);
   renderer = { render: function(x) {
                           return util.inspect(x, null, Infinity) + '\n';

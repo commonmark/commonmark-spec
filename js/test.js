@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+"use strict";
 
 var fs = require('fs');
 var commonmark = require('./lib/index.js');
@@ -13,8 +14,8 @@ var failed = 0;
 
 var showSpaces = function(s) {
   var t = s;
-  return t.replace(/\t/g,'→')
-    .replace(/ /g,'␣');
+  return t.replace(/\t/g, '→')
+    .replace(/ /g, '␣');
 };
 
 fs.readFile('spec.txt', 'utf8', function(err, data) {
@@ -30,7 +31,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
     .replace(/^<!-- END TESTS -->(.|[\n])*/m, '');
 
   tests.replace(/^\.\n([\s\S]*?)^\.\n([\s\S]*?)^\.$|^#{1,6} *(.*)$/gm,
-        function(_,markdownSubmatch,htmlSubmatch,sectionSubmatch){
+        function(_, markdownSubmatch, htmlSubmatch, sectionSubmatch){
           if (sectionSubmatch) {
             current_section = sectionSubmatch;
           } else {
@@ -79,4 +80,3 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
 
   console.timeEnd("Elapsed time");
 });
-
