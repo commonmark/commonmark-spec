@@ -162,7 +162,7 @@ jshint:
 	jshint ${JSMODULES}
 
 lint:
-	eslint -c eslint.json ${JSMODULES} js/bin/commonmark js/test.js
+	eslint -c eslint.json ${JSMODULES} js/bin/commonmark js/test.js js/bench.js
 
 benchjs:
 	node js/bench.js ${BENCHINP}
