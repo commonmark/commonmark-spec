@@ -739,7 +739,7 @@ var entities = {
   imped: 437,
   Implies: 8658,
   incare: 8453,
-  in: 8712,
+  'in': 8712,
   infin: 8734,
   infintie: 10717,
   inodot: 305,
