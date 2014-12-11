@@ -28,7 +28,7 @@ var renderInline = function(inline) {
     case 'Softbreak':
         return this.softbreak;
     case 'Hardbreak':
-        return inTags('br',[],"",true) + '\n';
+        return inTags('br', [], "", true) + '\n';
     case 'Emph':
         return inTags('em', [], this.renderInlines(inline.c));
     case 'Strong':
@@ -61,7 +61,7 @@ var renderInline = function(inline) {
 // Render a list of inlines.
 var renderInlines = function(inlines) {
     var result = '';
-    for (var i=0; i < inlines.length; i++) {
+    for (var i = 0; i < inlines.length; i++) {
         result = result + this.renderInline(inlines[i]);
     }
     return result;
@@ -97,8 +97,8 @@ var renderBlock = function(block, in_tight_list) {
         }
         return inTags('li', [], contents, false).trim();
     case 'List':
-        tag = block.list_data.type == 'Bullet' ? 'ul' : 'ol';
-        attr = (!block.list_data.start || block.list_data.start == 1) ?
+        tag = block.list_data.type === 'Bullet' ? 'ul' : 'ol';
+        attr = (!block.list_data.start || block.list_data.start === 1) ?
             [] : [['start', block.list_data.start.toString()]];
         return inTags(tag, attr, this.innersep +
                       this.renderBlocks(block.children, block.tight) +
@@ -109,7 +109,7 @@ var renderBlock = function(block, in_tight_list) {
     case 'CodeBlock':
         info_words = block.info ? block.info.split(/ +/) : [];
         attr = (info_words.length === 0 || info_words[0].length === 0) ?
-            [] : [['class','language-' + this.escape(info_words[0],true)]];
+            [] : [['class', 'language-' + this.escape(info_words[0], true)]];
         return inTags('pre', [],
                       inTags('code', attr, this.escape(block.string_content)));
     case 'HtmlBlock':
@@ -117,7 +117,7 @@ var renderBlock = function(block, in_tight_list) {
     case 'ReferenceDef':
         return "";
     case 'HorizontalRule':
-        return inTags('hr',[],"",true);
+        return inTags('hr', [], "", true);
     default:
         console.log("Unknown block type " + block.t);
         return "";
@@ -127,7 +127,7 @@ var renderBlock = function(block, in_tight_list) {
 // Render a list of block elements, separated by this.blocksep.
 var renderBlocks = function(blocks, in_tight_list) {
     var result = [];
-    for (var i=0; i < blocks.length; i++) {
+    for (var i = 0; i < blocks.length; i++) {
         if (blocks[i].t !== 'ReferenceDef') {
             result.push(this.renderBlock(blocks[i], in_tight_list));
         }

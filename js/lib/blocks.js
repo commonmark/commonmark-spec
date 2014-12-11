@@ -120,7 +120,7 @@ var breakOutOfLists = function(block, line_number) {
 var addLine = function(ln, offset) {
     var s = ln.slice(offset);
     if (!(this.tip.open)) {
-        throw({ msg: "Attempted to add line (" + ln + ") to closed container." });
+        throw { msg: "Attempted to add line (" + ln + ") to closed container." };
     }
     this.tip.strings.push(s);
 };
@@ -310,12 +310,13 @@ var incorporateLine = function(ln, line_number) {
     // want to close unmatched blocks.  So we store this closure for
     // use later, when we have more information.
     var closeUnmatchedBlocks = function(mythis) {
+        var already_done = false;
         // finalize any blocks not matched
         while (!already_done && oldtip !== last_matched_container) {
             mythis.finalize(oldtip, line_number);
             oldtip = oldtip.parent;
         }
-        var already_done = true;
+        already_done = true;
     };
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
@@ -508,7 +509,7 @@ var incorporateLine = function(ln, line_number) {
             if (acceptsLines(container.t)) {
                 this.addLine(ln, first_nonspace);
             } else if (blank) {
-                // do nothing
+                break;
             } else if (container.t !== 'HorizontalRule' &&
                        container.t !== 'Header') {
                 // create paragraph container for line
@@ -544,7 +545,7 @@ var finalize = function(block, line_number) {
 
     switch (block.t) {
     case 'Paragraph':
-        block.string_content = block.strings.join('\n').replace(/^  */m,'');
+        block.string_content = block.strings.join('\n').replace(/^ {2,}/m,'');
         // delete block.strings;
 
         // try parsing the beginning as link reference definitions:
@@ -669,7 +670,7 @@ var parse = function(input) {
     var lines = input.replace(/\n$/,'').split(/\r\n|\n|\r/);
     var len = lines.length;
     for (var i = 0; i < len; i++) {
-        this.incorporateLine(lines[i], i+1);
+        this.incorporateLine(lines[i], i + 1);
     }
     while (this.tip) {
         this.finalize(this.tip, len - 1);

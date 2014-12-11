@@ -509,7 +509,7 @@ var parseCloseBracket = function(inlines) {
     var link_text;
     var i;
     var reflabel;
-    var opener, closer_above, tempstack;
+    var opener, closer_above;
 
     this.pos += 1;
     startpos = this.pos;
@@ -676,7 +676,6 @@ var parseReference = function(s, refmap) {
     var title;
     var matchChars;
     var startpos = this.pos;
-    var m;
 
     // label:
     matchChars = this.parseLinkLabel();
