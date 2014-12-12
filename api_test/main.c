@@ -294,6 +294,30 @@ node_check(test_batch_runner *runner) {
 	cmark_node_free(doc);
 }
 
+static int
+S_handler(cmark_node *node, int entering, void *state)
+{
+	int *textnodes = state;
+	if (entering) {
+		if (node->type == CMARK_NODE_TEXT) {
+			*textnodes += 1;
+		}
+	}
+	return 1;
+}
+
+static void
+walk(test_batch_runner *runner) {
+	// Construct an incomplete tree.
+	cmark_node *doc = cmark_parse_document("> a *b*\n\nc", 10);
+	int textnodes = 0;
+	INT_EQ(runner, cmark_walk(doc, S_handler, &textnodes), 1,
+	       "walk succeeds");
+	INT_EQ(runner, textnodes, 3, "walk correctly counts text nodes");
+
+	cmark_node_free(doc);
+}
+
 static void
 create_tree(test_batch_runner *runner)
 {
@@ -606,6 +630,7 @@ int main() {
 	constructor(runner);
 	accessors(runner);
 	node_check(runner);
+	walk(runner);
 	create_tree(runner);
 	hierarchy(runner);
 	parser(runner);
@@ -619,4 +644,3 @@ int main() {
 
 	return retval;
 }
-
