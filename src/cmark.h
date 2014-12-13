@@ -346,6 +346,11 @@ char *cmark_render_ast(cmark_node *root);
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
 
+/**
+ */
+CMARK_EXPORT
+char *cmark_render_man(cmark_node *root);
+
 /** .SH AUTHORS
  *
  * John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.

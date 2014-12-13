@@ -28,6 +28,7 @@ set(LIBRARY_SOURCES
   utf8.c
   buffer.c
   references.c
+  man.c
   html.c
   html_unescape.gperf
   houdini_href_e.c

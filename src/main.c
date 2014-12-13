@@ -7,22 +7,38 @@
 #include "debug.h"
 #include "bench.h"
 
+typedef enum {
+	FORMAT_NONE,
+	FORMAT_HTML,
+	FORMAT_MAN,
+	FORMAT_AST
+} writer_format;
+
 void print_usage()
 {
 	printf("Usage:   cmark [FILE*]\n");
-	printf("Options: --help, -h    Print usage information\n");
-	printf("         --ast         Print AST instead of HTML\n");
-	printf("         --version     Print version\n");
+	printf("Options:\n");
+	printf("  --to, -t FORMAT  Specify output format (html, man, ast)\n");
+	printf("  --help, -h       Print usage information\n");
+	printf("  --version        Print version\n");
 }
 
-static void print_document(cmark_node *document, bool ast)
+static void print_document(cmark_node *document, writer_format writer)
 {
 	char *result;
-	if (ast) {
+	switch (writer) {
+	case FORMAT_AST:
 		result = cmark_render_ast(document);
-	} else {
-
+		break;
+	case FORMAT_HTML:
 		result = cmark_render_html(document);
+		break;
+	case FORMAT_MAN:
+		result = cmark_render_man(document);
+		break;
+	default:
+		fprintf(stderr, "Unknown format %d\n", writer);
+		exit(1);
 	}
 	printf("%s", result);
 	free(result);
@@ -31,12 +47,12 @@ static void print_document(cmark_node *document, bool ast)
 int main(int argc, char *argv[])
 {
 	int i, numfps = 0;
-	bool ast = false;
 	int *files;
 	char buffer[4096];
 	cmark_parser *parser;
 	size_t bytes;
 	cmark_node *document;
+	writer_format writer = FORMAT_HTML;
 
 	parser = cmark_parser_new();
 	files = (int *)malloc(argc * sizeof(*files));
@@ -50,8 +66,26 @@ int main(int argc, char *argv[])
 			   (strcmp(argv[i], "-h") == 0)) {
 			print_usage();
 			exit(0);
-		} else if (strcmp(argv[i], "--ast") == 0) {
-			ast = true;
+		} else if ((strcmp(argv[i], "-t") == 0) ||
+			   (strcmp(argv[i], "--to") == 0)) {
+			i += 1;
+			if (i < argc) {
+				if (strcmp(argv[i], "man") == 0) {
+					writer = FORMAT_MAN;
+				} else if (strcmp(argv[i], "html") == 0) {
+					writer = FORMAT_HTML;
+				} else if (strcmp(argv[i], "ast") == 0) {
+					writer = FORMAT_AST;
+				} else {
+					fprintf(stderr,
+						"Unknown format %s\n", argv[i]);
+					exit(1);
+				}
+			} else {
+				fprintf(stderr, "No argument provided for %s\n",
+					argv[i - 1]);
+				exit(1);
+			}
 		} else if (*argv[i] == '-') {
 			print_usage();
 			exit(1);
@@ -81,11 +115,6 @@ int main(int argc, char *argv[])
 	}
 
 	if (numfps == 0) {
-		/*
-		document = cmark_parse_file(stdin);
-		print_document(document, ast);
-		exit(0);
-		*/
 
 		while ((bytes = fread(buffer, 1, sizeof(buffer), stdin)) > 0) {
 			cmark_parser_feed(parser, buffer, bytes);
@@ -101,7 +130,7 @@ int main(int argc, char *argv[])
 	cmark_parser_free(parser);
 
 	start_timer();
-	print_document(document, ast);
+	print_document(document, writer);
 	end_timer("print_document");
 
 	start_timer();
