@@ -79,7 +79,8 @@ void cmark_parser_free(cmark_parser *parser)
 	free(parser);
 }
 
-static void finalize(cmark_parser *parser, cmark_node* b, int line_number);
+static cmark_node*
+finalize(cmark_parser *parser, cmark_node* b, int line_number);
 
 // Returns true if line has only space characters, else false.
 static bool is_blank(strbuf *s, int offset)
@@ -166,8 +167,7 @@ static int break_out_of_lists(cmark_parser *parser, cmark_node ** bptr, int line
 	}
 	if (b) {
 		while (container && container != b) {
-			finalize(parser, container, line_number);
-			container = container->parent;
+			container = finalize(parser, container, line_number);
 		}
 		finalize(parser, b, line_number);
 		*bptr = b->parent;
@@ -176,15 +176,20 @@ static int break_out_of_lists(cmark_parser *parser, cmark_node ** bptr, int line
 }
 
 
-static void finalize(cmark_parser *parser, cmark_node* b, int line_number)
+static cmark_node*
+finalize(cmark_parser *parser, cmark_node* b, int line_number)
 {
 	int firstlinelen;
 	int pos;
 	cmark_node* item;
 	cmark_node* subitem;
+	cmark_node* parent;
 
+	parent = b->parent;
+
+	// don't do anything if the cmark_node is already closed
 	if (!b->open)
-		return; // don't do anything if the cmark_node is already closed
+		return parent;
 
 	b->open = false;
 	if (line_number > b->start_line) {
@@ -201,7 +206,8 @@ static void finalize(cmark_parser *parser, cmark_node* b, int line_number)
 				strbuf_drop(&b->string_content, pos);
 			}
 			if (is_blank(&b->string_content, 0)) {
-				b->type = NODE_REFERENCE_DEF;
+				// remove blank node (former reference def)
+				cmark_node_free(b);
 			}
 			break;
 
@@ -260,6 +266,7 @@ static void finalize(cmark_parser *parser, cmark_node* b, int line_number)
 		default:
 			break;
 	}
+	return parent;
 }
 
 // Add a cmark_node as child of another.  Return pointer to child.
@@ -271,8 +278,7 @@ static cmark_node* add_child(cmark_parser *parser, cmark_node* parent,
 	// if 'parent' isn't the kind of cmark_node that can accept this child,
 	// then back up til we hit a cmark_node that can.
 	while (!can_contain(parent->type, block_type)) {
-		finalize(parser, parent, start_line);
-		parent = parent->parent;
+		parent = finalize(parser, parent, start_line);
 	}
 
 	cmark_node* child = make_block(block_type, start_line, start_column);
@@ -415,8 +421,8 @@ static int lists_match(cmark_list *list_data, cmark_list *item_data)
 static cmark_node *finalize_document(cmark_parser *parser)
 {
 	while (parser->current != parser->root) {
-		finalize(parser, parser->current, parser->line_number);
-		parser->current = parser->current->parent;
+		parser->current = finalize(parser, parser->current,
+					   parser->line_number);
 	}
 
 	finalize(parser, parser->root, parser->line_number);
@@ -720,8 +726,8 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			// it's only now that we know the line is not part of a setext header:
 			container = add_child(parser, container, NODE_HRULE, parser->line_number, first_nonspace + 1);
-			finalize(parser, container, parser->line_number);
-			container = container->parent;
+			container = finalize(parser, container,
+					     parser->line_number);
 			offset = input.len - 1;
 
 		} else if ((matched = parse_list_marker(&input, first_nonspace, &data))) {
@@ -813,8 +819,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		// finalize any blocks that were not matched and set cur to container:
 		while (cur != last_matched_container) {
-			finalize(parser, cur, parser->line_number);
-			cur = cur->parent;
+			cur = finalize(parser, cur, parser->line_number);
 			assert(cur != NULL);
 		}
 
@@ -836,8 +841,8 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			if (matched) {
 				// if closing fence, don't add line to container; instead, close it:
-				finalize(parser, container, parser->line_number);
-				container = container->parent; // back up to parent
+				container = finalize(parser, container,
+						     parser->line_number);
 			} else {
 				add_line(container, &input, offset);
 			}
@@ -854,8 +859,8 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			chop_trailing_hashtags(&input);
 			add_line(container, &input, first_nonspace);
-			finalize(parser, container, parser->line_number);
-			container = container->parent;
+			container = finalize(parser, container,
+					     parser->line_number);
 
 		} else if (accepts_lines(container->type)) {
 

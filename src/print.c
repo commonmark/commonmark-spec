@@ -88,10 +88,6 @@ static void render_nodes(strbuf* buffer, cmark_node* node, int indent)
 			print_str(buffer, node->string_content.ptr, -1);
 			strbuf_putc(buffer, '\n');
 			break;
-		case NODE_REFERENCE_DEF:
-			// skip
-			// strbuf_printf(buffer, "reference_def\n");
-			break;
 		case NODE_TEXT:
 			strbuf_printf(buffer, "text ");
 			print_str(buffer, node->as.literal.data, node->as.literal.len);
