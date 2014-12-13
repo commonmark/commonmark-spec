@@ -85,7 +85,14 @@ typedef enum {
 typedef struct cmark_node cmark_node;
 typedef struct cmark_parser cmark_parser;
 
-typedef int (*cmark_node_handler)(cmark_node*, int, void*);
+typedef enum {
+	CMARK_EVENT_DONE,
+	CMARK_EVENT_ENTER,
+	CMARK_EVENT_EXIT
+} cmark_event_type;
+
+typedef int (*cmark_node_handler)(cmark_node *node, cmark_event_type ev_type,
+				  void *state);
 
 /**
  * .SH CREATING AND DESTROYING NODES
@@ -311,7 +318,7 @@ char *cmark_render_html(cmark_node *root);
 /** Walks the tree starting from root, applying handler to each node.
  * Nodes that can have children are visited twice, once on the way in
  * and once on the way out.  handler is a function that takes a node
- * pointer, an integer direction (1 for entering, 0 for leaving),
+ * pointer, a cmark_event_type,
  * and a pointer to a state structure that can be consulted and
  * updated by the handler.  The handler should return 1 on success,
  * 0 on failure.  cmark_walk returns 1 if it traversed the entire

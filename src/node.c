@@ -786,7 +786,7 @@ int S_is_leaf_node(cmark_node *current_node)
 
 int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state)
 {
-	int begin = 1;
+	int ev_type = CMARK_EVENT_ENTER;
 	cmark_node *current_node = root;
 	int depth = 0;
 	cmark_node *next, *parent, *first_child;
@@ -796,14 +796,15 @@ int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state)
 		next = current_node->next;
 		parent = current_node->parent;
 
-		if (!handler(current_node, begin, state)) {
+		if (!handler(current_node, ev_type, state)) {
 			return 0;
 		}
 
-		if (begin && !S_is_leaf_node(current_node)) {
+		if (ev_type == CMARK_EVENT_ENTER &&
+		    !S_is_leaf_node(current_node)) {
 			first_child = current_node->first_child;
 			if (first_child == NULL) {
-				begin = 0; // stay on this node
+				ev_type = CMARK_EVENT_EXIT; // stay on this node
 			} else {
 				depth += 1;
 				current_node = first_child;
@@ -816,13 +817,14 @@ int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state)
 			if (next) {
 				// don't go past root:
 				if (current_node == root) {
+					ev_type = CMARK_EVENT_DONE;
 					return 1;
 				} else {
-					begin = 1;
+					ev_type = CMARK_EVENT_ENTER;
 					current_node = next;
 				}
 			} else {
-				begin = 0;
+				ev_type = CMARK_EVENT_EXIT;
 				depth -= 1;
 				current_node = parent;
 			}

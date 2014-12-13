@@ -294,10 +294,10 @@ node_check(test_batch_runner *runner) {
 }
 
 static int
-S_handler(cmark_node *node, int entering, void *state)
+S_handler(cmark_node *node, cmark_event_type ev_type, void *state)
 {
 	int *textnodes = state;
-	if (entering) {
+	if (ev_type == CMARK_EVENT_ENTER) {
 		if (node->type == CMARK_NODE_TEXT) {
 			*textnodes += 1;
 		}

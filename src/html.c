@@ -39,7 +39,7 @@ struct render_state {
 };
 
 static int
-S_render_node(cmark_node *node, int entering, void *vstate)
+S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 {
 	struct render_state *state = vstate;
 	cmark_node *parent;
@@ -49,6 +49,8 @@ S_render_node(cmark_node *node, int entering, void *vstate)
 	char end_header[] = "</h0>";
 	strbuf *info;
 	bool tight;
+
+	bool entering = (ev_type == CMARK_EVENT_ENTER);
 
 	if (state->plain == node) { // back at original node
 		state->plain = NULL;
