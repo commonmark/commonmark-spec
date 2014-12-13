@@ -23,7 +23,6 @@ static const cmark_node_type node_types[] = {
 	CMARK_NODE_PARAGRAPH,
 	CMARK_NODE_HEADER,
 	CMARK_NODE_HRULE,
-	CMARK_NODE_REFERENCE_DEF,
 	CMARK_NODE_TEXT,
 	CMARK_NODE_SOFTBREAK,
 	CMARK_NODE_LINEBREAK,
@@ -425,8 +424,7 @@ hierarchy(test_batch_runner *runner)
 		(1 << CMARK_NODE_HTML) |
 		(1 << CMARK_NODE_PARAGRAPH) |
 		(1 << CMARK_NODE_HEADER) |
-		(1 << CMARK_NODE_HRULE) |
-		(1 << CMARK_NODE_REFERENCE_DEF);
+		(1 << CMARK_NODE_HRULE);
 	int all_inlines =
 		(1 << CMARK_NODE_TEXT) |
 		(1 << CMARK_NODE_SOFTBREAK) |
@@ -447,7 +445,6 @@ hierarchy(test_batch_runner *runner)
 	test_content(runner, CMARK_NODE_PARAGRAPH,     all_inlines);
 	test_content(runner, CMARK_NODE_HEADER,        all_inlines);
 	test_content(runner, CMARK_NODE_HRULE,         0);
-	test_content(runner, CMARK_NODE_REFERENCE_DEF, 0);
 	test_content(runner, CMARK_NODE_TEXT,	       0);
 	test_content(runner, CMARK_NODE_SOFTBREAK,     0);
 	test_content(runner, CMARK_NODE_LINEBREAK,     0);

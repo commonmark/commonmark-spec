@@ -201,7 +201,8 @@ static void finalize(cmark_parser *parser, cmark_node* b, int line_number)
 				strbuf_drop(&b->string_content, pos);
 			}
 			if (is_blank(&b->string_content, 0)) {
-				b->type = NODE_REFERENCE_DEF;
+				// remove blank node (former reference def)
+				cmark_node_free(b);
 			}
 			break;
 
