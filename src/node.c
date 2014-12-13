@@ -773,6 +773,7 @@ int S_is_leaf_node(cmark_node *current_node)
 	switch (cmark_node_get_type(current_node)) {
 	case CMARK_NODE_HTML:
 	case CMARK_NODE_HRULE:
+	case CMARK_NODE_CODE_BLOCK:
 	case CMARK_NODE_REFERENCE_DEF:
 	case CMARK_NODE_TEXT:
 	case CMARK_NODE_SOFTBREAK:
@@ -815,8 +816,13 @@ int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state)
 				parent = current_node->parent;
 			}
 			if (next) {
-				begin = 1;
-				current_node = next;
+				// don't go past root:
+				if (current_node == root) {
+					return 1;
+				} else {
+					begin = 1;
+					current_node = next;
+				}
 			} else {
 				begin = 0;
 				depth -= 1;
