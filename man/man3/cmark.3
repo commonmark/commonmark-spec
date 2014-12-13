@@ -4,7 +4,9 @@
 .B cmark
 \- CommonMark parsing, manipulating, and rendering
 
-.SH SIMPLE INTERFACE
+.SH DESCRIPTION
+
+.SS Simple Interface
 
 .nf
 \f[C]
@@ -24,7 +26,7 @@ Convert \fItext\fR (assumed to be a UTF-8 encoded string with length
 \fIlen\fR from CommonMark Markdown to HTML, returning a null-terminated,
 UTF-8-encoded string.
 
-.SH NODE STRUCTURE
+.SS Node Structure
 
 .nf
 \f[C]
@@ -95,7 +97,7 @@ typedef enum {
 .PP
 
 
-.SH CREATING AND DESTROYING NODES
+.SS Creating and Destroying Nodes
 
 \fIcmark_node*\fR \fBcmark_node_new\fR(\fIcmark_node_type type\fR)
 
@@ -109,7 +111,7 @@ typedef enum {
 
 .PP
 
-.SH TREE TRAVERSAL
+.SS Tree Traversal
 
 \fIcmark_node*\fR \fBcmark_node_previous\fR(\fIcmark_node *node\fR)
 
@@ -128,7 +130,26 @@ typedef enum {
 .PP
 
 
-.SH ACCESSORS
+.SS Iterator
+
+\fIcmark_iter*\fR \fBcmark_iter_new\fR(\fIcmark_node *root\fR)
+
+.PP
+
+\fIvoid\fR \fBcmark_iter_free\fR(\fIcmark_iter *iter\fR)
+
+.PP
+
+\fIcmark_event_type\fR \fBcmark_iter_next\fR(\fIcmark_iter *iter\fR)
+
+.PP
+
+\fIcmark_node*\fR \fBcmark_iter_get_node\fR(\fIcmark_iter *iter\fR)
+
+.PP
+
+
+.SS Accessors
 
 \fIcmark_node_type\fR \fBcmark_node_get_type\fR(\fIcmark_node *node\fR)
 
@@ -211,7 +232,7 @@ typedef enum {
 .PP
 
 
-.SH TREE MANIPULATION
+.SS Tree Manipulation
 
 \fIvoid\fR \fBcmark_node_unlink\fR(\fIcmark_node *node\fR)
 
@@ -234,7 +255,7 @@ typedef enum {
 .PP
 
 
-.SH PARSING
+.SS Parsing
 
 \fIcmark_parser *\fR \fBcmark_parser_new\fR(\fI\fR)
 
@@ -261,7 +282,7 @@ typedef enum {
 .PP
 
 
-.SH RENDERING
+.SS Rendering
 
 \fIchar *\fR \fBcmark_render_ast\fR(\fIcmark_node *root\fR)
 
@@ -270,19 +291,6 @@ typedef enum {
 \fIchar *\fR \fBcmark_render_html\fR(\fIcmark_node *root\fR)
 
 .PP
-
-\fIint\fR \fBcmark_walk\fR(\fIcmark_node *root\fR, \fIcmark_node_handler handler\fR, \fIvoid *state\fR)
-
-.PP
-Walks the tree starting from root, applying handler to each node.
-Nodes that can have children are visited twice, once on the way in
-and once on the way out.  handler is a function that takes a node
-pointer, a cmark_event_type,
-and a pointer to a state structure that can be consulted and
-updated by the handler.  The handler should return 1 on success,
-0 on failure.  cmark_walk returns 1 if it traversed the entire
-tree, 0 if it quit early in response to a 0 status from the
-handler.
 
 .SH AUTHORS
 

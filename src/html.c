@@ -271,12 +271,18 @@ char *cmark_render_html(cmark_node *root)
 {
 	char *result;
 	strbuf html = GH_BUF_INIT;
+	cmark_event_type ev_type;
+	cmark_node *cur;
 	struct render_state state = { &html, NULL };
-	if (cmark_walk(root, S_render_node, &state)) {
-		result = (char *)strbuf_detach(&html);
-		strbuf_free(&html);
-		return result;
-	} else {
-		return NULL;
+	cmark_iter *iter = cmark_iter_new(root);
+
+	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+		cur = cmark_iter_get_node(iter);
+		S_render_node(cur, ev_type, &state);
 	}
+	result = (char *)strbuf_detach(&html);
+
+	cmark_iter_free(iter);
+	strbuf_free(&html);
+	return result;
 }

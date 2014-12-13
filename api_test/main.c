@@ -293,27 +293,24 @@ node_check(test_batch_runner *runner) {
 	cmark_node_free(doc);
 }
 
-static int
-S_handler(cmark_node *node, cmark_event_type ev_type, void *state)
-{
-	int *textnodes = state;
-	if (ev_type == CMARK_EVENT_ENTER) {
-		if (node->type == CMARK_NODE_TEXT) {
-			*textnodes += 1;
+static void
+iterator(test_batch_runner *runner) {
+	cmark_node *doc = cmark_parse_document("> a *b*\n\nc", 10);
+	int parnodes = 0;
+	cmark_event_type ev_type;
+	cmark_iter *iter = cmark_iter_new(doc);
+	cmark_node *cur;
+
+	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+		cur = cmark_iter_get_node(iter);
+		if (cur->type == CMARK_NODE_PARAGRAPH &&
+		    ev_type == CMARK_EVENT_ENTER) {
+			parnodes += 1;
 		}
 	}
-	return 1;
-}
+	INT_EQ(runner, parnodes, 2, "iterate correctly counts paragraphs");
 
-static void
-walk(test_batch_runner *runner) {
-	// Construct an incomplete tree.
-	cmark_node *doc = cmark_parse_document("> a *b*\n\nc", 10);
-	int textnodes = 0;
-	INT_EQ(runner, cmark_walk(doc, S_handler, &textnodes), 1,
-	       "walk succeeds");
-	INT_EQ(runner, textnodes, 3, "walk correctly counts text nodes");
-
+	cmark_iter_free(iter);
 	cmark_node_free(doc);
 }
 
@@ -627,7 +624,7 @@ int main() {
 	constructor(runner);
 	accessors(runner);
 	node_check(runner);
-	walk(runner);
+	iterator(runner);
 	create_tree(runner);
 	hierarchy(runner);
 	parser(runner);

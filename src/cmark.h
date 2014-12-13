@@ -14,7 +14,9 @@ extern "C" {
  * \- CommonMark parsing, manipulating, and rendering
  */
 
-/** .SH SIMPLE INTERFACE
+/** .SH DESCRIPTION
+ *
+ * .SS Simple Interface
  */
 
 /** Current version of library.
@@ -28,7 +30,7 @@ extern "C" {
 CMARK_EXPORT
 char *cmark_markdown_to_html(const char *text, int len);
 
-/** .SH NODE STRUCTURE
+/** .SS Node Structure
  */
 
 /**
@@ -84,6 +86,7 @@ typedef enum {
 
 typedef struct cmark_node cmark_node;
 typedef struct cmark_parser cmark_parser;
+typedef struct cmark_iter cmark_iter;
 
 typedef enum {
 	CMARK_EVENT_DONE,
@@ -95,7 +98,7 @@ typedef int (*cmark_node_handler)(cmark_node *node, cmark_event_type ev_type,
 				  void *state);
 
 /**
- * .SH CREATING AND DESTROYING NODES
+ * .SS Creating and Destroying Nodes
  */
 
 /**
@@ -109,7 +112,7 @@ CMARK_EXPORT void
 cmark_node_free(cmark_node *node);
 
 /**
- * .SH TREE TRAVERSAL
+ * .SS Tree Traversal
  */
 CMARK_EXPORT cmark_node*
 cmark_node_next(cmark_node *node);
@@ -135,7 +138,35 @@ CMARK_EXPORT cmark_node*
 cmark_node_last_child(cmark_node *node);
 
 /**
- * .SH ACCESSORS
+ * .SS Iterator
+ */
+
+/**
+ */
+CMARK_EXPORT
+cmark_iter*
+cmark_iter_new(cmark_node *root);
+
+/**
+ */
+CMARK_EXPORT
+void
+cmark_iter_free(cmark_iter *iter);
+
+/**
+ */
+CMARK_EXPORT
+cmark_event_type
+cmark_iter_next(cmark_iter *iter);
+
+/**
+ */
+CMARK_EXPORT
+cmark_node*
+cmark_iter_get_node(cmark_iter *iter);
+
+/**
+ * .SS Accessors
  */
 
 /**
@@ -239,7 +270,7 @@ CMARK_EXPORT int
 cmark_node_get_end_line(cmark_node *node);
 
 /**
- * .SH TREE MANIPULATION
+ * .SS Tree Manipulation
  */
 
 /**
@@ -268,7 +299,7 @@ CMARK_EXPORT int
 cmark_node_append_child(cmark_node *node, cmark_node *child);
 
 /**
- * .SH PARSING
+ * .SS Parsing
  */
 
 /**
@@ -302,7 +333,7 @@ CMARK_EXPORT
 cmark_node *cmark_parse_file(FILE *f);
 
 /**
- * .SH RENDERING
+ * .SS Rendering
  */
 
 /**
@@ -314,19 +345,6 @@ char *cmark_render_ast(cmark_node *root);
  */
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
-
-/** Walks the tree starting from root, applying handler to each node.
- * Nodes that can have children are visited twice, once on the way in
- * and once on the way out.  handler is a function that takes a node
- * pointer, a cmark_event_type,
- * and a pointer to a state structure that can be consulted and
- * updated by the handler.  The handler should return 1 on success,
- * 0 on failure.  cmark_walk returns 1 if it traversed the entire
- * tree, 0 if it quit early in response to a 0 status from the
- * handler.
- */
-CMARK_EXPORT
-int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state);
 
 /** .SH AUTHORS
  *
