@@ -308,7 +308,15 @@ char *cmark_render_ast(cmark_node *root);
 CMARK_EXPORT
 char *cmark_render_html(cmark_node *root);
 
-/**
+/** Walks the tree starting from root, applying handler to each node.
+ * Nodes that can have children are visited twice, once on the way in
+ * and once on the way out.  handler is a function that takes a node
+ * pointer, an integer direction (1 for entering, 0 for leaving),
+ * and a pointer to a state structure that can be consulted and
+ * updated by the handler.  The handler should return 1 on success,
+ * 0 on failure.  cmark_walk returns 1 if it traversed the entire
+ * tree, 0 if it quit early in response to a 0 status from the
+ * handler.
  */
 CMARK_EXPORT
 int cmark_walk(cmark_node *root, cmark_node_handler handler, void *state);
