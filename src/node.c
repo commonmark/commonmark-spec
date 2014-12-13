@@ -102,6 +102,7 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_PARAGRAPH:     return "PARAGRAPH";
 	case CMARK_NODE_HEADER:	       return "HEADER";
 	case CMARK_NODE_HRULE:         return "HRULE";
+	case CMARK_NODE_REFERENCE_DEF: return "REFERENCE_DEF";
 	case CMARK_NODE_TEXT:          return "TEXT";
 	case CMARK_NODE_SOFTBREAK:     return "SOFTBREAK";
 	case CMARK_NODE_LINEBREAK:     return "LINEBREAK";
@@ -773,6 +774,7 @@ int S_is_leaf_node(cmark_node *current_node)
 	case CMARK_NODE_HTML:
 	case CMARK_NODE_HRULE:
 	case CMARK_NODE_CODE_BLOCK:
+	case CMARK_NODE_REFERENCE_DEF:
 	case CMARK_NODE_TEXT:
 	case CMARK_NODE_SOFTBREAK:
 	case CMARK_NODE_LINEBREAK:

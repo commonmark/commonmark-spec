@@ -163,6 +163,9 @@ S_render_node(cmark_node *node, int entering, void *vstate)
 		strbuf_puts(html, "<hr />\n");
 		break;
 
+	case CMARK_NODE_REFERENCE_DEF:
+		break;
+
 	case CMARK_NODE_PARAGRAPH:
 		parent = cmark_node_parent(node);
 		grandparent = cmark_node_parent(parent);
