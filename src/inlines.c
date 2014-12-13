@@ -80,13 +80,13 @@ static inline cmark_node *make_link(cmark_node *label, unsigned char *url, unsig
 	return e;
 }
 
-static inline cmark_node* make_autolink(cmark_node* label, cmark_chunk url, int is_email)
+static inline cmark_node* make_autolink(cmark_node* label, chunk url, int is_email)
 {
 	return make_link(label, cmark_clean_autolink(&url, is_email), NULL);
 }
 
 // Create an inline with a literal string value.
-static inline cmark_node* make_literal(cmark_node_type t, cmark_chunk s)
+static inline cmark_node* make_literal(cmark_node_type t, chunk s)
 {
 	cmark_node * e = (cmark_node *)calloc(1, sizeof(*e));
 	if(e != NULL) {

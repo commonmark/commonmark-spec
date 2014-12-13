@@ -56,8 +56,8 @@ cmark_parser *cmark_parser_new()
 	cmark_node *document = make_document();
 	strbuf *line = (strbuf*)malloc(sizeof(strbuf));
 	strbuf *buf  = (strbuf*)malloc(sizeof(strbuf));
-	cmark_strbuf_init(line, 256);
-	cmark_strbuf_init(buf, 0);
+	strbuf_init(line, 256);
+	strbuf_init(buf, 0);
 
 	parser->refmap = cmark_reference_map_new();
 	parser->root = document;
@@ -71,9 +71,9 @@ cmark_parser *cmark_parser_new()
 
 void cmark_parser_free(cmark_parser *parser)
 {
-	cmark_strbuf_free(parser->curline);
+	strbuf_free(parser->curline);
 	free(parser->curline);
-	cmark_strbuf_free(parser->linebuf);
+	strbuf_free(parser->linebuf);
 	free(parser->linebuf);
 	cmark_reference_map_free(parser->refmap);
 	free(parser);
