@@ -77,6 +77,9 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	}
 
 	switch (node->type) {
+	case CMARK_NODE_DOCUMENT:
+		break;
+
 	case CMARK_NODE_BLOCK_QUOTE:
 		if (entering) {
 			cr(html);
