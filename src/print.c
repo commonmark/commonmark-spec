@@ -78,14 +78,17 @@ static void render_nodes(strbuf* buffer, cmark_node* node, int indent)
 			break;
 		case NODE_CODE_BLOCK:
 			strbuf_printf(buffer, "code_block info=");
-			print_str(buffer, node->as.code.info.ptr, -1);
+			print_str(buffer, node->as.code.info.data,
+				  node->as.code.info.len);
 			strbuf_putc(buffer, ' ');
-			print_str(buffer, node->string_content.ptr, -1);
+			print_str(buffer, node->as.literal.data,
+				  node->as.literal.len);
 			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_HTML:
 			strbuf_printf(buffer, "html ");
-			print_str(buffer, node->string_content.ptr, -1);
+			print_str(buffer, node->as.literal.data,
+				  node->as.literal.len);
 			strbuf_putc(buffer, '\n');
 			break;
 		case NODE_TEXT:

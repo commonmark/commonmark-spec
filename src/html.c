@@ -47,7 +47,6 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	strbuf *html = state->html;
 	char start_header[] = "<h0>";
 	char end_header[] = "</h0>";
-	strbuf *info;
 	bool tight;
 
 	bool entering = (ev_type == CMARK_EVENT_ENTER);
@@ -136,20 +135,21 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		break;
 
 	case CMARK_NODE_CODE_BLOCK:
-		info = &node->as.code.info;
 		cr(html);
 
 		if (&node->as.code.fence_length == 0
-		    || strbuf_len(info) == 0) {
+		    || node->as.code.info.len == 0) {
 			strbuf_puts(html, "<pre><code>");
 		}
 		else {
-			int first_tag = strbuf_strchr(info, ' ', 0);
-			if (first_tag < 0)
-				first_tag = strbuf_len(info);
+			int first_tag = 0;
+			while (first_tag < node->as.code.info.len &&
+			       node->as.code.info.data[first_tag] != ' ') {
+				first_tag += 1;
+			}
 
 			strbuf_puts(html, "<pre><code class=\"language-");
-			escape_html(html, info->ptr, first_tag);
+			escape_html(html, node->as.code.info.data, first_tag);
 			strbuf_puts(html, "\">");
 		}
 

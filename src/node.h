@@ -26,7 +26,7 @@ typedef struct {
 	int               fence_length;
 	int               fence_offset;
 	unsigned char     fence_char;
-	strbuf            info;
+	chunk             info;
 } cmark_code;
 
 typedef struct {

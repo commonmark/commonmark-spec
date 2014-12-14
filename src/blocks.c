@@ -220,16 +220,17 @@ finalize(cmark_parser *parser, cmark_node* b, int line_number)
 				// first line of contents becomes info
 				firstlinelen = strbuf_strchr(&b->string_content, '\n', 0);
 
+				strbuf tmp = GH_BUF_INIT;
 				houdini_unescape_html_f(
-						&b->as.code.info,
-						b->string_content.ptr,
-						firstlinelen
-						);
+					&tmp,
+					b->string_content.ptr,
+					firstlinelen
+					);
+				strbuf_trim(&tmp);
+				strbuf_unescape(&tmp);
+				b->as.code.info = chunk_buf_detach(&tmp);
 
 				strbuf_drop(&b->string_content, firstlinelen + 1);
-
-				strbuf_trim(&b->as.code.info);
-				strbuf_unescape(&b->as.code.info);
 			}
 			b->as.literal = chunk_buf_detach(&b->string_content);
 			break;
@@ -671,7 +672,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 				container->as.code.fence_char = 0;
 				container->as.code.fence_length = 0;
 				container->as.code.fence_offset = 0;
-				strbuf_init(&container->as.code.info, 0);
+				container->as.code.info = chunk_literal("");
 			} else { // indent > 4 in lazy line
 				break;
 			}
@@ -706,7 +707,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			container->as.code.fence_char = peek_at(&input, first_nonspace);
 			container->as.code.fence_length = matched;
 			container->as.code.fence_offset = first_nonspace - offset;
-			strbuf_init(&container->as.code.info, 0);
+			container->as.code.info = chunk_literal("");
 			offset = first_nonspace + matched;
 
 		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {

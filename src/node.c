@@ -41,7 +41,7 @@ void S_free_nodes(cmark_node *e)
 		strbuf_free(&e->string_content);
 		switch (e->type){
 		case NODE_CODE_BLOCK:
-			strbuf_free(&e->as.code.info);
+			chunk_free(&e->as.code.info);
 			chunk_free(&e->as.literal);
 			break;
 		case NODE_TEXT:
@@ -352,7 +352,7 @@ cmark_node_get_fence_info(cmark_node *node) {
 	}
 
 	if (node->type == NODE_CODE_BLOCK) {
-		return strbuf_cstr(&node->as.code.info);
+		return chunk_to_cstr(&node->as.code.info);
 	}
 	else {
 		return NULL;
@@ -366,7 +366,7 @@ cmark_node_set_fence_info(cmark_node *node, const char *info) {
 	}
 
 	if (node->type == NODE_CODE_BLOCK) {
-		strbuf_sets(&node->as.code.info, info);
+		chunk_set_cstr(&node->as.code.info, info);
 		return 1;
 	}
 	else {
