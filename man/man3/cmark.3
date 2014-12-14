@@ -102,6 +102,18 @@ way, for example, turning all level\-3 headers into regular paragraphs.
 .IP
 .nf
 \f[C]
+void
+usage_example(cmark_node *root) {
+    cmark_event_type ev_type;
+    cmark_iter *iter = cmark_iter_new(root);
+
+    while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+        cmark_node *cur = cmark_iter_get_node(iter);
+        // Do something with `cur` and `ev_type`
+    }
+
+    cmark_iter_free(iter);
+}
 \f[]
 .fi
 
@@ -302,6 +314,7 @@ Simple interface:
 .IP
 .nf
 \f[C]
+cmark_node *document = cmark_parse_document("Hello *world*", 12);
 \f[]
 .fi
 .PP
@@ -309,6 +322,16 @@ Streaming interface:
 .IP
 .nf
 \f[C]
+cmark_parser *parser = cmark_parser_new();
+FILE *fp = fopen("myfile.md", "r");
+while ((bytes = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+       cmark_parser_feed(parser, buffer, bytes);
+       if (bytes < sizeof(buffer)) {
+           break;
+       }
+}
+document = cmark_parser_finish(parser);
+cmark_parser_free(parser);
 \f[]
 .fi
 

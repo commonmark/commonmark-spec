@@ -59,7 +59,6 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		switch(node->type) {
 		case CMARK_NODE_TEXT:
 		case CMARK_NODE_CODE:
-		case CMARK_NODE_INLINE_HTML:
 			escape_man(man, node->as.literal.data,
 				    node->as.literal.len);
 			break;
@@ -131,8 +130,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_CODE_BLOCK:
 		cr(man);
 		strbuf_puts(man, ".IP\n.nf\n\\f[C]\n");
-		escape_man(man, node->string_content.ptr,
-			   node->string_content.size);
+		escape_man(man, node->as.literal.data,
+			   node->as.literal.len);
 		cr(man);
 		strbuf_puts(man, "\\f[]\n.fi");
 		cr(man);
