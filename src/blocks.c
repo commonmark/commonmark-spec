@@ -215,7 +215,6 @@ finalize(cmark_parser *parser, cmark_node* b, int line_number)
 			if (!b->as.code.fenced) { // indented code
 				remove_trailing_blank_lines(&b->string_content);
 				strbuf_putc(&b->string_content, '\n');
-				break;
 			} else {
 
 				// first line of contents becomes info
@@ -231,8 +230,13 @@ finalize(cmark_parser *parser, cmark_node* b, int line_number)
 
 				strbuf_trim(&b->as.code.info);
 				strbuf_unescape(&b->as.code.info);
-				break;
 			}
+			b->as.literal = chunk_buf_detach(&b->string_content);
+			break;
+
+	        case NODE_HTML:
+			b->as.literal = chunk_buf_detach(&b->string_content);
+			break;
 
 		case NODE_LIST: // determine tight/loose status
 			b->as.list.tight = true; // tight by default

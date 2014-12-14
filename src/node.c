@@ -42,10 +42,12 @@ void S_free_nodes(cmark_node *e)
 		switch (e->type){
 		case NODE_CODE_BLOCK:
 			strbuf_free(&e->as.code.info);
+			chunk_free(&e->as.literal);
 			break;
 		case NODE_TEXT:
 		case NODE_INLINE_HTML:
 		case NODE_CODE:
+		case NODE_HTML:
 			chunk_free(&e->as.literal);
 			break;
 		case NODE_LINK:
@@ -183,8 +185,6 @@ cmark_node_get_string_content(cmark_node *node) {
 	switch (node->type) {
 	case NODE_CODE_BLOCK:
 	case NODE_HTML:
-		return strbuf_cstr(&node->string_content);
-
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
@@ -206,9 +206,6 @@ cmark_node_set_string_content(cmark_node *node, const char *content) {
 	switch (node->type) {
 	case NODE_CODE_BLOCK:
 	case NODE_HTML:
-		strbuf_sets(&node->string_content, content);
-		return 1;
-
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
