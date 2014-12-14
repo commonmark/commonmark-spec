@@ -45,7 +45,7 @@ void S_free_nodes(cmark_node *e)
 			break;
 		case NODE_TEXT:
 		case NODE_INLINE_HTML:
-		case NODE_INLINE_CODE:
+		case NODE_CODE:
 			chunk_free(&e->as.literal);
 			break;
 		case NODE_LINK:
@@ -105,7 +105,7 @@ S_type_string(cmark_node *node)
 	case CMARK_NODE_TEXT:          return "TEXT";
 	case CMARK_NODE_SOFTBREAK:     return "SOFTBREAK";
 	case CMARK_NODE_LINEBREAK:     return "LINEBREAK";
-	case CMARK_NODE_INLINE_CODE:   return "INLINE_CODE";
+	case CMARK_NODE_CODE:          return "CODE";
 	case CMARK_NODE_INLINE_HTML:   return "INLINE_HTML";
 	case CMARK_NODE_EMPH:          return "EMPH";
 	case CMARK_NODE_STRONG:        return "STRONG";
@@ -187,7 +187,7 @@ cmark_node_get_string_content(cmark_node *node) {
 
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
-	case NODE_INLINE_CODE:
+	case NODE_CODE:
 		return chunk_to_cstr(&node->as.literal);
 
 	default:
@@ -211,7 +211,7 @@ cmark_node_set_string_content(cmark_node *node, const char *content) {
 
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
-	case NODE_INLINE_CODE:
+	case NODE_CODE:
 		chunk_set_cstr(&node->as.literal, content);
 		return 1;
 

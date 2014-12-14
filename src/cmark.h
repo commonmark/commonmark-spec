@@ -54,7 +54,7 @@ typedef enum {
 	CMARK_NODE_TEXT,
 	CMARK_NODE_SOFTBREAK,
 	CMARK_NODE_LINEBREAK,
-	CMARK_NODE_INLINE_CODE,
+	CMARK_NODE_CODE,
 	CMARK_NODE_INLINE_HTML,
 	CMARK_NODE_EMPH,
 	CMARK_NODE_STRONG,
@@ -423,7 +423,7 @@ char *cmark_render_man(cmark_node *root);
   #define NODE_TEXT                 CMARK_NODE_TEXT
   #define NODE_SOFTBREAK            CMARK_NODE_SOFTBREAK
   #define NODE_LINEBREAK            CMARK_NODE_LINEBREAK
-  #define NODE_INLINE_CODE          CMARK_NODE_INLINE_CODE
+  #define NODE_CODE                 CMARK_NODE_CODE
   #define NODE_INLINE_HTML          CMARK_NODE_INLINE_HTML
   #define NODE_EMPH                 CMARK_NODE_EMPH
   #define NODE_STRONG               CMARK_NODE_STRONG

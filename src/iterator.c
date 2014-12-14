@@ -40,7 +40,7 @@ int S_is_leaf(cmark_node *node)
 	case CMARK_NODE_TEXT:
 	case CMARK_NODE_SOFTBREAK:
 	case CMARK_NODE_LINEBREAK:
-	case CMARK_NODE_INLINE_CODE:
+	case CMARK_NODE_CODE:
 	case CMARK_NODE_INLINE_HTML:
 		return 1;
 	default:

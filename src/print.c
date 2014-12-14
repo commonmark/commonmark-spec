@@ -99,7 +99,7 @@ static void render_nodes(strbuf* buffer, cmark_node* node, int indent)
 		case NODE_SOFTBREAK:
 			strbuf_printf(buffer, "softbreak\n");
 			break;
-		case NODE_INLINE_CODE:
+		case NODE_CODE:
 			strbuf_printf(buffer, "code ");
 			print_str(buffer, node->as.literal.data, node->as.literal.len);
 			strbuf_putc(buffer, '\n');
