@@ -301,52 +301,25 @@ static cmark_node* add_child(cmark_parser *parser, cmark_node* parent,
 }
 
 
-typedef struct BlockStack {
-	struct BlockStack *previous;
-	cmark_node *next_sibling;
-} block_stack;
-
 // Walk through cmark_node and all children, recursively, parsing
 // string content into inline content where appropriate.
-static void process_inlines(cmark_node* cur, cmark_reference_map *refmap)
+static void process_inlines(cmark_node* root, cmark_reference_map *refmap)
 {
-	block_stack* stack = NULL;
-	block_stack* newstack = NULL;
+	cmark_iter *iter = cmark_iter_new(root);
+	cmark_node *cur;
+	cmark_event_type ev_type;
 
-	while (cur != NULL) {
-		switch (cur->type) {
-			case NODE_PARAGRAPH:
-			case NODE_HEADER:
+	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+		cur = cmark_iter_get_node(iter);
+		if (ev_type == CMARK_EVENT_ENTER) {
+			if (cur->type == NODE_PARAGRAPH ||
+			    cur->type == NODE_HEADER) {
 				cmark_parse_inlines(cur, refmap);
-				break;
-
-			default:
-				break;
-		}
-
-		if (cur->first_child) {
-			newstack = (block_stack*)malloc(sizeof(block_stack));
-			if (newstack == NULL) break;
-			newstack->previous = stack;
-			stack = newstack;
-			stack->next_sibling = cur->next;
-			cur = cur->first_child;
-		} else {
-			cur = cur->next;
-		}
-
-		while (cur == NULL && stack != NULL) {
-			cur = stack->next_sibling;
-			newstack = stack->previous;
-			free(stack);
-			stack = newstack;
+			}
 		}
 	}
-	while (stack != NULL) {
-		newstack = stack->previous;
-		free(stack);
-		stack = newstack;
-	}
+
+	cmark_iter_free(iter);
 }
 
 // Attempts to parse a list item marker (bullet or enumerated).
