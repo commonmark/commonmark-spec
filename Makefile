@@ -77,6 +77,12 @@ $(PROG): all
 man/man3/cmark.3: src/cmark.h
 	python man/make_man_page.py $< > $@
 
+man/man1/cmark.1.html: man/man1/cmark.1
+	groff -mman -Thtml > $@
+
+man/man3/cmark.3.html: man/man3/cmark.3
+	groff -mman -Thtml > $@
+
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
 $(SRCDIR)/html_unescape.h: $(SRCDIR)/html_unescape.gperf
