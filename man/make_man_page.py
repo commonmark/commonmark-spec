@@ -47,7 +47,7 @@ single_quote_re = re.compile("(?<!\w)'([^']+)'(?!\w)")
 double_quote_re = re.compile("(?<!\w)''([^']+)''(?!\w)")
 
 def handle_quotes(s):
-    return re.sub(double_quote_re, '\\\\fB\g<1>\\\\f[]', re.sub(single_quote_re, '\\\\fI\g<1>\\\\f[]', s))
+    return re.sub(double_quote_re, '**\g<1>**', re.sub(single_quote_re, '*\g<1>*', s))
 
 typedef = False
 mdlines = []
@@ -91,6 +91,7 @@ with open(sourcefile, 'r') as cmarkh:
                 mdlines.append('\n')
             rawsig = ''.join(sig)
             m = function_re.match(rawsig)
+            mdlines.append('.PP\n')
             if m:
                 mdlines.append('\\fI' + m.group('type') + '\\f[]' + ' ')
                 mdlines.append('\\fB' + m.group('name') + '\\f[]' + '(')
@@ -107,7 +108,7 @@ with open(sourcefile, 'r') as cmarkh:
                 mdlines.append('.RE\n\\f[]\n.fi\n')
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
-            mdlines += chunk
+            mdlines += md2man(''.join(chunk))
             mdlines.append('\n')
             chunk = []
             sig = []
