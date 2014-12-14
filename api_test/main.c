@@ -136,18 +136,18 @@ accessors(test_batch_runner *runner)
 	       "get_list_tight loose");
 
 	cmark_node *code = cmark_node_next(ordered_list);
-	STR_EQ(runner, cmark_node_get_string_content(code), "code\n",
-	       "get_string_content indented code");
+	STR_EQ(runner, cmark_node_get_literal(code), "code\n",
+	       "get_literal indented code");
 
 	cmark_node *fenced = cmark_node_next(code);
-	STR_EQ(runner, cmark_node_get_string_content(fenced), "fenced\n",
-	       "get_string_content fenced code");
+	STR_EQ(runner, cmark_node_get_literal(fenced), "fenced\n",
+	       "get_literal fenced code");
 	STR_EQ(runner, cmark_node_get_fence_info(fenced), "lang",
 	       "get_fence_info");
 
 	cmark_node *html = cmark_node_next(fenced);
-	STR_EQ(runner, cmark_node_get_string_content(html),
-	       "<div>html</div>\n", "get_string_content html");
+	STR_EQ(runner, cmark_node_get_literal(html),
+	       "<div>html</div>\n", "get_literal html");
 
 	cmark_node *paragraph = cmark_node_next(html);
 	INT_EQ(runner, cmark_node_get_start_line(paragraph), 19,
@@ -164,8 +164,8 @@ accessors(test_batch_runner *runner)
 	       "get_title");
 
 	cmark_node *string = cmark_node_first_child(link);
-	STR_EQ(runner, cmark_node_get_string_content(string), "link",
-	       "get_string_content string");
+	STR_EQ(runner, cmark_node_get_literal(string), "link",
+	       "get_literal string");
 
 	// Setters
 
@@ -184,24 +184,24 @@ accessors(test_batch_runner *runner)
 	OK(runner, cmark_node_set_list_tight(ordered_list, 1),
 	   "set_list_tight tight");
 
-	OK(runner, cmark_node_set_string_content(code, "CODE\n"),
-	   "set_string_content indented code");
+	OK(runner, cmark_node_set_literal(code, "CODE\n"),
+	   "set_literal indented code");
 
-	OK(runner, cmark_node_set_string_content(fenced, "FENCED\n"),
-	   "set_string_content fenced code");
+	OK(runner, cmark_node_set_literal(fenced, "FENCED\n"),
+	   "set_literal fenced code");
 	OK(runner, cmark_node_set_fence_info(fenced, "LANG"),
 	   "set_fence_info");
 
-	OK(runner, cmark_node_set_string_content(html, "<div>HTML</div>\n"),
-	   "set_string_content html");
+	OK(runner, cmark_node_set_literal(html, "<div>HTML</div>\n"),
+	   "set_literal html");
 
 	OK(runner, cmark_node_set_url(link, "URL"),
 	   "set_url");
 	OK(runner, cmark_node_set_title(link, "TITLE"),
 	   "set_title");
 
-	OK(runner, cmark_node_set_string_content(string, "LINK"),
-	   "set_string_content string");
+	OK(runner, cmark_node_set_literal(string, "LINK"),
+	   "set_literal string");
 
 	char *rendered_html = cmark_render_html(doc);
 	static const char expected_html[] =
@@ -237,8 +237,8 @@ accessors(test_batch_runner *runner)
 	       "get_list_start error");
 	INT_EQ(runner, cmark_node_get_list_tight(fenced), 0,
 	       "get_list_tight error");
-	OK(runner, cmark_node_get_string_content(ordered_list) == NULL,
-	   "get_string_content error");
+	OK(runner, cmark_node_get_literal(ordered_list) == NULL,
+	   "get_literal error");
 	OK(runner, cmark_node_get_fence_info(paragraph) == NULL,
 	   "get_fence_info error");
 	OK(runner, cmark_node_get_url(html) == NULL,
@@ -256,8 +256,8 @@ accessors(test_batch_runner *runner)
 	   "set_list_start error");
 	OK(runner, !cmark_node_set_list_tight(fenced, 0),
 	   "set_list_tight error");
-	OK(runner, !cmark_node_set_string_content(ordered_list, "content\n"),
-	   "set_string_content error");
+	OK(runner, !cmark_node_set_literal(ordered_list, "content\n"),
+	   "set_literal error");
 	OK(runner, !cmark_node_set_fence_info(paragraph, "lang"),
 	   "set_fence_info error");
 	OK(runner, !cmark_node_set_url(html, "url"),
@@ -334,17 +334,17 @@ create_tree(test_batch_runner *runner)
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "prepend1 consistent");
 
 	cmark_node *str1 = cmark_node_new(CMARK_NODE_TEXT);
-	cmark_node_set_string_content(str1, "Hello, ");
+	cmark_node_set_literal(str1, "Hello, ");
 	OK(runner, cmark_node_prepend_child(p, str1), "prepend2");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "prepend2 consistent");
 
 	cmark_node *str3 = cmark_node_new(CMARK_NODE_TEXT);
-	cmark_node_set_string_content(str3, "!");
+	cmark_node_set_literal(str3, "!");
 	OK(runner, cmark_node_append_child(p, str3), "append2");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append2 consistent");
 
 	cmark_node *str2 = cmark_node_new(CMARK_NODE_TEXT);
-	cmark_node_set_string_content(str2, "world");
+	cmark_node_set_literal(str2, "world");
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append3 consistent");
 

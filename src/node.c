@@ -177,7 +177,7 @@ S_strdup(const char *str) {
 }
 
 const char*
-cmark_node_get_string_content(cmark_node *node) {
+cmark_node_get_literal(cmark_node *node) {
 	if (node == NULL) {
 		return NULL;
 	}
@@ -198,7 +198,7 @@ cmark_node_get_string_content(cmark_node *node) {
 }
 
 int
-cmark_node_set_string_content(cmark_node *node, const char *content) {
+cmark_node_set_literal(cmark_node *node, const char *content) {
 	if (node == NULL) {
 		return 0;
 	}

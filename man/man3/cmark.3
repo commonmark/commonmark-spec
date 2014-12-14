@@ -152,13 +152,13 @@ Accessors
 Returns the type of \f[I]node\f[], or \f[C]CMARK_NODE_NONE\f[] on error.
 
 .PP
-\fIconst char*\f[] \fBcmark_node_get_string_content\f[](\fIcmark_node *node\f[])
+\fIconst char*\f[] \fBcmark_node_get_literal\f[](\fIcmark_node *node\f[])
 
 .PP
 Returns the string contents of \f[I]node\f[], or NULL if none.
 
 .PP
-\fIint\f[] \fBcmark_node_set_string_content\f[](\fIcmark_node *node\f[], \fIconst char *content\f[])
+\fIint\f[] \fBcmark_node_set_literal\f[](\fIcmark_node *node\f[], \fIconst char *content\f[])
 
 .PP
 Sets the string contents of \f[I]node\f[]\&.  Returns 1 on success,

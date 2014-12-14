@@ -201,13 +201,13 @@ cmark_node_get_type(cmark_node *node);
 /** Returns the string contents of 'node', or NULL if none.
  */
 CMARK_EXPORT const char*
-cmark_node_get_string_content(cmark_node *node);
+cmark_node_get_literal(cmark_node *node);
 
 /** Sets the string contents of 'node'.  Returns 1 on success,
  * 0 on failure.
  */
 CMARK_EXPORT int
-cmark_node_set_string_content(cmark_node *node, const char *content);
+cmark_node_set_literal(cmark_node *node, const char *content);
 
 /** Returns the header level of 'node', or 0 if 'node' is not a header.
  */
