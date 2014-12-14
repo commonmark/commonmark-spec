@@ -32,8 +32,6 @@ char *cmark_markdown_to_html(const char *text, int len);
 /** ## Node Structure
  */
 
-/**
- */
 typedef enum {
 	/* Error status */
 	CMARK_NODE_NONE,
@@ -68,16 +66,12 @@ typedef enum {
 } cmark_node_type;
 
 
-/**
- */
 typedef enum {
 	CMARK_NO_LIST,
 	CMARK_BULLET_LIST,
 	CMARK_ORDERED_LIST
 }  cmark_list_type;
 
-/**
- */
 typedef enum {
 	CMARK_PERIOD_DELIM,
 	CMARK_PAREN_DELIM
@@ -92,9 +86,6 @@ typedef enum {
 	CMARK_EVENT_ENTER,
 	CMARK_EVENT_EXIT
 } cmark_event_type;
-
-typedef int (*cmark_node_handler)(cmark_node *node, cmark_event_type ev_type,
-				  void *state);
 
 /**
  * ## Creating and Destroying Nodes
