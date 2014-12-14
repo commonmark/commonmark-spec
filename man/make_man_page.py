@@ -3,7 +3,7 @@
 # Creates a man page from a C file.
 
 # Comments beginning with `/**` are treated as Groff man, except that
-# 'this' is converted to \fIthis\fR, and ''this'' to \fBthis\fR.
+# 'this' is converted to \fIthis\f[], and ''this'' to \fBthis\f[].
 
 # Non-blank lines immediately following a man page comment are treated
 # as function signatures or examples and parsed into .Ft, .Fo, .Fa, .Fc. The
@@ -47,7 +47,7 @@ single_quote_re = re.compile("(?<!\w)'([^']+)'(?!\w)")
 double_quote_re = re.compile("(?<!\w)''([^']+)''(?!\w)")
 
 def handle_quotes(s):
-    return re.sub(double_quote_re, '\\\\fB\g<1>\\\\fR', re.sub(single_quote_re, '\\\\fI\g<1>\\\\fR', s))
+    return re.sub(double_quote_re, '\\\\f[CB]\g<1>\\\\f[]', re.sub(single_quote_re, '\\\\f[CI]\g<1>\\\\f[]', s))
 
 typedef = False
 mdlines = []
@@ -92,14 +92,14 @@ with open(sourcefile, 'r') as cmarkh:
             rawsig = ''.join(sig)
             m = function_re.match(rawsig)
             if m:
-                mdlines.append('\\fI' + m.group('type') + '\\fR' + ' ')
-                mdlines.append('\\fB' + m.group('name') + '\\fR' + '(')
+                mdlines.append('\\f[CI]' + m.group('type') + '\\f[]' + ' ')
+                mdlines.append('\\f[CB]' + m.group('name') + '\\f[]' + '(')
                 first = True
                 for argument in re.split(',', m.group('args')):
                     if not first:
                         mdlines.append(', ')
                     first = False
-                    mdlines.append('\\fI' + argument.strip() + '\\fR')
+                    mdlines.append('\\f[CI]' + argument.strip() + '\\f[]')
                 mdlines.append(')\n')
             else:
                 mdlines.append('.nf\n\\f[C]\n.RS 0n\n')
