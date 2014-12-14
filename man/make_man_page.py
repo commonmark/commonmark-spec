@@ -12,8 +12,28 @@
 
 # That's about it!
 
-import sys, re, os
+import sys, re, os, platform
 from datetime import date
+from ctypes import CDLL, c_char_p, c_long, c_void_p
+
+sysname = platform.system()
+
+if sysname == 'Darwin':
+    cmark = CDLL("build/src/libcmark.dylib")
+else:
+    cmark = CDLL("build/src/libcmark.so")
+
+parse_document = cmark.cmark_parse_document
+parse_document.restype = c_void_p
+parse_document.argtypes = [c_char_p, c_long]
+
+render_man = cmark.cmark_render_man
+render_man.restype = c_char_p
+render_man.argtypes = [c_void_p]
+
+def md2man(text):
+    return render_man(parse_document(text, len(text)))
+
 
 comment_start_re = re.compile('^\/\*\* ?')
 comment_delim_re = re.compile('^[/ ]\** ?')
@@ -87,14 +107,14 @@ with open(sourcefile, 'r') as cmarkh:
                 mdlines.append('.RE\n\\f[]\n.fi\n')
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
-            mdlines.append('.PP\n')
             mdlines += chunk
+            mdlines.append('\n')
             chunk = []
             sig = []
         elif oldstate == 'man' and state != 'signature':
             if len(mdlines) > 0 and mdlines[-1] != '\n':
                 mdlines.append('\n')
-            mdlines += chunk # add man chunk
+            mdlines += md2man(''.join(chunk)) # add man chunk
             chunk = []
             mdlines.append('\n')
 

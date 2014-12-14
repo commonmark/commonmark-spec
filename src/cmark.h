@@ -8,15 +8,14 @@
 extern "C" {
 #endif
 
-/** .SH NAME
+/** # NAME
  *
- * .B cmark
- * \- CommonMark parsing, manipulating, and rendering
+ * **cmark** - CommonMark parsing, manipulating, and rendering
  */
 
-/** .SH DESCRIPTION
+/** # DESCRIPTION
  *
- * .SS Simple Interface
+ * ## Simple Interface
  */
 
 /** Current version of library.
@@ -30,7 +29,7 @@ extern "C" {
 CMARK_EXPORT
 char *cmark_markdown_to_html(const char *text, int len);
 
-/** .SS Node Structure
+/** ## Node Structure
  */
 
 /**
@@ -98,7 +97,7 @@ typedef int (*cmark_node_handler)(cmark_node *node, cmark_event_type ev_type,
 				  void *state);
 
 /**
- * .SS Creating and Destroying Nodes
+ * ## Creating and Destroying Nodes
  */
 
 /**
@@ -112,8 +111,9 @@ CMARK_EXPORT void
 cmark_node_free(cmark_node *node);
 
 /**
- * .SS Tree Traversal
+ * ## Tree Traversal
  */
+
 CMARK_EXPORT cmark_node*
 cmark_node_next(cmark_node *node);
 
@@ -138,7 +138,7 @@ CMARK_EXPORT cmark_node*
 cmark_node_last_child(cmark_node *node);
 
 /**
- * .SS Iterator
+ * ## Iterator
  */
 
 /**
@@ -166,7 +166,7 @@ cmark_node*
 cmark_iter_get_node(cmark_iter *iter);
 
 /**
- * .SS Accessors
+ * ## Accessors
  */
 
 /**
@@ -270,7 +270,7 @@ CMARK_EXPORT int
 cmark_node_get_end_line(cmark_node *node);
 
 /**
- * .SS Tree Manipulation
+ * ## Tree Manipulation
  */
 
 /**
@@ -299,7 +299,7 @@ CMARK_EXPORT int
 cmark_node_append_child(cmark_node *node, cmark_node *child);
 
 /**
- * .SS Parsing
+ * ## Parsing
  */
 
 /**
@@ -333,7 +333,7 @@ CMARK_EXPORT
 cmark_node *cmark_parse_file(FILE *f);
 
 /**
- * .SS Rendering
+ * ## Rendering
  */
 
 /**
@@ -351,7 +351,7 @@ char *cmark_render_html(cmark_node *root);
 CMARK_EXPORT
 char *cmark_render_man(cmark_node *root);
 
-/** .SH AUTHORS
+/** # AUTHORS
  *
  * John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
  */

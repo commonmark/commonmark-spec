@@ -1,12 +1,13 @@
 .TH cmark 3 "December 13, 2014" "LOCAL" "Library Functions Manual"
-.SH NAME
+.SH
+NAME
+.PP
+\f[B]cmark\f[] \- CommonMark parsing, manipulating, and rendering
 
-.B cmark
-\- CommonMark parsing, manipulating, and rendering
-
-.SH DESCRIPTION
-
-.SS Simple Interface
+.SH
+DESCRIPTION
+.SS
+Simple Interface
 
 .nf
 \f[C]
@@ -16,17 +17,16 @@
 \f[]
 .fi
 
-.PP
 Current version of library.
 
 \fIchar *\fR \fBcmark_markdown_to_html\fR(\fIconst char *text\fR, \fIint len\fR)
 
-.PP
 Convert \fItext\fR (assumed to be a UTF-8 encoded string with length
 \fIlen\fR from CommonMark Markdown to HTML, returning a null-terminated,
 UTF-8-encoded string.
 
-.SS Node Structure
+.SS
+Node Structure
 
 .nf
 \f[C]
@@ -67,7 +67,7 @@ typedef enum {
 \f[]
 .fi
 
-.PP
+
 
 .nf
 \f[C]
@@ -81,7 +81,7 @@ typedef enum {
 \f[]
 .fi
 
-.PP
+
 
 .nf
 \f[C]
@@ -94,209 +94,207 @@ typedef enum {
 \f[]
 .fi
 
-.PP
 
 
-.SS Creating and Destroying Nodes
+.SS
+Creating and Destroying Nodes
 
 \fIcmark_node*\fR \fBcmark_node_new\fR(\fIcmark_node_type type\fR)
 
-.PP
+
 
 \fIvoid\fR \fBcmark_node_free\fR(\fIcmark_node *node\fR)
 
-.PP
 
-\fIcmark_node*\fR \fBcmark_node_next\fR(\fIcmark_node *node\fR)
 
-.PP
-
-.SS Tree Traversal
+.SS
+Tree Traversal
 
 \fIcmark_node*\fR \fBcmark_node_previous\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIcmark_node*\fR \fBcmark_node_parent\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIcmark_node*\fR \fBcmark_node_first_child\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIcmark_node*\fR \fBcmark_node_last_child\fR(\fIcmark_node *node\fR)
 
-.PP
 
 
-.SS Iterator
+.SS
+Iterator
 
 \fIcmark_iter*\fR \fBcmark_iter_new\fR(\fIcmark_node *root\fR)
 
-.PP
+
 
 \fIvoid\fR \fBcmark_iter_free\fR(\fIcmark_iter *iter\fR)
 
-.PP
+
 
 \fIcmark_event_type\fR \fBcmark_iter_next\fR(\fIcmark_iter *iter\fR)
 
-.PP
+
 
 \fIcmark_node*\fR \fBcmark_iter_get_node\fR(\fIcmark_iter *iter\fR)
 
-.PP
 
 
-.SS Accessors
+.SS
+Accessors
 
 \fIcmark_node_type\fR \fBcmark_node_get_type\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIconst char*\fR \fBcmark_node_get_string_content\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_string_content\fR(\fIcmark_node *node\fR, \fIconst char *content\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_header_level\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_header_level\fR(\fIcmark_node *node\fR, \fIint level\fR)
 
-.PP
+
 
 \fIcmark_list_type\fR \fBcmark_node_get_list_type\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_list_type\fR(\fIcmark_node *node\fR, \fIcmark_list_type type\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_list_start\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_list_start\fR(\fIcmark_node *node\fR, \fIint start\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_list_tight\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_list_tight\fR(\fIcmark_node *node\fR, \fIint tight\fR)
 
-.PP
+
 
 \fIconst char*\fR \fBcmark_node_get_fence_info\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_fence_info\fR(\fIcmark_node *node\fR, \fIconst char *info\fR)
 
-.PP
+
 
 \fIconst char*\fR \fBcmark_node_get_url\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_url\fR(\fIcmark_node *node\fR, \fIconst char *url\fR)
 
-.PP
+
 
 \fIconst char*\fR \fBcmark_node_get_title\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_set_title\fR(\fIcmark_node *node\fR, \fIconst char *title\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_start_line\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_start_column\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_get_end_line\fR(\fIcmark_node *node\fR)
 
-.PP
 
 
-.SS Tree Manipulation
+.SS
+Tree Manipulation
 
 \fIvoid\fR \fBcmark_node_unlink\fR(\fIcmark_node *node\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_insert_before\fR(\fIcmark_node *node\fR, \fIcmark_node *sibling\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_insert_after\fR(\fIcmark_node *node\fR, \fIcmark_node *sibling\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_prepend_child\fR(\fIcmark_node *node\fR, \fIcmark_node *child\fR)
 
-.PP
+
 
 \fIint\fR \fBcmark_node_append_child\fR(\fIcmark_node *node\fR, \fIcmark_node *child\fR)
 
-.PP
 
 
-.SS Parsing
+.SS
+Parsing
 
 \fIcmark_parser *\fR \fBcmark_parser_new\fR(\fI\fR)
 
-.PP
+
 
 \fIvoid\fR \fBcmark_parser_free\fR(\fIcmark_parser *parser\fR)
 
-.PP
+
 
 \fIcmark_node *\fR \fBcmark_parser_finish\fR(\fIcmark_parser *parser\fR)
 
-.PP
+
 
 \fIvoid\fR \fBcmark_parser_feed\fR(\fIcmark_parser *parser\fR, \fIconst char *buffer\fR, \fIsize_t len\fR)
 
-.PP
+
 
 \fIcmark_node *\fR \fBcmark_parse_document\fR(\fIconst char *buffer\fR, \fIsize_t len\fR)
 
-.PP
+
 
 \fIcmark_node *\fR \fBcmark_parse_file\fR(\fIFILE *f\fR)
 
-.PP
 
 
-.SS Rendering
+.SS
+Rendering
 
 \fIchar *\fR \fBcmark_render_ast\fR(\fIcmark_node *root\fR)
 
-.PP
+
 
 \fIchar *\fR \fBcmark_render_html\fR(\fIcmark_node *root\fR)
 
-.PP
+
 
 \fIchar *\fR \fBcmark_render_man\fR(\fIcmark_node *root\fR)
 
+
+
+.SH
+AUTHORS
 .PP
-
-.SH AUTHORS
-
 John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
 
