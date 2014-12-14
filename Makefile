@@ -21,14 +21,16 @@ JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench apidoc
 
-all: $(BUILDDIR)
-	@make -C $(BUILDDIR)
+all: $(PROG) man/man1/cmark.1 man/man3/cmark.3
 	@echo "Binaries can be found in $(BUILDDIR)/src"
+
+$(PROG): $(BUILDDIR)
+	@make -C $(BUILDDIR)
 
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man1/cmark.1 man/man3/cmark.3
+$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -72,9 +74,7 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 clean:
 	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
 
-$(PROG): all
-
-man/man3/cmark.3: src/cmark.h
+man/man3/cmark.3: src/cmark.h $(PROG)
 	python man/make_man_page.py $< > $@
 
 man/man1/cmark.1.html: man/man1/cmark.1

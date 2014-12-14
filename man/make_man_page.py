@@ -47,7 +47,7 @@ single_quote_re = re.compile("(?<!\w)'([^']+)'(?!\w)")
 double_quote_re = re.compile("(?<!\w)''([^']+)''(?!\w)")
 
 def handle_quotes(s):
-    return re.sub(double_quote_re, '\\\\f[CB]\g<1>\\\\f[]', re.sub(single_quote_re, '\\\\f[CI]\g<1>\\\\f[]', s))
+    return re.sub(double_quote_re, '\\\\fB\g<1>\\\\f[]', re.sub(single_quote_re, '\\\\fI\g<1>\\\\f[]', s))
 
 typedef = False
 mdlines = []
@@ -92,17 +92,17 @@ with open(sourcefile, 'r') as cmarkh:
             rawsig = ''.join(sig)
             m = function_re.match(rawsig)
             if m:
-                mdlines.append('\\f[CI]' + m.group('type') + '\\f[]' + ' ')
-                mdlines.append('\\f[CB]' + m.group('name') + '\\f[]' + '(')
+                mdlines.append('\\fI' + m.group('type') + '\\f[]' + ' ')
+                mdlines.append('\\fB' + m.group('name') + '\\f[]' + '(')
                 first = True
                 for argument in re.split(',', m.group('args')):
                     if not first:
                         mdlines.append(', ')
                     first = False
-                    mdlines.append('\\f[CI]' + argument.strip() + '\\f[]')
+                    mdlines.append('\\fI' + argument.strip() + '\\f[]')
                 mdlines.append(')\n')
             else:
-                mdlines.append('.nf\n\\f[C]\n.RS 0n\n')
+                mdlines.append('.nf\n\\fC\n.RS 0n\n')
                 mdlines += sig
                 mdlines.append('.RE\n\\f[]\n.fi\n')
             if len(mdlines) > 0 and mdlines[-1] != '\n':

@@ -10,7 +10,7 @@ DESCRIPTION
 Simple Interface
 
 .nf
-\f[C]
+\fC
 .RS 0n
 #define CMARK_VERSION "0.1"
 .RE
@@ -19,17 +19,17 @@ Simple Interface
 
 Current version of library.
 
-\f[CI]char *\f[] \f[CB]cmark_markdown_to_html\f[](\f[CI]const char *text\f[], \f[CI]int len\f[])
+\fIchar *\f[] \fBcmark_markdown_to_html\f[](\fIconst char *text\f[], \fIint len\f[])
 
-Convert \f[CI]text\f[] (assumed to be a UTF-8 encoded string with length
-\f[CI]len\f[] from CommonMark Markdown to HTML, returning a null-terminated,
+Convert \fItext\f[] (assumed to be a UTF-8 encoded string with length
+\fIlen\f[] from CommonMark Markdown to HTML, returning a null-terminated,
 UTF-8-encoded string.
 
 .SS
 Node Structure
 
 .nf
-\f[C]
+\fC
 .RS 0n
 typedef enum {
 	/* Error status */
@@ -70,7 +70,7 @@ typedef enum {
 
 
 .nf
-\f[C]
+\fC
 .RS 0n
 typedef enum {
 	CMARK_NO_LIST,
@@ -84,7 +84,7 @@ typedef enum {
 
 
 .nf
-\f[C]
+\fC
 .RS 0n
 typedef enum {
 	CMARK_PERIOD_DELIM,
@@ -99,197 +99,197 @@ typedef enum {
 .SS
 Creating and Destroying Nodes
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_node_new\f[](\f[CI]cmark_node_type type\f[])
+\fIcmark_node*\f[] \fBcmark_node_new\f[](\fIcmark_node_type type\f[])
 
 
 
-\f[CI]void\f[] \f[CB]cmark_node_free\f[](\f[CI]cmark_node *node\f[])
+\fIvoid\f[] \fBcmark_node_free\f[](\fIcmark_node *node\f[])
 
 
 
 .SS
 Tree Traversal
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_node_previous\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_node*\f[] \fBcmark_node_previous\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_node_parent\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_node*\f[] \fBcmark_node_parent\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_node_first_child\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_node*\f[] \fBcmark_node_first_child\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_node_last_child\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_node*\f[] \fBcmark_node_last_child\f[](\fIcmark_node *node\f[])
 
 
 
 .SS
 Iterator
 
-\f[CI]cmark_iter*\f[] \f[CB]cmark_iter_new\f[](\f[CI]cmark_node *root\f[])
+\fIcmark_iter*\f[] \fBcmark_iter_new\f[](\fIcmark_node *root\f[])
 
 
 
-\f[CI]void\f[] \f[CB]cmark_iter_free\f[](\f[CI]cmark_iter *iter\f[])
+\fIvoid\f[] \fBcmark_iter_free\f[](\fIcmark_iter *iter\f[])
 
 
 
-\f[CI]cmark_event_type\f[] \f[CB]cmark_iter_next\f[](\f[CI]cmark_iter *iter\f[])
+\fIcmark_event_type\f[] \fBcmark_iter_next\f[](\fIcmark_iter *iter\f[])
 
 
 
-\f[CI]cmark_node*\f[] \f[CB]cmark_iter_get_node\f[](\f[CI]cmark_iter *iter\f[])
+\fIcmark_node*\f[] \fBcmark_iter_get_node\f[](\fIcmark_iter *iter\f[])
 
 
 
 .SS
 Accessors
 
-\f[CI]cmark_node_type\f[] \f[CB]cmark_node_get_type\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_node_type\f[] \fBcmark_node_get_type\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]const char*\f[] \f[CB]cmark_node_get_string_content\f[](\f[CI]cmark_node *node\f[])
+\fIconst char*\f[] \fBcmark_node_get_string_content\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_string_content\f[](\f[CI]cmark_node *node\f[], \f[CI]const char *content\f[])
+\fIint\f[] \fBcmark_node_set_string_content\f[](\fIcmark_node *node\f[], \fIconst char *content\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_header_level\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_header_level\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_header_level\f[](\f[CI]cmark_node *node\f[], \f[CI]int level\f[])
+\fIint\f[] \fBcmark_node_set_header_level\f[](\fIcmark_node *node\f[], \fIint level\f[])
 
 
 
-\f[CI]cmark_list_type\f[] \f[CB]cmark_node_get_list_type\f[](\f[CI]cmark_node *node\f[])
+\fIcmark_list_type\f[] \fBcmark_node_get_list_type\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_list_type\f[](\f[CI]cmark_node *node\f[], \f[CI]cmark_list_type type\f[])
+\fIint\f[] \fBcmark_node_set_list_type\f[](\fIcmark_node *node\f[], \fIcmark_list_type type\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_list_start\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_list_start\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_list_start\f[](\f[CI]cmark_node *node\f[], \f[CI]int start\f[])
+\fIint\f[] \fBcmark_node_set_list_start\f[](\fIcmark_node *node\f[], \fIint start\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_list_tight\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_list_tight\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_list_tight\f[](\f[CI]cmark_node *node\f[], \f[CI]int tight\f[])
+\fIint\f[] \fBcmark_node_set_list_tight\f[](\fIcmark_node *node\f[], \fIint tight\f[])
 
 
 
-\f[CI]const char*\f[] \f[CB]cmark_node_get_fence_info\f[](\f[CI]cmark_node *node\f[])
+\fIconst char*\f[] \fBcmark_node_get_fence_info\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_fence_info\f[](\f[CI]cmark_node *node\f[], \f[CI]const char *info\f[])
+\fIint\f[] \fBcmark_node_set_fence_info\f[](\fIcmark_node *node\f[], \fIconst char *info\f[])
 
 
 
-\f[CI]const char*\f[] \f[CB]cmark_node_get_url\f[](\f[CI]cmark_node *node\f[])
+\fIconst char*\f[] \fBcmark_node_get_url\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_url\f[](\f[CI]cmark_node *node\f[], \f[CI]const char *url\f[])
+\fIint\f[] \fBcmark_node_set_url\f[](\fIcmark_node *node\f[], \fIconst char *url\f[])
 
 
 
-\f[CI]const char*\f[] \f[CB]cmark_node_get_title\f[](\f[CI]cmark_node *node\f[])
+\fIconst char*\f[] \fBcmark_node_get_title\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_set_title\f[](\f[CI]cmark_node *node\f[], \f[CI]const char *title\f[])
+\fIint\f[] \fBcmark_node_set_title\f[](\fIcmark_node *node\f[], \fIconst char *title\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_start_line\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_start_line\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_start_column\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_start_column\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_get_end_line\f[](\f[CI]cmark_node *node\f[])
+\fIint\f[] \fBcmark_node_get_end_line\f[](\fIcmark_node *node\f[])
 
 
 
 .SS
 Tree Manipulation
 
-\f[CI]void\f[] \f[CB]cmark_node_unlink\f[](\f[CI]cmark_node *node\f[])
+\fIvoid\f[] \fBcmark_node_unlink\f[](\fIcmark_node *node\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_insert_before\f[](\f[CI]cmark_node *node\f[], \f[CI]cmark_node *sibling\f[])
+\fIint\f[] \fBcmark_node_insert_before\f[](\fIcmark_node *node\f[], \fIcmark_node *sibling\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_insert_after\f[](\f[CI]cmark_node *node\f[], \f[CI]cmark_node *sibling\f[])
+\fIint\f[] \fBcmark_node_insert_after\f[](\fIcmark_node *node\f[], \fIcmark_node *sibling\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_prepend_child\f[](\f[CI]cmark_node *node\f[], \f[CI]cmark_node *child\f[])
+\fIint\f[] \fBcmark_node_prepend_child\f[](\fIcmark_node *node\f[], \fIcmark_node *child\f[])
 
 
 
-\f[CI]int\f[] \f[CB]cmark_node_append_child\f[](\f[CI]cmark_node *node\f[], \f[CI]cmark_node *child\f[])
+\fIint\f[] \fBcmark_node_append_child\f[](\fIcmark_node *node\f[], \fIcmark_node *child\f[])
 
 
 
 .SS
 Parsing
 
-\f[CI]cmark_parser *\f[] \f[CB]cmark_parser_new\f[](\f[CI]\f[])
+\fIcmark_parser *\f[] \fBcmark_parser_new\f[](\fI\f[])
 
 
 
-\f[CI]void\f[] \f[CB]cmark_parser_free\f[](\f[CI]cmark_parser *parser\f[])
+\fIvoid\f[] \fBcmark_parser_free\f[](\fIcmark_parser *parser\f[])
 
 
 
-\f[CI]cmark_node *\f[] \f[CB]cmark_parser_finish\f[](\f[CI]cmark_parser *parser\f[])
+\fIcmark_node *\f[] \fBcmark_parser_finish\f[](\fIcmark_parser *parser\f[])
 
 
 
-\f[CI]void\f[] \f[CB]cmark_parser_feed\f[](\f[CI]cmark_parser *parser\f[], \f[CI]const char *buffer\f[], \f[CI]size_t len\f[])
+\fIvoid\f[] \fBcmark_parser_feed\f[](\fIcmark_parser *parser\f[], \fIconst char *buffer\f[], \fIsize_t len\f[])
 
 
 
-\f[CI]cmark_node *\f[] \f[CB]cmark_parse_document\f[](\f[CI]const char *buffer\f[], \f[CI]size_t len\f[])
+\fIcmark_node *\f[] \fBcmark_parse_document\f[](\fIconst char *buffer\f[], \fIsize_t len\f[])
 
 
 
-\f[CI]cmark_node *\f[] \f[CB]cmark_parse_file\f[](\f[CI]FILE *f\f[])
+\fIcmark_node *\f[] \fBcmark_parse_file\f[](\fIFILE *f\f[])
 
 
 
 .SS
 Rendering
 
-\f[CI]char *\f[] \f[CB]cmark_render_ast\f[](\f[CI]cmark_node *root\f[])
+\fIchar *\f[] \fBcmark_render_ast\f[](\fIcmark_node *root\f[])
 
 
 
-\f[CI]char *\f[] \f[CB]cmark_render_html\f[](\f[CI]cmark_node *root\f[])
+\fIchar *\f[] \fBcmark_render_html\f[](\fIcmark_node *root\f[])
 
 
 
-\f[CI]char *\f[] \f[CB]cmark_render_man\f[](\f[CI]cmark_node *root\f[])
+\fIchar *\f[] \fBcmark_render_man\f[](\fIcmark_node *root\f[])
 
 
 
