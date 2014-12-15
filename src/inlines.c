@@ -254,6 +254,7 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 		before_char = 10;
 	} else {
 		before_char_pos = subj->pos - 1;
+		// walk back to the beginning of the UTF_8 sequence:
 		while (peek_at(subj, before_char_pos) >> 6 == 2 &&
 		       before_char_pos > 0) {
 			before_char_pos -= 1;
