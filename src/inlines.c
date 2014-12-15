@@ -241,22 +241,47 @@ static cmark_node* handle_backticks(subject *subj)
 
 // Scan ***, **, or * and return number scanned, or 0.
 // Advances position.
-static int scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
+static int
+scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 {
 	int numdelims = 0;
-	unsigned char char_before, char_after;
+	int before_char_pos;
+	int32_t after_char = 0;
+	int32_t before_char = 0;
+	int len;
 
-	char_before = subj->pos == 0 ? '\n' : peek_at(subj, subj->pos - 1);
+	if (subj->pos == 0) {
+		before_char = 10;
+	} else {
+		before_char_pos = subj->pos - 1;
+		while (peek_at(subj, before_char_pos) >> 6 == 2 &&
+		       before_char_pos > 0) {
+			before_char_pos -= 1;
+		}
+		len = utf8proc_iterate(subj->input.data + before_char_pos,
+				 subj->pos - before_char_pos, &before_char);
+		if (len == 0) {
+			before_char = 10;
+		}
+	}
+
 	while (peek_char(subj) == c) {
 		numdelims++;
 		advance(subj);
 	}
-	char_after = peek_char(subj);
-	*can_open = numdelims > 0 && !isspace(char_after);
-	*can_close = numdelims > 0 && !isspace(char_before);
+
+	len = utf8proc_iterate(subj->input.data + subj->pos,
+			 subj->input.len - subj->pos, &after_char);
+	if (len == 0) {
+		after_char = 10;
+	}
+	*can_open = numdelims > 0 && !utf8proc_is_space(after_char);
+	*can_close = numdelims > 0 && !utf8proc_is_space(before_char);
 	if (c == '_') {
-		*can_open = *can_open && !isalnum(char_before);
-		*can_close = *can_close && !isalnum(char_after);
+		*can_open = *can_open &&
+			!(before_char < 128 && isalnum((char)before_char));
+		*can_close = *can_close &&
+			!(before_char < 128 && isalnum((char)after_char));
 	}
 	return numdelims;
 }
