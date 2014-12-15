@@ -22,10 +22,10 @@ static const int8_t utf8proc_utf8class[256] = {
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	4, 4, 4, 4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-static void encode_unknown(strbuf *buf)
+static void encode_unknown(cmark_strbuf *buf)
 {
 	static const uint8_t repl[] = {239, 191, 189};
-	strbuf_put(buf, repl, 3);
+	cmark_strbuf_put(buf, repl, 3);
 }
 
 static int utf8proc_charlen(const uint8_t *str, int str_len)
@@ -109,7 +109,7 @@ static int utf8proc_valid(const uint8_t *str, int str_len)
 	return length;
 }
 
-void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
+void utf8proc_detab(cmark_strbuf *ob, const uint8_t *line, size_t size)
 {
 	static const uint8_t whitespace[] = "    ";
 
@@ -124,21 +124,21 @@ void utf8proc_detab(strbuf *ob, const uint8_t *line, size_t size)
 		}
 
 		if (i > org)
-			strbuf_put(ob, line + org, i - org);
+			cmark_strbuf_put(ob, line + org, i - org);
 
 		if (i >= size)
 			break;
 
 		if (line[i] == '\t') {
 			int numspaces = 4 - (tab % 4);
-			strbuf_put(ob, whitespace, numspaces);
+			cmark_strbuf_put(ob, whitespace, numspaces);
 			i += 1;
 			tab += numspaces;
 		} else {
 			int charlen = utf8proc_valid(line + i, size - i);
 
 			if (charlen >= 0) {
-				strbuf_put(ob, line + i, charlen);
+				cmark_strbuf_put(ob, line + i, charlen);
 			} else {
 				encode_unknown(ob);
 				charlen = -charlen;
@@ -188,7 +188,7 @@ int utf8proc_iterate(const uint8_t *str, int str_len, int32_t *dst)
 	return length;
 }
 
-void utf8proc_encode_char(int32_t uc, strbuf *buf)
+void utf8proc_encode_char(int32_t uc, cmark_strbuf *buf)
 {
 	uint8_t dst[4];
 	int len = 0;
@@ -224,10 +224,10 @@ void utf8proc_encode_char(int32_t uc, strbuf *buf)
 		return;
 	}
 
-	strbuf_put(buf, dst, len);
+	cmark_strbuf_put(buf, dst, len);
 }
 
-void utf8proc_case_fold(strbuf *dest, const uint8_t *str, int len)
+void utf8proc_case_fold(cmark_strbuf *dest, const uint8_t *str, int len)
 {
 	int32_t c;
 

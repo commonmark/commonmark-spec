@@ -10,7 +10,7 @@
 
 // Functions to convert cmark_nodes to groff man strings.
 
-static void escape_man(strbuf *dest, const unsigned char *source, int length)
+static void escape_man(cmark_strbuf *dest, const unsigned char *source, int length)
 {
 	int i;
 	unsigned char c;
@@ -18,27 +18,27 @@ static void escape_man(strbuf *dest, const unsigned char *source, int length)
 	for (i = 0; i < length; i++) {
 		c = source[i];
 		if (c == '.' && i == 0) {
-			strbuf_puts(dest, "\\&.");
+			cmark_strbuf_puts(dest, "\\&.");
 		} else if (c == '\'' && i == 0) {
-			strbuf_puts(dest, "\\&'");
+			cmark_strbuf_puts(dest, "\\&'");
 		} else if (c == '-') {
-			strbuf_puts(dest, "\\-");
+			cmark_strbuf_puts(dest, "\\-");
 		} else if (c == '\\') {
-			strbuf_puts(dest, "\\e");
+			cmark_strbuf_puts(dest, "\\e");
 		} else {
-			strbuf_putc(dest, source[i]);
+			cmark_strbuf_putc(dest, source[i]);
 		}
 	}
 }
 
-static inline void cr(strbuf *man)
+static inline void cr(cmark_strbuf *man)
 {
 	if (man->size && man->ptr[man->size - 1] != '\n')
-		strbuf_putc(man, '\n');
+		cmark_strbuf_putc(man, '\n');
 }
 
 struct render_state {
-	strbuf* man;
+	cmark_strbuf* man;
 	cmark_node *plain;
 };
 
@@ -47,7 +47,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 {
 	struct render_state *state = vstate;
 	cmark_node *tmp;
-	strbuf *man = state->man;
+	cmark_strbuf *man = state->man;
 	int list_number;
 	bool entering = (ev_type == CMARK_EVENT_ENTER);
 
@@ -65,7 +65,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 		case CMARK_NODE_LINEBREAK:
 		case CMARK_NODE_SOFTBREAK:
-			strbuf_putc(man, ' ');
+			cmark_strbuf_putc(man, ' ');
 			break;
 
 		default:
@@ -81,11 +81,11 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_BLOCK_QUOTE:
 		if (entering) {
 			cr(man);
-			strbuf_puts(man, ".RS");
+			cmark_strbuf_puts(man, ".RS");
 			cr(man);
 		} else {
 			cr(man);
-			strbuf_puts(man, ".RE");
+			cmark_strbuf_puts(man, ".RE");
 			cr(man);
 		}
 		break;
@@ -96,10 +96,10 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_LIST_ITEM:
 		if (entering) {
 			cr(man);
-			strbuf_puts(man, ".IP ");
+			cmark_strbuf_puts(man, ".IP ");
 			if (cmark_node_get_list_type(node->parent) ==
 			    CMARK_BULLET_LIST) {
-				strbuf_puts(man, "\\[bu] 2");
+				cmark_strbuf_puts(man, "\\[bu] 2");
 			} else {
 				list_number = cmark_node_get_list_start(node->parent);
 				tmp = node;
@@ -107,7 +107,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 					tmp = tmp->prev;
 					list_number += 1;
 				}
-				strbuf_printf(man, "\"%d.\" 4", list_number);
+				cmark_strbuf_printf(man, "\"%d.\" 4", list_number);
 			}
 			cr(man);
 		} else {
@@ -118,7 +118,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_HEADER:
 		if (entering) {
 			cr(man);
-			strbuf_puts(man,
+			cmark_strbuf_puts(man,
 				    cmark_node_get_header_level(node) == 1 ?
 				    ".SH" : ".SS");
 			cr(man);
@@ -129,11 +129,11 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 	case CMARK_NODE_CODE_BLOCK:
 		cr(man);
-		strbuf_puts(man, ".IP\n.nf\n\\f[C]\n");
+		cmark_strbuf_puts(man, ".IP\n.nf\n\\f[C]\n");
 		escape_man(man, node->as.literal.data,
 			   node->as.literal.len);
 		cr(man);
-		strbuf_puts(man, "\\f[]\n.fi");
+		cmark_strbuf_puts(man, "\\f[]\n.fi");
 		cr(man);
 		break;
 
@@ -142,7 +142,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 	case CMARK_NODE_HRULE:
 		cr(man);
-		strbuf_puts(man, ".PP\n  *  *  *  *  *");
+		cmark_strbuf_puts(man, ".PP\n  *  *  *  *  *");
 		cr(man);
 		break;
 
@@ -155,7 +155,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 				// no blank line or .PP
 			} else {
 				cr(man);
-				strbuf_puts(man, ".PP\n");
+				cmark_strbuf_puts(man, ".PP\n");
 			}
 		} else {
 			cr(man);
@@ -168,18 +168,18 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		break;
 
 	case CMARK_NODE_LINEBREAK:
-		strbuf_puts(man, ".PD 0\n.P\n.PD");
+		cmark_strbuf_puts(man, ".PD 0\n.P\n.PD");
 		cr(man);
 		break;
 
 	case CMARK_NODE_SOFTBREAK:
-		strbuf_putc(man, '\n');
+		cmark_strbuf_putc(man, '\n');
 		break;
 
 	case CMARK_NODE_CODE:
-		strbuf_puts(man, "\\f[C]");
+		cmark_strbuf_puts(man, "\\f[C]");
 		escape_man(man, node->as.literal.data, node->as.literal.len);
-		strbuf_puts(man, "\\f[]");
+		cmark_strbuf_puts(man, "\\f[]");
 		break;
 
 	case CMARK_NODE_INLINE_HTML:
@@ -187,33 +187,33 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 	case CMARK_NODE_STRONG:
 		if (entering) {
-			strbuf_puts(man, "\\f[B]");
+			cmark_strbuf_puts(man, "\\f[B]");
 		} else {
-			strbuf_puts(man, "\\f[]");
+			cmark_strbuf_puts(man, "\\f[]");
 		}
 		break;
 
 	case CMARK_NODE_EMPH:
 		if (entering) {
-			strbuf_puts(man, "\\f[I]");
+			cmark_strbuf_puts(man, "\\f[I]");
 		} else {
-			strbuf_puts(man, "\\f[]");
+			cmark_strbuf_puts(man, "\\f[]");
 		}
 		break;
 
 	case CMARK_NODE_LINK:
 		if (!entering) {
-			strbuf_printf(man, " (%s)",
+			cmark_strbuf_printf(man, " (%s)",
 				      cmark_node_get_url(node));
 		}
 		break;
 
 	case CMARK_NODE_IMAGE:
 		if (entering) {
-			strbuf_puts(man, "[IMAGE: ");
+			cmark_strbuf_puts(man, "[IMAGE: ");
 			state->plain = node;
 		} else {
-			strbuf_puts(man, "]");
+			cmark_strbuf_puts(man, "]");
 		}
 		break;
 
@@ -222,14 +222,14 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		break;
 	}
 
-	// strbuf_putc(man, 'x');
+	// cmark_strbuf_putc(man, 'x');
 	return 1;
 }
 
 char *cmark_render_man(cmark_node *root)
 {
 	char *result;
-	strbuf man = GH_BUF_INIT;
+	cmark_strbuf man = GH_BUF_INIT;
 	struct render_state state = { &man, NULL };
 	cmark_node *cur;
 	cmark_event_type ev_type;
@@ -239,9 +239,9 @@ char *cmark_render_man(cmark_node *root)
 		cur = cmark_iter_get_node(iter);
 		S_render_node(cur, ev_type, &state);
 	}
-	result = (char *)strbuf_detach(&man);
+	result = (char *)cmark_strbuf_detach(&man);
 
 	cmark_iter_free(iter);
-	strbuf_free(&man);
+	cmark_strbuf_free(&man);
 	return result;
 }

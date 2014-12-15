@@ -30,9 +30,9 @@ static void reference_free(cmark_reference *ref)
 // remove leading/trailing whitespace, case fold
 // Return NULL if the reference name is actually empty (i.e. composed
 // solely from whitespace)
-static unsigned char *normalize_reference(chunk *ref)
+static unsigned char *normalize_reference(cmark_chunk *ref)
 {
-	strbuf normalized = GH_BUF_INIT;
+	cmark_strbuf normalized = GH_BUF_INIT;
 	unsigned char *result;
 
 	if(ref == NULL)
@@ -42,10 +42,10 @@ static unsigned char *normalize_reference(chunk *ref)
 		return NULL;
 
 	utf8proc_case_fold(&normalized, ref->data, ref->len);
-	strbuf_trim(&normalized);
-	strbuf_normalize_whitespace(&normalized);
+	cmark_strbuf_trim(&normalized);
+	cmark_strbuf_normalize_whitespace(&normalized);
 
-	result = strbuf_detach(&normalized);
+	result = cmark_strbuf_detach(&normalized);
 	assert(result);
 
 	if (result[0] == '\0') {
@@ -73,8 +73,8 @@ static void add_reference(cmark_reference_map *map, cmark_reference* ref)
 	map->table[ref->hash % REFMAP_SIZE] = ref;
 }
 
-void cmark_reference_create(cmark_reference_map *map, chunk *label, chunk *url,
-			    chunk *title)
+void cmark_reference_create(cmark_reference_map *map, cmark_chunk *label, cmark_chunk *url,
+			    cmark_chunk *title)
 {
 	cmark_reference *ref;
 	unsigned char *reflabel = normalize_reference(label);
@@ -97,7 +97,7 @@ void cmark_reference_create(cmark_reference_map *map, chunk *label, chunk *url,
 
 // Returns reference if refmap contains a reference with matching
 // label, otherwise NULL.
-cmark_reference* cmark_reference_lookup(cmark_reference_map *map, chunk *label)
+cmark_reference* cmark_reference_lookup(cmark_reference_map *map, cmark_chunk *label)
 {
 	cmark_reference *ref = NULL;
 	unsigned char *norm;

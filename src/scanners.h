@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-int _scan_at(int (*scanner)(const unsigned char *), chunk *c, int offset);
+int _scan_at(int (*scanner)(const unsigned char *), cmark_chunk *c, int offset);
 int _scan_autolink_uri(const unsigned char *p);
 int _scan_autolink_email(const unsigned char *p);
 int _scan_html_tag(const unsigned char *p);

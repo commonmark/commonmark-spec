@@ -38,17 +38,17 @@ void S_free_nodes(cmark_node *e)
 {
 	cmark_node *next;
 	while (e != NULL) {
-		strbuf_free(&e->string_content);
+		cmark_strbuf_free(&e->string_content);
 		switch (e->type){
 		case NODE_CODE_BLOCK:
-			chunk_free(&e->as.code.info);
-			chunk_free(&e->as.literal);
+			cmark_chunk_free(&e->as.code.info);
+			cmark_chunk_free(&e->as.literal);
 			break;
 		case NODE_TEXT:
 		case NODE_INLINE_HTML:
 		case NODE_CODE:
 		case NODE_HTML:
-			chunk_free(&e->as.literal);
+			cmark_chunk_free(&e->as.literal);
 			break;
 		case NODE_LINK:
 		case NODE_IMAGE:
@@ -188,7 +188,7 @@ cmark_node_get_literal(cmark_node *node) {
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
-		return chunk_to_cstr(&node->as.literal);
+		return cmark_chunk_to_cstr(&node->as.literal);
 
 	default:
 		break;
@@ -209,7 +209,7 @@ cmark_node_set_literal(cmark_node *node, const char *content) {
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
-		chunk_set_cstr(&node->as.literal, content);
+		cmark_chunk_set_cstr(&node->as.literal, content);
 		return 1;
 
 	default:
@@ -352,7 +352,7 @@ cmark_node_get_fence_info(cmark_node *node) {
 	}
 
 	if (node->type == NODE_CODE_BLOCK) {
-		return chunk_to_cstr(&node->as.code.info);
+		return cmark_chunk_to_cstr(&node->as.code.info);
 	}
 	else {
 		return NULL;
@@ -366,7 +366,7 @@ cmark_node_set_fence_info(cmark_node *node, const char *info) {
 	}
 
 	if (node->type == NODE_CODE_BLOCK) {
-		chunk_set_cstr(&node->as.code.info, info);
+		cmark_chunk_set_cstr(&node->as.code.info, info);
 		return 1;
 	}
 	else {

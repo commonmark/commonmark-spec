@@ -31,19 +31,19 @@ extern "C" {
 #define HOUDINI_ESCAPED_SIZE(x) (((x) * 12) / 10)
 #define HOUDINI_UNESCAPED_SIZE(x) (x)
 
-extern size_t houdini_unescape_ent(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_html(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_html0(strbuf *ob, const uint8_t *src, size_t size, int secure);
-extern int houdini_unescape_html(strbuf *ob, const uint8_t *src, size_t size);
-extern void houdini_unescape_html_f(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_xml(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_uri(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_url(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_href(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_unescape_uri(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_unescape_url(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_escape_js(strbuf *ob, const uint8_t *src, size_t size);
-extern int houdini_unescape_js(strbuf *ob, const uint8_t *src, size_t size);
+extern size_t houdini_unescape_ent(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_html(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_html0(cmark_strbuf *ob, const uint8_t *src, size_t size, int secure);
+extern int houdini_unescape_html(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern void houdini_unescape_html_f(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_xml(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_uri(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_url(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_href(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_unescape_uri(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_unescape_url(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_escape_js(cmark_strbuf *ob, const uint8_t *src, size_t size);
+extern int houdini_unescape_js(cmark_strbuf *ob, const uint8_t *src, size_t size);
 
 #ifdef __cplusplus
 }

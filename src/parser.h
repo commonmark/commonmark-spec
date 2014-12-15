@@ -16,8 +16,8 @@ struct cmark_parser {
 	struct cmark_node* root;
 	struct cmark_node* current;
 	int line_number;
-	strbuf *curline;
-	strbuf *linebuf;
+	cmark_strbuf *curline;
+	cmark_strbuf *linebuf;
 };
 
 #ifdef __cplusplus
