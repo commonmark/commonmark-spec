@@ -261,7 +261,7 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 		}
 		len = utf8proc_iterate(subj->input.data + before_char_pos,
 				 subj->pos - before_char_pos, &before_char);
-		if (len == 0) {
+		if (len == -1) {
 			before_char = 10;
 		}
 	}
@@ -273,11 +273,17 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 
 	len = utf8proc_iterate(subj->input.data + subj->pos,
 			 subj->input.len - subj->pos, &after_char);
-	if (len == 0) {
+	if (len == -1) {
 		after_char = 10;
 	}
-	*can_open = numdelims > 0 && !utf8proc_is_space(after_char);
-	*can_close = numdelims > 0 && !utf8proc_is_space(before_char);
+	*can_open = numdelims > 0 && !utf8proc_is_space(after_char) &&
+		!(utf8proc_is_punctuation(after_char) &&
+		  !utf8proc_is_space(before_char) &&
+		  !utf8proc_is_punctuation(before_char));
+	*can_close = numdelims > 0 && !utf8proc_is_space(before_char) &&
+		!(utf8proc_is_punctuation(before_char) &&
+		  !utf8proc_is_space(after_char) &&
+		  !utf8proc_is_punctuation(after_char));
 	if (c == '_') {
 		*can_open = *can_open &&
 			!(before_char < 128 && isalnum((char)before_char));

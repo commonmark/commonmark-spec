@@ -41,6 +41,8 @@ var HTMLTAG = "(?:" + OPENTAG + "|" + CLOSETAG + "|" + HTMLCOMMENT + "|" +
         PROCESSINGINSTRUCTION + "|" + DECLARATION + "|" + CDATA + ")";
 var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
 
+var rePunctuation = new RegExp(/^[\u2000-\u206F\u2E00-\u2E7F\\'!"#\$%&\(\)\*\+,\-\.\/:;<=>\?@\[\]\^_`\{\|\}~]/);
+
 var reHtmlTag = new RegExp('^' + HTMLTAG, 'i');
 
 var reLinkTitle = new RegExp(
@@ -227,8 +229,14 @@ var scanDelims = function(cc) {
         char_after = fromCodePoint(cc_after);
     }
 
-    var can_open = numdelims > 0 && !(/\s/.test(char_after));
-    var can_close = numdelims > 0 && !(/\s/.test(char_before));
+    var can_open = numdelims > 0 && !(/\s/.test(char_after)) &&
+            !(rePunctuation.test(char_after) &&
+             !(/\s/.test(char_before)) &&
+             !(rePunctuation.test(char_before)));
+    var can_close = numdelims > 0 && !(/\s/.test(char_before)) &&
+            !(rePunctuation.test(char_before) &&
+              !(/\s/.test(char_after)) &&
+              !(rePunctuation.test(char_after)));
     if (cc === C_UNDERSCORE) {
         can_open = can_open && !((/[a-z0-9]/i).test(char_before));
         can_close = can_close && !((/[a-z0-9]/i).test(char_after));
