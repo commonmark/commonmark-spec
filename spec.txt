@@ -4355,8 +4355,8 @@ The following rules capture all of these patterns, while allowing
 for efficient parsing strategies that do not backtrack:
 
 1.  A single `*` character [can open emphasis](@can-open-emphasis)
-    iff it is not followed by
-    whitespace.
+    iff it is not followed by whitespace.  (For these purposes,
+    any unicode space character counts as whitespace.)
 
 2.  A single `_` character [can open emphasis](#can-open-emphasis) iff
     it is not followed by whitespace and it is not preceded by an
@@ -4378,8 +4378,7 @@ for efficient parsing strategies that do not backtrack:
     ASCII alphanumeric character.
 
 7.  A double `**` [can close strong emphasis](@can-close-strong-emphasis)
-    iff it is not preceded by
-    whitespace.
+    iff it is not preceded by whitespace.
 
 8.  A double `__` [can close strong emphasis](#can-close-strong-emphasis)
     iff it is not preceded by whitespace and it is not followed by an
@@ -4457,6 +4456,14 @@ whitespace:
 a * foo bar*
 .
 <p>a * foo bar*</p>
+.
+
+Unicode nonbreaking spaces count as whitespace, too:
+
+.
+* a *
+.
+<p>* a *</p>
 .
 
 Intraword emphasis with `*` is permitted:
