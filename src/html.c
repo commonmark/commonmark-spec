@@ -137,8 +137,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_CODE_BLOCK:
 		cr(html);
 
-		if (&node->as.code.fence_length == 0
-		    || node->as.code.info.len == 0) {
+		if (!node->as.code.fenced || node->as.code.info.len == 0) {
 			cmark_strbuf_puts(html, "<pre><code>");
 		}
 		else {
