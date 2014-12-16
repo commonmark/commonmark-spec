@@ -152,7 +152,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 			cmark_strbuf_puts(html, "\">");
 		}
 
-		escape_html(html, node->as.literal.data, node->as.literal.len);
+		escape_html(html, node->as.code.literal.data,
+			    node->as.code.literal.len);
 		cmark_strbuf_puts(html, "</code></pre>\n");
 		break;
 

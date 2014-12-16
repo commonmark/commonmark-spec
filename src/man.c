@@ -130,8 +130,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_CODE_BLOCK:
 		cr(man);
 		cmark_strbuf_puts(man, ".IP\n.nf\n\\f[C]\n");
-		escape_man(man, node->as.literal.data,
-			   node->as.literal.len);
+		escape_man(man, node->as.code.literal.data,
+			   node->as.code.literal.len);
 		cr(man);
 		cmark_strbuf_puts(man, "\\f[]\n.fi");
 		cr(man);

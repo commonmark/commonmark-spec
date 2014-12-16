@@ -42,7 +42,7 @@ void S_free_nodes(cmark_node *e)
 		switch (e->type){
 		case NODE_CODE_BLOCK:
 			cmark_chunk_free(&e->as.code.info);
-			cmark_chunk_free(&e->as.literal);
+			cmark_chunk_free(&e->as.code.literal);
 			break;
 		case NODE_TEXT:
 		case NODE_INLINE_HTML:
@@ -183,12 +183,14 @@ cmark_node_get_literal(cmark_node *node) {
 	}
 
 	switch (node->type) {
-	case NODE_CODE_BLOCK:
 	case NODE_HTML:
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
 		return cmark_chunk_to_cstr(&node->as.literal);
+
+	case NODE_CODE_BLOCK:
+		return cmark_chunk_to_cstr(&node->as.code.literal);
 
 	default:
 		break;
@@ -204,12 +206,15 @@ cmark_node_set_literal(cmark_node *node, const char *content) {
 	}
 
 	switch (node->type) {
-	case NODE_CODE_BLOCK:
 	case NODE_HTML:
 	case NODE_TEXT:
 	case NODE_INLINE_HTML:
 	case NODE_CODE:
 		cmark_chunk_set_cstr(&node->as.literal, content);
+		return 1;
+
+	case NODE_CODE_BLOCK:
+		cmark_chunk_set_cstr(&node->as.code.literal, content);
 		return 1;
 
 	default:

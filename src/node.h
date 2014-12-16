@@ -27,6 +27,7 @@ typedef struct {
 	int               fence_offset;
 	unsigned char     fence_char;
 	cmark_chunk       info;
+	cmark_chunk       literal;
 } cmark_code;
 
 typedef struct {

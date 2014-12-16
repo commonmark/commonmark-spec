@@ -232,7 +232,7 @@ finalize(cmark_parser *parser, cmark_node* b, int line_number)
 
 				cmark_strbuf_drop(&b->string_content, firstlinelen + 1);
 			}
-			b->as.literal = cmark_chunk_buf_detach(&b->string_content);
+			b->as.code.literal = cmark_chunk_buf_detach(&b->string_content);
 			break;
 
 	        case NODE_HTML:
