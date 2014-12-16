@@ -2,7 +2,7 @@
 #include "chunk.h"
 #include "scanners.h"
 
-int _scan_at(int (*scanner)(const unsigned char *), chunk *c, int offset)
+int _scan_at(int (*scanner)(const unsigned char *), cmark_chunk *c, int offset)
 {
 	int res;
 	unsigned char *ptr = (unsigned char *)c->data;
