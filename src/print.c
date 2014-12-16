@@ -77,7 +77,7 @@ static void render_nodes(cmark_strbuf* buffer, cmark_node* node, int indent)
 			cmark_strbuf_printf(buffer, "hrule\n");
 			break;
 		case NODE_CODE_BLOCK:
-			cmark_strbuf_printf(buffer, "code_block info=");
+			cmark_strbuf_printf(buffer, "code_block fenced=%d fence_length=%d info=", node->as.code.fenced, node->as.code.fence_length);
 			print_str(buffer, node->as.code.info.data,
 				  node->as.code.info.len);
 			cmark_strbuf_putc(buffer, ' ');
