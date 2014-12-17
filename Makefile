@@ -50,7 +50,7 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(BUILDDIR) man/man1/cmark.1
+archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/make_man_page.py
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/$(SRCDIR); \
 	mkdir -p $(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 ; \
@@ -60,6 +60,7 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
 	cp -a spec.html $(PKGDIR); \
 	cp -a man/CMakeLists.txt $(PKGDIR)/man;\
+	cp -a man/make_man_page.py $(PKGDIR)/man;\
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1;\
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
