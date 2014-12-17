@@ -21,7 +21,7 @@ JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench apidoc
 
-all: $(PROG) man/man1/cmark.1 man/man3/cmark.3
+all: $(PROG)
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
 $(PROG): $(BUILDDIR)
@@ -73,9 +73,6 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 
 clean:
 	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
-
-man/man3/cmark.3: src/cmark.h $(PROG)
-	python man/make_man_page.py $< > $@
 
 man/man1/cmark.1.html: man/man1/cmark.1
 	groff -mman -Thtml > $@
