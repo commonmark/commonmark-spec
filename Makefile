@@ -50,7 +50,7 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
+archive: spec.html $(BUILDDIR) man/man1/cmark.1
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/$(SRCDIR); \
 	mkdir -p $(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 ; \
@@ -61,7 +61,6 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 	cp -a spec.html $(PKGDIR); \
 	cp -a man/CMakeLists.txt $(PKGDIR)/man;\
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1;\
-	cp -a man/man3/cmark.3 $(PKGDIR)/man/man3;\
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
@@ -73,12 +72,6 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/man3/cmark.3
 
 clean:
 	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
-
-man/man1/cmark.1.html: man/man1/cmark.1
-	groff -mman -Thtml > $@
-
-man/man3/cmark.3.html: man/man3/cmark.3
-	groff -mman -Thtml > $@
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
