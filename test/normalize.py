@@ -115,8 +115,12 @@ def normalize_html(html):
     Return normalized form of HTML which ignores insignificant output
     differences:
 
-    * Multiple inner whitespaces are collapsed to a single space (except
-      in pre tags).
+    Multiple inner whitespaces are collapsed to a single space (except
+    in pre tags):
+
+        >>> normalize_html("<p>a  \t\nb</p>")
+        u'<p>a b</p>'
+
     * Outer whitespace (outside block-level tags) is removed.
     * Self-closing tags are converted to open tags.
     * Attributes are sorted and lowercased.
