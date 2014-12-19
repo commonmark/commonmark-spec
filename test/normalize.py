@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from HTMLParser import HTMLParser, HTMLParseError
 from htmlentitydefs import name2codepoint
 import sys
@@ -118,14 +119,33 @@ def normalize_html(html):
     Multiple inner whitespaces are collapsed to a single space (except
     in pre tags):
 
+        >>> normalize_html("<p>a  \t b</p>")
+        u'<p>a b</p>'
+
         >>> normalize_html("<p>a  \t\nb</p>")
         u'<p>a b</p>'
 
     * Outer whitespace (outside block-level tags) is removed.
+
+        >>> normalize_html("<p>a  b</p>  ")
+        u'<p>a b</p>'
+
     * Self-closing tags are converted to open tags.
+
+        >>> normalize_html("<br />")
+        u'<br>'
+
     * Attributes are sorted and lowercased.
+
+        >>> normalize_html('<a title="bar" HREF="foo">x</a>')
+        u'<a href="foo" title="bar">x</a>'
+
     * References are converted to unicode, except that '<', '>', '&', and
-      '&' are rendered using entities.
+      '"' are rendered using entities.
+
+        >>> normalize_html("&forall;&amp;&gt;&lt;&quot;")
+        u'\u2200&amp;&gt;&lt;&quot;'
+
     """
     html_chunk_re = re.compile("(\<!\[CDATA\[.*?\]\]\>|\<[^>]*\>|[^<]+)")
     try:
