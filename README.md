@@ -117,7 +117,7 @@ To build the JavaScript library as a single standalone file:
     browserify --standalone commonmark js/lib/index.js -o js/commonmark.js
 
 Or fetch a pre-built copy from
-<http://spec.commonmark.org/js/commonmark.js>`.
+<http://spec.commonmark.org/js/commonmark.js>.
 
 To run tests for the JavaScript library:
 
