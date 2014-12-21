@@ -28,12 +28,14 @@ if __name__ == "__main__":
     parser.add_argument('--debug-normalization', dest='debug_normalization',
             action='store_const', const=True,
             default=False, help='filter stdin through normalizer for testing')
+    parser.add_argument('-n', '--number', type=int, default=None,
+            help='only consider the test with the given number. Overrides --pattern.')
     args = parser.parse_args(sys.argv[1:])
 
 def print_test_header(headertext, example_number, start_line, end_line):
     print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
 
-def do_test(test, normalize):
+def do_test(test, normalize, result_counts):
     [retcode, actual_html, err] = cmark.to_html(test['markdown'])
     if retcode == 0:
         expected_html = test['html']
@@ -42,7 +44,7 @@ def do_test(test, normalize):
         else:
             passed = actual_html == expected_html
         if passed:
-            return 'pass'
+            result_counts['pass'] += 1
         else:
             print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
             sys.stdout.write(test['markdown'])
@@ -52,12 +54,12 @@ def do_test(test, normalize):
                             "expected HTML", "actual HTML"):
                 sys.stdout.write(diffline)
             sys.stdout.write('\n')
-            return 'fail'
+            result_counts['fail'] += 1
     else:
         print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
         print "program returned error code %d" % retcode
         print(err)
-        return 'error'
+        result_counts['error'] += 1
 
 def get_tests(specfile):
     line_number = 0
@@ -100,28 +102,24 @@ def get_tests(specfile):
                 html_lines.append(line)
     return tests
 
-def do_tests(cmark, tests, pattern, normalize):
-    passed = 0
-    errored = 0
-    failed = 0
-    skipped = 0
-    if pattern:
-        pattern_re = re.compile(pattern, re.IGNORECASE)
+def do_tests(cmark, tests, pattern, normalize, number):
+    result_counts = dict.fromkeys(['pass', 'error', 'fail', 'skip'], 0)
+    if number:
+        test = tests[number - 1]
+        do_test(test, normalize, result_counts)
+        result_counts['skip'] = len(tests) - 1
     else:
-        pattern_re = re.compile('.')
-    for test in tests:
-        if re.search(pattern_re, test['section']):
-            result = do_test(test, normalize)
-            if result == 'pass':
-                passed += 1
-            elif result == 'fail':
-                failed += 1
-            else:
-                errored += 1
+        if pattern:
+            pattern_re = re.compile(pattern, re.IGNORECASE)
         else:
-            skipped += 1
-    print "%d passed, %d failed, %d errored, %d skipped" % (passed, failed, errored, skipped)
-    return (failed == 0 and errored == 0)
+            pattern_re = re.compile('.')
+        for test in tests:
+            if re.search(pattern_re, test['section']):
+                do_test(test, normalize, result_counts)
+            else:
+                result_counts['skip'] += 1
+    print "{pass} passed, {fail} failed, {error} errored, {skip} skipped".format(**result_counts)
+    return (result_counts['fail'] == 0 and result_counts['error'] == 0)
 
 if __name__ == "__main__":
     if args.debug_normalization:
@@ -134,7 +132,7 @@ if __name__ == "__main__":
         exit(0)
     else:
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
-        if do_tests(cmark, tests, args.pattern, args.normalize):
+        if do_tests(cmark, tests, args.pattern, args.normalize, args.number):
             exit(0)
         else:
             exit(1)
