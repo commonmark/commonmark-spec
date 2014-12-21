@@ -100,26 +100,18 @@ def get_tests(specfile):
                 html_lines.append(line)
     return tests
 
-def do_tests(cmark, tests, pattern, normalize):
+def do_tests(cmark, tests, normalize, skipped):
     passed = 0
     errored = 0
     failed = 0
-    skipped = 0
-    if pattern:
-        pattern_re = re.compile(pattern, re.IGNORECASE)
-    else:
-        pattern_re = re.compile('.')
     for test in tests:
-        if re.search(pattern_re, test['section']):
-            result = do_test(test, normalize)
-            if result == 'pass':
-                passed += 1
-            elif result == 'fail':
-                failed += 1
-            else:
-                errored += 1
+        result = do_test(test, normalize)
+        if result == 'pass':
+            passed += 1
+        elif result == 'fail':
+            failed += 1
         else:
-            skipped += 1
+            errored += 1
     print "%d passed, %d failed, %d errored, %d skipped" % (passed, failed, errored, skipped)
     return (failed == 0 and errored == 0)
 
@@ -129,12 +121,17 @@ if __name__ == "__main__":
         exit(0)
 
     tests = get_tests(args.spec)
+    tests_total = len(tests)
+    if args.pattern:
+        pattern_re = re.compile(args.pattern, re.IGNORECASE)
+        tests = filter(lambda test: re.search(pattern_re, test['section']), tests)
+    skipped = tests_total - len(tests)
     if args.dump_tests:
         print json.dumps(tests, ensure_ascii=False, indent=2)
         exit(0)
     else:
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
-        if do_tests(cmark, tests, args.pattern, args.normalize):
+        if do_tests(cmark, tests, args.normalize, skipped):
             exit(0)
         else:
             exit(1)
