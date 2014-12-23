@@ -53,8 +53,8 @@ def do_test(test, normalize):
             sys.stdout.write(test['markdown'])
             if unicode_error:
                 print "Unicode error: " + str(unicode_error)
-                print repr(expected_html)
-                print repr(actual_html)
+                print "Expected: " + repr(expected_html)
+                print "Got:      " + repr(actual_html)
             else:
                 expected_html_lines = expected_html.splitlines(True)
                 actual_html_lines = actual_html.splitlines(True)
