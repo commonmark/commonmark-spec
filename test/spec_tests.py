@@ -29,7 +29,7 @@ if __name__ == "__main__":
             action='store_const', const=True,
             default=False, help='filter stdin through normalizer for testing')
     parser.add_argument('-n', '--number', type=int, default=None,
-            help='only consider the test with the given number. Overrides --pattern.')
+            help='only consider the test with the given number')
     args = parser.parse_args(sys.argv[1:])
 
 def print_test_header(headertext, example_number, start_line, end_line):
@@ -112,38 +112,28 @@ def get_tests(specfile):
                 html_lines.append(line)
     return tests
 
-def do_tests(cmark, tests, pattern_re, normalize, number):
-    result_counts = dict.fromkeys(['pass', 'error', 'fail', 'skip'], 0)
-    if number:
-        test = tests[number - 1]
-        do_test(test, normalize, result_counts)
-        result_counts['skip'] = len(tests) - 1
-    else:
-        for test in tests:
-            if re.search(pattern_re, test['section']):
-                do_test(test, normalize, result_counts)
-            else:
-                result_counts['skip'] += 1
-    print "{pass} passed, {fail} failed, {error} errored, {skip} skipped".format(**result_counts)
-    return (result_counts['fail'] == 0 and result_counts['error'] == 0)
-
 if __name__ == "__main__":
     if args.debug_normalization:
         print normalize_html(sys.stdin.read())
         exit(0)
 
-    tests = get_tests(args.spec)
+    all_tests = get_tests(args.spec)
     if args.pattern:
         pattern_re = re.compile(args.pattern, re.IGNORECASE)
     else:
         pattern_re = re.compile('.')
+    tests = [ test for test in all_tests if re.search(pattern_re, test['section']) and (not args.number or test['example'] == args.number) ]
     if args.dump_tests:
-        tests_to_dump = [ test for test in tests if re.search(pattern_re, test['section']) and (not args.number or test['example'] == args.number) ]
-        print json.dumps(tests_to_dump, ensure_ascii=False, indent=2)
+        print json.dumps(tests, ensure_ascii=False, indent=2)
         exit(0)
     else:
+        skipped = len(all_tests) - len(tests)
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
-        if do_tests(cmark, tests, pattern_re, args.normalize, args.number):
+        result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
+        for test in tests:
+            do_test(test, args.normalize, result_counts)
+        print "{pass} passed, {fail} failed, {error} errored, {skip} skipped".format(**result_counts)
+        if result_counts['fail'] == 0 and result_counts['error'] == 0:
             exit(0)
         else:
             exit(1)
