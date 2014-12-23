@@ -125,10 +125,19 @@ def normalize_html(html):
         >>> normalize_html("<p>a  \t\nb</p>")
         u'<p>a b</p>'
 
-    * Outer whitespace (outside block-level tags) is removed.
+    Outer whitespace (outside and inside block-level tags) is removed:
 
-        >>> normalize_html("<p>a  b</p>  ")
-        u'<p>a b</p>'
+        >>> normalize_html('<p>a</p>  ')
+        u'<p>a</p>'
+
+        >>> normalize_html('  <p>a</p>')
+        u'<p>a</p>'
+
+        >>> normalize_html('<p>a  </p>')
+        u'<p>a</p>'
+
+        >>> normalize_html('<i>a</i>  ')
+        u'<i>a</i> '
 
     * Self-closing tags are converted to open tags.
 
