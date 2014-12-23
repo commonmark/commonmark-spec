@@ -32,7 +32,7 @@ class MyHTMLParser(HTMLParser):
     def handle_endtag(self, tag):
         if tag == "pre":
             self.in_pre = False
-        if self.is_block_tag(tag):
+        elif self.is_block_tag(tag):
             self.output = self.output.rstrip()
         self.output += "</" + tag + ">"
         self.last_tag = tag
@@ -40,6 +40,8 @@ class MyHTMLParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "pre":
             self.in_pre = True
+        if self.is_block_tag(tag):
+            self.output = self.output.rstrip()
         self.output += "<" + tag
         # For now we don't strip out 'extra' attributes, because of
         # raw HTML test cases.
@@ -125,10 +127,22 @@ def normalize_html(html):
         >>> normalize_html("<p>a  \t\nb</p>")
         u'<p>a b</p>'
 
-    * Outer whitespace (outside block-level tags) is removed.
+    * Whitespace surrounding block-level tags is removed.
 
-        >>> normalize_html("<p>a  b</p>  ")
+        >>> normalize_html("<p>a  b</p>")
         u'<p>a b</p>'
+
+        >>> normalize_html(" <p>a  b</p>")
+        u'<p>a b</p>'
+
+        >>> normalize_html("<p>a  b</p> ")
+        u'<p>a b</p>'
+
+        >>> normalize_html("\n\t<p>\n\t\ta  b\t\t</p>\n\t")
+        u'<p>a b</p>'
+
+        >>> normalize_html("<i>a  b</i> ")
+        u'<i>a b</i> '
 
     * Self-closing tags are converted to open tags.
 
