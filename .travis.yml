@@ -8,4 +8,3 @@ before_install:
 script:
  - make testtarball
  - PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
- - python -m doctest test/normalize.py

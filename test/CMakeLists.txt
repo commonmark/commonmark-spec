@@ -7,6 +7,11 @@ if (WIN32)
   )
 endif(WIN32)
 
+add_test(html_normalization
+  python "-m" "doctest"
+  "${CMAKE_CURRENT_SOURCE_DIR}/normalize.py"
+)
+
 add_test(spectest_library
    python "${CMAKE_CURRENT_SOURCE_DIR}/spec_tests.py" "--no-normalize" "--spec"
    "${CMAKE_SOURCE_DIR}/spec.txt" "--library-dir" "${CMAKE_BINARY_DIR}/src"
