@@ -37,8 +37,13 @@ def do_test(test, normalize):
     [retcode, actual_html, err] = cmark.to_html(test['markdown'])
     if retcode == 0:
         expected_html = test['html']
+        unicode_error = None
         if normalize:
-            passed = normalize_html(actual_html) == normalize_html(expected_html)
+            try:
+                passed = normalize_html(actual_html) == normalize_html(expected_html)
+            except UnicodeDecodeError, e:
+                unicode_error = e
+                passed = False
         else:
             passed = actual_html == expected_html
         if passed:
@@ -46,11 +51,16 @@ def do_test(test, normalize):
         else:
             print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
             sys.stdout.write(test['markdown'])
-            expected_html_lines = expected_html.splitlines(True)
-            actual_html_lines = actual_html.splitlines(True)
-            for diffline in unified_diff(expected_html_lines, actual_html_lines,
-                            "expected HTML", "actual HTML"):
-                sys.stdout.write(diffline)
+            if unicode_error:
+                print "Unicode error: " + str(unicode_error)
+                print repr(expected_html)
+                print repr(actual_html)
+            else:
+                expected_html_lines = expected_html.splitlines(True)
+                actual_html_lines = actual_html.splitlines(True)
+                for diffline in unified_diff(expected_html_lines, actual_html_lines,
+                                "expected HTML", "actual HTML"):
+                    sys.stdout.write(diffline)
             sys.stdout.write('\n')
             return 'fail'
     else:
