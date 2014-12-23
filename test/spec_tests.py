@@ -112,17 +112,13 @@ def get_tests(specfile):
                 html_lines.append(line)
     return tests
 
-def do_tests(cmark, tests, pattern, normalize, number):
+def do_tests(cmark, tests, pattern_re, normalize, number):
     result_counts = dict.fromkeys(['pass', 'error', 'fail', 'skip'], 0)
     if number:
         test = tests[number - 1]
         do_test(test, normalize, result_counts)
         result_counts['skip'] = len(tests) - 1
     else:
-        if pattern:
-            pattern_re = re.compile(pattern, re.IGNORECASE)
-        else:
-            pattern_re = re.compile('.')
         for test in tests:
             if re.search(pattern_re, test['section']):
                 do_test(test, normalize, result_counts)
@@ -137,12 +133,17 @@ if __name__ == "__main__":
         exit(0)
 
     tests = get_tests(args.spec)
+    if args.pattern:
+        pattern_re = re.compile(args.pattern, re.IGNORECASE)
+    else:
+        pattern_re = re.compile('.')
     if args.dump_tests:
-        print json.dumps(tests, ensure_ascii=False, indent=2)
+        tests_to_dump = [ test for test in tests if re.search(pattern_re, test['section']) and (not args.number or test['example'] == args.number) ]
+        print json.dumps(tests_to_dump, ensure_ascii=False, indent=2)
         exit(0)
     else:
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
-        if do_tests(cmark, tests, args.pattern, args.normalize, args.number):
+        if do_tests(cmark, tests, pattern_re, args.normalize, args.number):
             exit(0)
         else:
             exit(1)
