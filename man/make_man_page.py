@@ -34,7 +34,13 @@ render_man.restype = c_char_p
 render_man.argtypes = [c_void_p]
 
 def md2man(text):
-    return render_man(parse_document(text, len(text)))
+    if sys.version_info >= (3,0):
+        textbytes = text.encode('utf-8')
+        textlen = len(textbytes)
+    else:
+        textbytes = text
+        textlen = len(text)
+    return render_man(parse_document(textbytes, textlen))
 
 
 comment_start_re = re.compile('^\/\*\* ?')
