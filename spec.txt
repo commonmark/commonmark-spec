@@ -5773,6 +5773,12 @@ However, links may not contain other links, at any level of nesting.
 <p>[foo <em>[bar <a href="/uri">baz</a>](/uri)</em>](/uri)</p>
 .
 
+.
+![[[foo](uri1)](uri2)](uri3)
+.
+<p><img src="uri3" alt="[foo](uri2)" /></p>
+.
+
 These cases illustrate the precedence of link text grouping over
 emphasis grouping:
 
