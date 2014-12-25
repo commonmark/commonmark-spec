@@ -5524,11 +5524,12 @@ A [link title](@link-title)  consists of either
 
 An [inline link](@inline-link)
 consists of a [link text](#link-text) followed immediately
-by a left parenthesis `(`, optional whitespace,
+by a left parenthesis `(`, optional [whitespace](#whitespace),
 an optional [link destination](#link-destination),
 an optional [link title](#link-title) separated from the link
-destination by whitespace, optional whitespace, and a right
-parenthesis `)`.  The link's text consists of the inlines contained
+destination by [whitespace](#whitespace), optional
+[whitespace](#whitespace), and a right parenthesis `)`.
+The link's text consists of the inlines contained
 in the [link text](#link-text) (excluding the enclosing square brackets).
 The link's URI consists of the link destination, excluding enclosing
 `<...>` if present, with backslash-escapes in effect as described
@@ -5700,7 +5701,7 @@ quotation mark, though 1.0.2b8 does not.  It seems preferable to adopt
 a simple, rational rule that works the same way in inline links and
 link reference definitions.)
 
-Whitespace is allowed around the destination and title:
+[Whitespace](#whitespace) is allowed around the destination and title:
 
 .
 [link](   /uri
@@ -5820,7 +5821,8 @@ There are three kinds of [reference links](@reference-link):
 and [shortcut](#shortcut-reference-link).
 
 A [full reference link](@full-reference-link)
-consists of a [link text](#link-text), optional whitespace, and
+consists of a [link text](#link-text),
+optional [whitespace](#whitespace), and
 a [link label](#link-label) that [matches](#matches) a
 [link reference definition](#link-reference-definition) elsewhere in the
 document.
@@ -5834,9 +5836,9 @@ characters inside the square brackets.
 One label [matches](@matches)
 another just in case their normalized forms are equal.  To normalize a
 label, perform the *unicode case fold* and collapse consecutive internal
-whitespace to a single space.  If there are multiple matching reference
-link definitions, the one that comes first in the document is used.  (It
-is desirable in such cases to emit a warning.)
+[whitespace](#whitespace) to a single space.  If there are multiple
+matching reference link definitions, the one that comes first in the
+document is used.  (It is desirable in such cases to emit a warning.)
 
 The contents of the first link label are parsed as inlines, which are
 used as the link's text.  The link's URI and title are provided by the
@@ -5980,7 +5982,7 @@ Unicode case fold is used:
 <p><a href="/url">Толпой</a> is a Russian word.</p>
 .
 
-Consecutive internal whitespace is treated as one space for
+Consecutive internal [whitespace](#whitespace) is treated as one space for
 purposes of determining matching:
 
 .
@@ -5992,8 +5994,8 @@ purposes of determining matching:
 <p><a href="/url">Baz</a></p>
 .
 
-There can be whitespace between the [link text](#link-text) and the
-[link label](#link-label):
+There can be [whitespace](#whitespace) between the
+[link text](#link-text) and the [link label](#link-label):
 
 .
 [foo] [bar]
@@ -6079,10 +6081,11 @@ A [collapsed reference link](@collapsed-reference-link)
 consists of a [link
 label](#link-label) that [matches](#matches) a [link reference
 definition](#link-reference-definition) elsewhere in the
-document, optional whitespace, and the string `[]`.  The contents of the
-first link label are parsed as inlines, which are used as the link's
-text.  The link's URI and title are provided by the matching reference
-link definition.  Thus, `[foo][]` is equivalent to `[foo][foo]`.
+document, optional [whitespace](#whitespace), and the string `[]`.
+The contents of the first link label are parsed as inlines,
+which are used as the link's text.  The link's URI and title are
+provided by the matching reference link definition.  Thus,
+`[foo][]` is equivalent to `[foo][foo]`.
 
 .
 [foo][]
@@ -6111,7 +6114,7 @@ The link labels are case-insensitive:
 .
 
 
-As with full reference links, whitespace is allowed
+As with full reference links, [whitespace](#whitespace) is allowed
 between the two sets of brackets:
 
 .
@@ -6387,7 +6390,7 @@ The labels are case-insensitive:
 <p><img src="/url" alt="Foo" title="title" /></p>
 .
 
-As with full reference links, whitespace is allowed
+As with full reference links, [whitespace](#whitespace) is allowed
 between the two sets of brackets:
 
 .
@@ -6473,9 +6476,10 @@ as a link to the URI, with the URI as the link's label.
 
 An [absolute URI](@absolute-uri),
 for these purposes, consists of a [scheme](#scheme) followed by a colon (`:`)
-followed by zero or more characters other than ASCII whitespace and
-control characters, `<`, and `>`.  If the URI includes these characters,
-you must use percent-encoding (e.g. `%20` for a space).
+followed by zero or more characters other than ASCII
+[whitespace](#whitespace) and control characters, `<`, and `>`.  If
+the URI includes these characters, you must use percent-encoding
+(e.g. `%20` for a space).
 
 The following [schemes](@scheme)
 are recognized (case-insensitive):
@@ -6622,7 +6626,7 @@ Here is the grammar for tags:
 A [tag name](@tag-name) consists of an ASCII letter
 followed by zero or more ASCII letters or digits.
 
-An [attribute](@attribute) consists of whitespace,
+An [attribute](@attribute) consists of [whitespace](#whitespace),
 an [attribute name](#attribute-name), and an optional
 [attribute value specification](#attribute-value-specification).
 
@@ -6632,8 +6636,8 @@ letters, digits, `_`, `.`, `:`, or `-`.  (Note:  This is the XML
 specification restricted to ASCII.  HTML5 is laxer.)
 
 An [attribute value specification](@attribute-value-specification)
-consists of optional whitespace,
-a `=` character, optional whitespace, and an [attribute
+consists of optional [whitespace](#whitespace),
+a `=` character, optional [whitespace](#whitespace), and an [attribute
 value](#attribute-value).
 
 An [attribute value](@attribute-value)
@@ -6655,11 +6659,12 @@ characters not including `"`, and a final `"`.
 
 An [open tag](@open-tag) consists of a `<` character,
 a [tag name](#tag-name), zero or more [attributes](#attribute),
-optional whitespace, an optional `/` character, and a `>` character.
+optional [whitespace](#whitespace), an optional `/` character, and a
+`>` character.
 
 A [closing tag](@closing-tag) consists of the
-string `</`, a [tag name](#tag-name), optional whitespace, and the
-character `>`.
+string `</`, a [tag name](#tag-name), optional
+[whitespace](#whitespace), and the character `>`.
 
 An [HTML comment](@html-comment) consists of the
 string `<!--`, a string of characters not including the string `--`, and
@@ -6672,8 +6677,8 @@ of characters not including the string `?>`, and the string
 
 A [declaration](@declaration) consists of the
 string `<!`, a name consisting of one or more uppercase ASCII letters,
-whitespace, a string of characters not including the character `>`, and
-the character `>`.
+[whitespace](#whitespace), a string of characters not including the
+character `>`, and the character `>`.
 
 A [CDATA section](@cdata-section) consists of
 the string `<![CDATA[`, a string of characters not including the string
@@ -6702,7 +6707,7 @@ Empty elements:
 <p><a/><b2/></p>
 .
 
-Whitespace is allowed:
+[Whitespace](#whitespace) is allowed:
 
 .
 <a  /><b2
@@ -6746,7 +6751,7 @@ Illegal attribute values:
 <p>&lt;a href=&quot;hi'&gt; &lt;a href=hi'&gt;</p>
 .
 
-Illegal whitespace:
+Illegal [whitespace](#whitespace):
 
 .
 < a><
@@ -6756,7 +6761,7 @@ foo><bar/ >
 foo&gt;&lt;bar/ &gt;</p>
 .
 
-Missing whitespace:
+Missing [whitespace](#whitespace):
 
 .
 <a href='bar'title=title>
