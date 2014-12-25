@@ -280,7 +280,8 @@ var parseEmphasis = function(cc,inlines) {
                         previous: this.delimiters,
                         next: null,
                         can_open: res.can_open,
-                        can_close: res.can_close};
+                        can_close: res.can_close,
+                        active: true };
     if (this.delimiters.previous !== null) {
         this.delimiters.previous.next = this.delimiters;
     }
@@ -460,7 +461,8 @@ var parseOpenBracket = function(inlines) {
                         next: null,
                         can_open: true,
                         can_close: false,
-                        index: startpos };
+                        index: startpos,
+                        active: true };
     if (this.delimiters.previous !== null) {
         this.delimiters.previous.next = this.delimiters;
     }
@@ -487,7 +489,8 @@ var parseBang = function(inlines) {
                             next: null,
                             can_open: true,
                             can_close: false,
-                            index: startpos + 1 };
+                            index: startpos + 1,
+                            active: true };
         if (this.delimiters.previous !== null) {
             this.delimiters.previous.next = this.delimiters;
         }
@@ -510,12 +513,12 @@ var parseCloseBracket = function(inlines) {
     var link_text;
     var i;
     var reflabel;
-    var opener, closer_above;
+    var opener;
 
     this.pos += 1;
     startpos = this.pos;
 
-    // look through stack of delimiters for a [ or !
+    // look through stack of delimiters for a [ or ![
     opener = this.delimiters;
 
     while (opener !== null) {
@@ -528,6 +531,14 @@ var parseCloseBracket = function(inlines) {
     if (opener === null) {
         // no matched opener, just return a literal
         inlines.push(Str("]"));
+        return true;
+    }
+
+    if (!opener.active) {
+        // no matched opener, just return a literal
+        inlines.push(Str("]"));
+        // take opener off emphasis stack
+        this.removeDelimiter(opener);
         return true;
     }
 
@@ -595,14 +606,13 @@ var parseCloseBracket = function(inlines) {
         }
 
         // processEmphasis will remove this and later delimiters.
-        // Now, for a link, we also remove earlier link openers.
+        // Now, for a link, we also deactivate earlier link openers.
         // (no links in links)
         if (!is_image) {
           opener = this.delimiters;
-          closer_above = null;
           while (opener !== null) {
             if (opener.cc === C_OPEN_BRACKET) {
-                this.removeDelimiter(opener);  // remove this opener from stack
+                opener.active = false; // deactivate this opener
             }
             opener = opener.previous;
           }
