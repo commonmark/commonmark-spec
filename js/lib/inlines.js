@@ -449,6 +449,7 @@ var parseOpenBracket = function(inlines) {
 
     var startpos = this.pos;
     this.pos += 1;
+
     inlines.push(Str("["));
 
     // Add entry to stack for this opener
@@ -463,6 +464,7 @@ var parseOpenBracket = function(inlines) {
     if (this.delimiters.previous !== null) {
         this.delimiters.previous.next = this.delimiters;
     }
+
     return true;
 
 };
@@ -515,6 +517,7 @@ var parseCloseBracket = function(inlines) {
 
     // look through stack of delimiters for a [ or !
     opener = this.delimiters;
+
     while (opener !== null) {
         if (opener.cc === C_OPEN_BRACKET || opener.cc === C_BANG) {
             break;
@@ -599,13 +602,7 @@ var parseCloseBracket = function(inlines) {
           closer_above = null;
           while (opener !== null) {
             if (opener.cc === C_OPEN_BRACKET) {
-              if (closer_above) {
-                closer_above.previous = opener.previous;
-              } else {
-                this.delimiters = opener.previous;
-              }
-            } else {
-              closer_above = opener;
+                this.removeDelimiter(opener);  // remove this opener from stack
             }
             opener = opener.previous;
           }
@@ -826,3 +823,4 @@ function InlineParser(){
 }
 
 module.exports = InlineParser;
+
