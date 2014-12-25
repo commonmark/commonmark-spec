@@ -31,6 +31,7 @@ typedef struct delimiter {
 	int position;
 	bool can_open;
 	bool can_close;
+	bool active;
 } delimiter;
 
 typedef struct {
@@ -342,6 +343,7 @@ static void push_delimiter(subject *subj, unsigned char c, bool can_open,
 		delim->previous->next = delim;
 	}
 	delim->position = subj->pos;
+	delim->active = true;
 	subj->last_delim = delim;
 }
 
@@ -702,6 +704,12 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 		return make_str(cmark_chunk_literal("]"));
 	}
 
+	if (!opener->active) {
+		// take delimiter off stack
+		remove_delimiter(subj, opener);
+		return make_str(cmark_chunk_literal("]"));
+	}
+
 	// If we got here, we matched a potential link/image text.
 	is_image = opener->delim_char == '!';
 	link_text = opener->inl_text->next;
@@ -795,7 +803,7 @@ match:
 	parent->last_child = inl;
 
 	// process_emphasis will remove this delimiter and all later ones.
-	// Now, if we have a link, we also want to remove earlier link
+	// Now, if we have a link, we also want to deactivate earlier link
         // delimiters. (This code can be removed if we decide to allow links
 	// inside links.)
 	if (!is_image) {
@@ -803,7 +811,7 @@ match:
 		while (opener != NULL) {
 			tmp_delim = opener->previous;
 			if (opener->delim_char == '[') {
-				remove_delimiter(subj, opener);
+				opener->active = false;
 			}
 			opener = tmp_delim;
 		}
