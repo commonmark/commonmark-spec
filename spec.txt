@@ -1799,7 +1799,7 @@ No further [non-space characters](#non-space-character) may occur on the line.
 A [link reference-definition](#link-reference-definition)
 does not correspond to a structural element of a document.  Instead, it
 defines a label which can be used in [reference links](#reference-link)
-and reference-style [images](#image) elsewhere in the document.  [Link
+and reference-style [images](#images) elsewhere in the document.  [Link
 reference definitions] can come either before or after the links that use
 them.
 
@@ -1975,8 +1975,8 @@ and horizontal rules, and it need not be followed by a blank line.
 </blockquote>
 .
 
-Several [link references](#link-reference) can occur one after another,
-without intervening blank lines.
+Several [link references definitions](#link-reference-definition)
+can occur one after another, without intervening blank lines.
 
 .
 [foo]: /foo-url "foo"
@@ -5469,11 +5469,11 @@ __a<http://foo.bar?q=__>
 ## Links
 
 A link contains [link text](#link-label) (the visible text),
-a [destination](#destination) (the URI that is the link destination),
+a [link destination](#link-destination) (the URI that is the link destination),
 and optionally a [link title](#link-title).  There are two basic kinds
-of links in Markdown.  In [inline links](#inline-links) the destination
+of links in Markdown.  In [inline links](#inline-link) the destination
 and title are given immediately after the link text.  In [reference
-links](#reference-links) the destination and title are defined elsewhere
+links](#reference-link) the destination and title are defined elsewhere
 in the document.
 
 A [link text](@link-text) consists of a sequence of zero or more
@@ -6686,10 +6686,8 @@ the string `<![CDATA[`, a string of characters not including the string
 
 An [HTML tag](@html-tag) consists of an [open
 tag](#open-tag), a [closing tag](#closing-tag), an [HTML
-comment](#html-comment), a [processing
-instruction](#processing-instruction), an [element type
-declaration](#element-type-declaration), or a [CDATA
-section](#cdata-section).
+comment](#html-comment), a [processing instruction](#processing-instruction),
+a [declaration](#declaration), or a [CDATA section](#cdata-section).
 
 Here are some simple open tags:
 
