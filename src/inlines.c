@@ -682,7 +682,6 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 	cmark_chunk urlcmark_chunk, titlecmark_chunk;
 	unsigned char *url, *title;
 	delimiter *opener;
-	delimiter *tmp_delim;
 	cmark_node *link_text;
 	cmark_node *inl;
 	cmark_chunk raw_label;
@@ -809,11 +808,14 @@ match:
 	if (!is_image) {
 		opener = subj->last_delim;
 		while (opener != NULL) {
-			tmp_delim = opener->previous;
 			if (opener->delim_char == '[') {
-				opener->active = false;
+				if (!opener->active) {
+					break;
+				} else {
+					opener->active = false;
+				}
 			}
-			opener = tmp_delim;
+			opener = opener->previous;
 		}
 	}
 
