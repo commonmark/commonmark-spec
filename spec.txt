@@ -4095,7 +4095,7 @@ handle the unicode chars and need not be HTML-entity aware.
 
 [Named entities](@name-entities) consist of `&`
 + any of the valid HTML5 entity names + `;`. The
-[following document](http://www.whatwg.org/specs/web-apps/current-work/multipage/entities.json)
+[following document](https://html.spec.whatwg.org/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
 corresponding codepoints.
 
@@ -6551,7 +6551,7 @@ and the URL is `mailto:` followed by the email address.
 An [email address](@email-address),
 for these purposes, is anything that matches
 the [non-normative regex from the HTML5
-spec](http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#e-mail-state-%28type=email%29):
+spec](https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)):
 
     /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
     (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
