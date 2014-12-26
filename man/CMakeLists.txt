@@ -1,4 +1,4 @@
-set(PYTHON python2)
+set(PYTHON python)
 
 if (NOT MSVC)
   add_custom_target(man ALL

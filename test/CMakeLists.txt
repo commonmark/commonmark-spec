@@ -1,6 +1,6 @@
 # To get verbose output: cmake --build build --target "test" -- ARGS='-V'
 
-set(PYTHON python2)
+set(PYTHON python)
 
 if (WIN32)
   file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR}/src WIN_DLL_DIR)
