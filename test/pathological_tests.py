@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import re
@@ -30,8 +30,8 @@ pathological = {
                  ((("> " * 50000) + "a"),
                   re.compile("(<blockquote>\n){50000}")),
     "U+0000 in input":
-                 ("abc\0de\0",
-                  re.compile("abc(�)?de(�)?"))
+                 ("abc\u0000de\u0000",
+                  re.compile("abc\ufffd?de\ufffd?"))
     }
 
 whitespace_re = re.compile('/s+/')
@@ -39,24 +39,24 @@ passed = 0
 errored = 0
 failed = 0
 
-print "Testing pathological cases:"
+print("Testing pathological cases:")
 for description in pathological:
-    print description
+    print(description)
     (inp, regex) = pathological[description]
     [rc, actual, err] = cmark.to_html(inp)
     if rc != 0:
         errored += 1
-        print description
-        print "program returned error code %d" % rc
+        print(description)
+        print("program returned error code %d" % rc)
         print(err)
     elif regex.search(actual):
         passed += 1
     else:
-        print description, 'failed'
-        print(actual)
+        print(description, 'failed')
+        print(repr(actual))
         failed += 1
 
-print "%d passed, %d failed, %d errored" % (passed, failed, errored)
+print("%d passed, %d failed, %d errored" % (passed, failed, errored))
 if (failed == 0 and errored == 0):
     exit(0)
 else:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from ctypes import CDLL, c_char_p, c_long
@@ -7,11 +7,13 @@ import platform
 
 def pipe_through_prog(prog, text):
     p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    [result, err] = p1.communicate(input=text)
-    return [p1.returncode, result, err]
+    [result, err] = p1.communicate(input=text.encode('utf-8'))
+    return [p1.returncode, result.decode('utf-8'), err]
 
 def use_library(lib, text):
-    return [0, lib(text, len(text)), '']
+    textbytes = text.encode('utf-8')
+    textlen = len(textbytes)
+    return [0, lib(textbytes, textlen).decode('utf-8'), '']
 
 class CMark:
     def __init__(self, prog=None, library_dir=None):

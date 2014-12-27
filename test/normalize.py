@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from HTMLParser import HTMLParser, HTMLParseError
-from htmlentitydefs import name2codepoint
+from html.parser import HTMLParser, HTMLParseError
+from html.entities import name2codepoint
 import sys
 import re
 import cgi
@@ -14,7 +14,7 @@ class MyHTMLParser(HTMLParser):
         HTMLParser.__init__(self)
         self.last = "starttag"
         self.in_pre = False
-        self.output = u""
+        self.output = ""
         self.last_tag = ""
     def handle_data(self, data):
         after_tag = self.last == "endtag" or self.last == "starttag"
@@ -74,7 +74,7 @@ class MyHTMLParser(HTMLParser):
         self.last = "pi"
     def handle_entityref(self, name):
         try:
-            c = unichr(name2codepoint[name])
+            c = chr(name2codepoint[name])
         except KeyError:
             c = None
         self.output_char(c, '&' + name + ';')
@@ -82,22 +82,22 @@ class MyHTMLParser(HTMLParser):
     def handle_charref(self, name):
         try:
             if name.startswith("x"):
-                c = unichr(int(name[1:], 16))
+                c = chr(int(name[1:], 16))
             else:
-                c = unichr(int(name))
+                c = chr(int(name))
         except ValueError:
                 c = None
         self.output_char(c, '&' + name + ';')
         self.last = "ref"
     # Helpers.
     def output_char(self, c, fallback):
-        if c == u'<':
+        if c == '<':
             self.output += "&lt;"
-        elif c == u'>':
+        elif c == '>':
             self.output += "&gt;"
-        elif c == u'&':
+        elif c == '&':
             self.output += "&amp;"
-        elif c == u'"':
+        elif c == '"':
             self.output += "&quot;"
         elif c == None:
             self.output += fallback
@@ -122,43 +122,43 @@ def normalize_html(html):
     in pre tags):
 
         >>> normalize_html("<p>a  \t b</p>")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
         >>> normalize_html("<p>a  \t\nb</p>")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
     * Whitespace surrounding block-level tags is removed.
 
         >>> normalize_html("<p>a  b</p>")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
         >>> normalize_html(" <p>a  b</p>")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
         >>> normalize_html("<p>a  b</p> ")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
         >>> normalize_html("\n\t<p>\n\t\ta  b\t\t</p>\n\t")
-        u'<p>a b</p>'
+        '<p>a b</p>'
 
         >>> normalize_html("<i>a  b</i> ")
-        u'<i>a b</i> '
+        '<i>a b</i> '
 
     * Self-closing tags are converted to open tags.
 
         >>> normalize_html("<br />")
-        u'<br>'
+        '<br>'
 
     * Attributes are sorted and lowercased.
 
         >>> normalize_html('<a title="bar" HREF="foo">x</a>')
-        u'<a href="foo" title="bar">x</a>'
+        '<a href="foo" title="bar">x</a>'
 
     * References are converted to unicode, except that '<', '>', '&', and
       '"' are rendered using entities.
 
         >>> normalize_html("&forall;&amp;&gt;&lt;&quot;")
-        u'\u2200&amp;&gt;&lt;&quot;'
+        '\u2200&amp;&gt;&lt;&quot;'
 
     """
     html_chunk_re = re.compile("(\<!\[CDATA\[.*?\]\]\>|\<[^>]*\>|[^<]+)")
@@ -171,7 +171,7 @@ def normalize_html(html):
             if chunk.group(0)[:8] == "<![CDATA":
                 parser.output += chunk.group(0)
             else:
-                parser.feed(chunk.group(0).decode(encoding='UTF-8'))
+                parser.feed(chunk.group(0))
         parser.close()
         return parser.output
     except HTMLParseError as e:

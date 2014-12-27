@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     args = parser.parse_args(sys.argv[1:])
 
 def print_test_header(headertext, example_number, start_line, end_line):
-    print "Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext)
+    print("Example %d (lines %d-%d) %s" % (example_number,start_line,end_line,headertext))
 
 def do_test(test, normalize, result_counts):
     [retcode, actual_html, err] = cmark.to_html(test['markdown'])
@@ -43,7 +43,7 @@ def do_test(test, normalize, result_counts):
         if normalize:
             try:
                 passed = normalize_html(actual_html) == normalize_html(expected_html)
-            except UnicodeDecodeError, e:
+            except UnicodeDecodeError as e:
                 unicode_error = e
                 passed = False
         else:
@@ -54,9 +54,9 @@ def do_test(test, normalize, result_counts):
             print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
             sys.stdout.write(test['markdown'])
             if unicode_error:
-                print "Unicode error: " + str(unicode_error)
-                print "Expected: " + repr(expected_html)
-                print "Got:      " + repr(actual_html)
+                print("Unicode error: " + str(unicode_error))
+                print("Expected: " + repr(expected_html))
+                print("Got:      " + repr(actual_html))
             else:
                 expected_html_lines = expected_html.splitlines(True)
                 actual_html_lines = actual_html.splitlines(True)
@@ -67,7 +67,7 @@ def do_test(test, normalize, result_counts):
             result_counts['fail'] += 1
     else:
         print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
-        print "program returned error code %d" % retcode
+        print("program returned error code %d" % retcode)
         print(err)
         result_counts['error'] += 1
 
@@ -114,7 +114,7 @@ def get_tests(specfile):
 
 if __name__ == "__main__":
     if args.debug_normalization:
-        print normalize_html(sys.stdin.read())
+        print(normalize_html(sys.stdin.read()))
         exit(0)
 
     all_tests = get_tests(args.spec)
@@ -124,7 +124,7 @@ if __name__ == "__main__":
         pattern_re = re.compile('.')
     tests = [ test for test in all_tests if re.search(pattern_re, test['section']) and (not args.number or test['example'] == args.number) ]
     if args.dump_tests:
-        print json.dumps(tests, ensure_ascii=False, indent=2)
+        print(json.dumps(tests, ensure_ascii=False, indent=2))
         exit(0)
     else:
         skipped = len(all_tests) - len(tests)
@@ -132,7 +132,7 @@ if __name__ == "__main__":
         result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
         for test in tests:
             do_test(test, args.normalize, result_counts)
-        print "{pass} passed, {fail} failed, {error} errored, {skip} skipped".format(**result_counts)
+        print("{pass} passed, {fail} failed, {error} errored, {skip} skipped".format(**result_counts))
         if result_counts['fail'] == 0 and result_counts['error'] == 0:
             exit(0)
         else:

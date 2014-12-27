@@ -1,6 +1,7 @@
 # To get verbose output: cmake --build build --target "test" -- ARGS='-V'
 
-set(PYTHON python)
+find_package(PythonInterp 3 REQUIRED)
+set(PYTHON ${PYTHON_EXECUTABLE})
 
 if (WIN32)
   file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR}/src WIN_DLL_DIR)
