@@ -132,9 +132,9 @@ var parseBackticks = function(inlines) {
     }
     var afterOpenTicks = this.pos;
     var foundCode = false;
-    var match;
-    while (!foundCode && (match = this.match(/`+/m))) {
-        if (match === ticks) {
+    var matched;
+    while (!foundCode && (matched = this.match(/`+/m))) {
+        if (matched === ticks) {
             inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
                                                       this.pos - ticks.length)
                      .replace(/[ \n]+/g,' ')
