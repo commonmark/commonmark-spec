@@ -17,14 +17,20 @@ if __name__ == "__main__":
 
 cmark = CMark(prog=args.program, library_dir=args.library_dir)
 
+# list of pairs consisting of input and a regex that must match the output.
 pathological = {
     "nested strong emph":
                 (("*a **a " * 100000) + "b" + (" a** a*" * 100000),
-                 "<p>" + ("<em>a <strong>a " * 100000) + "b" +
-                   (" a</strong> a</em>" * 100000) + "</p>"),
+                 re.compile("(<em>a <strong>a ){100000}b( a</strong> a</em>){100000}")),
     "nested brackets":
                  (("[" * 50000) + "a" + ("]" * 50000),
-                  "<p>" + ("[" * 50000) + "a" + ("]" * 50000) + "</p>")
+                  re.compile("\[{50000}a\]{50000}")),
+    "nested block quotes":
+                 ((("> " * 50000) + "a"),
+                  re.compile("(<blockquote>\n){50000}")),
+    "U+0000 in input":
+                 ("abc\0de\0",
+                  re.compile("abc(�)?de(�)?"))
     }
 
 whitespace_re = re.compile('/s+/')
@@ -35,14 +41,14 @@ failed = 0
 print "Testing pathological cases:"
 for description in pathological:
     print description
-    (inp, expected) = pathological[description]
+    (inp, regex) = pathological[description]
     [rc, actual, err] = cmark.to_html(inp)
     if rc != 0:
         errored += 1
         print description
         print "program returned error code %d" % rc
         print(err)
-    elif whitespace_re.sub(' ', actual.rstrip()) == expected.rstrip():
+    elif regex.search(actual):
         passed += 1
     else:
         print description, 'failed'
