@@ -128,14 +128,22 @@ questions it does not answer:
       - and it can screw things up`
     ```
 
-11. Can list items include headers?  (`Markdown.pl` does not allow this,
-    but headers can occur in blockquotes.)
+11. Can list items include section headers?  (`Markdown.pl` does not
+    allow this, but does allow blockquotes to include headers.)
 
     ``` markdown
     - # Heading
     ```
 
-12. Can link references be defined inside block quotes or list items?
+12. Can list items be empty?
+
+    ``` markdown
+    * a
+    *
+    * b
+    ```
+
+13. Can link references be defined inside block quotes or list items?
 
     ``` markdown
     > Blockquote [foo].
@@ -143,7 +151,7 @@ questions it does not answer:
     > [foo]: /url
     ```
 
-13. If there are multiple definitions for the same reference, which takes
+14. If there are multiple definitions for the same reference, which takes
     precedence?
 
     ``` markdown
