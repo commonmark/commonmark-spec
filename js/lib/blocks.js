@@ -330,7 +330,7 @@ var incorporateLine = function(ln, line_number) {
            container.t !== 'IndentedCode' &&
            container.t !== 'HtmlBlock' &&
            // this is a little performance optimization:
-           matchAt(/^[ #`~*+_=<>0-9-]/,ln,offset) !== -1) {
+           matchAt(/^[ #`~*+_=<>0-9-]/, ln, offset) !== -1) {
 
         match = matchAt(/[^ ]/, ln, offset);
         if (match === -1) {
@@ -370,7 +370,7 @@ var incorporateLine = function(ln, line_number) {
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
             container.strings =
-                [ln.slice(offset).replace(/^ *#+ *$/, '').replace(/ +#+ *$/,'')];
+                [ln.slice(offset).replace(/^ *#+ *$/, '').replace(/ +#+ *$/, '')];
             break;
 
         } else if ((match = ln.slice(first_nonspace).match(/^`{3,}(?!.*`)|^~{3,}(?!.*~)/))) {
@@ -545,7 +545,7 @@ var finalize = function(block, line_number) {
 
     switch (block.t) {
     case 'Paragraph':
-        block.string_content = block.strings.join('\n').replace(/^ {2,}/m,'');
+        block.string_content = block.strings.join('\n').replace(/^ {2,}/m, '');
         // delete block.strings;
 
         // try parsing the beginning as link reference definitions:
@@ -566,7 +566,7 @@ var finalize = function(block, line_number) {
         break;
 
     case 'IndentedCode':
-        block.string_content = block.strings.join('\n').replace(/(\n *)*$/,'\n');
+        block.string_content = block.strings.join('\n').replace(/(\n *)*$/, '\n');
         block.t = 'CodeBlock';
         break;
 
@@ -667,7 +667,7 @@ var parse = function(input) {
     this.doc = makeBlock('Document', 1, 1);
     this.tip = this.doc;
     this.refmap = {};
-    var lines = input.replace(/\n$/,'').split(/\r\n|\n|\r/);
+    var lines = input.replace(/\n$/, '').split(/\r\n|\n|\r/);
     var len = lines.length;
     for (var i = 0; i < len; i++) {
         this.incorporateLine(lines[i], i + 1);

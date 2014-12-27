@@ -81,7 +81,7 @@ var unescapeString = function(s) {
 // to single space, remove leading/trailing whitespace, case fold.
 var normalizeReference = function(s) {
     return s.trim()
-        .replace(/\s+/,' ')
+        .replace(/\s+/, ' ')
         .toUpperCase();
 };
 
@@ -137,7 +137,7 @@ var parseBackticks = function(inlines) {
         if (matched === ticks) {
             inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
                                                       this.pos - ticks.length)
-                     .replace(/[ \n]+/g,' ')
+                     .replace(/[ \n]+/g, ' ')
                       .trim() });
             return true;
         }
@@ -153,7 +153,7 @@ var parseBackticks = function(inlines) {
 // or a literal backslash to the 'inlines' list.
 var parseBackslash = function(inlines) {
     var subj = this.subject,
-        pos  = this.pos;
+        pos = this.pos;
     if (subj.charCodeAt(pos) === C_BACKSLASH) {
         if (subj.charAt(pos + 1) === '\n') {
             this.pos = this.pos + 2;
@@ -176,14 +176,14 @@ var parseAutolink = function(inlines) {
     var m;
     var dest;
     if ((m = this.match(/^<([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)>/))) {  // email autolink
-        dest = m.slice(1,-1);
+        dest = m.slice(1, -1);
         inlines.push(
                 {t: 'Link',
                  label: [{ t: 'Text', c: dest }],
                  destination: 'mailto:' + encodeURI(unescape(dest)) });
         return true;
     } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
-        dest = m.slice(1,-1);
+        dest = m.slice(1, -1);
         inlines.push({
                   t: 'Link',
                   label: [{ t: 'Text', c: dest }],
@@ -260,7 +260,7 @@ var Str = function(s) {
 };
 
 // Attempt to parse emphasis or strong emphasis.
-var parseEmphasis = function(cc,inlines) {
+var parseEmphasis = function(cc, inlines) {
 
     var res = this.scanDelims(cc);
     var numdelims = res.numdelims;

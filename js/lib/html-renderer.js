@@ -45,7 +45,7 @@ var renderInline = function(inline) {
         attrs = [['src', this.escape(inline.destination, true)],
                  ['alt', this.renderInlines(inline.label).
                     replace(/\<[^>]*alt="([^"]*)"[^>]*\>/g, '$1').
-                    replace(/\<[^>]*\>/g,'')]];
+                    replace(/\<[^>]*\>/g, '')]];
         if (inline.title) {
             attrs.push(['title', this.escape(inline.title, true)]);
         }
@@ -146,15 +146,15 @@ function HtmlRenderer(){
         // set to " " if you want to ignore line wrapping in source
         escape: function(s, preserve_entities) {
             if (preserve_entities) {
-                return s.replace(/[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)/gi,'&amp;')
-                    .replace(/[<]/g,'&lt;')
-                    .replace(/[>]/g,'&gt;')
-                    .replace(/["]/g,'&quot;');
+                return s.replace(/[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)/gi, '&amp;')
+                    .replace(/[<]/g, '&lt;')
+                    .replace(/[>]/g, '&gt;')
+                    .replace(/["]/g, '&quot;');
             } else {
                 return s.replace(/[&]/g,'&amp;')
-                    .replace(/[<]/g,'&lt;')
-                    .replace(/[>]/g,'&gt;')
-                    .replace(/["]/g,'&quot;');
+                    .replace(/[<]/g, '&lt;')
+                    .replace(/[>]/g, '&gt;')
+                    .replace(/["]/g, '&quot;');
             }
         },
         renderInline: renderInline,
