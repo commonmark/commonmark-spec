@@ -2730,6 +2730,15 @@ two blanks are contained in a [fenced code block](#fenced-code-block).
 
   bar
   ```
+
+- baz
+
+  + ```
+    foo
+
+
+    bar
+    ```
 .
 <ul>
 <li>
@@ -2748,6 +2757,18 @@ two blanks are contained in a [fenced code block](#fenced-code-block).
 
 bar
 </code></pre>
+</li>
+<li>
+<p>baz</p>
+<ul>
+<li>
+<pre><code>foo
+
+
+bar
+</code></pre>
+</li>
+</ul>
 </li>
 </ul>
 .
