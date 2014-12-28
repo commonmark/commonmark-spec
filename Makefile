@@ -175,6 +175,14 @@ dingus: js/commonmark.js
 spec.md: $(SPEC)
 	perl spec2md.pl < $< > $@
 
+spec: spec.html
+	@anchors=`perl -ne '@matches = / id="([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
+	links=`perl -ne '@matches = / href="#([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
+	for link in $$links; do \
+		[[ $$anchors =~ $$link ]] || \
+			 echo "Link to missing anchor #$$link"; \
+	done
+
 spec.html: spec.md template.html
 	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< | \
 	perl -pe 's/a href="@([^"]*)"/a id="\1" href="#\1" class="definition"/g' | \
@@ -189,8 +197,8 @@ spec.pdf: spec.md template.tex specfilter.hs
 
 ### Website ###
 
-update-site: spec.html js/commonmark.js
+update-site: spec js/commonmark.js
 	make -C $(SITE) update
 
-upload-site: spec.html
+upload-site: spec js/commonmark.js
 	make -C $(SITE) upload
