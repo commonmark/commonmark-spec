@@ -66,6 +66,9 @@ struct cmark_node {
 	} as;
 };
 
+const char*
+cmark_node_type_string(cmark_node *node);
+
 CMARK_EXPORT int
 cmark_node_check(cmark_node *node, FILE *out);
 

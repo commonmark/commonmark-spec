@@ -86,8 +86,8 @@ cmark_node_get_type(cmark_node *node)
 	}
 }
 
-static const char*
-S_type_string(cmark_node *node)
+const char*
+cmark_node_type_string(cmark_node *node)
 {
 	if (node == NULL) {
 		return "NONE";
@@ -708,7 +708,8 @@ S_print_error(FILE *out, cmark_node *node, const char *elem)
 		return;
 	}
 	fprintf(out, "Invalid '%s' in node type %s at %d:%d\n", elem,
-		S_type_string(node), node->start_line, node->start_column);
+		cmark_node_type_string(node), node->start_line,
+		node->start_column);
 }
 
 int
