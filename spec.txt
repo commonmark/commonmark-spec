@@ -728,13 +728,19 @@ with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  The line of text must be
 one that, were it not followed by the setext header underline,
 would be interpreted as part of a paragraph:  it cannot be a code
-block, header, blockquote, horizontal rule, or list.  A [setext header
-underline](@setext-header-underline)
-is a sequence of `=` characters or a sequence of `-` characters, with no
-more than 3 spaces indentation and any number of trailing
-spaces.  The header is a level 1 header if `=` characters are used, and
-a level 2 header if `-` characters are used.  The contents of the header
-are the result of parsing the first line as Markdown inline content.
+block, header, blockquote, horizontal rule, or list.
+
+A [setext header underline](@setext-header-underline) is a sequence of
+`=` characters or a sequence of `-` characters, with no more than 3
+spaces indentation and any number of trailing spaces.  If a line
+containing a single `-` can be interpreted as an
+empty [list item](#list-items), it should be interpreted this way
+and not as a [setext header underline](#setext-header-underline).
+
+The header is a level 1 header if `=` characters are used in the
+[setext header underline](#setext-header-underline), and a level 2
+header if `-` characters are used.  The contents of the header are the
+result of parsing the first line as Markdown inline content.
 
 In general, a setext header need not be preceded or followed by a
 blank line.  However, it cannot interrupt a paragraph, so when a
