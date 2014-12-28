@@ -3529,11 +3529,12 @@ blank lines:
 Second, we are attracted to a
 
 > [principle of uniformity](@principle-of-uniformity):
-> if a span of text has a certain
-> meaning, it will continue to have the same meaning when put into a list
-> item.
+> if a chunk of text has a certain
+> meaning, it will continue to have the same meaning when put into a
+> container block (such as a list item or blockquote).
 
-(Indeed, the spec for [list items](#list-item) presupposes this.)
+(Indeed, the spec for [list items](#list-item) and
+[blockquotes](#block-quotes) presupposes this principle.)
 This principle implies that if
 
       * I need to buy
