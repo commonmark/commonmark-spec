@@ -394,6 +394,11 @@ cmark_node *cmark_parse_file(FILE *f);
 CMARK_EXPORT
 char *cmark_render_ast(cmark_node *root);
 
+/** Render a 'node' tree as XML.
+ */
+CMARK_EXPORT
+char *cmark_render_xml(cmark_node *root);
+
 /** Render a 'node' tree as an HTML fragment.  It is up to the user
  * to add an appropriate header and footer.
  */
