@@ -19,9 +19,10 @@ cmark = CMark(prog=args.program, library_dir=args.library_dir)
 
 # list of pairs consisting of input and a regex that must match the output.
 pathological = {
+    # note - some pythons have limit of 65535 for {num-matches} in re.
     "nested strong emph":
-                (("*a **a " * 100000) + "b" + (" a** a*" * 100000),
-                 re.compile("(<em>a <strong>a ){100000}b( a</strong> a</em>){100000}")),
+                (("*a **a " * 65000) + "b" + (" a** a*" * 65000),
+                 re.compile("(<em>a <strong>a ){65000}b( a</strong> a</em>){65000}")),
     "nested brackets":
                  (("[" * 50000) + "a" + ("]" * 50000),
                   re.compile("\[{50000}a\]{50000}")),
