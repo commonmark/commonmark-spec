@@ -73,6 +73,7 @@ typedef enum {
 }  cmark_list_type;
 
 typedef enum {
+	CMARK_NO_DELIM,
 	CMARK_PERIOD_DELIM,
 	CMARK_PAREN_DELIM
 } cmark_delim_type;
