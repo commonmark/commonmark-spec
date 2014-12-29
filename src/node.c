@@ -87,32 +87,32 @@ cmark_node_get_type(cmark_node *node)
 }
 
 const char*
-cmark_node_type_string(cmark_node *node)
+cmark_node_get_type_string(cmark_node *node)
 {
 	if (node == NULL) {
 		return "NONE";
 	}
 
 	switch (node->type) {
-	case CMARK_NODE_NONE:          return "NONE";
-	case CMARK_NODE_DOCUMENT:      return "DOCUMENT";
-	case CMARK_NODE_BLOCK_QUOTE:   return "BLOCK_QUOTE";
-	case CMARK_NODE_LIST:          return "LIST";
-	case CMARK_NODE_LIST_ITEM:     return "LIST_ITEM";
-	case CMARK_NODE_CODE_BLOCK:    return "CODE_BLOCK";
-	case CMARK_NODE_HTML:          return "HTML";
-	case CMARK_NODE_PARAGRAPH:     return "PARAGRAPH";
-	case CMARK_NODE_HEADER:	       return "HEADER";
-	case CMARK_NODE_HRULE:         return "HRULE";
-	case CMARK_NODE_TEXT:          return "TEXT";
-	case CMARK_NODE_SOFTBREAK:     return "SOFTBREAK";
-	case CMARK_NODE_LINEBREAK:     return "LINEBREAK";
-	case CMARK_NODE_CODE:          return "CODE";
-	case CMARK_NODE_INLINE_HTML:   return "INLINE_HTML";
-	case CMARK_NODE_EMPH:          return "EMPH";
-	case CMARK_NODE_STRONG:        return "STRONG";
-	case CMARK_NODE_LINK:          return "LINK";
-	case CMARK_NODE_IMAGE:         return "IMAGE";
+	case CMARK_NODE_NONE:          return "none";
+	case CMARK_NODE_DOCUMENT:      return "document";
+	case CMARK_NODE_BLOCK_QUOTE:   return "block_quote";
+	case CMARK_NODE_LIST:          return "list";
+	case CMARK_NODE_LIST_ITEM:     return "list_item";
+	case CMARK_NODE_CODE_BLOCK:    return "code_block";
+	case CMARK_NODE_HTML:          return "html";
+	case CMARK_NODE_PARAGRAPH:     return "paragraph";
+	case CMARK_NODE_HEADER:	       return "header";
+	case CMARK_NODE_HRULE:         return "hrule";
+	case CMARK_NODE_TEXT:          return "text";
+	case CMARK_NODE_SOFTBREAK:     return "softbreak";
+	case CMARK_NODE_LINEBREAK:     return "linebreak";
+	case CMARK_NODE_CODE:          return "code";
+	case CMARK_NODE_INLINE_HTML:   return "inline_html";
+	case CMARK_NODE_EMPH:          return "emph";
+	case CMARK_NODE_STRONG:        return "strong";
+	case CMARK_NODE_LINK:          return "link";
+	case CMARK_NODE_IMAGE:         return "image";
 	}
 
 	return "<unknown>";
@@ -708,7 +708,7 @@ S_print_error(FILE *out, cmark_node *node, const char *elem)
 		return;
 	}
 	fprintf(out, "Invalid '%s' in node type %s at %d:%d\n", elem,
-		cmark_node_type_string(node), node->start_line,
+		cmark_node_get_type_string(node), node->start_line,
 		node->start_column);
 }
 

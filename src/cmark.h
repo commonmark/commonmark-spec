@@ -198,6 +198,13 @@ cmark_iter_get_node(cmark_iter *iter);
 CMARK_EXPORT cmark_node_type
 cmark_node_get_type(cmark_node *node);
 
+/** Like 'cmark_node_get_type', but returns a string representation
+    of the type, or `"<unknown>"`.
+ */
+CMARK_EXPORT
+const char*
+cmark_node_get_type_string(cmark_node *node);
+
 /** Returns the string contents of 'node', or NULL if none.
  */
 CMARK_EXPORT const char*
