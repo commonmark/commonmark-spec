@@ -35,7 +35,8 @@ static inline void indent(struct render_state *state)
 }
 
 static int
-S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
+S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate,
+	long options)
 {
 	struct render_state *state = vstate;
 	cmark_strbuf *xml = state->xml;
@@ -48,7 +49,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		cmark_strbuf_printf(xml, "<%s",
 				    cmark_node_get_type_string(node));
 
-		if (node->start_line != 0) {
+		if (options & CMARK_OPT_SOURCEPOS && node->start_line != 0) {
 			cmark_strbuf_printf(xml, " sourcepos=\"%d:%d-%d:%d\"",
 					    node->start_line,
 					    node->start_column,
@@ -135,7 +136,7 @@ char *cmark_render_xml(cmark_node *root, long options)
 			  "<!DOCTYPE CommonMark SYSTEM \"CommonMark.dtd\">\n");
 	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
 		cur = cmark_iter_get_node(iter);
-		S_render_node(cur, ev_type, &state);
+		S_render_node(cur, ev_type, &state, options);
 	}
 	result = (char *)cmark_strbuf_detach(&xml);
 
