@@ -475,6 +475,14 @@ cmark_node_get_end_line(cmark_node *node) {
 	return node->end_line;
 }
 
+int
+cmark_node_get_end_column(cmark_node *node) {
+	if (node == NULL) {
+		return 0;
+	}
+	return node->end_column;
+}
+
 static inline bool
 S_is_block(cmark_node *node) {
 	if (node == NULL) {

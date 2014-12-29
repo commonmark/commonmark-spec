@@ -306,6 +306,11 @@ cmark_node_get_start_column(cmark_node *node);
 CMARK_EXPORT int
 cmark_node_get_end_line(cmark_node *node);
 
+/** Returns the column at which 'node' ends.
+ */
+CMARK_EXPORT int
+cmark_node_get_end_column(cmark_node *node);
+
 /**
  * ## Tree Manipulation
  */

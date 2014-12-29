@@ -64,6 +64,7 @@ cmark_parser *cmark_parser_new()
 	parser->current = document;
 	parser->line_number = 0;
 	parser->curline = line;
+	parser->last_line_length = 0;
 	parser->linebuf = buf;
 
 	return parser;
@@ -197,6 +198,8 @@ finalize(cmark_parser *parser, cmark_node* b)
 	} else {
 		b->end_line = parser->line_number;
 	}
+
+	b->end_column = parser->last_line_length - 1;  // -1 because of newline
 
 	switch (b->type) {
 		case NODE_PARAGRAPH:
@@ -853,6 +856,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		parser->current = container;
 	}
+	parser->last_line_length = parser->curline->size;
 	cmark_strbuf_clear(parser->curline);
 
 }

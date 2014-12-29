@@ -52,6 +52,7 @@ struct cmark_node {
 	int start_line;
 	int start_column;
 	int end_line;
+	int end_column;
 	bool open;
 	bool last_line_blank;
 

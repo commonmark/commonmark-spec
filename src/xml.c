@@ -49,10 +49,11 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 				    cmark_node_get_type_string(node));
 
 		if (node->start_line != 0) {
-			cmark_strbuf_printf(xml, " sourcepos=\"%d:%d-%d\"",
+			cmark_strbuf_printf(xml, " sourcepos=\"%d:%d-%d:%d\"",
 					    node->start_line,
 					    node->start_column,
-					    node->end_line);
+					    node->end_line,
+					    node->end_column);
 		}
 
 		literal = false;
