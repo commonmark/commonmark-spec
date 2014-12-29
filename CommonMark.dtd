@@ -1,45 +1,45 @@
 <!-- DTD for CommonMark xml export format -->
-<!ELEMENT DOCUMENT
-(BLOCK_QUOTE|LIST|CODE_BLOCK|HTML|PARAGRAPH|HEADER|HRULE)*>
-<!ELEMENT BLOCK_QUOTE
-(BLOCK_QUOTE|LIST|CODE_BLOCK|HTML|PARAGRAPH|HEADER|HRULE)*>
-<!ELEMENT LIST (LIST_ITEM)+>
-<!ATTLIST LIST
+<!ELEMENT document
+(block_quote|list|code_block|html|paragraph|header|hrule)*>
+<!ELEMENT block_quote
+(block_quote|list|code_block|html|paragraph|header|hrule)*>
+<!ELEMENT list (list_item)+>
+<!ATTLIST list
           type (bullet|ordered) #REQUIRED
           start CDATA #IMPLIED
           tight (true|false) #REQUIRED
           delimiter (period|paren) #IMPLIED>
-<!ELEMENT LIST_ITEM
-(BLOCK_QUOTE|LIST|CODE_BLOCK|HTML|PARAGRAPH|HEADER|HRULE)*>
-<!ELEMENT CODE_BLOCK (#PCDATA)>
-<!ATTLIST CODE_BLOCK
+<!ELEMENT list_item
+(block_quote|list|code_block|html|paragraph|header|hrule)*>
+<!ELEMENT code_block (#PCDATA)>
+<!ATTLIST code_block
           xml:space CDATA #FIXED "preserve"
           info CDATA #IMPLIED>
-<!ELEMENT HTML (#PCDATA)>
-<!ATTLIST HTML xml:space CDATA #FIXED "preserve">
-<!ELEMENT PARAGRAPH
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ELEMENT HEADER
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ATTLIST HEADER level (1|2|3|4|5|6) #REQUIRED>
-<!ELEMENT HRULE EMPTY>
-<!ELEMENT TEXT (#PCDATA)>
-<!ELEMENT SOFTBREAK EMPTY>
-<!ELEMENT LINEBREAK EMPTY>
-<!ELEMENT CODE (#PCDATA)>
-<!ATTLIST CODE xml:space CDATA #FIXED "preserve">
-<!ELEMENT INLINE_HTML (#PCDATA)>
-<!ATTLIST INLINE_HTML xml:space CDATA #FIXED "preserve">
-<!ELEMENT EMPH
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ELEMENT STRONG
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ELEMENT LINK
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ATTLIST LINK url CDATA #REQUIRED>
-<!ATTLIST LINK title CDATA #IMPLIED>
-<!ELEMENT IMAGE
-(TEXT|SOFTBREAK|LINEBREAK|CODE|INLINE_HTML|EMPH|STRONG|LINK|IMAGE)*>
-<!ATTLIST IMAGE url CDATA #REQUIRED>
-<!ATTLIST IMAGE title CDATA #IMPLIED>
+<!ELEMENT html (#PCDATA)>
+<!ATTLIST html xml:space CDATA #FIXED "preserve">
+<!ELEMENT paragraph
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ELEMENT header
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ATTLIST header level (1|2|3|4|5|6) #REQUIRED>
+<!ELEMENT hrule EMPTY>
+<!ELEMENT text (#PCDATA)>
+<!ELEMENT softbreak EMPTY>
+<!ELEMENT linebreak EMPTY>
+<!ELEMENT code (#PCDATA)>
+<!ATTLIST code xml:space CDATA #FIXED "preserve">
+<!ELEMENT inline_html (#PCDATA)>
+<!ATTLIST inline_html xml:space CDATA #FIXED "preserve">
+<!ELEMENT emph
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ELEMENT strong
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ELEMENT link
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ATTLIST link Url CDATA #REQUIRED>
+<!ATTLIST link Title CDATA #IMPLIED>
+<!ELEMENT image
+(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
+<!ATTLIST image url CDATA #REQUIRED>
+<!ATTLIST image title CDATA #IMPLIED>
 <!ATTLIST ANY sourcepos CDATA #IMPLIED>

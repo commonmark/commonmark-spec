@@ -45,7 +45,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 	if (entering) {
 		indent(state);
-		cmark_strbuf_printf(xml, "<%s", cmark_node_type_string(node));
+		cmark_strbuf_printf(xml, "<%s",
+				    cmark_node_get_type_string(node));
 
 		if (node->start_line != 0) {
 			cmark_strbuf_printf(xml, " sourcepos=\"%d:%d-%d\"",
@@ -65,7 +66,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 			escape_xml(xml, node->as.literal.data,
 				   node->as.literal.len);
 			cmark_strbuf_puts(xml, "</");
-			cmark_strbuf_puts(xml, cmark_node_type_string(node));
+			cmark_strbuf_puts(xml,
+					  cmark_node_get_type_string(node));
 			literal = true;
 			break;
 		case CMARK_NODE_CODE_BLOCK:
@@ -79,7 +81,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 			escape_xml(xml, node->as.code.literal.data,
 				   node->as.code.literal.len);
 			cmark_strbuf_puts(xml, "</");
-			cmark_strbuf_puts(xml, cmark_node_type_string(node));
+			cmark_strbuf_puts(xml,
+					  cmark_node_get_type_string(node));
 			literal = true;
 			break;
 		case CMARK_NODE_LINK:
@@ -105,7 +108,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 			state->indent -= 2;
 		}
 		indent(state);
-		cmark_strbuf_printf(xml, "</%s", cmark_node_type_string(node));
+		cmark_strbuf_printf(xml, "</%s",
+				    cmark_node_get_type_string(node));
 	}
 
 	// TODO print attributes
