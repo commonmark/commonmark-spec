@@ -113,7 +113,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		break;
 	}
 
-	case CMARK_NODE_LIST_ITEM:
+	case CMARK_NODE_ITEM:
 		if (entering) {
 			cr(html);
 			cmark_strbuf_puts(html, "<li>");

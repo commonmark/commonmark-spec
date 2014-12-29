@@ -104,8 +104,8 @@ static inline bool can_contain(cmark_node_type parent_type, cmark_node_type chil
 {
 	return ( parent_type == NODE_DOCUMENT ||
 			parent_type == NODE_BLOCK_QUOTE ||
-			parent_type == NODE_LIST_ITEM ||
-			(parent_type == NODE_LIST && child_type == NODE_LIST_ITEM) );
+			parent_type == NODE_ITEM ||
+			(parent_type == NODE_LIST && child_type == NODE_ITEM) );
 }
 
 static inline bool accepts_lines(cmark_node_type block_type)
@@ -149,7 +149,7 @@ static bool ends_with_blank_line(cmark_node* cmark_node)
 	if (cmark_node->last_line_blank) {
 		return true;
 	}
-	if ((cmark_node->type == NODE_LIST || cmark_node->type == NODE_LIST_ITEM) && cmark_node->last_child) {
+	if ((cmark_node->type == NODE_LIST || cmark_node->type == NODE_ITEM) && cmark_node->last_child) {
 		return ends_with_blank_line(cmark_node->last_child);
 	} else {
 		return false;
@@ -558,7 +558,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 				all_matched = false;
 			}
 
-		} else if (container->type == NODE_LIST_ITEM) {
+		} else if (container->type == NODE_ITEM) {
 
 			if (indent >= container->as.list.marker_offset +
 					container->as.list.padding) {
@@ -741,7 +741,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			}
 
 			// add the list item
-			container = add_child(parser, container, NODE_LIST_ITEM, parser->line_number,
+			container = add_child(parser, container, NODE_ITEM, parser->line_number,
 					first_nonspace + 1);
 			/* TODO: static */
 			memcpy(&container->as.list, data, sizeof(*data));
@@ -775,7 +775,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			container->type != NODE_HEADER &&
 			!(container->type == NODE_CODE_BLOCK &&
 				container->as.code.fenced) &&
-			!(container->type == NODE_LIST_ITEM &&
+			!(container->type == NODE_ITEM &&
 				container->first_child == NULL &&
 				container->start_line == parser->line_number));
 

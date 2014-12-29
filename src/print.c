@@ -51,7 +51,7 @@ static void render_nodes(cmark_strbuf* buffer, cmark_node* node, int indent)
 		case NODE_BLOCK_QUOTE:
 			cmark_strbuf_printf(buffer, "block_quote\n");
 			break;
-		case NODE_LIST_ITEM:
+		case NODE_ITEM:
 			cmark_strbuf_printf(buffer, "list_item\n");
 			break;
 		case NODE_LIST:

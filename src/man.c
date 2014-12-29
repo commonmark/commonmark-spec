@@ -93,7 +93,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	case CMARK_NODE_LIST:
 		break;
 
-	case CMARK_NODE_LIST_ITEM:
+	case CMARK_NODE_ITEM:
 		if (entering) {
 			cr(man);
 			cmark_strbuf_puts(man, ".IP ");
@@ -150,7 +150,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 		if (entering) {
 			// no blank line if first paragraph in list:
 			if (node->parent &&
-			    node->parent->type == CMARK_NODE_LIST_ITEM &&
+			    node->parent->type == CMARK_NODE_ITEM &&
 			    node->prev == NULL) {
 				// no blank line or .PP
 			} else {

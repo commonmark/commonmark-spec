@@ -98,7 +98,7 @@ cmark_node_get_type_string(cmark_node *node)
 	case CMARK_NODE_DOCUMENT:      return "document";
 	case CMARK_NODE_BLOCK_QUOTE:   return "block_quote";
 	case CMARK_NODE_LIST:          return "list";
-	case CMARK_NODE_LIST_ITEM:     return "list_item";
+	case CMARK_NODE_ITEM:          return "item";
 	case CMARK_NODE_CODE_BLOCK:    return "code_block";
 	case CMARK_NODE_HTML:          return "html";
 	case CMARK_NODE_PARAGRAPH:     return "paragraph";
@@ -518,12 +518,12 @@ S_can_contain(cmark_node *node, cmark_node *child)
 	switch (node->type) {
 	case CMARK_NODE_DOCUMENT:
 	case CMARK_NODE_BLOCK_QUOTE:
-	case CMARK_NODE_LIST_ITEM:
+	case CMARK_NODE_ITEM:
 		return S_is_block(child)
-		       && child->type != CMARK_NODE_LIST_ITEM;
+		       && child->type != CMARK_NODE_ITEM;
 
 	case CMARK_NODE_LIST:
-		return child->type == CMARK_NODE_LIST_ITEM;
+		return child->type == CMARK_NODE_ITEM;
 
 	case CMARK_NODE_PARAGRAPH:
 	case CMARK_NODE_HEADER:

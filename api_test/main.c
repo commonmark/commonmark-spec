@@ -17,7 +17,7 @@ static const cmark_node_type node_types[] = {
 	CMARK_NODE_DOCUMENT,
 	CMARK_NODE_BLOCK_QUOTE,
 	CMARK_NODE_LIST,
-	CMARK_NODE_LIST_ITEM,
+	CMARK_NODE_ITEM,
 	CMARK_NODE_CODE_BLOCK,
 	CMARK_NODE_HTML,
 	CMARK_NODE_PARAGRAPH,
@@ -413,7 +413,7 @@ hierarchy(test_batch_runner *runner)
 			    ? CMARK_NODE_LAST_BLOCK : CMARK_NODE_LAST_INLINE;
 	OK(runner, max_node_type < 32, "all node types < 32");
 
-	int list_item_flag = 1 << CMARK_NODE_LIST_ITEM;
+	int list_item_flag = 1 << CMARK_NODE_ITEM;
 	int top_level_blocks =
 		(1 << CMARK_NODE_BLOCK_QUOTE) |
 		(1 << CMARK_NODE_LIST) |
@@ -436,7 +436,7 @@ hierarchy(test_batch_runner *runner)
 	test_content(runner, CMARK_NODE_DOCUMENT,      top_level_blocks);
 	test_content(runner, CMARK_NODE_BLOCK_QUOTE,   top_level_blocks);
 	test_content(runner, CMARK_NODE_LIST,          list_item_flag);
-	test_content(runner, CMARK_NODE_LIST_ITEM,     top_level_blocks);
+	test_content(runner, CMARK_NODE_ITEM,          top_level_blocks);
 	test_content(runner, CMARK_NODE_CODE_BLOCK ,   0);
 	test_content(runner, CMARK_NODE_HTML,          0);
 	test_content(runner, CMARK_NODE_PARAGRAPH,     all_inlines);

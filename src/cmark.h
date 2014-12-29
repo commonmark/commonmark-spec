@@ -40,7 +40,7 @@ typedef enum {
 	CMARK_NODE_DOCUMENT,
 	CMARK_NODE_BLOCK_QUOTE,
 	CMARK_NODE_LIST,
-	CMARK_NODE_LIST_ITEM,
+	CMARK_NODE_ITEM,
 	CMARK_NODE_CODE_BLOCK,
 	CMARK_NODE_HTML,
 	CMARK_NODE_PARAGRAPH,
@@ -426,7 +426,7 @@ char *cmark_render_man(cmark_node *root);
   #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
   #define NODE_BLOCK_QUOTE          CMARK_NODE_BLOCK_QUOTE
   #define NODE_LIST                 CMARK_NODE_LIST
-  #define NODE_LIST_ITEM            CMARK_NODE_LIST_ITEM
+  #define NODE_ITEM                 CMARK_NODE_ITEM
   #define NODE_CODE_BLOCK           CMARK_NODE_CODE_BLOCK
   #define NODE_HTML                 CMARK_NODE_HTML
   #define NODE_PARAGRAPH            CMARK_NODE_PARAGRAPH

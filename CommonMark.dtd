@@ -3,13 +3,13 @@
 (block_quote|list|code_block|html|paragraph|header|hrule)*>
 <!ELEMENT block_quote
 (block_quote|list|code_block|html|paragraph|header|hrule)*>
-<!ELEMENT list (list_item)+>
+<!ELEMENT list (item)+>
 <!ATTLIST list
           type (bullet|ordered) #REQUIRED
           start CDATA #IMPLIED
           tight (true|false) #REQUIRED
           delimiter (period|paren) #IMPLIED>
-<!ELEMENT list_item
+<!ELEMENT item
 (block_quote|list|code_block|html|paragraph|header|hrule)*>
 <!ELEMENT code_block (#PCDATA)>
 <!ATTLIST code_block
