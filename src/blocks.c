@@ -276,7 +276,7 @@ finalize(cmark_parser *parser, cmark_node* b)
 
 // Add a cmark_node as child of another.  Return pointer to child.
 static cmark_node* add_child(cmark_parser *parser, cmark_node* parent,
-		cmark_node_type block_type, int start_line, int start_column)
+		cmark_node_type block_type, int start_column)
 {
 	assert(parent);
 
@@ -286,7 +286,7 @@ static cmark_node* add_child(cmark_parser *parser, cmark_node* parent,
 		parent = finalize(parser, parent);
 	}
 
-	cmark_node* child = make_block(block_type, start_line, start_column);
+	cmark_node* child = make_block(block_type, parser->line_number, start_column);
 	child->parent = parent;
 
 	if (parent->last_child) {
@@ -639,7 +639,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 		if (indent >= CODE_INDENT) {
 			if (cur->type != NODE_PARAGRAPH && !blank) {
 				offset += CODE_INDENT;
-				container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, offset + 1);
+				container = add_child(parser, container, NODE_CODE_BLOCK, offset + 1);
 				container->as.code.fenced = false;
 				container->as.code.fence_char = 0;
 				container->as.code.fence_length = 0;
@@ -655,12 +655,12 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			// optional following character
 			if (peek_at(&input, offset) == ' ')
 				offset++;
-			container = add_child(parser, container, NODE_BLOCK_QUOTE, parser->line_number, offset + 1);
+			container = add_child(parser, container, NODE_BLOCK_QUOTE, offset + 1);
 
 		} else if ((matched = scan_atx_header_start(&input, first_nonspace))) {
 
 			offset = first_nonspace + matched;
-			container = add_child(parser, container, NODE_HEADER, parser->line_number, offset + 1);
+			container = add_child(parser, container, NODE_HEADER, offset + 1);
 
 			int hashpos = cmark_chunk_strchr(&input, '#', first_nonspace);
 			int level = 0;
@@ -674,7 +674,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		} else if ((matched = scan_open_code_fence(&input, first_nonspace))) {
 
-			container = add_child(parser, container, NODE_CODE_BLOCK, parser->line_number, first_nonspace + 1);
+			container = add_child(parser, container, NODE_CODE_BLOCK, first_nonspace + 1);
 			container->as.code.fenced = true;
 			container->as.code.fence_char = peek_at(&input, first_nonspace);
 			container->as.code.fence_length = matched;
@@ -684,7 +684,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		} else if ((matched = scan_html_block_tag(&input, first_nonspace))) {
 
-			container = add_child(parser, container, NODE_HTML, parser->line_number, first_nonspace + 1);
+			container = add_child(parser, container, NODE_HTML, first_nonspace + 1);
 			// note, we don't adjust offset because the tag is part of the text
 
 		} else if (container->type == NODE_PARAGRAPH &&
@@ -702,7 +702,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 				(matched = scan_hrule(&input, first_nonspace))) {
 
 			// it's only now that we know the line is not part of a setext header:
-			container = add_child(parser, container, NODE_HRULE, parser->line_number, first_nonspace + 1);
+			container = add_child(parser, container, NODE_HRULE, first_nonspace + 1);
 			container = finalize(parser, container);
 			offset = input.len - 1;
 
@@ -732,14 +732,14 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			if (container->type != NODE_LIST ||
 					!lists_match(&container->as.list, data)) {
-				container = add_child(parser, container, NODE_LIST, parser->line_number,
+				container = add_child(parser, container, NODE_LIST,
 						first_nonspace + 1);
 
 				memcpy(&container->as.list, data, sizeof(*data));
 			}
 
 			// add the list item
-			container = add_child(parser, container, NODE_ITEM, parser->line_number,
+			container = add_child(parser, container, NODE_ITEM,
 					first_nonspace + 1);
 			/* TODO: static */
 			memcpy(&container->as.list, data, sizeof(*data));
@@ -844,7 +844,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			   container->type != NODE_HEADER) {
 
 			// create paragraph container for line
-			container = add_child(parser, container, NODE_PARAGRAPH, parser->line_number, first_nonspace + 1);
+			container = add_child(parser, container, NODE_PARAGRAPH, first_nonspace + 1);
 			add_line(container, &input, first_nonspace);
 
 		} else {
