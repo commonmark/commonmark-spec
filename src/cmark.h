@@ -416,18 +416,30 @@ cmark_node *cmark_parse_file(FILE *f);
 /** Render a 'node' tree as XML.
  */
 CMARK_EXPORT
-char *cmark_render_xml(cmark_node *root);
+char *cmark_render_xml(cmark_node *root, long options);
 
 /** Render a 'node' tree as an HTML fragment.  It is up to the user
  * to add an appropriate header and footer.
  */
 CMARK_EXPORT
-char *cmark_render_html(cmark_node *root);
+char *cmark_render_html(cmark_node *root, long options);
 
 /** Render a 'node' tree as a groff man page, without the header.
  */
 CMARK_EXPORT
-char *cmark_render_man(cmark_node *root);
+char *cmark_render_man(cmark_node *root, long options);
+
+/** Default writer options.
+ */
+#define CMARK_OPT_DEFAULT 0
+
+/** Include a `data-sourcepos` attribute on all block elements.
+ */
+#define CMARK_OPT_SOURCEPOS 1
+
+/** Render `softbreak` elements as hard line breaks.
+ */
+#define CMARK_OPT_HARDBREAKS 2
 
 /** # AUTHORS
  *

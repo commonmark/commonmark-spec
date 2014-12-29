@@ -120,7 +120,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	return 1;
 }
 
-char *cmark_render_xml(cmark_node *root)
+char *cmark_render_xml(cmark_node *root, long options)
 {
 	char *result;
 	cmark_strbuf xml = GH_BUF_INIT;

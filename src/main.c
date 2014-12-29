@@ -19,22 +19,25 @@ void print_usage()
 	printf("Usage:   cmark [FILE*]\n");
 	printf("Options:\n");
 	printf("  --to, -t FORMAT  Specify output format (html, xml, man)\n");
+	printf("  --sourcepos      Include source position attribute\n");
+	printf("  --hardbreaks     Treat newlines as hard line breaks\n");
 	printf("  --help, -h       Print usage information\n");
 	printf("  --version        Print version\n");
 }
 
-static void print_document(cmark_node *document, writer_format writer)
+static void print_document(cmark_node *document, writer_format writer,
+			   long options)
 {
 	char *result;
 	switch (writer) {
 	case FORMAT_HTML:
-		result = cmark_render_html(document);
+		result = cmark_render_html(document, options);
 		break;
 	case FORMAT_XML:
-		result = cmark_render_xml(document);
+		result = cmark_render_xml(document, options);
 		break;
 	case FORMAT_MAN:
-		result = cmark_render_man(document);
+		result = cmark_render_man(document, options);
 		break;
 	default:
 		fprintf(stderr, "Unknown format %d\n", writer);
@@ -53,6 +56,7 @@ int main(int argc, char *argv[])
 	size_t bytes;
 	cmark_node *document;
 	writer_format writer = FORMAT_HTML;
+	long options = CMARK_OPT_DEFAULT;
 
 	parser = cmark_parser_new();
 	files = (int *)malloc(argc * sizeof(*files));
@@ -62,6 +66,10 @@ int main(int argc, char *argv[])
 			printf("cmark %s", CMARK_VERSION);
 			printf(" - CommonMark converter (c) 2014 John MacFarlane\n");
 			exit(0);
+		} else if (strcmp(argv[i], "--sourcepos") == 0) {
+			options |= CMARK_OPT_SOURCEPOS;
+		} else if (strcmp(argv[i], "--hardbreaks") == 0) {
+			options |= CMARK_OPT_HARDBREAKS;
 		} else if ((strcmp(argv[i], "--help") == 0) ||
 			   (strcmp(argv[i], "-h") == 0)) {
 			print_usage();
@@ -130,7 +138,7 @@ int main(int argc, char *argv[])
 	cmark_parser_free(parser);
 
 	start_timer();
-	print_document(document, writer);
+	print_document(document, writer, options);
 	end_timer("print_document");
 
 	start_timer();

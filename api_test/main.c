@@ -210,7 +210,7 @@ accessors(test_batch_runner *runner)
 	OK(runner, cmark_node_set_literal(string, "LINK"),
 	   "set_literal string");
 
-	char *rendered_html = cmark_render_html(doc);
+	char *rendered_html = cmark_render_html(doc, CMARK_OPT_DEFAULT);
 	static const char expected_html[] =
 		"<h3>Header</h3>\n"
 		"<ol start=\"3\">\n"
@@ -355,7 +355,7 @@ create_tree(test_batch_runner *runner)
 	OK(runner, cmark_node_append_child(emph, str2), "append3");
 	INT_EQ(runner, cmark_node_check(doc, NULL), 0, "append3 consistent");
 
-	html = cmark_render_html(doc);
+	html = cmark_render_html(doc, CMARK_OPT_DEFAULT);
 	STR_EQ(runner, html, "<p>Hello, <em>world</em>!</p>\n",
 	       "render_html");
 	free(html);
@@ -386,7 +386,7 @@ create_tree(test_batch_runner *runner)
 
 	cmark_node_unlink(emph);
 
-	html = cmark_render_html(doc);
+	html = cmark_render_html(doc, CMARK_OPT_DEFAULT);
 	STR_EQ(runner, html, "<p>Hello, !</p>\n",
 	       "render_html after shuffling");
 	free(html);
@@ -501,18 +501,18 @@ render_html(test_batch_runner *runner)
 	cmark_node *doc = cmark_parse_document(markdown, sizeof(markdown) - 1);
 
 	cmark_node *paragraph = cmark_node_first_child(doc);
-	html = cmark_render_html(paragraph);
+	html = cmark_render_html(paragraph, CMARK_OPT_DEFAULT);
 	STR_EQ(runner, html, "<p>foo <em>bar</em></p>\n",
 	       "render single paragraph");
 	free(html);
 
 	cmark_node *string = cmark_node_first_child(paragraph);
-	html = cmark_render_html(string);
+	html = cmark_render_html(string, CMARK_OPT_DEFAULT);
 	STR_EQ(runner, html, "foo ", "render single inline");
 	free(html);
 
 	cmark_node *emph = cmark_node_next(string);
-	html = cmark_render_html(emph);
+	html = cmark_render_html(emph, CMARK_OPT_DEFAULT);
 	STR_EQ(runner, html, "<em>bar</em>", "render inline with children");
 	free(html);
 
