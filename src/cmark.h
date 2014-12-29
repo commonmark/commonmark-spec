@@ -400,12 +400,6 @@ cmark_node *cmark_parse_file(FILE *f);
  * ## Rendering
  */
 
-/** Render a 'node' tree for debugging purposes, showing
- * the hierachy of nodes and their types and contents.
- */
-CMARK_EXPORT
-char *cmark_render_ast(cmark_node *root);
-
 /** Render a 'node' tree as XML.
  */
 CMARK_EXPORT

@@ -12,14 +12,13 @@ typedef enum {
 	FORMAT_HTML,
 	FORMAT_XML,
 	FORMAT_MAN,
-	FORMAT_AST
 } writer_format;
 
 void print_usage()
 {
 	printf("Usage:   cmark [FILE*]\n");
 	printf("Options:\n");
-	printf("  --to, -t FORMAT  Specify output format (html, xml, man, ast)\n");
+	printf("  --to, -t FORMAT  Specify output format (html, xml, man)\n");
 	printf("  --help, -h       Print usage information\n");
 	printf("  --version        Print version\n");
 }
@@ -28,9 +27,6 @@ static void print_document(cmark_node *document, writer_format writer)
 {
 	char *result;
 	switch (writer) {
-	case FORMAT_AST:
-		result = cmark_render_ast(document);
-		break;
 	case FORMAT_HTML:
 		result = cmark_render_html(document);
 		break;
@@ -80,8 +76,6 @@ int main(int argc, char *argv[])
 					writer = FORMAT_HTML;
 				} else if (strcmp(argv[i], "xml") == 0) {
 					writer = FORMAT_XML;
-				} else if (strcmp(argv[i], "ast") == 0) {
-					writer = FORMAT_AST;
 				} else {
 					fprintf(stderr,
 						"Unknown format %s\n", argv[i]);

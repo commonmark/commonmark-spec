@@ -22,7 +22,6 @@ set(LIBRARY_SOURCES
   iterator.c
   blocks.c
   inlines.c
-  print.c
   scanners.c
   scanners.re
   utf8.c
