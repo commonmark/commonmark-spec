@@ -235,6 +235,8 @@ char *cmark_render_man(cmark_node *root, long options)
 	cmark_event_type ev_type;
 	cmark_iter *iter = cmark_iter_new(root);
 
+	if (options == 0) options = 0; // avoid warning about unused parameters
+
 	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
 		cur = cmark_iter_get_node(iter);
 		S_render_node(cur, ev_type, &state);
