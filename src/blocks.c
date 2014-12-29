@@ -193,13 +193,22 @@ finalize(cmark_parser *parser, cmark_node* b)
 		return parent;
 
 	b->open = false;
-	if (parser->line_number > b->start_line) {
-		b->end_line = parser->line_number - 1;
-	} else {
-		b->end_line = parser->line_number;
-	}
 
-	b->end_column = parser->last_line_length - 1;  // -1 because of newline
+	if (parser->curline->size == 0) {
+		// end of input - line number has not been incremented
+		b->end_line = parser->line_number;
+		b->end_column = parser->last_line_length;
+	} else if (b->type == NODE_DOCUMENT ||
+	    (b->type == NODE_CODE_BLOCK && b->as.code.fenced) ||
+	    (b->type == NODE_HEADER && b->as.header.setext)) {
+		b->end_line = parser->line_number;
+		b->end_column = parser->curline->size -
+		    (parser->curline->ptr[parser->curline->size - 1] == '\n' ?
+			 1 : 0);
+	} else {
+		b->end_line = parser->line_number - 1;
+		b->end_column = parser->last_line_length;
+	}
 
 	switch (b->type) {
 		case NODE_PARAGRAPH:
@@ -856,7 +865,10 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		parser->current = container;
 	}
-	parser->last_line_length = parser->curline->size;
+	parser->last_line_length = parser->curline->size -
+		(parser->curline->ptr[parser->curline->size - 1] == '\n' ?
+		 1 : 0);
+;
 	cmark_strbuf_clear(parser->curline);
 
 }
