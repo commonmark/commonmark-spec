@@ -292,6 +292,39 @@ cmark_node_set_list_type(cmark_node *node, cmark_list_type type) {
 	}
 }
 
+cmark_delim_type
+cmark_node_get_list_delim(cmark_node *node) {
+	if (node == NULL) {
+		return CMARK_NO_DELIM;
+	}
+
+	if (node->type == CMARK_NODE_LIST) {
+		return node->as.list.delimiter;
+	}
+	else {
+		return CMARK_NO_DELIM;
+	}
+}
+
+int
+cmark_node_set_list_delim(cmark_node *node, cmark_delim_type delim) {
+	if (!(delim == CMARK_PERIOD_DELIM || delim == CMARK_PAREN_DELIM)) {
+		return 0;
+	}
+
+	if (node == NULL) {
+		return 0;
+	}
+
+	if (node->type == CMARK_NODE_LIST) {
+		node->as.list.delimiter = delim;
+		return 1;
+	}
+	else {
+		return 0;
+	}
+}
+
 int
 cmark_node_get_list_start(cmark_node *node) {
 	if (node == NULL) {

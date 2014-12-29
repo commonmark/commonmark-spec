@@ -238,6 +238,18 @@ cmark_node_get_list_type(cmark_node *node);
 CMARK_EXPORT int
 cmark_node_set_list_type(cmark_node *node, cmark_list_type type);
 
+/** Returns the list delimiter type of 'node', or `CMARK_NO_DELIM` if 'node'
+ * is not a list.
+ */
+CMARK_EXPORT cmark_delim_type
+cmark_node_get_list_delim(cmark_node *node);
+
+/** Sets the list delimiter type of 'node', returning 1 on success and 0
+ * on error.
+ */
+CMARK_EXPORT int
+cmark_node_set_list_delim(cmark_node *node, cmark_delim_type delim);
+
 /** Returns starting number of 'node', if it is an ordered list, otherwise 0.
  */
 CMARK_EXPORT int

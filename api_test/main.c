@@ -75,6 +75,9 @@ constructor(test_batch_runner *runner)
 			INT_EQ(runner, cmark_node_get_list_type(node),
 			       CMARK_BULLET_LIST,
 			       "default is list type is bullet");
+			INT_EQ(runner, cmark_node_get_list_delim(node),
+			       CMARK_NO_DELIM,
+			       "default is list delim is NO_DELIM");
 			INT_EQ(runner, cmark_node_get_list_start(node), 1,
 			       "default is list start is 1");
 			INT_EQ(runner, cmark_node_get_list_tight(node), 0,
@@ -130,6 +133,8 @@ accessors(test_batch_runner *runner)
 	cmark_node *ordered_list = cmark_node_next(bullet_list);
 	INT_EQ(runner, cmark_node_get_list_type(ordered_list),
 	       CMARK_ORDERED_LIST, "get_list_type ordered");
+	INT_EQ(runner, cmark_node_get_list_delim(ordered_list),
+	       CMARK_PERIOD_DELIM, "get_list_delim ordered");
 	INT_EQ(runner, cmark_node_get_list_start(ordered_list), 2,
 	       "get_list_start");
 	INT_EQ(runner, cmark_node_get_list_tight(ordered_list), 0,
@@ -174,6 +179,8 @@ accessors(test_batch_runner *runner)
 
 	OK(runner, cmark_node_set_list_type(bullet_list, CMARK_ORDERED_LIST),
 	   "set_list_type ordered");
+	OK(runner, cmark_node_set_list_delim(bullet_list, CMARK_PAREN_DELIM),
+	   "set_list_delim paren");
 	OK(runner, cmark_node_set_list_start(bullet_list, 3),
 	   "set_list_start");
 	OK(runner, cmark_node_set_list_tight(bullet_list, 0),
