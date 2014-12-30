@@ -286,10 +286,10 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 		  !utf8proc_is_space(after_char) &&
 		  !utf8proc_is_punctuation(after_char));
 	if (c == '_') {
-		*can_open = *can_open &&
-			!(before_char < 128 && isalnum((char)before_char));
-		*can_close = *can_close &&
-			!(before_char < 128 && isalnum((char)after_char));
+		*can_open = *can_open && !(before_char < 128 &&
+					   cmark_isalnum((char)before_char));
+		*can_close = *can_close && !(before_char < 128 &&
+					     cmark_isalnum((char)after_char));
 	}
 	return numdelims;
 }
@@ -489,7 +489,7 @@ static cmark_node* handle_backslash(subject *subj)
 {
 	advance(subj);
 	unsigned char nextchar = peek_char(subj);
-	if (ispunct(nextchar)) {  // only ascii symbols and newline can be escaped
+	if (cmark_ispunct(nextchar)) {  // only ascii symbols and newline can be escaped
 		advance(subj);
 		return make_str(cmark_chunk_dup(&subj->input, subj->pos - 1, 1));
 	} else if (nextchar == '\n') {
@@ -645,7 +645,7 @@ static int link_label(subject* subj, cmark_chunk *raw_label)
 		if (c == '\\') {
 			advance(subj);
 			length++;
-			if (ispunct(peek_char(subj))) {
+			if (cmark_ispunct(peek_char(subj))) {
 				advance(subj);
 				length++;
 			}

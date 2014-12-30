@@ -2,10 +2,10 @@
  * We want cmark to behave the same no matter what the system locale.
  */
 
-int isspace(char c);
+int cmark_isspace(char c);
 
-int ispunct(char c);
+int cmark_ispunct(char c);
 
-int isalnum(char c);
+int cmark_isalnum(char c);
 
-int isdigit(char c);
+int cmark_isdigit(char c);

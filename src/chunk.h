@@ -27,7 +27,7 @@ static inline void cmark_chunk_ltrim(cmark_chunk *c)
 {
 	assert(!c->alloc);
 
-	while (c->len && isspace(c->data[0])) {
+	while (c->len && cmark_isspace(c->data[0])) {
 		c->data++;
 		c->len--;
 	}
@@ -36,7 +36,7 @@ static inline void cmark_chunk_ltrim(cmark_chunk *c)
 static inline void cmark_chunk_rtrim(cmark_chunk *c)
 {
 	while (c->len > 0) {
-		if (!isspace(c->data[c->len - 1]))
+		if (!cmark_isspace(c->data[c->len - 1]))
 			break;
 
 		c->len--;

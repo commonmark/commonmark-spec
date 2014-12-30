@@ -1,7 +1,7 @@
 /**
  * Returns 1 if c is a "whitespace" character as defined by the spec.
  */
-int isspace(char c)
+int cmark_isspace(char c)
 {
 	return (c == 0x09 ||
 		c == 0x20 ||
@@ -12,7 +12,7 @@ int isspace(char c)
 /**
  * Returns 1 if c is an ascii punctuation character.
  */
-int ispunct(char c)
+int cmark_ispunct(char c)
 {
 	return ((c >= 33 && c <= 47) ||
 		(c >= 58 && c <= 64) ||
@@ -20,14 +20,14 @@ int ispunct(char c)
 		(c >= 123 && c <= 126));
 }
 
-int isalnum(char c)
+int cmark_isalnum(char c)
 {
 	return ((c >= 48 && c <= 57) ||
 		(c >= 65 && c <= 90) ||
 		(c >= 97 && c <= 122));
 }
 
-int isdigit(char c)
+int cmark_isdigit(char c)
 {
 	return (c >= 48 && c <= 57);
 }

@@ -308,7 +308,7 @@ void cmark_strbuf_rtrim(cmark_strbuf *buf)
 		return;
 
 	while (buf->size > 0) {
-		if (!isspace(buf->ptr[buf->size - 1]))
+		if (!cmark_isspace(buf->ptr[buf->size - 1]))
 			break;
 
 		buf->size--;
@@ -324,7 +324,7 @@ void cmark_strbuf_trim(cmark_strbuf *buf)
 	if (!buf->size)
 		return;
 
-	while (i < buf->size && isspace(buf->ptr[i]))
+	while (i < buf->size && cmark_isspace(buf->ptr[i]))
 		i++;
 
 	cmark_strbuf_drop(buf, i);
@@ -365,7 +365,7 @@ extern void cmark_strbuf_unescape(cmark_strbuf *buf)
 	int r, w;
 
 	for (r = 0, w = 0; r < buf->size; ++r) {
-		if (buf->ptr[r] == '\\' && ispunct(buf->ptr[r + 1]))
+		if (buf->ptr[r] == '\\' && cmark_ispunct(buf->ptr[r + 1]))
 			continue;
 
 		buf->ptr[w++] = buf->ptr[r];

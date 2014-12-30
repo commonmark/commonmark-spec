@@ -269,7 +269,7 @@ int utf8proc_is_space(int32_t uc)
 // matches anything in the P[cdefios] classes.
 int utf8proc_is_punctuation(int32_t uc)
 {
-	return ((uc < 128 && ispunct((char)uc)) ||
+	return ((uc < 128 && cmark_ispunct((char)uc)) ||
 		uc == 161 ||
 		uc == 167 ||
 		uc == 171 ||

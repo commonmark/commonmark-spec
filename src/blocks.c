@@ -348,7 +348,7 @@ static int parse_list_marker(cmark_chunk *input, int pos, cmark_list **dataptr)
 
 	if ((c == '*' || c == '-' || c == '+') && !scan_hrule(input, pos)) {
 		pos++;
-		if (!isspace(peek_at(input, pos))) {
+		if (!cmark_isspace(peek_at(input, pos))) {
 			return 0;
 		}
 		data = (cmark_list *)calloc(1, sizeof(*data));
@@ -362,18 +362,18 @@ static int parse_list_marker(cmark_chunk *input, int pos, cmark_list **dataptr)
 			data->delimiter = CMARK_PERIOD_DELIM;
 			data->tight = false;
 		}
-	} else if (isdigit(c)) {
+	} else if (cmark_isdigit(c)) {
 		int start = 0;
 
 		do {
 			start = (10 * start) + (peek_at(input, pos) - '0');
 			pos++;
-		} while (isdigit(peek_at(input, pos)));
+		} while (cmark_isdigit(peek_at(input, pos)));
 
 		c = peek_at(input, pos);
 		if (c == '.' || c == ')') {
 			pos++;
-			if (!isspace(peek_at(input, pos))) {
+			if (!cmark_isspace(peek_at(input, pos))) {
 				return 0;
 			}
 			data = (cmark_list *)calloc(1, sizeof(*data));
