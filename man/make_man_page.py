@@ -37,11 +37,11 @@ def md2man(text):
     if sys.version_info >= (3,0):
         textbytes = text.encode('utf-8')
         textlen = len(textbytes)
+        return render_man(parse_document(textbytes, textlen)).decode('utf-8')
     else:
         textbytes = text
         textlen = len(text)
-    return render_man(parse_document(textbytes, textlen))
-
+        return render_man(parse_document(textbytes, textlen))
 
 comment_start_re = re.compile('^\/\*\* ?')
 comment_delim_re = re.compile('^[/ ]\** ?')
