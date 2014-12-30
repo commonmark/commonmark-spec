@@ -2,9 +2,9 @@
 #define CMARK_CHUNK_H
 
 #include <string.h>
-#include <ctype.h>
 #include <stdlib.h>
 #include <assert.h>
+#include "cmark_ctype.h"
 #include "buffer.h"
 
 typedef struct {

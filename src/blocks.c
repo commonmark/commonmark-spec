@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <ctype.h>
 
+#include "cmark_ctype.h"
 #include "config.h"
 #include "parser.h"
 #include "cmark.h"

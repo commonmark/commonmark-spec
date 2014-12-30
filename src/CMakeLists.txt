@@ -15,6 +15,7 @@ set(HEADERS
   inlines.h
   html_unescape.h
   houdini.h
+  cmark_ctype.h
   )
 set(LIBRARY_SOURCES
   cmark.c
@@ -34,6 +35,7 @@ set(LIBRARY_SOURCES
   houdini_href_e.c
   houdini_html_e.c
   houdini_html_u.c
+  cmark_ctype.c
   ${HEADERS}
   )
 

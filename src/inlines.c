@@ -1,8 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <ctype.h>
 
+#include "cmark_ctype.h"
 #include "config.h"
 #include "node.h"
 #include "parser.h"

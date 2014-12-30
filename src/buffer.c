@@ -1,11 +1,11 @@
 #include <stdarg.h>
-#include <ctype.h>
 #include <string.h>
 #include <assert.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cmark_ctype.h"
 #include "buffer.h"
 
 /* Used as default value for cmark_strbuf->ptr so that people can always

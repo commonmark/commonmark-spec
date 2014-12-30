@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <assert.h>
 
+#include "cmark_ctype.h"
 #include "utf8.h"
 
 static const int8_t utf8proc_utf8class[256] = {
@@ -268,17 +269,7 @@ int utf8proc_is_space(int32_t uc)
 // matches anything in the P[cdefios] classes.
 int utf8proc_is_punctuation(int32_t uc)
 {
-	return ((uc >= 33 && uc <= 35) ||
-		(uc >= 37 && uc <= 42) ||
-		(uc >= 44 && uc <= 47) ||
-		uc == 58 ||
-		uc == 59 ||
-		uc == 63 ||
-		uc == 64 ||
-		(uc >= 91 && uc <= 93) ||
-		uc == 95 ||
-		uc == 123 ||
-		uc == 125 ||
+	return ((uc < 128 && ispunct((char)uc)) ||
 		uc == 161 ||
 		uc == 167 ||
 		uc == 171 ||
