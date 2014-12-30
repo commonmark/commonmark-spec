@@ -108,7 +108,7 @@ testziparchive: $(ZIPARCHIVE)
 	mkdir build && cd build && cmake .. && make && ctest -V
 
 $(ALLTESTS): spec.txt
-	python3 test/spec_tests.py --spec $< --dump-tests | python3 -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print "\n".join([test["markdown"] for test in tests]).encode("utf-8")' > $@
+	python3 test/spec_tests.py --spec $< --dump-tests | python3 -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print("\n".join([test["markdown"] for test in tests]).encode("utf-8"))' > $@
 
 leakcheck: $(ALLTESTS)
 	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
