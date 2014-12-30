@@ -241,14 +241,14 @@ or more [unicode whitespace characters](#unicode-whitespace-character).
 
 A [non-space character](@non-space-character) is anything but `U+0020`.
 
-A [punctuation character](@punctuation-character) is anything in
-the unicode classes `Pc`, `Pd`, `Pe`,` `Pf`, `Pi`, `Po`, or `Ps`.
-
 An [ASCII punctuation character](@ascii-punctuation-character)
-is a [punctuation character](#punctuation-character) in the
-ASCII class: that is, `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
+is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `*`, `+`, `,`, `-`, `.`, `/`, `:`, `;`, `<`, `=`, `>`, `?`, `@`,
 `[`, `\`, `]`, `^`, `_`, `` ` ``, `{`, `|`, `}`, or `~`.
+
+A [punctuation character](@punctuation-character) is an [ASCII
+punctuation character](#ascii-punctuation-character) or anything in
+the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tab expansion
 
