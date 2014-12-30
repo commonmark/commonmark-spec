@@ -49,6 +49,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 	cmark_node *tmp;
 	cmark_strbuf *man = state->man;
 	int list_number;
+	const char *url;
 	bool entering = (ev_type == CMARK_EVENT_ENTER);
 
 	if (state->plain == node) { // back at original node
@@ -203,8 +204,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
 
 	case CMARK_NODE_LINK:
 		if (!entering) {
-			cmark_strbuf_printf(man, " (%s)",
-				      cmark_node_get_url(node));
+			url = cmark_node_get_url(node);
+			cmark_strbuf_printf(man, " (%s)", url);
 		}
 		break;
 
