@@ -679,7 +679,7 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 	int sps;
 	cmark_reference *ref;
 	bool is_image = false;
-	cmark_chunk urlcmark_chunk, titlecmark_chunk;
+	cmark_chunk url_chunk, title_chunk;
 	unsigned char *url, *title;
 	delimiter *opener;
 	cmark_node *link_text;
@@ -734,12 +734,12 @@ static cmark_node* handle_close_bracket(subject* subj, cmark_node *parent)
 		if (peek_at(subj, endall) == ')') {
 			subj->pos = endall + 1;
 
-			urlcmark_chunk = cmark_chunk_dup(&subj->input, starturl, endurl - starturl);
-			titlecmark_chunk = cmark_chunk_dup(&subj->input, starttitle, endtitle - starttitle);
-			url = cmark_clean_url(&urlcmark_chunk);
-			title = cmark_clean_title(&titlecmark_chunk);
-			cmark_chunk_free(&urlcmark_chunk);
-			cmark_chunk_free(&titlecmark_chunk);
+			url_chunk = cmark_chunk_dup(&subj->input, starturl, endurl - starturl);
+			title_chunk = cmark_chunk_dup(&subj->input, starttitle, endtitle - starttitle);
+			url = cmark_clean_url(&url_chunk);
+			title = cmark_clean_title(&title_chunk);
+			cmark_chunk_free(&url_chunk);
+			cmark_chunk_free(&title_chunk);
 			goto match;
 
 		} else {
