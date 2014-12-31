@@ -7,11 +7,9 @@
 #include "node.h"
 
 #include "harness.h"
+#include "cplusplus.h"
 
 #define UTF8_REPL "\xEF\xBF\xBD"
-
-void
-test_cplusplus(test_batch_runner *runner);
 
 static const cmark_node_type node_types[] = {
 	CMARK_NODE_DOCUMENT,
