@@ -26,7 +26,7 @@ class CMark:
             if sysname == 'Darwin':
                 libname += ".dylib"
             elif sysname == 'Windows':
-                libname += ".dll"
+                libname = "cmark.dll"
             else:
                 libname += ".so"
             if library_dir:
