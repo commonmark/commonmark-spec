@@ -85,6 +85,11 @@ $(SRCDIR)/html_unescape.h: $(SRCDIR)/html_unescape.gperf
 $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $< > $@
 
+# We include scanners.c in the repository, so this shouldn't
+# normally need to be generated.
+$(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
+	re2c --case-insensitive -b -i --no-generation-date -o $@ $<
+
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test ARGS="-V"
 

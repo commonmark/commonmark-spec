@@ -47,24 +47,6 @@ set(PROGRAM_SOURCES
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 
-set(RE2C re2c)
-if (MSVC)
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} DOS_CURRENT_SOURCE_DIR)
-    add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
-                        COMMAND ${RE2C} --case-insensitive -b -i
-                        --no-generation-date
-                        -o ${DOS_CURRENT_SOURCE_DIR}\\scanners.c
-                        ${DOS_CURRENT_SOURCE_DIR}\\scanners.re )
-else(MSVC)
-    add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
-                        COMMAND ${RE2C} --case-insensitive -b -i
-                        --no-generation-date
-                        -o ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re )
-endif(MSVC)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcmark.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc
