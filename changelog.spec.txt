@@ -1,9 +1,47 @@
+[0.14]
+
+  * Clarified indented code blocks. Previously the spec said, wrongly,
+    that a blank line was needed between a paragraph and a following
+    code block.  It is only needed between a code block and a following
+    paragraph (due to lazy continuations). (Thanks to textnut.)
+  * Added definitions of whitespace, unicode whitespace, punctuation,
+    ASCII punctuation (#108).
+  * Improved rules for emphasis and strong emphasis. This improves
+    parsing of emphasis around punctuation. For background see
+    <http://talk.commonmark.org/t/903/6>. The basic idea of the change
+    is that if the delimiter is part of a delimiter clump that has
+    punctuation to the left and a normal character (non-space,
+    non-punctuation) to the right, it can only be an opener.  If it has
+    punctuation to the right and a normal character (non-space,
+    non-punctuation) to the left, it can only be a closer. This handles
+    cases like
+
+          **Gomphocarpus (*Gomphocarpus physocarpus*, syn. *Asclepias
+          physocarpa*)**
+
+    and
+
+          **foo "*bar*" foo**
+
+    better than before.
+  * Added test case for link-in-link-in-image (#252).
+  * Fixed broken internal references.
+  * Added another example of an unclarity in the canonical Markdown
+    syntax description.
+  * Reworded the principle of uniformity to be more general; it applies
+    to all container blocks, not just list items.
+  * Added a rule for empty list items (#242).
+  * Clarified precedence of empty list items over setext header lines
+    (#95).
+  * Added an example with two blank lines in fenced code in a sublist (#180).
+  * Added an explicit CC-BY-SA license to the spec (#55).
+
 [0.13]
 
-* Updated path of test program.
-* Use terminology "plain textual content" instead of "string."
-* Added condition that conforming parsers strip or replace NULL characters.
-* Changed Example 196 to reflect the spec's rules.  It should not be a loose
-  list as it has no blank lines.
-* Adjusted semantically insignificant formatting of HTML output.
-* Added example to spec of shortcut link with following space (#214).
+  * Updated path of test program.
+  * Use terminology "plain textual content" instead of "string."
+  * Added condition that conforming parsers strip or replace NULL characters.
+  * Changed Example 196 to reflect the spec's rules.  It should not be a loose
+    list as it has no blank lines.
+  * Adjusted semantically insignificant formatting of HTML output.
+  * Added example to spec of shortcut link with following space (#214).
