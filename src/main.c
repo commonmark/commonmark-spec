@@ -7,6 +7,11 @@
 #include "debug.h"
 #include "bench.h"
 
+#if defined(_WIN32) && !defined(__CYGWIN__)
+  #include <io.h>
+  #include <fcntl.h>
+#endif
+
 typedef enum {
 	FORMAT_NONE,
 	FORMAT_HTML,
@@ -57,6 +62,10 @@ int main(int argc, char *argv[])
 	cmark_node *document;
 	writer_format writer = FORMAT_HTML;
 	long options = CMARK_OPT_DEFAULT;
+
+#if defined(_WIN32) && !defined(__CYGWIN__)
+	_setmode(_fileno(stdout), _O_BINARY);
+#endif
 
 	parser = cmark_parser_new();
 	files = (int *)malloc(argc * sizeof(*files));
