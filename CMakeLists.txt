@@ -16,7 +16,7 @@ add_subdirectory(src)
 add_subdirectory(api_test)
 add_subdirectory(man)
 enable_testing()
-add_subdirectory(test)
+add_subdirectory(test testdir)
 
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "Release" CACHE STRING

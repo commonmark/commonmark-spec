@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
 #include "cmark_ctype.h"
 #include "buffer.h"
 
@@ -174,6 +175,8 @@ int cmark_strbuf_vprintf(cmark_strbuf *buf, const char *format, va_list ap)
 			buf->asize - buf->size,
 			format, args
 			);
+
+		va_end(args);
 
 		if (len < 0) {
 			free(buf->ptr);

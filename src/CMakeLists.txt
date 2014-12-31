@@ -47,24 +47,6 @@ set(PROGRAM_SOURCES
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 
-set(RE2C re2c)
-if (MSVC)
-    file(TO_NATIVE_PATH ${CMAKE_CURRENT_SOURCE_DIR} DOS_CURRENT_SOURCE_DIR)
-    add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
-                        COMMAND ${RE2C} --case-insensitive -b -i
-                        --no-generation-date
-                        -o ${DOS_CURRENT_SOURCE_DIR}\\scanners.c
-                        ${DOS_CURRENT_SOURCE_DIR}\\scanners.re )
-else(MSVC)
-    add_custom_command( OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re
-                        COMMAND ${RE2C} --case-insensitive -b -i
-                        --no-generation-date
-                        -o ${CMAKE_CURRENT_SOURCE_DIR}/scanners.c
-                        ${CMAKE_CURRENT_SOURCE_DIR}/scanners.re )
-endif(MSVC)
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcmark.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc
@@ -117,6 +99,7 @@ install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
 # Feature tests
 include(CheckIncludeFile)
 include(CheckCSourceCompiles)
+include(CheckSymbolExists)
 CHECK_INCLUDE_FILE(stdbool.h HAVE_STDBOOL_H)
 CHECK_C_SOURCE_COMPILES(
   "int main() { __builtin_expect(0,0); return 0; }"
@@ -125,6 +108,7 @@ CHECK_C_SOURCE_COMPILES("
   int f(void) __attribute__ (());
   int main() { return 0; }
 " HAVE___ATTRIBUTE__)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in

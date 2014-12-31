@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+#include "cmark_ctype.h"
+
 /** 1 = space, 2 = punct, 3 = digit, 4 = alpha, 0 = other
  */
 static const int8_t cmark_ctype_class[256] = {
