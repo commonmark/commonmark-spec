@@ -175,6 +175,8 @@ int cmark_strbuf_vprintf(cmark_strbuf *buf, const char *format, va_list ap)
 			format, args
 			);
 
+		va_end(args);
+
 		if (len < 0) {
 			free(buf->ptr);
 			buf->ptr = cmark_strbuf__oom;
