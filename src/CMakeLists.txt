@@ -117,6 +117,7 @@ install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
 # Feature tests
 include(CheckIncludeFile)
 include(CheckCSourceCompiles)
+include(CheckSymbolExists)
 CHECK_INCLUDE_FILE(stdbool.h HAVE_STDBOOL_H)
 CHECK_C_SOURCE_COMPILES(
   "int main() { __builtin_expect(0,0); return 0; }"
@@ -125,6 +126,7 @@ CHECK_C_SOURCE_COMPILES("
   int f(void) __attribute__ (());
   int main() { return 0; }
 " HAVE___ATTRIBUTE__)
+CHECK_SYMBOL_EXISTS(va_copy stdarg.h HAVE_VA_COPY)
 
 CONFIGURE_FILE(
   ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
