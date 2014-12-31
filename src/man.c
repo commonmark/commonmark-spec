@@ -43,9 +43,9 @@ struct render_state {
 };
 
 static int
-S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate)
+S_render_node(cmark_node *node, cmark_event_type ev_type,
+	struct render_state *state)
 {
-	struct render_state *state = vstate;
 	cmark_node *tmp;
 	cmark_strbuf *man = state->man;
 	int list_number;

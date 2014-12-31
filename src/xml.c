@@ -35,10 +35,9 @@ static inline void indent(struct render_state *state)
 }
 
 static int
-S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate,
-	long options)
+S_render_node(cmark_node *node, cmark_event_type ev_type,
+	struct render_state *state, long options)
 {
-	struct render_state *state = vstate;
 	cmark_strbuf *xml = state->xml;
 	bool literal = false;
 

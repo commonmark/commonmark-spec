@@ -50,10 +50,9 @@ S_render_sourcepos(cmark_node *node, cmark_strbuf *html, long options) {
 }
 
 static int
-S_render_node(cmark_node *node, cmark_event_type ev_type, void *vstate,
-	long options)
+S_render_node(cmark_node *node, cmark_event_type ev_type,
+	struct render_state *state, long options)
 {
-	struct render_state *state = vstate;
 	cmark_node *parent;
 	cmark_node *grandparent;
 	cmark_strbuf *html = state->html;
