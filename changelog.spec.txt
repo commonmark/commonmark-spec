@@ -1,3 +1,8 @@
+[0.15]
+
+  * Fixed some typos with "left-" and "right-flanking" delimiters in the
+    section on emphasis and strong emphasis (#257).
+
 [0.14]
 
   * Clarified indented code blocks. Previously the spec said, wrongly,
