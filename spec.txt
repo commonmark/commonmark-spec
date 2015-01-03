@@ -493,7 +493,7 @@ bar
 .
 
 When both a horizontal rule and a list item are possible
-interpretations of a line, the horizontal rule is preferred:
+interpretations of a line, the horizontal rule takes precedence:
 
 .
 * Foo
@@ -4605,7 +4605,7 @@ the following principles resolve ambiguity:
 
 15. When two potential emphasis or strong emphasis spans overlap,
     so that the second begins before the first ends and ends after
-    the first ends, the first is preferred. Thus, for example,
+    the first ends, the first takes precedence. Thus, for example,
     `*foo _bar* baz_` is parsed as `<em>foo _bar</em> baz_` rather
     than `*foo <em>bar* baz</em>`.  For the same reason,
     `**foo*bar**` is parsed as `<em><em>foo</em>bar</em>*`
@@ -4613,7 +4613,7 @@ the following principles resolve ambiguity:
 
 16. When there are two potential emphasis or strong emphasis spans
     with the same closing delimiter, the shorter one (the one that
-    opens later) is preferred. Thus, for example,
+    opens later) takes precedence. Thus, for example,
     `**foo **bar baz**` is parsed as `**foo <strong>bar baz</strong>`
     rather than `<strong>foo **bar baz</strong>`.
 
