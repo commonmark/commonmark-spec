@@ -202,6 +202,8 @@ In the examples, the `→` character is used to represent tabs.
 
 ## Characters and lines
 
+All inputs are valid CommonMark.
+
 The input is a sequence of zero or more [lines](#line).
 
 A [line](@line)
