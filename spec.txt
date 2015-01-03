@@ -529,7 +529,8 @@ An [ATX header](@atx-header)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
-of `#` characters cannot be followed directly by a nonspace character.
+of `#` characters cannot be followed directly by a
+[non-space character](#non-space-character).
 The optional closing sequence of `#`s must be preceded by a space and may be
 followed by spaces only.  The opening `#` character may be indented 0-3
 spaces.  The raw contents of the header are stripped of leading and
@@ -655,7 +656,8 @@ Spaces are allowed after the closing sequence:
 <h3>foo</h3>
 .
 
-A sequence of `#` characters with a nonspace character following it
+A sequence of `#` characters with a
+[non-space character](#non-space-character) following it
 is not a closing sequence, but counts as part of the contents of the
 header:
 
@@ -724,7 +726,8 @@ ATX headers can be empty:
 ## Setext headers
 
 A [setext header](@setext-header)
-consists of a line of text, containing at least one nonspace character,
+consists of a line of text, containing at least one
+[non-space character](#non-space-character),
 with no more than 3 spaces indentation, followed by a [setext header
 underline](#setext-header-underline).  The line of text must be
 one that, were it not followed by the setext header underline,
@@ -2606,7 +2609,8 @@ The most important thing to notice is that the position of
 the text after the list marker determines how much indentation
 is needed in subsequent blocks in the list item.  If the list
 marker takes up two spaces, and there are three spaces between
-the list marker and the next nonspace character, then blocks
+the list marker and the next
+[non-space character](#non-space-character), then blocks
 must be indented five spaces in order to fall under the list
 item.
 
@@ -2663,8 +2667,9 @@ put under the list item:
 .
 
 It is tempting to think of this in terms of columns:  the continuation
-blocks must be indented at least to the column of the first nonspace
-character after the list marker.  However, that is not quite right.
+blocks must be indented at least to the column of the first
+[non-space character](#non-space-character) after the list marker.
+However, that is not quite right.
 The spaces after the list marker determine how much relative indentation
 is needed.  Which column this indentation reaches will depend on
 how the list item is embedded in other constructions, as shown by
@@ -2904,8 +2909,9 @@ inside the code block:
 .
 
 Note that rules #1 and #2 only apply to two cases:  (a) cases
-in which the lines to be included in a list item begin with a nonspace
-character, and (b) cases in which they begin with an indented code
+in which the lines to be included in a list item begin with a
+[non-space character](#non-space-character), and (b) cases in which
+they begin with an indented code
 block.  In a case like the following, where the first block begins with
 a three-space indent, the rules do not allow us to form a list item by
 indenting the whole thing and prepending a list marker:
