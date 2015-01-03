@@ -823,7 +823,7 @@ Four spaces is too much:
 
 .
 Foo
-     ---
+    ---
 .
 <p>Foo
 ---</p>
