@@ -1615,6 +1615,20 @@ bar
    baz -->
 .
 
+Not comments:
+
+.
+<!--> foo -->
+
+<!-- foo--bar -->
+
+<!-- foo--->
+.
+<p>&lt;!--&gt; foo --&gt;</p>
+<p>&lt;!-- foo--bar --&gt;</p>
+<p>&lt;!-- foo---&gt;</p>
+.
+
 A processing instruction:
 
 .
