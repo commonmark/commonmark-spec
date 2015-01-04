@@ -103,19 +103,15 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		} else if (!literal) {
 			cmark_strbuf_puts(xml, " /");
 		}
+		cmark_strbuf_puts(xml, ">\n");
 
-	} else {
-		if (node->first_child) {
+
+	} else if (node->first_child) {
 			state->indent -= 2;
-		}
-		indent(state);
-		cmark_strbuf_printf(xml, "</%s",
-				    cmark_node_get_type_string(node));
+			indent(state);
+			cmark_strbuf_printf(xml, "</%s>\n",
+					    cmark_node_get_type_string(node));
 	}
-
-	// TODO print attributes
-
-	cmark_strbuf_puts(xml, ">\n");
 
 	return 1;
 }
