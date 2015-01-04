@@ -20,7 +20,10 @@ def pipe_through_prog(prog, text):
 
 def replaceAnchor(match):
     refs.append("[{0}]: #{1}".format(match.group(1), match.group(2)))
-    return '<a id="{1}" href="#{1}" class="definition">{0}</a>'.format(match.group(1), match.group(2))
+    if specformat == "html":
+        return '<a id="{1}" href="#{1}" class="definition">{0}</a>'.format(match.group(1), match.group(2))
+    else:
+        return match.group(0)
 
 stage = 0
 example = 0

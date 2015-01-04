@@ -1,11 +1,11 @@
 #!/usr/bin/env runhaskell
 
 import Text.Pandoc.JSON
-import Text.Pandoc.Walk
+import Text.Pandoc.Generic
 
 main = toJSONFilter go
   where go :: Pandoc -> Pandoc
-        go = walk exampleDivs . walk anchors
+        go = bottomUp exampleDivs . bottomUp (concatMap anchors)
 
 exampleDivs :: Block -> Block
 exampleDivs (Div (ident, ["example"], kvs)
@@ -30,8 +30,7 @@ exampleDivs (Div (ident, ["example"], kvs)
              else code
 exampleDivs x = x
 
-anchors :: Inline -> Inline
-anchors (RawInline (Format "html") ('<':'a':' ':'i':'d':'=':'"':xs)) =
-  RawInline (Format "latex") ("\\hyperdef{}{" ++ lab ++ "}{\\label{" ++ lab ++ "}}")
-  where lab = takeWhile (/='"') xs
-anchors x = x
+anchors :: Inline -> [Inline]
+anchors (Link text ('@':lab,_)) =
+  [RawInline (Format "latex") ("\\hyperdef{}{" ++ lab ++ "}{\\label{" ++ lab ++ "}}"), Strong text]
+anchors x = [x]
