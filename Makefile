@@ -178,7 +178,7 @@ dingus: js/commonmark.js
 ### Spec ###
 
 spec.md: $(SPEC)
-	python3 spec2md.py $< > $@
+	python3 makespec.py $< markdown > $@
 
 spec: spec.html
 	@anchors=`perl -ne '@matches = / id="([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
@@ -188,11 +188,8 @@ spec: spec.html
 			 echo "Link to missing anchor #$$link"; \
 	done
 
-spec.html: spec.md template.html
-	pandoc --no-highlight --number-sections --template template.html -s --toc -S $< | \
-	perl -pe 's/a href="@([^"]*)"/a id="\1" href="#\1" class="definition"/g' | \
-	perl -pe 's/␣/<span class="space"> <\/span>/g' \
-	> $@
+spec.html: spec.txt template.html
+	python3 makespec.py $< html > $@
 
 spec.pdf: spec.md template.tex specfilter.hs
 	pandoc -s $< --template template.tex \

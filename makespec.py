@@ -1,17 +1,32 @@
 #!/usr/bin/env python3
 import re
 import sys
+from subprocess import *
+
+if len(sys.argv) == 3:
+    specfile = sys.argv[1]
+    specformat = sys.argv[2]
+    if not (specformat in ["html", "markdown"]):
+        sys.stderr.write("Format must be html or markdown\n")
+        exit(1)
+else:
+    sys.stderr.write("Usage:  makespec.py SPECFILE [html|markdown]\n")
+    exit(1)
+
+def pipe_through_prog(prog, text):
+    p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    [result, err] = p1.communicate(input=text.encode('utf-8'))
+    return [p1.returncode, result.decode('utf-8'), err]
+
+def replaceAnchor(match):
+    refs.append("[{0}]: #{1}".format(match.group(1), match.group(2)))
+    return '<a id="{1}" href="#{1}" class="definition">{0}</a>'.format(match.group(1), match.group(2))
 
 stage = 0
 example = 0
 section = ""
 mdlines = []
 refs = []
-
-if len(sys.argv) > 1:
-    specfile = sys.argv[1]
-else:
-    specfile = 'spec.txt'
 
 with open(specfile, 'r', encoding='utf-8') as spec:
     for ln in spec:
@@ -39,12 +54,24 @@ with open(specfile, 'r', encoding='utf-8') as spec:
                 if match:
                     section = match.group(1)
                 else:
-                    for match in re.finditer(r'\[([^]]*)\]\(@([^)]*)\)', ln):
-                        refs.append("[{0}]: #{1}".format(match.group(1), match.group(2)))
+                    ln = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor, ln)
             else:
                 ln = re.sub(r' ', '␣', ln)
             mdlines.append(ln)
 
 mdtext = ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n'
 
-sys.stdout.write(mdtext)
+if specformat == "markdown":
+    sys.stdout.write(mdtext)
+elif specformat == "html":
+    prog = "pandoc -s --toc -S --no-highlight --number-sections --template template.html"
+    [retcode, result, err] = pipe_through_prog(prog, mdtext)
+    if retcode == 0:
+        result = re.sub(r'␣', '<span class="space"> </span>', result)
+        sys.stdout.write(result)
+    else:
+        sys.stderr.write("Error converting markdown version of spec:\n")
+        sys.stderr.write(err)
+        exit(1)
+
+exit(0)
