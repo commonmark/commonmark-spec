@@ -6743,9 +6743,10 @@ A [closing tag](@closing-tag) consists of the
 string `</`, a [tag name](#tag-name), optional
 [whitespace](#whitespace), and the character `>`.
 
-An [HTML comment](@html-comment) consists of the
-string `<!--`, a string of characters not including the string `--`, and
-the string `-->`.
+An [HTML comment](@html-comment) consists of `<!--` + *text* + `-->`,
+where *text* does not start with `>` or `->`, does not end with `-`,
+and does not contain `--`.  (See the
+[HTML5 spec](http://www.w3.org/TR/html5/syntax.html#comments).)
 
 A [processing instruction](@processing-instruction)
 consists of the string `<?`, a string
