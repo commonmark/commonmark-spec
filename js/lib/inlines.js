@@ -33,7 +33,7 @@ var ATTRIBUTEVALUESPEC = "(?:" + "\\s*=" + "\\s*" + ATTRIBUTEVALUE + ")";
 var ATTRIBUTE = "(?:" + "\\s+" + ATTRIBUTENAME + ATTRIBUTEVALUESPEC + "?)";
 var OPENTAG = "<" + TAGNAME + ATTRIBUTE + "*" + "\\s*/?>";
 var CLOSETAG = "</" + TAGNAME + "\\s*[>]";
-var HTMLCOMMENT = "<!--([^-]+|[-][^-]+)*-->";
+var HTMLCOMMENT = "<!---->|<!--(?:-?[^>-])(?:-?[^-])*-->";
 var PROCESSINGINSTRUCTION = "[<][?].*?[?][>]";
 var DECLARATION = "<![A-Z]+" + "\\s+[^>]*>";
 var CDATA = "<!\\[CDATA\\[([^\\]]+|\\][^\\]]|\\]\\][^>])*\\]\\]>";
