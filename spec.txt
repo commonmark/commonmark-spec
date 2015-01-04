@@ -1615,20 +1615,6 @@ bar
    baz -->
 .
 
-Not comments:
-
-.
-<!--> foo -->
-
-<!-- foo--bar -->
-
-<!-- foo--->
-.
-<p>&lt;!--&gt; foo --&gt;</p>
-<p>&lt;!-- foo--bar --&gt;</p>
-<p>&lt;!-- foo---&gt;</p>
-.
-
 A processing instruction:
 
 .
@@ -6891,6 +6877,17 @@ comment - with hyphen --></p>
 foo <!-- not a comment -- two hyphens -->
 .
 <p>foo &lt;!-- not a comment -- two hyphens --&gt;</p>
+.
+
+Not comments:
+
+.
+foo <!--> foo -->
+
+foo <!-- foo--->
+.
+<p>foo &lt;!--&gt; foo --&gt;</p>
+<p>foo &lt;!-- foo---&gt;</p>
 .
 
 Processing instructions:
