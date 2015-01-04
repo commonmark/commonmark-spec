@@ -178,7 +178,7 @@ dingus: js/commonmark.js
 ### Spec ###
 
 spec.md: $(SPEC)
-	perl spec2md.pl < $< > $@
+	python3 spec2md.py $< > $@
 
 spec: spec.html
 	@anchors=`perl -ne '@matches = / id="([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
