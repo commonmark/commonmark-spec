@@ -1,45 +1,72 @@
 <!-- DTD for CommonMark xml export format -->
-<!ELEMENT document
-(block_quote|list|code_block|html|paragraph|header|hrule)*>
-<!ELEMENT block_quote
-(block_quote|list|code_block|html|paragraph|header|hrule)*>
+
+<!ENTITY % block
+         'block_quote|list|code_block|html|paragraph|header|hrule'>
+<!ENTITY % inline
+         'text|softbreak|linebreak|code|inline_html|emph|strong|link|image'>
+
+<!ELEMENT document (%block;)*>
+
+<!-- block elements -->
+
+<!ELEMENT block_quote (%block;)*>
+
 <!ELEMENT list (item)+>
 <!ATTLIST list
           type (bullet|ordered) #REQUIRED
           start CDATA #IMPLIED
           tight (true|false) #REQUIRED
           delimiter (period|paren) #IMPLIED>
-<!ELEMENT item
-(block_quote|list|code_block|html|paragraph|header|hrule)*>
+
+<!ELEMENT item (%block;)*>
+
 <!ELEMENT code_block (#PCDATA)>
 <!ATTLIST code_block
           xml:space CDATA #FIXED "preserve"
           info CDATA #IMPLIED>
+
 <!ELEMENT html (#PCDATA)>
-<!ATTLIST html xml:space CDATA #FIXED "preserve">
-<!ELEMENT paragraph
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ELEMENT header
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ATTLIST header level (1|2|3|4|5|6) #REQUIRED>
+<!ATTLIST html
+          xml:space CDATA #FIXED "preserve">
+
+<!ELEMENT paragraph (%inline;)*>
+
+<!ELEMENT header (%inline;)*>
+<!ATTLIST header
+          level (1|2|3|4|5|6) #REQUIRED>
+
 <!ELEMENT hrule EMPTY>
+
+<!-- inline elements -->
+
 <!ELEMENT text (#PCDATA)>
+
 <!ELEMENT softbreak EMPTY>
+
 <!ELEMENT linebreak EMPTY>
+
 <!ELEMENT code (#PCDATA)>
-<!ATTLIST code xml:space CDATA #FIXED "preserve">
+<!ATTLIST code
+          xml:space CDATA #FIXED "preserve">
+
 <!ELEMENT inline_html (#PCDATA)>
-<!ATTLIST inline_html xml:space CDATA #FIXED "preserve">
-<!ELEMENT emph
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ELEMENT strong
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ELEMENT link
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ATTLIST link Url CDATA #REQUIRED>
-<!ATTLIST link Title CDATA #IMPLIED>
-<!ELEMENT image
-(text|softbreak|linebreak|code|inline_html|emph|strong|link|image)*>
-<!ATTLIST image url CDATA #REQUIRED>
-<!ATTLIST image title CDATA #IMPLIED>
+<!ATTLIST inline_html
+          xml:space CDATA #FIXED "preserve">
+
+<!ELEMENT emph (%inline;)*>
+
+<!ELEMENT strong (%inline;)*>
+
+<!ELEMENT link (%inline;)*>
+<!ATTLIST link
+          url CDATA #REQUIRED
+          title CDATA #IMPLIED>
+
+<!ELEMENT image (%inline;)*>
+<!ATTLIST image
+          url CDATA #REQUIRED
+          title CDATA #IMPLIED>
+
+<!-- all elements can have a sourcepos attribute -->
+
 <!ATTLIST ANY sourcepos CDATA #IMPLIED>
