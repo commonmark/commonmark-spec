@@ -1165,7 +1165,7 @@ begins with a code fence, indented no more than three spaces.
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
 spaces and called the [info string](@info-string).
-The info string may not contain any backtick
+The [info string] may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
 beginning of a fenced code block.)
@@ -1193,10 +1193,10 @@ A fenced code block may interrupt a paragraph, and does not require
 a blank line either before or after.
 
 The content of a code fence is treated as literal text, not parsed
-as inlines.  The first word of the info string is typically used to
+as inlines.  The first word of the [info string] is typically used to
 specify the language of the code sample, and rendered in the `class`
 attribute of the `code` tag.  However, this spec does not mandate any
-particular treatment of the info string.
+particular treatment of the [info string].
 
 Here is a simple example with backticks:
 
@@ -1494,7 +1494,7 @@ end
 <pre><code class="language-;"></code></pre>
 .
 
-Info strings for backtick code blocks cannot contain backticks:
+[Info string]s for backtick code blocks cannot contain backticks:
 
 .
 ``` aa ```
@@ -1504,7 +1504,7 @@ foo
 foo</p>
 .
 
-Closing code fences cannot have info strings:
+Closing code fences cannot have [info string]s:
 
 .
 ```
@@ -4117,7 +4117,7 @@ raw HTML:
 .
 
 But they work in all other contexts, including URLs and link titles,
-link references, and info strings in [fenced code block]s:
+link references, and [info string]s in [fenced code block]s:
 
 .
 [foo](/bar\* "ti\*tle")
@@ -4222,7 +4222,7 @@ recognized as entities either:
 
 Entities are recognized in any context besides code spans or
 code blocks, including raw HTML, URLs, [link title]s, and
-[fenced code block] info strings:
+[fenced code block] [info string]s:
 
 .
 <a href="&ouml;&ouml;.html">
