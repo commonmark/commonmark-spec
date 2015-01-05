@@ -6,7 +6,7 @@ before_install:
  # we need a more recent cmake than travis provides (at least 2.8.9):
  - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
  - sudo apt-get update -qq
- - sudo apt-get install -qq cmake python3 pandoc valgrind
+ - sudo apt-get install -qq cmake python3 valgrind
 script:
  - make testtarball
  - PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
