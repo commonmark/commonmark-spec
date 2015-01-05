@@ -13,6 +13,9 @@ else:
     sys.stderr.write("Usage:  makespec.py SPECFILE [html|markdown]\n")
     exit(1)
 
+def toIdentifier(s):
+   return re.sub(r'\s+', '-', re.sub(r'\W+', ' ', s.strip().lower()))
+
 def pipe_through_prog(prog, text):
     p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
     [result, err] = p1.communicate(input=text.encode('utf-8'))
@@ -28,12 +31,20 @@ def replaceAnchor(match):
 stage = 0
 example = 0
 section = ""
+sections = []
 mdlines = []
 refs = []
+lastnum = []
+finishedMeta = False
+yamllines = []
 
 with open(specfile, 'r', encoding='utf-8') as spec:
     for ln in spec:
-        if re.match(r'^\.$', ln):
+        if not finishedMeta:
+            yamllines.append(ln)
+            if re.match(r'^\.\.\.$', ln):
+                finishedMeta = True
+        elif re.match(r'^\.$', ln):
             if stage == 0:
                 example += 1
                 mdlines.append("\n<div class=\"example\" id=\"example-{0}\" data-section=\"{1}\">\n".format(example, section))
@@ -53,9 +64,30 @@ with open(specfile, 'r', encoding='utf-8') as spec:
                 sys.exit(1)
         else:
             if stage == 0:
-                match = re.match(r'^#{1,6} *(.*)', ln)
+                match = re.match(r'^(#{1,6}) *(.*)', ln)
                 if match:
-                    section = match.group(1)
+                    section = match.group(2)
+                    lastlevel = len(lastnum)
+                    level = len(match.group(1))
+                    if re.search(r'{-}$', section):
+                        section = re.sub(r' *{-} *$', '', section)
+                        number = ''
+                    else:
+                        if lastlevel == level:
+                            lastnum[level - 1] = lastnum[level - 1] + 1
+                        elif lastlevel < level:
+                            while len(lastnum) < level:
+                                lastnum.append(1)
+                        else: # lastlevel > level
+                            lastnum = lastnum[0:level]
+                            lastnum[level - 1] = lastnum[level - 1] + 1
+                        number = '.'.join([str(x) for x in lastnum])
+                    ident = toIdentifier(section)
+                    sections.append(dict(level=level,
+                                         contents=section,
+                                         ident=ident,
+                                         number=number))
+                    refs.append("[{0}]: #{1}".format(section, ident))
                 else:
                     ln = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor, ln)
             else:
@@ -67,8 +99,15 @@ mdtext = ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n'
 if specformat == "markdown":
     sys.stdout.write(mdtext)
 elif specformat == "html":
-    prog = "pandoc -s --toc -S --no-highlight --number-sections --template template.html"
-    [retcode, result, err] = pipe_through_prog(prog, mdtext)
+    toclines = []
+    for section in sections:
+        indent = '    ' * (section['level'] - 1)
+        toclines.append(indent + '* [' + section['number'] + ' ' +
+                        section['contents'] + '](#' + section['ident'] + ')')
+    toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
+    yaml = ''.join(yamllines) + '\n'
+    prog = "pandoc -s -S --no-highlight --number-sections --template template.html"
+    [retcode, result, err] = pipe_through_prog(prog, yaml + toc + mdtext)
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
         sys.stdout.write(result)
