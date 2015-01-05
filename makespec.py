@@ -83,6 +83,8 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
                     level = len(match.group(1))
                     if re.search(r'{-}$', section):
                         section = re.sub(r' *{-} *$', '', section)
+                        if specformat == 'html':
+                            ln = re.sub(r' *{-} *$', '', ln)
                         number = ''
                     else:
                         if lastlevel == level:
