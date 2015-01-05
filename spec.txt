@@ -478,7 +478,7 @@ bar
 If a line of dashes that meets the above conditions for being a
 horizontal rule could also be interpreted as the underline of a [setext
 header], the interpretation as a
-[setext-header] takes precedence. Thus, for example,
+[setext header] takes precedence. Thus, for example,
 this is a setext header, not a paragraph followed by a horizontal rule:
 
 .
@@ -736,7 +736,7 @@ A [setext header underline](@setext-header-underline) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
 spaces indentation and any number of trailing spaces.  If a line
 containing a single `-` can be interpreted as an
-empty [list item]s, it should be interpreted this way
+empty [list items], it should be interpreted this way
 and not as a [setext header underline].
 
 The header is a level 1 header if `=` characters are used in the
@@ -1002,7 +1002,7 @@ use backslash escapes:
 ## Indented code blocks
 
 An [indented code block](@indented-code-block) is composed of one or more
-[indented chunks] separated by blank lines.
+[indented chunk]s separated by blank lines.
 An [indented chunk](@indented-chunk) is a sequence of non-blank lines,
 each indented four or more spaces. The contents of the code block are
 the literal contents of the lines, including trailing
@@ -1814,7 +1814,7 @@ No further [non-space character]s may occur on the line.
 A [link reference-definition]
 does not correspond to a structural element of a document.  Instead, it
 defines a label which can be used in [reference link]s
-and reference-style [image]s elsewhere in the document.  [Link
+and reference-style [images] elsewhere in the document.  [Link
 reference definitions] can come either before or after the links that use
 them.
 
@@ -1989,7 +1989,7 @@ and horizontal rules, and it need not be followed by a blank line.
 </blockquote>
 .
 
-Several [link references definition]s
+Several [link reference definition]s
 can occur one after another, without intervening blank lines.
 
 .
@@ -2174,15 +2174,15 @@ A [block quote marker](@block-quote-marker)
 consists of 0-3 spaces of initial indent, plus (a) the character `>` together
 with a following space, or (b) a single character `>` not followed by a space.
 
-The following rules define [block quote]s:
+The following rules define [block quotes]:
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
     of blocks *Bs*, then the result of prepending a [block quote
     marker] to the beginning of each line in *Ls*
-    is a [block quote] containing *Bs*.
+    is a [block quote](#block-quotes) containing *Bs*.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
-    quote] with contents *Bs*, then the result of deleting
+    quote](#block-quotes) with contents *Bs*, then the result of deleting
     the initial [block quote marker] from one or
     more lines in which the next [non-space character] after the [block
     quote marker] is [paragraph continuation
@@ -2194,7 +2194,7 @@ The following rules define [block quote]s:
 3.  **Consecutiveness.**  A document cannot contain two [block
     quotes] in a row unless there is a [blank line] between them.
 
-Nothing else counts as a [block quote].
+Nothing else counts as a [block quote](#block-quotes).
 
 Here is a simple example:
 
@@ -2539,7 +2539,7 @@ An [ordered list marker](@ordered-list-marker)
 is a sequence of one of more digits (`0-9`), followed by either a
 `.` character or a `)` character.
 
-The following rules define [list item]s:
+The following rules define [list items]:
 
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
     blocks *Bs* starting with a [non-space character] and not separated
@@ -3094,13 +3094,13 @@ Four spaces indent gives a code block:
 
 
 5.  **Laziness.**  If a string of lines *Ls* constitute a [list
-    item] with contents *Bs*, then the result of deleting
+    item](#list-items) with contents *Bs*, then the result of deleting
     some or all of the indentation from one or more lines in which the
     next [non-space character] after the indentation is
     [paragraph continuation text] is a
     list item with the same contents and attributes.  The unindented
     lines are called
-    [lazy continuation lines](@lazy-continuation-line).
+    [lazy continuation line](@lazy-continuation-line)s.
 
 Here is an example with [lazy continuation line]s:
 
@@ -3173,7 +3173,7 @@ continued here.</p>
 
 
 6.  **That's all.** Nothing that is not counted as a list item by rules
-    #1--5 counts as a [list item].
+    #1--5 counts as a [list item](#list-items).
 
 The rules for sublists follow from the general rules above.  A sublist
 must be indented the same number of spaces a paragraph would need to be
@@ -5853,7 +5853,7 @@ and autolinks over link grouping:
 <p>[foo<a href="http://example.com?search=%5D(uri)">http://example.com?search=](uri)</a></p>
 .
 
-There are three kinds of [reference links](@reference-link):
+There are three kinds of [reference link](@reference-link)s:
 [full](#full-reference-link), [collapsed](#collapsed-reference-link),
 and [shortcut](#shortcut-reference-link).
 
