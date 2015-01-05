@@ -130,6 +130,8 @@ elif specformat == "html":
     [retcode, result, err] = pipe_through_prog(prog, toc + mdtext)
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
+        result = re.sub(r'<h([1-6])><a id="([^\"]*)"><\/a> ',
+                        "<h\\1 id=\"\\2\">", result)
         sys.stdout.write(template.substitute(metadata, body=result))
 
         # check for errors:
