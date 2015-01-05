@@ -129,6 +129,28 @@ elif specformat == "html":
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
         sys.stdout.write(template.substitute(metadata, body=result))
+
+        # check for errors:
+        idents = []
+        for ident in re.findall(r'id="([^"]*)"', result):
+            if ident in idents:
+                sys.stderr.write("WARNING: duplicate identifier '" + ident +
+                                 "'\n")
+            else:
+                idents.append(ident)
+        for href in re.findall(r'href="#([^"]*)"', result):
+            if not (href in idents):
+                sys.stderr.write("WARNING: internal link with no anchor '" +
+                                 href + "'\n")
+        reftexts = []
+        for ref in refs:
+            ref = re.sub('].*',']',ref).upper()
+            if ref in reftexts:
+                sys.stderr.write("WARNING: duplicate reference link '" +
+                                 ref + "'\n")
+            else:
+                reftexts.append(ref)
+
     else:
         sys.stderr.write("Error converting markdown version of spec:\n")
         sys.stderr.write(err)

@@ -180,14 +180,6 @@ dingus: js/commonmark.js
 spec.md: $(SPEC)
 	python3 makespec.py markdown > $@
 
-spec: spec.html
-	@anchors=`perl -ne '@matches = / id="([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
-	links=`perl -ne '@matches = / href="#([^"]*)"/g; foreach $$match (@matches) { print "$$match\n"; }' $<`; \
-	for link in $$links; do \
-		[[ $$anchors =~ $$link ]] || \
-			 echo "Link to missing anchor #$$link"; \
-	done
-
 spec.html: spec.txt template.html ${PROG}
 	python3 makespec.py html > $@
 
