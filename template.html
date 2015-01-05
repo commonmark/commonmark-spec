@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>$title$</title>
+<title>${title}</title>
 <style type="text/css">
   body { font-family: Helvetica, arial, freesans, clean, sans-serif;
     line-height: 1.4;
@@ -40,10 +40,8 @@ pre {
 code { font-family: monospace; background-color: #D3E1E4; }
 pre > code { background-color: transparent; }
 div.example > pre { float:left; width: 48%; }
-div.example > pre.markdown { clear:left; }
-pre.tree { font-weight: bold; color: #777; }
-pre.markdown { background-color: #D3E1E4; }
-pre.html { background-color: #C9CaCE; }
+div.example > pre:nth-child(2) { clear:left; background-color: #D3E1E4; }
+div.example > pre:nth-child(3) { clear:right; background-color: #C9CaCE; }
 #watermark {
  position:fixed;
  bottom:0px;
@@ -73,27 +71,23 @@ a.footnoteRef > sup {
 <script type="text/javascript">
 $$(document).ready(function() {
   $$("div.example").each(function(e) {
-    var t = $$(this).find('pre.markdown > code').text();
+    var t = $$(this).find('code.markdown').text();
     $$(this).find('a.dingus').click(function(f) {
       window.open('/dingus.html?text=' +
         encodeURIComponent(t.replace(/→/g,"\t")));
     });
   });
-  $$("pre.markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
+  $$("code.markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
       encodeURIComponent($$(this).find('code').text()));
   });
 });
 </script>
 </head>
 <body>
-$if(title)$
-<h1 class="title">$title$</h1>
-$endif$
-$if(version)$
-<div class="version">Version $version$ ($date$)</div>
-$endif$
+<h1 class="title">${title}</h1>
+<div class="version">Version ${version} (${date})</div>
 <div class="authors">
-$for(author)$<span class="author">$author$</span>$sep$; $endfor$
+    <span class="author">${author}</span>
 </div>
 <div class="license">
 <a rel="license"
@@ -110,10 +104,7 @@ $for(author)$<span class="author">$author$</span>$sep$; $endfor$
    href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
    Commons Attribution-ShareAlike 4.0 International License</a>.</span>
 </div>
-<div id="TOC">
-$toc$
-</div>
 <div id="watermark"></div>
-$body$
+${body}
 </body>
 </html>

@@ -2,6 +2,7 @@
 import re
 import sys
 from subprocess import *
+from string import Template
 
 if len(sys.argv) == 3:
     specfile = sys.argv[1]
@@ -15,6 +16,18 @@ else:
 
 def toIdentifier(s):
    return re.sub(r'\s+', '-', re.sub(r'\W+', ' ', s.strip().lower()))
+
+def parseYaml(yaml):
+    metadata = {}
+    def parseField(match):
+        key = match.group(1)
+        val = match.group(2).strip()
+        if re.match(r'^\'', val):
+            val = val[1:len(val) - 1]
+        metadata[key] = val
+    fieldre = re.compile('^(\w+):(.*)$', re.MULTILINE)
+    re.sub(fieldre, parseField, yaml)
+    return metadata
 
 def pipe_through_prog(prog, text):
     p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
@@ -83,11 +96,14 @@ with open(specfile, 'r', encoding='utf-8') as spec:
                             lastnum[level - 1] = lastnum[level - 1] + 1
                         number = '.'.join([str(x) for x in lastnum])
                     ident = toIdentifier(section)
+                    ln = re.sub(r' ', ' ' + number + ' ', ln, count=1)
                     sections.append(dict(level=level,
                                          contents=section,
                                          ident=ident,
                                          number=number))
                     refs.append("[{0}]: #{1}".format(section, ident))
+                    ln = re.sub(r'# +', '# <a id="{0}"></a> '.format(ident),
+                                ln, count=1)
                 else:
                     ln = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor, ln)
             else:
@@ -95,22 +111,25 @@ with open(specfile, 'r', encoding='utf-8') as spec:
             mdlines.append(ln)
 
 mdtext = ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n'
+yaml = ''.join(yamllines)
+metadata = parseYaml(yaml)
 
 if specformat == "markdown":
-    sys.stdout.write(mdtext)
+    sys.stdout.write(yaml + '\n\n' + mdtext)
 elif specformat == "html":
+    with open("template.html", "r", encoding="utf-8") as templatefile:
+        template = Template(templatefile.read())
     toclines = []
     for section in sections:
         indent = '    ' * (section['level'] - 1)
         toclines.append(indent + '* [' + section['number'] + ' ' +
                         section['contents'] + '](#' + section['ident'] + ')')
     toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
-    yaml = ''.join(yamllines) + '\n'
-    prog = "pandoc -s -S --no-highlight --number-sections --template template.html"
-    [retcode, result, err] = pipe_through_prog(prog, yaml + toc + mdtext)
+    prog = "build/src/cmark"
+    [retcode, result, err] = pipe_through_prog(prog, toc + mdtext)
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
-        sys.stdout.write(result)
+        sys.stdout.write(template.substitute(metadata, body=result))
     else:
         sys.stderr.write("Error converting markdown version of spec:\n")
         sys.stderr.write(err)
