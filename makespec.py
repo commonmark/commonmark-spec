@@ -132,6 +132,8 @@ elif specformat == "html":
         result = re.sub(r'␣', '<span class="space"> </span>', result)
         result = re.sub(r'<h([1-6])><a id="([^\"]*)"><\/a> ',
                         "<h\\1 id=\"\\2\">", result)
+        # put plural s inside links for better visuals:
+        result = re.sub(r'<\/a>s', "s</a>", result)
         sys.stdout.write(template.substitute(metadata, body=result))
 
         # check for errors:
