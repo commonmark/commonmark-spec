@@ -307,8 +307,8 @@ one block element does not affect the inline parsing of any other.
 ## Container blocks and leaf blocks
 
 We can divide blocks into two types:
-[container blocks](@container-block),
-which can contain other blocks, and [leaf blocks](@leaf-block),
+[container block](@container-block)s,
+which can contain other blocks, and [leaf block](@leaf-block)s,
 which cannot.
 
 # Leaf blocks
@@ -2174,7 +2174,7 @@ A [block quote marker](@block-quote-marker)
 consists of 0-3 spaces of initial indent, plus (a) the character `>` together
 with a following space, or (b) a single character `>` not followed by a space.
 
-The following rules define [block quotes](@block-quote):
+The following rules define [block quote]s:
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
     of blocks *Bs*, then the result of prepending a [block quote
@@ -2539,7 +2539,7 @@ An [ordered list marker](@ordered-list-marker)
 is a sequence of one of more digits (`0-9`), followed by either a
 `.` character or a `)` character.
 
-The following rules define [list items](@list-item):
+The following rules define [list item]s:
 
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
     blocks *Bs* starting with a [non-space character] and not separated
@@ -4267,7 +4267,7 @@ Entities are treated as literal text in code spans and code blocks:
 </code></pre>
 .
 
-## Code span
+## Code spans
 
 A [backtick string](@backtick-string)
 is a string of one or more backtick characters (`` ` ``) that is neither
@@ -6495,9 +6495,9 @@ If you want a link after a literal `!`, backslash-escape the
 
 ## Autolinks
 
-[Autolinks](@autolink) are absolute URIs and email addresses inside `<` and `>`.
-They are parsed as links, with the URL or email address as the link
-label.
+[Autolink](@autolink)s are absolute URIs and email addresses inside
+`<` and `>`. They are parsed as links, with the URL or email address
+as the link label.
 
 A [URI autolink](@uri-autolink) consists of `<`, followed by an
 [absolute URI] not containing `<`, followed by `>`.  It is parsed as
