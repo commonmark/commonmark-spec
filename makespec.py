@@ -4,14 +4,13 @@ import sys
 from subprocess import *
 from string import Template
 
-if len(sys.argv) == 3:
-    specfile = sys.argv[1]
-    specformat = sys.argv[2]
+if len(sys.argv) == 2:
+    specformat = sys.argv[1]
     if not (specformat in ["html", "markdown"]):
         sys.stderr.write("Format must be html or markdown\n")
         exit(1)
 else:
-    sys.stderr.write("Usage:  makespec.py SPECFILE [html|markdown]\n")
+    sys.stderr.write("Usage:  makespec.py [html|markdown]\n")
     exit(1)
 
 def toIdentifier(s):
@@ -51,7 +50,7 @@ lastnum = []
 finishedMeta = False
 yamllines = []
 
-with open(specfile, 'r', encoding='utf-8') as spec:
+with open('spec.txt', 'r', encoding='utf-8') as spec:
     for ln in spec:
         if not finishedMeta:
             yamllines.append(ln)

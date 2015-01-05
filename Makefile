@@ -188,8 +188,8 @@ spec: spec.html
 			 echo "Link to missing anchor #$$link"; \
 	done
 
-spec.html: spec.txt template.html
-	python3 makespec.py $< html > $@
+spec.html: spec.txt template.html ${PROG}
+	python3 makespec.py html > $@
 
 spec.pdf: spec.md template.tex specfilter.hs
 	pandoc -s $< --template template.tex \
