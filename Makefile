@@ -65,7 +65,7 @@ archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/make_man_page.py
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
-	cp -a README.md LICENSE spec.txt $(PKGDIR)/; \
+	cp -a README.md COPYING spec.txt $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
