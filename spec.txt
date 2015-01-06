@@ -5849,6 +5849,15 @@ emphasis grouping:
 <p><a href="baz*">foo *bar</a></p>
 .
 
+Note that brackets that *aren't* part of links do not take
+precedence:
+
+.
+*foo [bar* baz]
+.
+<p><em>foo [bar</em> baz]</p>
+.
+
 These cases illustrate the precedence of HTML tags, code spans,
 and autolinks over link grouping:
 
