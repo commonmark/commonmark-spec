@@ -19,7 +19,7 @@ PROG?=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench apidoc
+.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench astyle
 
 all: $(PROG)
 	@echo "Binaries can be found in $(BUILDDIR)/src"
@@ -141,6 +141,10 @@ bench: $(BENCHFILE)
 	  /usr/bin/env time -p $(PROG) <$< >/dev/null ; \
 		  done \
 	} 2>&1  | grep 'real' | awk '{print $$2}' | python3 'bench/stats.py'
+
+astyle:
+	astyle --style=linux -t -p -r  'src/*.c' --exclude=scanners.c
+	astyle --style=linux -t -p -r  'src/*.h' --exclude=html_unescape.h
 
 operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
