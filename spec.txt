@@ -2030,7 +2030,7 @@ kinds of blocks forms a [paragraph](@paragraph).
 The contents of the paragraph are the result of parsing the
 paragraph's raw content as inlines.  The paragraph's raw content
 is formed by concatenating the lines and removing initial and final
-spaces.
+[whitespace].
 
 A simple example with two paragraphs:
 
