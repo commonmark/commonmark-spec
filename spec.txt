@@ -1007,7 +1007,7 @@ An [indented chunk](@indented-chunk) is a sequence of non-blank lines,
 each indented four or more spaces. The contents of the code block are
 the literal contents of the lines, including trailing
 [line ending]s, minus four spaces of indentation.
-An indented code block has no attributes.
+An indented code block has no [info string].
 
 An indented code block cannot interrupt a paragraph, so there must be
 a blank line between a paragraph and a following indented code block.
