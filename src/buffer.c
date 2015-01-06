@@ -130,8 +130,8 @@ int cmark_strbuf_set(cmark_strbuf *buf, const unsigned char *data, int len)
 int cmark_strbuf_sets(cmark_strbuf *buf, const char *string)
 {
 	return cmark_strbuf_set(buf,
-			  (const unsigned char *)string,
-			  string ? strlen(string) : 0);
+	                        (const unsigned char *)string,
+	                        string ? strlen(string) : 0);
 }
 
 int cmark_strbuf_putc(cmark_strbuf *buf, int c)
@@ -171,10 +171,10 @@ int cmark_strbuf_vprintf(cmark_strbuf *buf, const char *format, va_list ap)
 		va_copy(args, ap);
 
 		len = vsnprintf(
-			(char *)buf->ptr + buf->size,
-			buf->asize - buf->size,
-			format, args
-			);
+		          (char *)buf->ptr + buf->size,
+		          buf->asize - buf->size,
+		          format, args
+		      );
 
 		va_end(args);
 
@@ -265,7 +265,7 @@ int cmark_strbuf_cmp(const cmark_strbuf *a, const cmark_strbuf *b)
 {
 	int result = memcmp(a->ptr, b->ptr, MIN(a->size, b->size));
 	return (result != 0) ? result :
-		(a->size < b->size) ? -1 : (a->size > b->size) ? 1 : 0;
+	       (a->size < b->size) ? -1 : (a->size > b->size) ? 1 : 0;
 }
 
 int cmark_strbuf_strchr(const cmark_strbuf *buf, int c, int pos)

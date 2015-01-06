@@ -39,19 +39,20 @@ struct render_state {
 };
 
 static void
-S_render_sourcepos(cmark_node *node, cmark_strbuf *html, long options) {
+S_render_sourcepos(cmark_node *node, cmark_strbuf *html, long options)
+{
 	if (CMARK_OPT_SOURCEPOS & options) {
 		cmark_strbuf_printf(html, " data-sourcepos=\"%d:%d-%d:%d\"",
-				    cmark_node_get_start_line(node),
-				    cmark_node_get_start_column(node),
-				    cmark_node_get_end_line(node),
-				    cmark_node_get_end_column(node));
+		                    cmark_node_get_start_line(node),
+		                    cmark_node_get_start_column(node),
+		                    cmark_node_get_end_line(node),
+		                    cmark_node_get_end_column(node));
 	}
 }
 
 static int
 S_render_node(cmark_node *node, cmark_event_type ev_type,
-	struct render_state *state, long options)
+              struct render_state *state, long options)
 {
 	cmark_node *parent;
 	cmark_node *grandparent;
@@ -72,7 +73,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		case CMARK_NODE_CODE:
 		case CMARK_NODE_INLINE_HTML:
 			escape_html(html, node->as.literal.data,
-				    node->as.literal.len);
+			            node->as.literal.len);
 			break;
 
 		case CMARK_NODE_LINEBREAK:
@@ -112,23 +113,21 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 				cmark_strbuf_puts(html, "<ul");
 				S_render_sourcepos(node, html, options);
 				cmark_strbuf_puts(html, ">\n");
-			}
-			else if (start == 1) {
+			} else if (start == 1) {
 				cmark_strbuf_puts(html, "<ol");
 				S_render_sourcepos(node, html, options);
 				cmark_strbuf_puts(html, ">\n");
-			}
-			else {
+			} else {
 				cmark_strbuf_printf(html,
-						    "<ol start=\"%d\"",
-						    start);
+				                    "<ol start=\"%d\"",
+				                    start);
 				S_render_sourcepos(node, html, options);
 				cmark_strbuf_puts(html, ">\n");
 			}
 		} else {
 			cmark_strbuf_puts(html,
-				    list_type == CMARK_BULLET_LIST ?
-				    "</ul>\n" : "</ol>\n");
+			                  list_type == CMARK_BULLET_LIST ?
+			                  "</ul>\n" : "</ol>\n");
 		}
 		break;
 	}
@@ -165,8 +164,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 			cmark_strbuf_puts(html, "<pre");
 			S_render_sourcepos(node, html, options);
 			cmark_strbuf_puts(html, "><code>");
-		}
-		else {
+		} else {
 			int first_tag = 0;
 			while (first_tag < node->as.code.info.len &&
 			       node->as.code.info.data[first_tag] != ' ') {
@@ -181,7 +179,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		}
 
 		escape_html(html, node->as.code.literal.data,
-			    node->as.code.literal.len);
+		            node->as.code.literal.len);
 		cmark_strbuf_puts(html, "</code></pre>\n");
 		break;
 
@@ -220,7 +218,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 
 	case CMARK_NODE_TEXT:
 		escape_html(html, node->as.literal.data,
-			    node->as.literal.len);
+		            node->as.literal.len);
 		break;
 
 	case CMARK_NODE_LINEBREAK:

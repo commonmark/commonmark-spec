@@ -36,7 +36,7 @@ static inline void indent(struct render_state *state)
 
 static int
 S_render_node(cmark_node *node, cmark_event_type ev_type,
-	struct render_state *state, long options)
+              struct render_state *state, long options)
 {
 	cmark_strbuf *xml = state->xml;
 	bool literal = false;
@@ -46,14 +46,14 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 	if (entering) {
 		indent(state);
 		cmark_strbuf_printf(xml, "<%s",
-				    cmark_node_get_type_string(node));
+		                    cmark_node_get_type_string(node));
 
 		if (options & CMARK_OPT_SOURCEPOS && node->start_line != 0) {
 			cmark_strbuf_printf(xml, " sourcepos=\"%d:%d-%d:%d\"",
-					    node->start_line,
-					    node->start_column,
-					    node->end_line,
-					    node->end_column);
+			                    node->start_line,
+			                    node->start_column,
+			                    node->end_line,
+			                    node->end_column);
 		}
 
 		literal = false;
@@ -65,25 +65,25 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		case CMARK_NODE_INLINE_HTML:
 			cmark_strbuf_puts(xml, ">");
 			escape_xml(xml, node->as.literal.data,
-				   node->as.literal.len);
+			           node->as.literal.len);
 			cmark_strbuf_puts(xml, "</");
 			cmark_strbuf_puts(xml,
-					  cmark_node_get_type_string(node));
+			                  cmark_node_get_type_string(node));
 			literal = true;
 			break;
 		case CMARK_NODE_CODE_BLOCK:
 			if (node->as.code.info.len > 0) {
 				cmark_strbuf_puts(xml, " info=\"");
 				escape_xml(xml, node->as.code.info.data,
-					   node->as.code.info.len);
+				           node->as.code.info.len);
 				cmark_strbuf_putc(xml, '"');
 			}
 			cmark_strbuf_puts(xml, ">");
 			escape_xml(xml, node->as.code.literal.data,
-				   node->as.code.literal.len);
+			           node->as.code.literal.len);
 			cmark_strbuf_puts(xml, "</");
 			cmark_strbuf_puts(xml,
-					  cmark_node_get_type_string(node));
+			                  cmark_node_get_type_string(node));
 			literal = true;
 			break;
 		case CMARK_NODE_LINK:
@@ -107,10 +107,10 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 
 
 	} else if (node->first_child) {
-			state->indent -= 2;
-			indent(state);
-			cmark_strbuf_printf(xml, "</%s>\n",
-					    cmark_node_get_type_string(node));
+		state->indent -= 2;
+		indent(state);
+		cmark_strbuf_printf(xml, "</%s>\n",
+		                    cmark_node_get_type_string(node));
 	}
 
 	return 1;
@@ -126,9 +126,9 @@ char *cmark_render_xml(cmark_node *root, long options)
 	cmark_iter *iter = cmark_iter_new(root);
 
 	cmark_strbuf_puts(state.xml,
-			  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	                  "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	cmark_strbuf_puts(state.xml,
-			  "<!DOCTYPE CommonMark SYSTEM \"CommonMark.dtd\">\n");
+	                  "<!DOCTYPE CommonMark SYSTEM \"CommonMark.dtd\">\n");
 	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
 		cur = cmark_iter_get_node(iter);
 		S_render_node(cur, ev_type, &state, options);

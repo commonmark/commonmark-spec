@@ -8,8 +8,8 @@
 #include "bench.h"
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
-  #include <io.h>
-  #include <fcntl.h>
+#include <io.h>
+#include <fcntl.h>
 #endif
 
 typedef enum {
@@ -31,7 +31,7 @@ void print_usage()
 }
 
 static void print_document(cmark_node *document, writer_format writer,
-			   long options)
+                           long options)
 {
 	char *result;
 	switch (writer) {
@@ -80,11 +80,11 @@ int main(int argc, char *argv[])
 		} else if (strcmp(argv[i], "--hardbreaks") == 0) {
 			options |= CMARK_OPT_HARDBREAKS;
 		} else if ((strcmp(argv[i], "--help") == 0) ||
-			   (strcmp(argv[i], "-h") == 0)) {
+		           (strcmp(argv[i], "-h") == 0)) {
 			print_usage();
 			exit(0);
 		} else if ((strcmp(argv[i], "-t") == 0) ||
-			   (strcmp(argv[i], "--to") == 0)) {
+		           (strcmp(argv[i], "--to") == 0)) {
 			i += 1;
 			if (i < argc) {
 				if (strcmp(argv[i], "man") == 0) {
@@ -95,12 +95,12 @@ int main(int argc, char *argv[])
 					writer = FORMAT_XML;
 				} else {
 					fprintf(stderr,
-						"Unknown format %s\n", argv[i]);
+					        "Unknown format %s\n", argv[i]);
 					exit(1);
 				}
 			} else {
 				fprintf(stderr, "No argument provided for %s\n",
-					argv[i - 1]);
+				        argv[i - 1]);
 				exit(1);
 			}
 		} else if (*argv[i] == '-') {
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 		FILE *fp = fopen(argv[files[i]], "r");
 		if (fp == NULL) {
 			fprintf(stderr, "Error opening file %s: %s\n",
-				argv[files[i]], strerror(errno));
+			        argv[files[i]], strerror(errno));
 			exit(1);
 		}
 

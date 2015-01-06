@@ -83,10 +83,10 @@ houdini_escape_href(cmark_strbuf *ob, const uint8_t *src, size_t size)
 			cmark_strbuf_puts(ob, "&#x27;");
 			break;
 
-		/* the space can be escaped to %20 or a plus
-		 * sign. we're going with the generic escape
-		 * for now. the plus thing is more commonly seen
-		 * when building GET strings */
+			/* the space can be escaped to %20 or a plus
+			 * sign. we're going with the generic escape
+			 * for now. the plus thing is more commonly seen
+			 * when building GET strings */
 #if 0
 		case ' ':
 			cmark_strbuf_putc(ob, '+');

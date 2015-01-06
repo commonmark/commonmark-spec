@@ -93,7 +93,7 @@ int cmark_strbuf_putc(cmark_strbuf *buf, int c);
 int cmark_strbuf_put(cmark_strbuf *buf, const unsigned char *data, int len);
 int cmark_strbuf_puts(cmark_strbuf *buf, const char *string);
 int cmark_strbuf_printf(cmark_strbuf *buf, const char *format, ...)
-	CMARK_ATTRIBUTE((format (printf, 2, 3)));
+CMARK_ATTRIBUTE((format (printf, 2, 3)));
 int cmark_strbuf_vprintf(cmark_strbuf *buf, const char *format, va_list ap);
 void cmark_strbuf_clear(cmark_strbuf *buf);
 

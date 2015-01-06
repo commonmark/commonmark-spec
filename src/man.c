@@ -44,7 +44,7 @@ struct render_state {
 
 static int
 S_render_node(cmark_node *node, cmark_event_type ev_type,
-	struct render_state *state)
+              struct render_state *state)
 {
 	cmark_node *tmp;
 	cmark_strbuf *man = state->man;
@@ -60,7 +60,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		case CMARK_NODE_TEXT:
 		case CMARK_NODE_CODE:
 			escape_man(man, node->as.literal.data,
-				    node->as.literal.len);
+			           node->as.literal.len);
 			break;
 
 		case CMARK_NODE_LINEBREAK:
@@ -119,8 +119,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		if (entering) {
 			cr(man);
 			cmark_strbuf_puts(man,
-				    cmark_node_get_header_level(node) == 1 ?
-				    ".SH" : ".SS");
+			                  cmark_node_get_header_level(node) == 1 ?
+			                  ".SH" : ".SS");
 			cr(man);
 		} else {
 			cr(man);
@@ -131,7 +131,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		cr(man);
 		cmark_strbuf_puts(man, ".IP\n.nf\n\\f[C]\n");
 		escape_man(man, node->as.code.literal.data,
-			   node->as.code.literal.len);
+		           node->as.code.literal.len);
 		cr(man);
 		cmark_strbuf_puts(man, "\\f[]\n.fi");
 		cr(man);
@@ -164,7 +164,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 
 	case CMARK_NODE_TEXT:
 		escape_man(man, node->as.literal.data,
-			    node->as.literal.len);
+		           node->as.literal.len);
 		break;
 
 	case CMARK_NODE_LINEBREAK:
@@ -204,7 +204,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 	case CMARK_NODE_LINK:
 		if (!entering) {
 			cmark_strbuf_printf(man, " (%s)",
-				      cmark_node_get_url(node));
+			                    cmark_node_get_url(node));
 		}
 		break;
 

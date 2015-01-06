@@ -74,7 +74,7 @@ static void add_reference(cmark_reference_map *map, cmark_reference* ref)
 }
 
 void cmark_reference_create(cmark_reference_map *map, cmark_chunk *label, cmark_chunk *url,
-			    cmark_chunk *title)
+                            cmark_chunk *title)
 {
 	cmark_reference *ref;
 	unsigned char *reflabel = normalize_reference(label);

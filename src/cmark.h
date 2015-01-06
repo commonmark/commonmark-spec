@@ -447,29 +447,29 @@ char *cmark_render_man(cmark_node *root, long options);
  */
 
 #ifndef CMARK_NO_SHORT_NAMES
-  #define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
-  #define NODE_BLOCK_QUOTE          CMARK_NODE_BLOCK_QUOTE
-  #define NODE_LIST                 CMARK_NODE_LIST
-  #define NODE_ITEM                 CMARK_NODE_ITEM
-  #define NODE_CODE_BLOCK           CMARK_NODE_CODE_BLOCK
-  #define NODE_HTML                 CMARK_NODE_HTML
-  #define NODE_PARAGRAPH            CMARK_NODE_PARAGRAPH
-  #define NODE_HEADER		    CMARK_NODE_HEADER
-  #define NODE_HRULE                CMARK_NODE_HRULE
-  #define NODE_TEXT                 CMARK_NODE_TEXT
-  #define NODE_SOFTBREAK            CMARK_NODE_SOFTBREAK
-  #define NODE_LINEBREAK            CMARK_NODE_LINEBREAK
-  #define NODE_CODE                 CMARK_NODE_CODE
-  #define NODE_INLINE_HTML          CMARK_NODE_INLINE_HTML
-  #define NODE_EMPH                 CMARK_NODE_EMPH
-  #define NODE_STRONG               CMARK_NODE_STRONG
-  #define NODE_LINK                 CMARK_NODE_LINK
-  #define NODE_IMAGE                CMARK_NODE_IMAGE
-  #define NODE_LINK_LABEL           CMARK_NODE_LINK_LABEL
-  #define BULLET_LIST               CMARK_BULLET_LIST
-  #define ORDERED_LIST              CMARK_ORDERED_LIST
-  #define PERIOD_DELIM              CMARK_PERIOD_DELIM
-  #define PAREN_DELIM               CMARK_PAREN_DELIM
+#define NODE_DOCUMENT             CMARK_NODE_DOCUMENT
+#define NODE_BLOCK_QUOTE          CMARK_NODE_BLOCK_QUOTE
+#define NODE_LIST                 CMARK_NODE_LIST
+#define NODE_ITEM                 CMARK_NODE_ITEM
+#define NODE_CODE_BLOCK           CMARK_NODE_CODE_BLOCK
+#define NODE_HTML                 CMARK_NODE_HTML
+#define NODE_PARAGRAPH            CMARK_NODE_PARAGRAPH
+#define NODE_HEADER		    CMARK_NODE_HEADER
+#define NODE_HRULE                CMARK_NODE_HRULE
+#define NODE_TEXT                 CMARK_NODE_TEXT
+#define NODE_SOFTBREAK            CMARK_NODE_SOFTBREAK
+#define NODE_LINEBREAK            CMARK_NODE_LINEBREAK
+#define NODE_CODE                 CMARK_NODE_CODE
+#define NODE_INLINE_HTML          CMARK_NODE_INLINE_HTML
+#define NODE_EMPH                 CMARK_NODE_EMPH
+#define NODE_STRONG               CMARK_NODE_STRONG
+#define NODE_LINK                 CMARK_NODE_LINK
+#define NODE_IMAGE                CMARK_NODE_IMAGE
+#define NODE_LINK_LABEL           CMARK_NODE_LINK_LABEL
+#define BULLET_LIST               CMARK_BULLET_LIST
+#define ORDERED_LIST              CMARK_ORDERED_LIST
+#define PERIOD_DELIM              CMARK_PERIOD_DELIM
+#define PAREN_DELIM               CMARK_PAREN_DELIM
 #endif
 
 #ifdef __cplusplus
