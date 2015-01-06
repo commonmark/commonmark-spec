@@ -4376,20 +4376,37 @@ And this is not parsed as a link:
 <p>[not a <code>link](/foo</code>)</p>
 .
 
-But this is a link:
+Code spans, HTML tags, and autolinks have the same precedence.
+Thus, this is code:
 
 .
-<http://foo.bar.`baz>`
+`<a href="`">`
 .
-<p><a href="http://foo.bar.%60baz">http://foo.bar.`baz</a>`</p>
+<p><code>&lt;a href=&quot;</code>&quot;&gt;`</p>
 .
 
-And this is an HTML tag:
+But this is an HTML tag:
 
 .
 <a href="`">`
 .
 <p><a href="`">`</p>
+.
+
+And this is code:
+
+.
+`<http://foo.bar.`baz>`
+.
+<p><code>&lt;http://foo.bar.</code>baz&gt;`</p>
+.
+
+But this is an autolink:
+
+.
+<http://foo.bar.`baz>`
+.
+<p><a href="http://foo.bar.%60baz">http://foo.bar.`baz</a>`</p>
 .
 
 When a backtick string is not closed by a matching backtick string,
