@@ -58,7 +58,7 @@ SOFTWARE.
 
 -----
 
-buffer.h, buffer.c, chunk.h, utf8.h, utf8.c
+buffer.h, buffer.c, chunk.h
 
 are derived from code (C) 2012 Github, Inc.
 
@@ -82,7 +82,9 @@ SOFTWARE.
 
 -----
 
-utf8.c and utf8.c contain tables from utf8proc
+utf8.c and utf8.c
+
+are derived from utf8proc
 (<http://www.public-software-group.org/utf8proc>),
 (C) 2009 Public Software Group e. V., Berlin, Germany.
 
