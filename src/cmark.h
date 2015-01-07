@@ -356,6 +356,11 @@ cmark_node_prepend_child(cmark_node *node, cmark_node *child);
 CMARK_EXPORT int
 cmark_node_append_child(cmark_node *node, cmark_node *child);
 
+/** Consolidates adjacent text nodes.
+ */
+CMARK_EXPORT void
+cmark_consolidate_text_nodes(cmark_node *root);
+
 /**
  * ## Parsing
  *
@@ -440,6 +445,10 @@ char *cmark_render_man(cmark_node *root, long options);
 /** Render `softbreak` elements as hard line breaks.
  */
 #define CMARK_OPT_HARDBREAKS 2
+
+/** Normalize tree by consolidating adjacent text nodes.
+ */
+#define CMARK_OPT_NORMALIZE 4
 
 /** # AUTHORS
  *

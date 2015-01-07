@@ -123,6 +123,11 @@ char *cmark_render_xml(cmark_node *root, long options)
 	cmark_event_type ev_type;
 	cmark_node *cur;
 	struct render_state state = { &xml, 0 };
+
+	if (options & CMARK_OPT_NORMALIZE) {
+		cmark_consolidate_text_nodes(root);
+	}
+
 	cmark_iter *iter = cmark_iter_new(root);
 
 	cmark_strbuf_puts(state.xml,

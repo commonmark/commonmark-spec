@@ -84,3 +84,34 @@ cmark_iter_get_node(cmark_iter *iter)
 
 	return cur;
 }
+
+
+void cmark_consolidate_text_nodes(cmark_node *root)
+{
+	cmark_iter *iter = cmark_iter_new(root);
+	cmark_strbuf buf = GH_BUF_INIT;
+	cmark_event_type ev_type;
+	cmark_node *cur, *tmp, *next;
+
+	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+		cur = cmark_iter_get_node(iter);
+		if (ev_type == CMARK_EVENT_ENTER &&
+		    cur->type == CMARK_NODE_TEXT &&
+		    cur->next &&
+		    cur->next->type == CMARK_NODE_TEXT) {
+			cmark_strbuf_clear(&buf);
+			cmark_strbuf_puts(&buf, cmark_node_get_literal(cur));
+			tmp = cur->next;
+			while (tmp && tmp->type == CMARK_NODE_TEXT) {
+				cmark_iter_get_node(iter); // advance pointer
+				cmark_strbuf_puts(&buf, cmark_node_get_literal(tmp));
+				next = tmp->next;
+				cmark_node_free(tmp);
+				tmp = next;
+			}
+			cmark_node_set_literal(cur, (char *)cmark_strbuf_detach(&buf));
+		}
+	}
+
+	cmark_iter_free(iter);
+}
