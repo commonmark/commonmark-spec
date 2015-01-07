@@ -61,7 +61,7 @@ on FreeBSD:
     mkdir build
     cd build
     cmake ..  # optionally: -DCMAKE_INSTALL_PREFIX=path
-    make      # executable will be create as build/src/cmake
+    make      # executable will be created as build/src/cmark
     make test
     make install
 
