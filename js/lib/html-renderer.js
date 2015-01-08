@@ -78,9 +78,9 @@ var renderBlock = function(block, in_tight_list) {
         return (whole_doc === '' ? '' : whole_doc + '\n');
     case 'Paragraph':
         if (in_tight_list) {
-            return this.renderInlines(block.inline_content);
+            return this.renderInlines(block.children);
         } else {
-            return inTags('p', [], this.renderInlines(block.inline_content));
+            return inTags('p', [], this.renderInlines(block.children));
         }
         break;
     case 'BlockQuote':
@@ -105,7 +105,7 @@ var renderBlock = function(block, in_tight_list) {
                       this.innersep);
     case 'Header':
         tag = 'h' + block.level;
-        return inTags(tag, [], this.renderInlines(block.inline_content));
+        return inTags(tag, [], this.renderInlines(block.children));
     case 'CodeBlock':
         info_words = block.info ? block.info.split(/ +/) : [];
         attr = (info_words.length === 0 || info_words[0].length === 0) ?

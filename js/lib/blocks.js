@@ -59,7 +59,7 @@ var makeBlock = function(tag, start_line, start_column) {
              // string_content is formed by concatenating strings, in finalize:
              string_content: "",
              strings: [],
-             inline_content: []
+             children: []
            };
 };
 
@@ -629,11 +629,11 @@ var processInlines = function(block) {
 
     switch(block.t) {
     case 'Paragraph':
-        newblock.inline_content =
+        newblock.children =
             this.inlineParser.parse(block.string_content.trim(), this.refmap);
         break;
     case 'Header':
-        newblock.inline_content =
+        newblock.children =
             this.inlineParser.parse(block.string_content.trim(), this.refmap);
         newblock.level = block.level;
         break;
@@ -652,7 +652,7 @@ var processInlines = function(block) {
         break;
     }
 
-    if (block.children) {
+    if (block.children && !newblock.children) {
         var newchildren = [];
         for (var i = 0; i < block.children.length; i++) {
             newchildren.push(this.processInlines(block.children[i]));
