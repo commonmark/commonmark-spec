@@ -40,10 +40,10 @@ var renderInline = function(inline) {
         if (inline.title) {
             attrs.push(['title', this.escape(inline.title, true)]);
         }
-        return inTags('a', attrs, this.renderInlines(inline.label));
+        return inTags('a', attrs, this.renderInlines(inline.children));
     case 'Image':
         attrs = [['src', this.escape(inline.destination, true)],
-                 ['alt', this.renderInlines(inline.label).
+                 ['alt', this.renderInlines(inline.children).
                     replace(/\<[^>]*alt="([^"]*)"[^>]*\>/g, '$1').
                     replace(/\<[^>]*\>/g, '')]];
         if (inline.title) {

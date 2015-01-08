@@ -179,14 +179,14 @@ var parseAutolink = function(inlines) {
         dest = m.slice(1, -1);
         inlines.push(
                 {t: 'Link',
-                 label: [{ t: 'Text', c: dest }],
+                 children: [{ t: 'Text', c: dest }],
                  destination: 'mailto:' + encodeURI(unescape(dest)) });
         return true;
     } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
         dest = m.slice(1, -1);
         inlines.push({
                   t: 'Link',
-                  label: [{ t: 'Text', c: dest }],
+                  children: [{ t: 'Text', c: dest }],
                   destination: encodeURI(unescape(dest)) });
         return true;
     } else {
@@ -621,7 +621,7 @@ var parseCloseBracket = function(inlines) {
         inlines.push({t: is_image ? 'Image' : 'Link',
                       destination: dest,
                       title: title,
-                      label: link_text});
+                      children: link_text});
         return true;
 
     } else { // no match
@@ -676,7 +676,6 @@ var parseNewline = function(inlines) {
 var parseReference = function(s, refmap) {
     this.subject = s;
     this.pos = 0;
-    this.label_nest_level = 0;
     var rawlabel;
     var dest;
     var title;
@@ -801,7 +800,6 @@ function InlineParser(){
     "use strict";
     return {
         subject: '',
-        label_nest_level: 0, // used by parseLinkLabel method
         delimiters: null,  // used by parseEmphasis method
         pos: 0,
         refmap: {},
@@ -833,4 +831,3 @@ function InlineParser(){
 }
 
 module.exports = InlineParser;
-
