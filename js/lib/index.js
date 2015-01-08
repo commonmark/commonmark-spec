@@ -17,6 +17,7 @@ var renderAST = function(tree) {
     return util.inspect(tree, {depth: null});
 };
 
+module.exports.Node = require('./node');
 module.exports.DocParser = require('./blocks');
 module.exports.HtmlRenderer = require('./html-renderer');
 module.exports.ASTRenderer = renderAST;

@@ -1,3 +1,5 @@
+Node = require('./node');
+
 var C_GREATERTHAN = 62;
 var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
@@ -48,19 +50,14 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 // These are methods of a DocParser object, defined below.
 
 var makeBlock = function(tag, start_line, start_column) {
-    return { t: tag,
-             open: true,
-             last_line_blank: false,
-             start_line: start_line,
-             start_column: start_column,
-             end_line: start_line,
-             children: [],
-             parent: null,
-             // string_content is formed by concatenating strings, in finalize:
-             string_content: "",
-             strings: [],
-             children: []
-           };
+  var b = new Node(tag);
+  b.pos.start = [start_line, start_column];
+  b.pos.end = [];  // assigned in finalization step
+  b.open = true;
+  b.last_line_blank = false;
+  b.string_content = "";
+  b.strings = [];
+  return b;
 };
 
 // Returns true if parent block can contain child block.
@@ -81,14 +78,17 @@ var acceptsLines = function(block_type) {
 // Returns true if block ends with a blank line, descending if needed
 // into lists and sublists.
 var endsWithBlankLine = function(block) {
-    if (block.last_line_blank) {
+    while (block) {
+      if (block.last_line_blank) {
         return true;
+      }
+      if (block.t === 'List' || block.t === 'ListItem') {
+        block = block.lastChild;
+      } else {
+        break;
+      }
     }
-    if ((block.t === 'List' || block.t === 'ListItem') && block.children.length > 0) {
-        return endsWithBlankLine(block.children[block.children.length - 1]);
-    } else {
-        return false;
-    }
+    return false;
 };
 
 // Break out of all containing lists, resetting the tip of the
@@ -135,8 +135,7 @@ var addChild = function(tag, line_number, offset) {
 
     var column_number = offset + 1; // offset 0 = column 1
     var newBlock = makeBlock(tag, line_number, column_number);
-    this.tip.children.push(newBlock);
-    newBlock.parent = this.tip;
+    this.tip.appendChild(newBlock);
     this.tip = newBlock;
     return newBlock;
 };
@@ -190,7 +189,6 @@ var listsMatch = function(list_data, item_data) {
 var incorporateLine = function(ln, line_number) {
 
     var all_matched = true;
-    var last_child;
     var first_nonspace;
     var offset = 0;
     var match;
@@ -210,12 +208,11 @@ var incorporateLine = function(ln, line_number) {
     // For each containing block, try to parse the associated line start.
     // Bail out on failure: container will point to the last matching block.
     // Set all_matched to false if not all containers match.
-    while (container.children.length > 0) {
-        last_child = container.children[container.children.length - 1];
-        if (!last_child.open) {
+    while (container.lastChild) {
+        if (!container.lastChild.open) {
             break;
         }
-        container = last_child;
+        container = container.lastChild;
 
         match = matchAt(/[^ ]/, ln, offset);
         if (match === -1) {
@@ -472,8 +469,8 @@ var incorporateLine = function(ln, line_number) {
               container.t === 'Header' ||
               container.t === 'FencedCode' ||
               (container.t === 'ListItem' &&
-               container.children.length === 0 &&
-               container.start_line === line_number));
+               !container.firstChild &&
+               container.pos.start[0] === line_number));
 
         var cont = container;
         while (cont.parent) {
@@ -537,10 +534,10 @@ var finalize = function(block, line_number) {
         return 0;
     }
     block.open = false;
-    if (line_number > block.start_line) {
-        block.end_line = line_number - 1;
+    if (line_number > block.pos.start[0]) {
+        block.pos.end = [line_number - 1]; // TODO end column
     } else {
-        block.end_line = line_number;
+        block.pos.end = [line_number];
     }
 
     switch (block.t) {
@@ -584,30 +581,24 @@ var finalize = function(block, line_number) {
     case 'List':
         block.tight = true; // tight by default
 
-        var numitems = block.children.length;
-        var i = 0;
-        while (i < numitems) {
-            var item = block.children[i];
+        var item = block.firstChild;
+        while (item) {
             // check for non-final list item ending with blank line:
-            var last_item = i === numitems - 1;
-            if (endsWithBlankLine(item) && !last_item) {
+            if (endsWithBlankLine(item) && item.next) {
                 block.tight = false;
                 break;
             }
             // recurse into children of list item, to see if there are
             // spaces between any of them:
-            var numsubitems = item.children.length;
-            var j = 0;
-            while (j < numsubitems) {
-                var subitem = item.children[j];
-                var last_subitem = j === numsubitems - 1;
-                if (endsWithBlankLine(subitem) && !(last_item && last_subitem)) {
+            var subitem = item.firstChild;
+            while (subitem) {
+                if (endsWithBlankLine(subitem) && (item.next || subitem.next)) {
                     block.tight = false;
                     break;
                 }
-                j++;
+                subitem = subitem.next;
             }
-            i++;
+            item = item.next;
         }
         break;
 
@@ -621,45 +612,14 @@ var finalize = function(block, line_number) {
 // Walk through a block & children recursively, parsing string content
 // into inline content where appropriate.  Returns new object.
 var processInlines = function(block) {
-    var newblock = {};
-    newblock.t = block.t;
-    newblock.start_line = block.start_line;
-    newblock.start_column = block.start_column;
-    newblock.end_line = block.end_line;
-
-    switch(block.t) {
-    case 'Paragraph':
-        newblock.children =
-            this.inlineParser.parse(block.string_content.trim(), this.refmap);
-        break;
-    case 'Header':
-        newblock.children =
-            this.inlineParser.parse(block.string_content.trim(), this.refmap);
-        newblock.level = block.level;
-        break;
-    case 'List':
-        newblock.list_data = block.list_data;
-        newblock.tight = block.tight;
-        break;
-    case 'CodeBlock':
-        newblock.string_content = block.string_content;
-        newblock.info = block.info;
-        break;
-    case 'HtmlBlock':
-        newblock.string_content = block.string_content;
-        break;
-    default:
-        break;
-    }
-
-    if (block.children && !newblock.children) {
-        var newchildren = [];
-        for (var i = 0; i < block.children.length; i++) {
-            newchildren.push(this.processInlines(block.children[i]));
+    var node, event;
+    var walker = block.walker();
+    while (event = walker.next()) {
+        node = event.node;
+        if (!event.entering && (node.t == 'Paragraph' || node.t == 'Header')) {
+          this.inlineParser.parse(node, this.refmap);
         }
-        newblock.children = newchildren;
     }
-    return newblock;
 };
 
 // The main parsing function.  Returns a parsed document AST.
@@ -675,7 +635,8 @@ var parse = function(input) {
     while (this.tip) {
         this.finalize(this.tip, len - 1);
     }
-    return this.processInlines(this.doc);
+    this.processInlines(this.doc);
+    return this.doc;
 };
 
 

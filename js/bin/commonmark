@@ -14,7 +14,7 @@ var files = [];
 if (process.argv[2] === '--ast') {
   files = process.argv.slice(3);
   renderer = { render: function(x) {
-                          return util.inspect(x, null, Infinity) + '\n';
+                          return util.inspect(x.toAST(), null, Infinity, true) + '\n';
                         } };
 } else {
   files = process.argv.slice(2);

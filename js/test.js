@@ -56,7 +56,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
       current_section = example.section;
       cursor.reset().write(current_section).reset().write('  ');
     }
-    var actual = writer.renderBlock(reader.parse(example.markdown.replace(/→/g, '\t')));
+    var actual = writer.render(reader.parse(example.markdown.replace(/→/g, '\t')));
     if (actual === example.html) {
       passed++;
       cursor.green().write('✓').reset();

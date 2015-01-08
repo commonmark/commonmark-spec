@@ -17,7 +17,7 @@ suite.add('commonmark.js markdown->html', function() {
   "use strict";
   var doc = new sm.DocParser().parse(contents);
   var renderer = new sm.HtmlRenderer();
-  renderer.renderBlock(doc);
+  renderer.render(doc);
 })
 
 .add('showdown.js markdown->html', function() {

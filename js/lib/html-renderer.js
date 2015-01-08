@@ -1,6 +1,6 @@
-// Helper function to produce content in a pair of HTML tags.
-var inTags = function(tag, attribs, contents, selfclosing) {
-    var result = '<' + tag;
+// Helper function to produce an HTML tag.
+var tag = function(name, attribs, selfclosing) {
+    var result = '<' + name;
     if (attribs) {
         var i = 0;
         var attrib;
@@ -9,131 +9,206 @@ var inTags = function(tag, attribs, contents, selfclosing) {
             i++;
         }
     }
-    if (contents) {
-        result = result.concat('>', contents, '</', tag, '>');
-    } else if (selfclosing) {
-        result = result + ' />';
-    } else {
-        result = result.concat('></', tag, '>');
-    }
+    if (selfclosing)
+        result += ' /';
+
+    result += '>';
     return result;
 };
 
-// Render an inline element as HTML.
-var renderInline = function(inline) {
+var renderNodes = function(block) {
+
     var attrs;
-    switch (inline.t) {
-    case 'Text':
-        return this.escape(inline.c);
-    case 'Softbreak':
-        return this.softbreak;
-    case 'Hardbreak':
-        return inTags('br', [], "", true) + '\n';
-    case 'Emph':
-        return inTags('em', [], this.renderInlines(inline.children));
-    case 'Strong':
-        return inTags('strong', [], this.renderInlines(inline.children));
-    case 'Html':
-        return inline.c;
-    case 'Link':
-        attrs = [['href', this.escape(inline.destination, true)]];
-        if (inline.title) {
-            attrs.push(['title', this.escape(inline.title, true)]);
-        }
-        return inTags('a', attrs, this.renderInlines(inline.children));
-    case 'Image':
-        attrs = [['src', this.escape(inline.destination, true)],
-                 ['alt', this.renderInlines(inline.children).
-                    replace(/\<[^>]*alt="([^"]*)"[^>]*\>/g, '$1').
-                    replace(/\<[^>]*\>/g, '')]];
-        if (inline.title) {
-            attrs.push(['title', this.escape(inline.title, true)]);
-        }
-        return inTags('img', attrs, "", true);
-    case 'Code':
-        return inTags('code', [], this.escape(inline.c));
-    default:
-        console.log("Unknown inline type " + inline.t);
-        return "";
-    }
-};
-
-// Render a list of inlines.
-var renderInlines = function(inlines) {
-    var result = '';
-    for (var i = 0; i < inlines.length; i++) {
-        result = result + this.renderInline(inlines[i]);
-    }
-    return result;
-};
-
-// Render a single block element.
-var renderBlock = function(block, in_tight_list) {
-    var tag;
-    var attr;
     var info_words;
-    switch (block.t) {
-    case 'Document':
-        var whole_doc = this.renderBlocks(block.children);
-        return (whole_doc === '' ? '' : whole_doc + '\n');
-    case 'Paragraph':
-        if (in_tight_list) {
-            return this.renderInlines(block.children);
+    var tagname;
+    var walker = block.walker();
+    var event, node, entering;
+    var buffer = [];
+    var disableTags = 0;
+    var grandparent;
+    var out = function(s) {
+        if (disableTags > 0) {
+              buffer.push(s.replace(/\<[^>]*\>/g, ''));
         } else {
-            return inTags('p', [], this.renderInlines(block.children));
+            buffer.push(s);
         }
-        break;
-    case 'BlockQuote':
-        var filling = this.renderBlocks(block.children);
-        return inTags('blockquote', [], filling === '' ? this.innersep :
-                      this.innersep + filling + this.innersep);
-    case 'ListItem':
-        var contents = this.renderBlocks(block.children, in_tight_list);
-        if (/^[<]/.test(contents)) {
-            contents = '\n' + contents;
-        }
-        if (/[>]$/.test(contents)) {
-            contents = contents + '\n';
-        }
-        return inTags('li', [], contents, false).trim();
-    case 'List':
-        tag = block.list_data.type === 'Bullet' ? 'ul' : 'ol';
-        attr = (!block.list_data.start || block.list_data.start === 1) ?
-            [] : [['start', block.list_data.start.toString()]];
-        return inTags(tag, attr, this.innersep +
-                      this.renderBlocks(block.children, block.tight) +
-                      this.innersep);
-    case 'Header':
-        tag = 'h' + block.level;
-        return inTags(tag, [], this.renderInlines(block.children));
-    case 'CodeBlock':
-        info_words = block.info ? block.info.split(/ +/) : [];
-        attr = (info_words.length === 0 || info_words[0].length === 0) ?
-            [] : [['class', 'language-' + this.escape(info_words[0], true)]];
-        return inTags('pre', [],
-                      inTags('code', attr, this.escape(block.string_content)));
-    case 'HtmlBlock':
-        return block.string_content;
-    case 'ReferenceDef':
-        return "";
-    case 'HorizontalRule':
-        return inTags('hr', [], "", true);
-    default:
-        console.log("Unknown block type " + block.t);
-        return "";
     }
+    var esc = this.escape;
+    var cr = function() {
+        if (buffer.length > 0 && buffer[buffer.length - 1] !== '\n') {
+            out('\n');
+        }
+    }
+
+    while (event = walker.next()) {
+        entering = event.entering;
+        node = event.node;
+
+        switch (node.t) {
+        case 'Text':
+            out(esc(node.c));
+            break;
+
+        case 'Softbreak':
+            out(this.softbreak);
+            break;
+
+        case 'Hardbreak':
+            out(tag('br', [], true));
+            cr();
+            break;
+
+        case 'Emph':
+            out(tag(entering ? 'em' : '/em'));
+            break;
+
+        case 'Strong':
+            out(tag(entering ? 'strong' : '/strong'));
+            break;
+
+        case 'Emph':
+            out(tag(entering ? 'strong' : '/strong'));
+            break;
+
+        case 'Html':
+            out(node.c);
+            break;
+
+        case 'Link':
+            if (entering) {
+                attrs = [['href', esc(node.destination, true)]];
+                if (node.title) {
+                    attrs.push(['title', esc(node.title, true)]);
+                }
+                out(tag('a', attrs));
+            } else {
+                out(tag('/a'));
+            }
+            break;
+
+        case 'Image':
+            if (entering) {
+                if (disableTags == 0) {
+                    out('<img src="' + esc(node.destination, true) +
+                        '" alt="');
+                }
+                disableTags += 1;
+            } else {
+                disableTags -= 1;
+                if (disableTags == 0) {
+                    if (node.title) {
+                        out('" title="' + esc(node.title, true));
+                    }
+                    out('" />');
+                }
+            }
+            break;
+
+        case 'Code':
+            out(tag('code') + esc(node.c) + tag('/code'));
+            break;
+
+        case 'Document':
+            break;
+
+        case 'Paragraph':
+            grandparent = node.parent.parent;
+            if (grandparent !== null &&
+                grandparent.t === 'List') {
+                if (grandparent.tight)
+                    break;
+            }
+            if (entering) {
+                cr();
+                out(tag('p'));
+            } else {
+                out(tag('/p'));
+                cr();
+            }
+            break;
+
+        case 'BlockQuote':
+            if (entering) {
+                cr();
+                out(tag('blockquote'));
+                cr();
+            } else {
+                cr();
+                out(tag('/blockquote'));
+                cr();
+            }
+            break;
+
+        case 'ListItem':
+            if (entering) {
+                out(tag('li'));
+            } else {
+                out(tag('/li'));
+                cr();
+            }
+            break;
+
+        case 'List':
+            tagname = node.list_data.type === 'Bullet' ? 'ul' : 'ol';
+            if (entering) {
+                attr = (!node.list_data.start || node.list_data.start === 1) ?
+                    [] : [['start', node.list_data.start.toString()]];
+                cr();
+                out(tag(tagname, attr));
+                cr();
+            } else {
+                cr();
+                out(tag('/' + tagname));
+                cr();
+            }
+            break;
+
+        case 'Header':
+            tagname = 'h' + node.level;
+            if (entering) {
+                cr();
+                out(tag(tagname));
+            } else {
+                out(tag('/' + tagname));
+                cr();
+            }
+            break;
+
+        case 'CodeBlock':
+            info_words = node.info ? node.info.split(/ +/) : [];
+            attr = (info_words.length === 0 || info_words[0].length === 0)
+                ? [] : [['class', 'language-' + esc(info_words[0], true)]];
+            cr();
+            out(tag('pre') + tag('code', attr));
+            out(this.escape(node.string_content));
+            out(tag('/code') + tag('/pre'));
+            cr();
+            break;
+
+        case 'HtmlBlock':
+            cr();
+            out(node.string_content);
+            cr();
+            break;
+
+        case 'HorizontalRule':
+            cr();
+            out(tag('hr', [], true));
+            cr();
+            break;
+
+
+        case 'ReferenceDef':
+            break;
+
+        default:
+            console.log("Unknown node type " + node.t);
+        }
+
+    }
+    return buffer.join('');
 };
 
-// Render a list of block elements, separated by this.blocksep.
-var renderBlocks = function(blocks, in_tight_list) {
-    var result = [];
-    for (var i = 0; i < blocks.length; i++) {
-        if (blocks[i].t !== 'ReferenceDef') {
-            result.push(this.renderBlock(blocks[i], in_tight_list));
-        }
-    }
-    return result.join(this.blocksep);
-};
 
 // The HtmlRenderer object.
 function HtmlRenderer(){
@@ -157,11 +232,7 @@ function HtmlRenderer(){
                     .replace(/["]/g, '&quot;');
             }
         },
-        renderInline: renderInline,
-        renderInlines: renderInlines,
-        renderBlock: renderBlock,
-        renderBlocks: renderBlocks,
-        render: renderBlock
+        render: renderNodes
     };
 }
 

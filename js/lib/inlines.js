@@ -85,6 +85,12 @@ var normalizeReference = function(s) {
         .toUpperCase();
 };
 
+var text = function(s) {
+    var node = new Node('Text');
+    node.c = s;
+    return node;
+}
+
 // INLINE PARSER
 
 // These are methods of an InlineParser object, defined below.
@@ -123,9 +129,9 @@ var spnl = function() {
 // in the subject.  If they succeed in matching anything, they
 // return the inline matched, advancing the subject.
 
-// Attempt to parse backticks, returning either a backtick code span or a
+// Attempt to parse backticks, adding either a backtick code span or a
 // literal sequence of backticks.
-var parseBackticks = function(inlines) {
+var parseBackticks = function(block) {
     var ticks = this.match(/^`+/);
     if (!ticks) {
         return 0;
@@ -133,37 +139,42 @@ var parseBackticks = function(inlines) {
     var afterOpenTicks = this.pos;
     var foundCode = false;
     var matched;
+    var node;
     while (!foundCode && (matched = this.match(/`+/m))) {
         if (matched === ticks) {
-            inlines.push({ t: 'Code', c: this.subject.slice(afterOpenTicks,
-                                                      this.pos - ticks.length)
-                     .replace(/[ \n]+/g, ' ')
-                      .trim() });
+            node = new Node('Code');
+            node.c = this.subject.slice(afterOpenTicks,
+                                        this.pos - ticks.length)
+                          .replace(/[ \n]+/g, ' ')
+                          .trim();
+            block.appendChild(node);
             return true;
         }
     }
     // If we got here, we didn't match a closing backtick sequence.
     this.pos = afterOpenTicks;
-    inlines.push({ t: 'Text', c: ticks });
+    block.appendChild(text(ticks));
     return true;
 };
 
 // Parse a backslash-escaped special character, adding either the escaped
 // character, a hard line break (if the backslash is followed by a newline),
-// or a literal backslash to the 'inlines' list.
-var parseBackslash = function(inlines) {
+// or a literal backslash to the block's children.
+var parseBackslash = function(block) {
     var subj = this.subject,
         pos = this.pos;
+    var node;
     if (subj.charCodeAt(pos) === C_BACKSLASH) {
         if (subj.charAt(pos + 1) === '\n') {
             this.pos = this.pos + 2;
-            inlines.push({ t: 'Hardbreak' });
+            node = new Node('Hardbreak');
+            block.appendChild(node);
         } else if (reEscapable.test(subj.charAt(pos + 1))) {
             this.pos = this.pos + 2;
-            inlines.push({ t: 'Text', c: subj.charAt(pos + 1) });
+            block.appendChild(text(subj.charAt(pos + 1)));
         } else {
             this.pos++;
-            inlines.push({t: 'Text', c: '\\'});
+            block.appendChild(text('\\'));
         }
         return true;
     } else {
@@ -172,22 +183,23 @@ var parseBackslash = function(inlines) {
 };
 
 // Attempt to parse an autolink (URL or email in pointy brackets).
-var parseAutolink = function(inlines) {
+var parseAutolink = function(block) {
     var m;
     var dest;
+    var node;
     if ((m = this.match(/^<([a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*)>/))) {  // email autolink
         dest = m.slice(1, -1);
-        inlines.push(
-                {t: 'Link',
-                 children: [{ t: 'Text', c: dest }],
-                 destination: 'mailto:' + encodeURI(unescape(dest)) });
+        node = new Node('Link');
+        node.destination = 'mailto:' + encodeURI(unescape(dest));
+        node.appendChild(text(dest));
+        block.appendChild(node);
         return true;
     } else if ((m = this.match(/^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data|dav|dict|dns|file|ftp|geo|go|gopher|h323|http|https|iax|icap|im|imap|info|ipp|iris|iris.beep|iris.xpc|iris.xpcs|iris.lwz|ldap|mailto|mid|msrp|msrps|mtqp|mupdate|news|nfs|ni|nih|nntp|opaquelocktoken|pop|pres|rtsp|service|session|shttp|sieve|sip|sips|sms|snmp|soap.beep|soap.beeps|tag|tel|telnet|tftp|thismessage|tn3270|tip|tv|urn|vemmi|ws|wss|xcon|xcon-userid|xmlrpc.beep|xmlrpc.beeps|xmpp|z39.50r|z39.50s|adiumxtra|afp|afs|aim|apt|attachment|aw|beshare|bitcoin|bolo|callto|chrome|chrome-extension|com-eventbrite-attendee|content|cvs|dlna-playsingle|dlna-playcontainer|dtn|dvb|ed2k|facetime|feed|finger|fish|gg|git|gizmoproject|gtalk|hcp|icon|ipn|irc|irc6|ircs|itms|jar|jms|keyparc|lastfm|ldaps|magnet|maps|market|message|mms|ms-help|msnim|mumble|mvn|notes|oid|palm|paparazzi|platform|proxy|psyc|query|res|resource|rmi|rsync|rtmp|secondlife|sftp|sgn|skype|smb|soldat|spotify|ssh|steam|svn|teamspeak|things|udp|unreal|ut2004|ventrilo|view-source|webcal|wtai|wyciwyg|xfire|xri|ymsgr):[^<>\x00-\x20]*>/i))) {
         dest = m.slice(1, -1);
-        inlines.push({
-                  t: 'Link',
-                  children: [{ t: 'Text', c: dest }],
-                  destination: encodeURI(unescape(dest)) });
+        node = new Node('Link');
+        node.destination = encodeURI(unescape(dest));
+        node.appendChild(text(dest));
+        block.appendChild(node);
         return true;
     } else {
         return false;
@@ -195,10 +207,13 @@ var parseAutolink = function(inlines) {
 };
 
 // Attempt to parse a raw HTML tag.
-var parseHtmlTag = function(inlines) {
+var parseHtmlTag = function(block) {
     var m = this.match(reHtmlTag);
+    var node;
     if (m) {
-        inlines.push({ t: 'Html', c: m });
+        node = new Node('Html');
+        node.c = m;
+        block.appendChild(node);
         return true;
     } else {
         return false;
@@ -247,20 +262,8 @@ var scanDelims = function(cc) {
              can_close: can_close };
 };
 
-var Emph = function(ils) {
-    return {t: 'Emph', children: ils};
-};
-
-var Strong = function(ils) {
-    return {t: 'Strong', children: ils};
-};
-
-var Str = function(s) {
-    return {t: 'Text', c: s};
-};
-
 // Attempt to parse emphasis or strong emphasis.
-var parseEmphasis = function(cc, inlines) {
+var parseEmphasis = function(cc, block) {
 
     var res = this.scanDelims(cc);
     var numdelims = res.numdelims;
@@ -271,12 +274,13 @@ var parseEmphasis = function(cc, inlines) {
     }
 
     this.pos += numdelims;
-    inlines.push(Str(this.subject.slice(startpos, this.pos)));
+    var node = text(this.subject.slice(startpos, this.pos));
+    block.appendChild(node);
 
     // Add entry to stack for this opener
     this.delimiters = { cc: cc,
                         numdelims: numdelims,
-                        pos: inlines.length - 1,
+                        node: node,
                         previous: this.delimiters,
                         next: null,
                         can_open: res.can_open,
@@ -302,28 +306,14 @@ var removeDelimiter = function(delim) {
     }
 };
 
-var removeGaps = function(inlines) {
-    // remove gaps from inlines
-    var i, j;
-    j = 0;
-    for (i = 0 ; i < inlines.length; i++) {
-        if (inlines[i] !== null) {
-            inlines[j] = inlines[i];
-            j++;
-        }
-    }
-    inlines.splice(j);
-};
-
-var processEmphasis = function(inlines, stack_bottom) {
+var processEmphasis = function(block, stack_bottom) {
     "use strict";
     var opener, closer;
     var opener_inl, closer_inl;
     var nextstack, tempstack;
     var use_delims;
     var contents;
-    var emph;
-    var i;
+    var tmp, next;
 
     // find first closer above stack_bottom:
     closer = this.delimiters;
@@ -350,8 +340,8 @@ var processEmphasis = function(inlines, stack_bottom) {
                     use_delims = closer.numdelims % 2 === 0 ? 2 : 1;
                 }
 
-                opener_inl = inlines[opener.pos];
-                closer_inl = inlines[closer.pos];
+                opener_inl = opener.node;
+                closer_inl = closer.node;
 
                 // remove used delimiters from stack elts and inlines
                 opener.numdelims -= use_delims;
@@ -360,16 +350,17 @@ var processEmphasis = function(inlines, stack_bottom) {
                 closer_inl.c = closer_inl.c.slice(0, closer_inl.c.length - use_delims);
 
                 // build contents for new emph element
-                contents = inlines.slice(opener.pos + 1, closer.pos);
-                removeGaps(contents);
+                var emph = new Node(use_delims === 1 ? 'Emph' : 'Strong');
 
-                emph = use_delims === 1 ? Emph(contents) : Strong(contents);
-
-                // insert into list of inlines
-                inlines[opener.pos + 1] = emph;
-                for (i = opener.pos + 2; i < closer.pos; i++) {
-                    inlines[i] = null;
+                tmp = opener_inl.next;
+                while (tmp && tmp !== closer_inl) {
+                    next = tmp.next;
+                    tmp.unlink();
+                    emph.appendChild(tmp);
+                    tmp = next;
                 }
+
+                opener_inl.insertAfter(emph);
 
                 // remove elts btw opener and closer in delimiters stack
                 tempstack = closer.previous;
@@ -381,17 +372,16 @@ var processEmphasis = function(inlines, stack_bottom) {
 
                 // if opener has 0 delims, remove it and the inline
                 if (opener.numdelims === 0) {
-                    inlines[opener.pos] = null;
+                    opener_inl.unlink();
                     this.removeDelimiter(opener);
                 }
 
                 if (closer.numdelims === 0) {
-                    inlines[closer.pos] = null;
+                    closer_inl.unlink();
                     tempstack = closer.next;
                     this.removeDelimiter(closer);
                     closer = tempstack;
                 }
-
 
             } else {
                 closer = closer.next;
@@ -402,8 +392,6 @@ var processEmphasis = function(inlines, stack_bottom) {
         }
 
     }
-
-    removeGaps(inlines);
 
     // remove all delimiters
     while (this.delimiters !== stack_bottom) {
@@ -445,18 +433,19 @@ var parseLinkLabel = function() {
     return m === null ? 0 : m.length;
 };
 
-// Add open bracket to delimiter stack and add a Str to inlines.
-var parseOpenBracket = function(inlines) {
+// Add open bracket to delimiter stack and add a text node to block's children.
+var parseOpenBracket = function(block) {
 
     var startpos = this.pos;
     this.pos += 1;
 
-    inlines.push(Str("["));
+    var node = text('[');
+    block.appendChild(node);
 
     // Add entry to stack for this opener
     this.delimiters = { cc: C_OPEN_BRACKET,
                         numdelims: 1,
-                        pos: inlines.length - 1,
+                        node: node,
                         previous: this.delimiters,
                         next: null,
                         can_open: true,
@@ -472,19 +461,21 @@ var parseOpenBracket = function(inlines) {
 };
 
 // IF next character is [, and ! delimiter to delimiter stack and
-// add a Str to inlines.  Otherwise just add a Str.
-var parseBang = function(inlines) {
+// add a text node to block's children.  Otherwise just add a text node.
+var parseBang = function(block) {
 
     var startpos = this.pos;
     this.pos += 1;
     if (this.peek() === C_OPEN_BRACKET) {
         this.pos += 1;
-        inlines.push(Str("!["));
+
+        var node = text('![');
+        block.appendChild(node);
 
         // Add entry to stack for this opener
         this.delimiters = { cc: C_BANG,
                             numdelims: 1,
-                            pos: inlines.length - 1,
+                            node: node,
                             previous: this.delimiters,
                             next: null,
                             can_open: true,
@@ -495,22 +486,21 @@ var parseBang = function(inlines) {
             this.delimiters.previous.next = this.delimiters;
         }
     } else {
-        inlines.push(Str("!"));
+        block.appendChild(text('!'));
     }
     return true;
 };
 
 // Try to match close bracket against an opening in the delimiter
 // stack.  Add either a link or image, or a plain [ character,
-// to the inlines stack.  If there is a matching delimiter,
+// to block's children.  If there is a matching delimiter,
 // remove it from the delimiter stack.
-var parseCloseBracket = function(inlines) {
+var parseCloseBracket = function(block) {
     var startpos;
     var is_image;
     var dest;
     var title;
     var matched = false;
-    var link_text;
     var i;
     var reflabel;
     var opener;
@@ -530,13 +520,13 @@ var parseCloseBracket = function(inlines) {
 
     if (opener === null) {
         // no matched opener, just return a literal
-        inlines.push(Str("]"));
+        block.appendChild(text(']'));
         return true;
     }
 
     if (!opener.active) {
         // no matched opener, just return a literal
-        inlines.push(Str("]"));
+        block.appendChild(text(']'));
         // take opener off emphasis stack
         this.removeDelimiter(opener);
         return true;
@@ -544,15 +534,6 @@ var parseCloseBracket = function(inlines) {
 
     // If we got here, open is a potential opener
     is_image = opener.cc === C_BANG;
-    // instead of copying a slice, we null out the
-    // parts of inlines that don't correspond to link_text;
-    // later, we'll collapse them.  This is awkward, and could
-    // be simplified if we made inlines a linked list rather than
-    // an array:
-    link_text = inlines.slice(0);
-    for (i = 0; i < opener.pos + 1; i++) {
-        link_text[i] = null;
-    }
 
     // Check to see if we have a link/image
 
@@ -597,13 +578,22 @@ var parseCloseBracket = function(inlines) {
     }
 
     if (matched) {
-        this.processEmphasis(link_text, opener.previous);
+        var node = new Node(is_image ? 'Image' : 'Link');
+        node.destination = dest;
+        node.title = title;
 
-        // remove the part of inlines that became link_text.
-        // see note above on why we need to do this instead of splice:
-        for (i = opener.pos; i < inlines.length; i++) {
-            inlines[i] = null;
+        var tmp, next;
+        tmp = opener.node.next;
+        while (tmp) {
+            next = tmp.next;
+            tmp.unlink();
+            node.appendChild(tmp);
+            tmp = next;
         }
+        block.appendChild(node);
+        this.processEmphasis(node, opener.previous);
+
+        opener.node.unlink();
 
         // processEmphasis will remove this and later delimiters.
         // Now, for a link, we also deactivate earlier link openers.
@@ -618,27 +608,23 @@ var parseCloseBracket = function(inlines) {
           }
         }
 
-        inlines.push({t: is_image ? 'Image' : 'Link',
-                      destination: dest,
-                      title: title,
-                      children: link_text});
         return true;
 
     } else { // no match
 
         this.removeDelimiter(opener);  // remove this opener from stack
         this.pos = startpos;
-        inlines.push(Str("]"));
+        block.appendChild(text(']'));
         return true;
     }
 
 };
 
 // Attempt to parse an entity, return Entity object if successful.
-var parseEntity = function(inlines) {
+var parseEntity = function(block) {
     var m;
     if ((m = this.match(reEntityHere))) {
-        inlines.push({ t: 'Text', c: entityToChar(m) });
+        block.appendChild(text(entityToChar(m)));
         return true;
     } else {
         return false;
@@ -646,11 +632,11 @@ var parseEntity = function(inlines) {
 };
 
 // Parse a run of ordinary characters, or a single character with
-// a special meaning in markdown, as a plain string, adding to inlines.
-var parseString = function(inlines) {
+// a special meaning in markdown, as a plain string.
+var parseString = function(block) {
     var m;
     if ((m = this.match(reMain))) {
-        inlines.push({ t: 'Text', c: m });
+        block.appendChild(text(m));
         return true;
     } else {
         return false;
@@ -659,17 +645,15 @@ var parseString = function(inlines) {
 
 // Parse a newline.  If it was preceded by two spaces, return a hard
 // line break; otherwise a soft line break.
-var parseNewline = function(inlines) {
+var parseNewline = function(block) {
     var m = this.match(/^ *\n/);
     if (m) {
-        if (m.length > 2) {
-            inlines.push({ t: 'Hardbreak' });
-        } else if (m.length > 0) {
-            inlines.push({ t: 'Softbreak' });
-        }
+        var node = new Node(m.length > 2 ? 'Hardbreak' : 'Softbreak');
+        block.appendChild(node);
         return true;
+    } else {
+      return false;
     }
-    return false;
 };
 
 // Attempt to parse a link reference, modifying refmap.
@@ -731,9 +715,9 @@ var parseReference = function(s, refmap) {
 };
 
 // Parse the next inline element in subject, advancing subject position.
-// On success, add the result to the inlines list, and return true.
+// On success, add the result to block's children and return true.
 // On failure, return false.
-var parseInline = function(inlines) {
+var parseInline = function(block) {
     "use strict";
     var c = this.peek();
     if (c === -1) {
@@ -743,56 +727,57 @@ var parseInline = function(inlines) {
     switch(c) {
     case C_NEWLINE:
     case C_SPACE:
-        res = this.parseNewline(inlines);
+        res = this.parseNewline(block);
         break;
     case C_BACKSLASH:
-        res = this.parseBackslash(inlines);
+        res = this.parseBackslash(block);
         break;
     case C_BACKTICK:
-        res = this.parseBackticks(inlines);
+        res = this.parseBackticks(block);
         break;
     case C_ASTERISK:
     case C_UNDERSCORE:
-        res = this.parseEmphasis(c, inlines);
+        res = this.parseEmphasis(c, block);
         break;
     case C_OPEN_BRACKET:
-        res = this.parseOpenBracket(inlines);
+        res = this.parseOpenBracket(block);
         break;
     case C_BANG:
-        res = this.parseBang(inlines);
+        res = this.parseBang(block);
         break;
     case C_CLOSE_BRACKET:
-        res = this.parseCloseBracket(inlines);
+        res = this.parseCloseBracket(block);
         break;
     case C_LESSTHAN:
-        res = this.parseAutolink(inlines) || this.parseHtmlTag(inlines);
+        res = this.parseAutolink(block) || this.parseHtmlTag(block);
         break;
     case C_AMPERSAND:
-        res = this.parseEntity(inlines);
+        res = this.parseEntity(block);
         break;
     default:
-        res = this.parseString(inlines);
+        res = this.parseString(block);
         break;
     }
     if (!res) {
         this.pos += 1;
-        inlines.push({t: 'Text', c: fromCodePoint(c)});
+        var textnode = new Node('Text');
+        textnode.c = fromCodePoint(c);
+        block.appendChild(textnode);
     }
 
     return true;
 };
 
-// Parse s as a list of inlines, using refmap to resolve references.
-var parseInlines = function(s, refmap) {
-    this.subject = s;
+// Parse string_content in block into inline children,
+// using refmap to resolve references.
+var parseInlines = function(block, refmap) {
+    this.subject = block.string_content.trim();
     this.pos = 0;
     this.refmap = refmap || {};
     this.delimiters = null;
-    var inlines = [];
-    while (this.parseInline(inlines)) {
+    while (this.parseInline(block)) {
     }
-    this.processEmphasis(inlines, null);
-    return inlines;
+    this.processEmphasis(block, null);
 };
 
 // The InlineParser object.
