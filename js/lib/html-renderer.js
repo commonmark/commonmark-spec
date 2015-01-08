@@ -30,9 +30,9 @@ var renderInline = function(inline) {
     case 'Hardbreak':
         return inTags('br', [], "", true) + '\n';
     case 'Emph':
-        return inTags('em', [], this.renderInlines(inline.c));
+        return inTags('em', [], this.renderInlines(inline.children));
     case 'Strong':
-        return inTags('strong', [], this.renderInlines(inline.c));
+        return inTags('strong', [], this.renderInlines(inline.children));
     case 'Html':
         return inline.c;
     case 'Link':

@@ -248,11 +248,11 @@ var scanDelims = function(cc) {
 };
 
 var Emph = function(ils) {
-    return {t: 'Emph', c: ils};
+    return {t: 'Emph', children: ils};
 };
 
 var Strong = function(ils) {
-    return {t: 'Strong', c: ils};
+    return {t: 'Strong', children: ils};
 };
 
 var Str = function(s) {
