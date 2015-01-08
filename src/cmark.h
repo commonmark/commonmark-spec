@@ -163,6 +163,11 @@ cmark_node_last_child(cmark_node *node);
  *
  *         cmark_iter_free(iter);
  *     }
+ *
+ * Note that if you delete the current node, its first child, or its
+ * next sibling, the iterator may point to a nonexistent note.
+ * Use 'cmark_iter_reset' to set its pointer to the next node that
+ * should be traversed.
  */
 
 /** Creates a new iterator starting at 'root'.
@@ -176,6 +181,15 @@ cmark_iter_new(cmark_node *root);
 CMARK_EXPORT
 void
 cmark_iter_free(cmark_iter *iter);
+
+/** Resets the iterator so that the current node is 'current' and
+    the event type is 'event_type'.  Use this to resume after destructively
+    modifying the tree structure.
+ */
+CMARK_EXPORT
+void
+cmark_iter_reset(cmark_iter *iter, cmark_node *current,
+		 cmark_event_type event_type);
 
 /** Returns the event type (`CMARK_EVENT_ENTER`, `CMARK_EVENT_EXIT`,
  * or `CMARK_EVENT_DONE`) for the next node.

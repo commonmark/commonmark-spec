@@ -48,6 +48,14 @@ int S_is_leaf(cmark_node *node)
 	}
 }
 
+void
+cmark_iter_reset(cmark_iter *iter, cmark_node *current,
+		 cmark_event_type event_type)
+{
+	iter->event_type = event_type;
+	iter->current = current;
+}
+
 cmark_node*
 cmark_iter_get_node(cmark_iter *iter)
 {
