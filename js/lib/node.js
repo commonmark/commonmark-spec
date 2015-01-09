@@ -70,8 +70,8 @@ function Node(nodeType, pos) {
     this.pos = pos || {};
     this.last_line_blank = false;
     this.open = true;
-    this.strings = [];
-    this.string_content = "";
+    this.strings = undefined;
+    this.string_content = undefined;
     this.c = undefined;
     this.list_data = undefined;
     this.info = undefined;

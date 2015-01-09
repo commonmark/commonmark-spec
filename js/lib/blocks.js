@@ -137,6 +137,8 @@ var addChild = function(tag, line_number, offset) {
 
     var column_number = offset + 1; // offset 0 = column 1
     var newBlock = new Node(tag, { start: [line_number, column_number], end: [] });
+    newBlock.strings = [];
+    newBlock.string_content = "";
     this.tip.appendChild(newBlock);
     this.tip = newBlock;
     return newBlock;
@@ -635,10 +637,17 @@ var processInlines = function(block) {
     }
 };
 
+var Document = function() {
+    var doc = new Node('Document', { start: [1, 1], end: [] });
+    doc.string_content = "";
+    doc.strings = [];
+    return doc;
+};
+
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
     "use strict";
-    this.doc = new Node('Document', { start: [1, 1], end: [] });
+    this.doc = Document();
     this.tip = this.doc;
     this.refmap = {};
     var lines = input.replace(/\n$/, '').split(/\r\n|\n|\r/);
@@ -658,7 +667,7 @@ var parse = function(input) {
 function DocParser(){
     "use strict";
     return {
-        doc: new Node('Document', { start: [1, 1], end: [] }),
+        doc: Document(),
         tip: this.doc,
         refmap: {},
         inlineParser: new InlineParser(),
