@@ -68,9 +68,7 @@ var reEntityHere = new RegExp('^' + ENTITY, 'i');
 
 var reEntity = new RegExp(ENTITY, 'gi');
 
-// Matches a character with a special meaning in markdown,
-// or a string of non-special characters.  Note:  we match
-// clumps of _ or * or `, because they need to be handled in groups.
+// Matches a string of non-special characters.
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
 // Replace entities and backslash escapes with literal characters.
