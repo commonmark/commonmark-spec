@@ -2,10 +2,12 @@ var Benchmark = require('benchmark').Benchmark;
 var suite = new Benchmark.Suite();
 var fs = require('fs');
 var sm = require('./lib/index.js');
-// https://github.com/coreyti/showdown
-var showdown = require('../../showdown/src/showdown');
-// https://github.com/chjj/marked
-var marked = require('../../marked/marked.min.js');
+// npm install showdown
+var showdown = require('showdown');
+// npm install marked
+var marked = require('marked');
+// npm install markdown-it
+var markdownit = require('markdown-it')('commonmark');
 
 var benchfile = process.argv[2];
 
@@ -27,6 +29,11 @@ suite.add('commonmark.js markdown->html', function() {
 .add('marked.js markdown->html', function() {
   "use strict";
   marked(contents);
+})
+
+.add('markdown-it markdown->html', function() {
+  "use strict";
+  markdownit.render(contents);
 })
 
 .on('cycle', function(event) {
