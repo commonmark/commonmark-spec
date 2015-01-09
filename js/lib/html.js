@@ -1,3 +1,5 @@
+"use strict";
+
 // Helper function to produce an HTML tag.
 var tag = function(name, attribs, selfclosing) {
     var result = '<' + name;
@@ -9,8 +11,9 @@ var tag = function(name, attribs, selfclosing) {
             i++;
         }
     }
-    if (selfclosing)
+    if (selfclosing) {
         result += ' /';
+    }
 
     result += '>';
     return result;
@@ -28,19 +31,19 @@ var renderNodes = function(block) {
     var grandparent;
     var out = function(s) {
         if (disableTags > 0) {
-              buffer.push(s.replace(/\<[^>]*\>/g, ''));
+            buffer.push(s.replace(/\<[^>]*\>/g, ''));
         } else {
             buffer.push(s);
         }
-    }
+    };
     var esc = this.escape;
     var cr = function() {
         if (buffer.length > 0 && buffer[buffer.length - 1] !== '\n') {
             out('\n');
         }
-    }
+    };
 
-    while (event = walker.next()) {
+    while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
 
@@ -88,14 +91,14 @@ var renderNodes = function(block) {
 
         case 'Image':
             if (entering) {
-                if (disableTags == 0) {
+                if (disableTags === 0) {
                     out('<img src="' + esc(node.destination, true) +
                         '" alt="');
                 }
                 disableTags += 1;
             } else {
                 disableTags -= 1;
-                if (disableTags == 0) {
+                if (disableTags === 0) {
                     if (node.title) {
                         out('" title="' + esc(node.title, true));
                     }
@@ -115,8 +118,9 @@ var renderNodes = function(block) {
             grandparent = node.parent.parent;
             if (grandparent !== null &&
                 grandparent.t === 'List') {
-                if (grandparent.tight)
+                if (grandparent.tight) {
                     break;
+                }
             }
             if (entering) {
                 cr();
@@ -151,10 +155,10 @@ var renderNodes = function(block) {
         case 'List':
             tagname = node.list_data.type === 'Bullet' ? 'ul' : 'ol';
             if (entering) {
-                attr = (!node.list_data.start || node.list_data.start === 1) ?
+                attrs = (!node.list_data.start || node.list_data.start === 1) ?
                     [] : [['start', node.list_data.start.toString()]];
                 cr();
-                out(tag(tagname, attr));
+                out(tag(tagname, attrs));
                 cr();
             } else {
                 cr();
@@ -176,10 +180,10 @@ var renderNodes = function(block) {
 
         case 'CodeBlock':
             info_words = node.info ? node.info.split(/ +/) : [];
-            attr = (info_words.length === 0 || info_words[0].length === 0)
+            attrs = (info_words.length === 0 || info_words[0].length === 0)
                 ? [] : [['class', 'language-' + esc(info_words[0], true)]];
             cr();
-            out(tag('pre') + tag('code', attr));
+            out(tag('pre') + tag('code', attrs));
             out(this.escape(node.string_content));
             out(tag('/code') + tag('/pre'));
             cr();
@@ -226,7 +230,7 @@ function HtmlRenderer(){
                     .replace(/[>]/g, '&gt;')
                     .replace(/["]/g, '&quot;');
             } else {
-                return s.replace(/[&]/g,'&amp;')
+                return s.replace(/[&]/g, '&amp;')
                     .replace(/[<]/g, '&lt;')
                     .replace(/[>]/g, '&gt;')
                     .replace(/["]/g, '&quot;');
