@@ -56,18 +56,6 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
 // These are methods of a DocParser object, defined below.
 
-var makeBlock = function(tag, start_line, start_column) {
-    "use strict";
-    var b = new Node(tag);
-    b.pos.start = [start_line, start_column];
-    b.pos.end = [];  // assigned in finalization step
-    b.open = true;
-    b.last_line_blank = false;
-    b.string_content = "";
-    b.strings = [];
-    return b;
-};
-
 // Returns true if parent block can contain child block.
 var canContain = function(parent_type, child_type) {
     "use strict";
@@ -148,7 +136,7 @@ var addChild = function(tag, line_number, offset) {
     }
 
     var column_number = offset + 1; // offset 0 = column 1
-    var newBlock = makeBlock(tag, line_number, column_number);
+    var newBlock = new Node(tag, { start: [line_number, column_number], end: [] });
     this.tip.appendChild(newBlock);
     this.tip = newBlock;
     return newBlock;
@@ -645,7 +633,7 @@ var processInlines = function(block) {
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
     "use strict";
-    this.doc = makeBlock('Document', 1, 1);
+    this.doc = new Node('Document', { start: [1, 1], end: [] });
     this.tip = this.doc;
     this.refmap = {};
     var lines = input.replace(/\n$/, '').split(/\r\n|\n|\r/);
@@ -665,7 +653,7 @@ var parse = function(input) {
 function DocParser(){
     "use strict";
     return {
-        doc: makeBlock('Document', 1, 1),
+        doc: new Node('Document', { start: [1, 1], end: [] }),
         tip: this.doc,
         refmap: {},
         inlineParser: new InlineParser(),

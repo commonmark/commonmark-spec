@@ -60,14 +60,18 @@ NodeWalker.prototype.next = function(){
     return {entering: entering, node: cur};
 };
 
-function Node(nodeType) {
+function Node(nodeType, pos) {
     this.t = nodeType;
     this.parent = null;
     this.firstChild = null;
     this.lastChild = null;
     this.prev = null;
     this.next = null;
-    this.pos = {};
+    this.pos = pos || {};
+    this.last_line_blank = false;
+    this.open = true;
+    this.strings = [];
+    this.string_content = "";
 }
 
 Node.prototype.isContainer = function() {
