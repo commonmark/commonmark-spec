@@ -10,7 +10,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | lunamark          | 6.295      |    31.5 |
 | cheapskate        | 5.760      |    28.8 |
 | peg-markdown      | 5.450      |    27.3 |
-| **commonmark.js** | 2.500      |    12.5 |
+| **commonmark.js** | 2.345      |    11.7 |
 | marked            | 1.855      |     9.3 |
 | discount          | 1.705      |     8.5 |
 | **cmark**         | 0.280      |     1.4 |
