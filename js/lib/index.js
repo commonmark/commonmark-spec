@@ -19,5 +19,5 @@ var renderAST = function(tree) {
 
 module.exports.Node = require('./node');
 module.exports.DocParser = require('./blocks');
-module.exports.HtmlRenderer = require('./html-renderer');
+module.exports.HtmlRenderer = require('./html');
 module.exports.ASTRenderer = renderAST;
