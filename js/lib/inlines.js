@@ -71,7 +71,7 @@ var reEntity = new RegExp(ENTITY, 'gi');
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.  Note:  we match
 // clumps of _ or * or `, because they need to be handled in groups.
-var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+)/m;
+var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
 // Replace entities and backslash escapes with literal characters.
 var unescapeString = function(s) {
@@ -760,7 +760,6 @@ var parseInline = function(block) {
     var res;
     switch(c) {
     case C_NEWLINE:
-    case C_SPACE:
         res = this.parseNewline(block);
         break;
     case C_BACKSLASH:
