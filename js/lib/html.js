@@ -118,7 +118,7 @@ var renderNodes = function(block) {
             grandparent = node.parent.parent;
             if (grandparent !== null &&
                 grandparent.t === 'List') {
-                if (grandparent.tight) {
+                if (grandparent.list_data.tight) {
                     break;
                 }
             }

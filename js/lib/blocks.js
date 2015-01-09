@@ -149,7 +149,12 @@ var parseListMarker = function(ln, offset) {
     var rest = ln.slice(offset);
     var match;
     var spaces_after_marker;
-    var data = {};
+    var data = { type: undefined,
+                 tight: true,
+                 bullet_char: undefined,
+                 start: undefined,
+                 delimiter: undefined,
+                 padding: undefined };
     if (rest.match(reHrule)) {
         return null;
     }
@@ -585,13 +590,13 @@ var finalize = function(block, line_number) {
         break;
 
     case 'List':
-        block.tight = true; // tight by default
+        block.list_data.tight = true; // tight by default
 
         var item = block.firstChild;
         while (item) {
             // check for non-final list item ending with blank line:
             if (endsWithBlankLine(item) && item.next) {
-                block.tight = false;
+                block.list_data.tight = false;
                 break;
             }
             // recurse into children of list item, to see if there are
@@ -599,7 +604,7 @@ var finalize = function(block, line_number) {
             var subitem = item.firstChild;
             while (subitem) {
                 if (endsWithBlankLine(subitem) && (item.next || subitem.next)) {
-                    block.tight = false;
+                    block.list_data.tight = false;
                     break;
                 }
                 subitem = subitem.next;

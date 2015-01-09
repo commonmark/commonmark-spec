@@ -74,7 +74,6 @@ function Node(nodeType, pos) {
     this.string_content = "";
     this.c = undefined;
     this.list_data = undefined;
-    this.tight = undefined;
     this.info = undefined;
     this.destination = undefined;
     this.title = undefined;
@@ -169,7 +168,7 @@ Node.prototype.toAST = function() {
     var result = { t: this.t };
 
     var propsToShow = ['t', 'c', 'list_data', 'string_content',
-                       'pos', 'tight', 'info', 'level'];
+                       'pos', 'info', 'level'];
 
     for (var i = 0; i < propsToShow.length; i++) {
         var prop = propsToShow[i];
