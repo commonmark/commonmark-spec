@@ -1,4 +1,4 @@
-Node = require('./node');
+var Node = require('./node');
 
 var C_GREATERTHAN = 62;
 var C_SPACE = 32;
@@ -9,11 +9,13 @@ var unescapeString = new InlineParser().unescapeString;
 
 // Returns true if string contains only space characters.
 var isBlank = function(s) {
+    "use strict";
     return /^\s*$/.test(s);
 };
 
 // Convert tabs to spaces on each line using a 4-space tab stop.
 var detabLine = function(text) {
+    "use strict";
     if (text.indexOf('\t') === -1) {
         return text;
     } else {
@@ -29,6 +31,7 @@ var detabLine = function(text) {
 // Attempt to match a regex in string s at offset offset.
 // Return index of match or -1.
 var matchAt = function(re, s, offset) {
+    "use strict";
     var res = s.slice(offset).match(re);
     if (res) {
         return offset + res.index;
@@ -50,18 +53,20 @@ var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 // These are methods of a DocParser object, defined below.
 
 var makeBlock = function(tag, start_line, start_column) {
-  var b = new Node(tag);
-  b.pos.start = [start_line, start_column];
-  b.pos.end = [];  // assigned in finalization step
-  b.open = true;
-  b.last_line_blank = false;
-  b.string_content = "";
-  b.strings = [];
-  return b;
+    "use strict";
+    var b = new Node(tag);
+    b.pos.start = [start_line, start_column];
+    b.pos.end = [];  // assigned in finalization step
+    b.open = true;
+    b.last_line_blank = false;
+    b.string_content = "";
+    b.strings = [];
+    return b;
 };
 
 // Returns true if parent block can contain child block.
 var canContain = function(parent_type, child_type) {
+    "use strict";
     return ( parent_type === 'Document' ||
              parent_type === 'BlockQuote' ||
              parent_type === 'ListItem' ||
@@ -70,6 +75,7 @@ var canContain = function(parent_type, child_type) {
 
 // Returns true if block type can accept lines of text.
 var acceptsLines = function(block_type) {
+    "use strict";
     return ( block_type === 'Paragraph' ||
              block_type === 'IndentedCode' ||
              block_type === 'FencedCode' );
@@ -78,15 +84,16 @@ var acceptsLines = function(block_type) {
 // Returns true if block ends with a blank line, descending if needed
 // into lists and sublists.
 var endsWithBlankLine = function(block) {
+    "use strict";
     while (block) {
-      if (block.last_line_blank) {
-        return true;
-      }
-      if (block.t === 'List' || block.t === 'ListItem') {
-        block = block.lastChild;
-      } else {
-        break;
-      }
+        if (block.last_line_blank) {
+            return true;
+        }
+        if (block.t === 'List' || block.t === 'ListItem') {
+            block = block.lastChild;
+        } else {
+            break;
+        }
     }
     return false;
 };
@@ -96,6 +103,7 @@ var endsWithBlankLine = function(block) {
 // all the lists.  (This is used to implement the "two blank lines
 // break of of all lists" feature.)
 var breakOutOfLists = function(block, line_number) {
+    "use strict";
     var b = block;
     var last_list = null;
     do {
@@ -118,6 +126,7 @@ var breakOutOfLists = function(block, line_number) {
 // Add a line to the block at the tip.  We assume the tip
 // can accept lines -- that check should be done before calling this.
 var addLine = function(ln, offset) {
+    "use strict";
     var s = ln.slice(offset);
     if (!(this.tip.open)) {
         throw { msg: "Attempted to add line (" + ln + ") to closed container." };
@@ -129,6 +138,7 @@ var addLine = function(ln, offset) {
 // accept children, close and finalize it and try its parent,
 // and so on til we find a block that can accept children.
 var addChild = function(tag, line_number, offset) {
+    "use strict";
     while (!canContain(this.tip.t, tag)) {
         this.finalize(this.tip, line_number);
     }
@@ -143,6 +153,7 @@ var addChild = function(tag, line_number, offset) {
 // Parse a list marker and return data on the marker (type,
 // start, delimiter, bullet character, padding) or null.
 var parseListMarker = function(ln, offset) {
+    "use strict";
     var rest = ln.slice(offset);
     var match;
     var spaces_after_marker;
@@ -178,6 +189,7 @@ var parseListMarker = function(ln, offset) {
 // with the same delimiter and bullet character.  This is used
 // in agglomerating list items into lists.
 var listsMatch = function(list_data, item_data) {
+    "use strict";
     return (list_data.type === item_data.type &&
             list_data.delimiter === item_data.delimiter &&
             list_data.bullet_char === item_data.bullet_char);
@@ -187,6 +199,7 @@ var listsMatch = function(list_data, item_data) {
 // We parse markdown text by calling this on each line of input,
 // then finalizing the document.
 var incorporateLine = function(ln, line_number) {
+    "use strict";
 
     var all_matched = true;
     var first_nonspace;
@@ -528,6 +541,7 @@ var incorporateLine = function(ln, line_number) {
 // of paragraphs for reference definitions.  Reset the tip to the
 // parent of the closed block.
 var finalize = function(block, line_number) {
+    "use strict";
     var pos;
     // don't do anything if the block is already closed
     if (!block.open) {
@@ -612,18 +626,21 @@ var finalize = function(block, line_number) {
 // Walk through a block & children recursively, parsing string content
 // into inline content where appropriate.  Returns new object.
 var processInlines = function(block) {
+    "use strict";
     var node, event;
     var walker = block.walker();
-    while (event = walker.next()) {
+    while ((event = walker.next())) {
         node = event.node;
-        if (!event.entering && (node.t == 'Paragraph' || node.t == 'Header')) {
-          this.inlineParser.parse(node, this.refmap);
+        if (!event.entering && (node.t === 'Paragraph' ||
+                                node.t === 'Header')) {
+            this.inlineParser.parse(node, this.refmap);
         }
     }
 };
 
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
+    "use strict";
     this.doc = makeBlock('Document', 1, 1);
     this.tip = this.doc;
     this.refmap = {};
@@ -642,6 +659,7 @@ var parse = function(input) {
 
 // The DocParser object.
 function DocParser(){
+    "use strict";
     return {
         doc: makeBlock('Document', 1, 1),
         tip: this.doc,
