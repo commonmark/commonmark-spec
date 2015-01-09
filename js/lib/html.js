@@ -213,6 +213,20 @@ var renderNodes = function(block) {
     return buffer.join('');
 };
 
+var sub = function(s) {
+    if (s === '&') {
+        return '&amp;';
+    } else if (s === '<') {
+        return '&lt;';
+    } else if (s === '>') {
+        return '&gt;';
+    } else if (s === '"') {
+        return '&quot;';
+    } else {
+        return s;
+    }
+};
+
 
 // The HtmlRenderer object.
 function HtmlRenderer(){
@@ -225,15 +239,9 @@ function HtmlRenderer(){
         // set to " " if you want to ignore line wrapping in source
         escape: function(s, preserve_entities) {
             if (preserve_entities) {
-                return s.replace(/[&](?![#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)/gi, '&amp;')
-                    .replace(/[<]/g, '&lt;')
-                    .replace(/[>]/g, '&gt;')
-                    .replace(/["]/g, '&quot;');
+                return s.replace(/[&](?:[#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)|[&<>"]/gi, sub);
             } else {
-                return s.replace(/[&]/g, '&amp;')
-                    .replace(/[<]/g, '&lt;')
-                    .replace(/[>]/g, '&gt;')
-                    .replace(/["]/g, '&quot;');
+                return s.replace(/[&<>"]/g, sub);
             }
         },
         render: renderNodes

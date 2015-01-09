@@ -38,7 +38,7 @@ They can be run using `make benchjs`:
 
 |Implementation     |  ops/sec    |
 |-------------------|-------------|
-| showdown.js       | 173 ±1.43%  |
-| **commonmark.js** | 371 ±1.20%  |
-| marked.js         | 554 ±0.48%  |
-| markdown-it       | 694 ±0.97%  |
+| showdown.js       | 169 ±1.72%  |
+| **commonmark.js** | 420 ±0.88%  |
+| marked.js         | 548 ±0.66%  |
+| markdown-it       | 690 ±1.00%  |
