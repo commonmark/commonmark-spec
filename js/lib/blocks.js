@@ -16,6 +16,10 @@ var isBlank = function(s) {
 // Convert tabs to spaces on each line using a 4-space tab stop.
 var detabLine = function(text) {
     "use strict";
+    if (text.indexOf('\0') !== -1) {
+        // replace NUL for security
+        text = text.replace(/\0/g, '\uFFFD');
+    }
     if (text.indexOf('\t') === -1) {
         return text;
     } else {
