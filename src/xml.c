@@ -40,7 +40,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 {
 	cmark_strbuf *xml = state->xml;
 	bool literal = false;
-
+	cmark_delim_type delim;
 	bool entering = (ev_type == CMARK_EVENT_ENTER);
 
 	if (entering) {
@@ -70,6 +70,31 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 			cmark_strbuf_puts(xml,
 			                  cmark_node_get_type_string(node));
 			literal = true;
+			break;
+		case CMARK_NODE_LIST:
+			switch (cmark_node_get_list_type(node)) {
+			case CMARK_ORDERED_LIST:
+				cmark_strbuf_puts(xml, " type=\"ordered\"");
+				cmark_strbuf_printf(xml, " start=\"%d\"",
+					    cmark_node_get_list_start(node));
+				delim = cmark_node_get_list_delim(node);
+				if (delim == CMARK_PAREN_DELIM) {
+					cmark_strbuf_puts(xml,
+							  " delim=\"paren\"");
+				} else if (delim == CMARK_PERIOD_DELIM) {
+					cmark_strbuf_puts(xml,
+							  " delim=\"period\"");
+				}
+				break;
+			case CMARK_BULLET_LIST:
+				cmark_strbuf_puts(xml, " type=\"bullet\"");
+				break;
+			default:
+				break;
+			}
+			cmark_strbuf_printf(xml, " tight=\"%s\"",
+			    (cmark_node_get_list_tight(node) ?
+			     "true" : "false"));
 			break;
 		case CMARK_NODE_CODE_BLOCK:
 			if (node->as.code.info.len > 0) {
