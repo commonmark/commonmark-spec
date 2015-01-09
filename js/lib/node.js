@@ -72,6 +72,10 @@ function Node(nodeType, pos) {
     this.open = true;
     this.strings = [];
     this.string_content = "";
+    this.c = undefined;
+    this.list_data = undefined;
+    this.tight = undefined;
+    this.info = undefined;
 }
 
 Node.prototype.isContainer = function() {
@@ -159,8 +163,7 @@ Node.prototype.toAST = function() {
     var result = { t: this.t };
 
     var propsToShow = ['t', 'c', 'list_data', 'string_content',
-                       'pos', 'start_column', 'end_column',
-                       'tight', 'info'];
+                       'pos', 'tight', 'info'];
 
     for (var i = 0; i < propsToShow.length; i++) {
         var prop = propsToShow[i];
