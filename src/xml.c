@@ -76,14 +76,14 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 			case CMARK_ORDERED_LIST:
 				cmark_strbuf_puts(xml, " type=\"ordered\"");
 				cmark_strbuf_printf(xml, " start=\"%d\"",
-					    cmark_node_get_list_start(node));
+				                    cmark_node_get_list_start(node));
 				delim = cmark_node_get_list_delim(node);
 				if (delim == CMARK_PAREN_DELIM) {
 					cmark_strbuf_puts(xml,
-							  " delim=\"paren\"");
+					                  " delim=\"paren\"");
 				} else if (delim == CMARK_PERIOD_DELIM) {
 					cmark_strbuf_puts(xml,
-							  " delim=\"period\"");
+					                  " delim=\"period\"");
 				}
 				break;
 			case CMARK_BULLET_LIST:
@@ -93,8 +93,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 				break;
 			}
 			cmark_strbuf_printf(xml, " tight=\"%s\"",
-			    (cmark_node_get_list_tight(node) ?
-			     "true" : "false"));
+			                    (cmark_node_get_list_tight(node) ?
+			                     "true" : "false"));
 			break;
 		case CMARK_NODE_CODE_BLOCK:
 			if (node->as.code.info.len > 0) {

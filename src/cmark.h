@@ -189,7 +189,7 @@ cmark_iter_free(cmark_iter *iter);
 CMARK_EXPORT
 void
 cmark_iter_reset(cmark_iter *iter, cmark_node *current,
-		 cmark_event_type event_type);
+                 cmark_event_type event_type);
 
 /** Returns the event type (`CMARK_EVENT_ENTER`, `CMARK_EVENT_EXIT`,
  * or `CMARK_EVENT_DONE`) for the next node.
