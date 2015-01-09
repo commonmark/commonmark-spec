@@ -71,7 +71,7 @@ var reEntity = new RegExp(ENTITY, 'gi');
 // Matches a character with a special meaning in markdown,
 // or a string of non-special characters.  Note:  we match
 // clumps of _ or * or `, because they need to be handled in groups.
-var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|(?: *[^\n `\[\]\\!<&*_]+)+|[ \n]+)/m;
+var reMain = /^(?:[_*`\n]+|[\[\]\\!<&*_]|[^\n`\[\]\\!<&*_]+)/m;
 
 // Replace entities and backslash escapes with literal characters.
 var unescapeString = function(s) {
@@ -670,10 +670,19 @@ var parseString = function(block) {
 // line break; otherwise a soft line break.
 var parseNewline = function(block) {
     "use strict";
-    var m = this.match(/^ *\n/);
+    var m = this.match(/^\n/);
     if (m) {
-        var node = new Node(m.length > 2 ? 'Hardbreak' : 'Softbreak');
-        block.appendChild(node);
+        // check previous node for trailing spaces
+        var lastc = block.lastChild;
+        if (lastc && lastc.t === 'Text') {
+            var sps = / *$/.exec(lastc.c)[0].length;
+            if (sps > 0) {
+                lastc.c = lastc.c.replace(/ *$/,'');
+            }
+            block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
+        } else {
+            block.appendChild(new Node('Softbreak'));
+        }
         return true;
     } else {
       return false;
