@@ -76,6 +76,8 @@ function Node(nodeType, pos) {
     this.list_data = undefined;
     this.tight = undefined;
     this.info = undefined;
+    this.destination = undefined;
+    this.title = undefined;
 }
 
 Node.prototype.isContainer = function() {
