@@ -6,19 +6,26 @@ var util = require('util');
 var commonmark = require('../lib/index.js');
 
 var parser = new commonmark.DocParser();
-var renderer;
+var renderer = new commonmark.HtmlRenderer();
 var inps = [];
 var file;
 var files = [];
+var options = { sourcepos: false, };
 
-if (process.argv[2] === '--ast') {
-  files = process.argv.slice(3);
-  renderer = { render: function(x) {
-                          return util.inspect(x.toAST(), null, Infinity, true) + '\n';
-                        } };
-} else {
-  files = process.argv.slice(2);
-  renderer = new commonmark.HtmlRenderer();
+for (var i = 2; i < process.argv.length; i++) {
+    var arg = process.argv[i];
+    if (arg == '--ast') {
+        renderer = { render: function(x) {
+            return util.inspect(x.toAST(), null, Infinity, true) + '\n';
+        } };
+    } else if (arg == '--sourcepos') {
+        options.sourcepos = true;
+    } else if (/^--/.test(arg)) {
+        process.stderr.write('Unknown option ' + arg + '\n');
+        process.exit(1);
+    } else {
+      files.push(arg);
+    }
 }
 
 if (files.length === 0) {
@@ -30,4 +37,4 @@ for (var i = 0; i < files.length; i++) {
   inps.push(fs.readFileSync(file, 'utf8'));
 }
 
-process.stdout.write(renderer.render(parser.parse(inps.join('\n'))));
+process.stdout.write(renderer.render(parser.parse(inps.join('\n')), options));

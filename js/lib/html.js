@@ -1,12 +1,12 @@
 "use strict";
 
 // Helper function to produce an HTML tag.
-var tag = function(name, attribs, selfclosing) {
+var tag = function(name, attrs, selfclosing) {
     var result = '<' + name;
-    if (attribs) {
+    if (attrs && attrs.length > 0) {
         var i = 0;
         var attrib;
-        while ((attrib = attribs[i]) !== undefined) {
+        while ((attrib = attrs[i]) !== undefined) {
             result = result.concat(' ', attrib[0], '="', attrib[1], '"');
             i++;
         }
@@ -19,7 +19,7 @@ var tag = function(name, attribs, selfclosing) {
     return result;
 };
 
-var renderNodes = function(block) {
+var renderNodes = function(block, options) {
 
     var attrs;
     var info_words;
@@ -43,9 +43,21 @@ var renderNodes = function(block) {
         }
     };
 
+    options = options || {};
+
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
+
+        attrs = [];
+        if (options.sourcepos) {
+            var pos = node.sourcepos;
+            if (pos) {
+                attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
+                            String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
+                            String(pos[1][1])]);
+            }
+        }
 
         switch (node.t) {
         case 'Text':
@@ -79,7 +91,7 @@ var renderNodes = function(block) {
 
         case 'Link':
             if (entering) {
-                attrs = [['href', esc(node.destination, true)]];
+                attrs.push(['href', esc(node.destination, true)]);
                 if (node.title) {
                     attrs.push(['title', esc(node.title, true)]);
                 }
@@ -124,7 +136,7 @@ var renderNodes = function(block) {
             }
             if (entering) {
                 cr();
-                out(tag('p'));
+                out(tag('p', attrs));
             } else {
                 out(tag('/p'));
                 cr();
@@ -134,7 +146,7 @@ var renderNodes = function(block) {
         case 'BlockQuote':
             if (entering) {
                 cr();
-                out(tag('blockquote'));
+                out(tag('blockquote', attrs));
                 cr();
             } else {
                 cr();
@@ -145,7 +157,7 @@ var renderNodes = function(block) {
 
         case 'ListItem':
             if (entering) {
-                out(tag('li'));
+                out(tag('li', attrs));
             } else {
                 out(tag('/li'));
                 cr();
@@ -155,8 +167,9 @@ var renderNodes = function(block) {
         case 'List':
             tagname = node.list_data.type === 'Bullet' ? 'ul' : 'ol';
             if (entering) {
-                attrs = (!node.list_data.start || node.list_data.start === 1) ?
-                    [] : [['start', node.list_data.start.toString()]];
+                if (node.list_data.start && node.list_data.start > 1) {
+                    attrs.push(['start', node.list_data.start.toString()]);
+                }
                 cr();
                 out(tag(tagname, attrs));
                 cr();
@@ -171,7 +184,7 @@ var renderNodes = function(block) {
             tagname = 'h' + node.level;
             if (entering) {
                 cr();
-                out(tag(tagname));
+                out(tag(tagname, attrs));
             } else {
                 out(tag('/' + tagname));
                 cr();
@@ -180,8 +193,9 @@ var renderNodes = function(block) {
 
         case 'CodeBlock':
             info_words = node.info ? node.info.split(/ +/) : [];
-            attrs = (info_words.length === 0 || info_words[0].length === 0)
-                ? [] : [['class', 'language-' + esc(info_words[0], true)]];
+            if (info_words.length > 0 && info_words[0].length > 0) {
+                attrs.push(['class', 'language-' + esc(info_words[0], true)]);
+            }
             cr();
             out(tag('pre') + tag('code', attrs));
             out(this.escape(node.c));
@@ -197,7 +211,7 @@ var renderNodes = function(block) {
 
         case 'HorizontalRule':
             cr();
-            out(tag('hr', [], true));
+            out(tag('hr', attrs, true));
             cr();
             break;
 
