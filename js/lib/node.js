@@ -167,7 +167,7 @@ var toASTNode = function(node) {
     var propsToShow = ['t', 'literal', 'list_data', 'sourcepos',
                        'info', 'level'];
 
-    for (var i = 0; i < propsToShow.length; i++) {
+    for (var i = 0, len = propsToShow.length; i < len; i++) {
         var prop = propsToShow[i];
         if (node[prop] !== undefined) {
             result[prop] = node[prop];
