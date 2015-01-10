@@ -26,19 +26,19 @@ var renderNodes = function(block, options) {
     var tagname;
     var walker = block.walker();
     var event, node, entering;
-    var buffer = [];
+    var buffer = "";
     var disableTags = 0;
     var grandparent;
     var out = function(s) {
         if (disableTags > 0) {
-            buffer.push(s.replace(/\<[^>]*\>/g, ''));
+            buffer += s.replace(/\<[^>]*\>/g, '');
         } else {
-            buffer.push(s);
+            buffer += s;
         }
     };
     var esc = this.escape;
     var cr = function() {
-        if (buffer.length > 0 && buffer[buffer.length - 1] !== '\n') {
+        if (buffer.length > 0 && buffer.charAt[buffer.length - 1] !== '\n') {
             out('\n');
         }
     };
@@ -224,7 +224,7 @@ var renderNodes = function(block, options) {
         }
 
     }
-    return buffer.join('');
+    return buffer;
 };
 
 var sub = function(s) {
