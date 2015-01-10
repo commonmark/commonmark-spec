@@ -56,9 +56,9 @@ var NodeWalker = function(root) {
              entering: true,
              next: next,
              resumeAt: resumeAt };
-}
+};
 
-function Node(nodeType, sourcepos) {
+var Node = function(nodeType, sourcepos) {
     this.t = nodeType;
     this.parent = null;
     this.firstChild = null;
@@ -79,7 +79,7 @@ function Node(nodeType, sourcepos) {
     this.fence_length = undefined;
     this.fence_offset = undefined;
     this.level = undefined;
-}
+};
 
 Node.prototype.isContainer = function() {
     return isContainer(this);
