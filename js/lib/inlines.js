@@ -672,23 +672,20 @@ var parseString = function(block) {
 // line break; otherwise a soft line break.
 var parseNewline = function(block) {
     "use strict";
-    var m = this.match(/^\n/);
-    if (m) {
-        // check previous node for trailing spaces
-        var lastc = block.lastChild;
-        if (lastc && lastc.t === 'Text') {
-            var sps = / *$/.exec(lastc.literal)[0].length;
-            if (sps > 0) {
-                lastc.literal = lastc.literal.replace(/ *$/,'');
-            }
-            block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
-        } else {
-            block.appendChild(new Node('Softbreak'));
+    this.pos += 1; // assume we're at a \n
+    // check previous node for trailing spaces
+    var lastc = block.lastChild;
+    if (lastc && lastc.t === 'Text') {
+        var sps = / *$/.exec(lastc.literal)[0].length;
+        if (sps > 0) {
+            lastc.literal = lastc.literal.replace(/ *$/,'');
         }
-        return true;
+        block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
     } else {
-      return false;
+        block.appendChild(new Node('Softbreak'));
     }
+    this.match(/^ */); // gobble leading spaces in next line
+    return true;
 };
 
 // Attempt to parse a link reference, modifying refmap.

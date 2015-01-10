@@ -552,8 +552,7 @@ var finalize = function(block, line_number) {
 
     switch (block.t) {
     case 'Paragraph':
-        block.string_content = block.strings.join('\n').replace(/^ {2,}/m, '');
-        // delete block.strings;
+        block.string_content = block.strings.join('\n');
 
         // try parsing the beginning as link reference definitions:
         while (block.string_content.charCodeAt(0) === C_OPEN_BRACKET &&
