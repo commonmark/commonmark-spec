@@ -1,6 +1,7 @@
 var Node = require('./node');
 
 var C_GREATERTHAN = 62;
+var C_NEWLINE = 10;
 var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
 
@@ -675,8 +676,12 @@ var parse = function(input) {
     this.doc = Document();
     this.tip = this.doc;
     this.refmap = {};
-    var lines = input.replace(/\n$/, '').split(reLineEnding);
+    var lines = input.split(reLineEnding);
     var len = lines.length;
+    if (input.charCodeAt(input.length - 1) === C_NEWLINE) {
+        // ignore last blank line created by final newline
+        len -= 1;
+    }
     for (var i = 0; i < len; i++) {
         this.incorporateLine(lines[i], i + 1);
     }
