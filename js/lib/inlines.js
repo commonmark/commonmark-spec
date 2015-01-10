@@ -75,6 +75,18 @@ var reAutolink = /^<(?:coap|doi|javascript|aaa|aaas|about|acap|cap|cid|crid|data
 
 var reSpnl = /^ *(?:\n *)?/;
 
+var reWhitespaceChar = /^\s/;
+
+var reWhitespace = /\s+/g;
+
+var reFinalSpace = / *$/;
+
+var reInitialSpace = /^ */;
+
+var reAsciiAlnum = /[a-z0-9]/i;
+
+var reLinkLabel = /^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/;
+
 // Matches a string of non-special characters.
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
@@ -167,8 +179,7 @@ var parseBackticks = function(block) {
             node = new Node('Code');
             node.literal = this.subject.slice(afterOpenTicks,
                                         this.pos - ticks.length)
-                          .replace(/[ \n]+/g, ' ')
-                          .trim();
+                          .trim().replace(reWhitespace, ' ');
             block.appendChild(node);
             return true;
         }
@@ -270,17 +281,17 @@ var scanDelims = function(cc) {
         char_after = fromCodePoint(cc_after);
     }
 
-    var can_open = numdelims > 0 && !(/\s/.test(char_after)) &&
+    var can_open = numdelims > 0 && !(reWhitespaceChar.test(char_after)) &&
             !(rePunctuation.test(char_after) &&
              !(/\s/.test(char_before)) &&
              !(rePunctuation.test(char_before)));
-    var can_close = numdelims > 0 && !(/\s/.test(char_before)) &&
+    var can_close = numdelims > 0 && !(reWhitespaceChar.test(char_before)) &&
             !(rePunctuation.test(char_before) &&
-              !(/\s/.test(char_after)) &&
+              !(reWhitespaceChar.test(char_after)) &&
               !(rePunctuation.test(char_after)));
     if (cc === C_UNDERSCORE) {
-        can_open = can_open && !((/[a-z0-9]/i).test(char_before));
-        can_close = can_close && !((/[a-z0-9]/i).test(char_after));
+        can_open = can_open && !((reAsciiAlnum).test(char_before));
+        can_close = can_close && !((reAsciiAlnum).test(char_after));
     }
     this.pos = startpos;
     return { numdelims: numdelims,
@@ -463,7 +474,7 @@ var parseLinkDestination = function() {
 // Attempt to parse a link label, returning number of characters parsed.
 var parseLinkLabel = function() {
     "use strict";
-    var m = this.match(/^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/);
+    var m = this.match(reLinkLabel);
     return m === null ? 0 : m.length;
 };
 
@@ -581,10 +592,11 @@ var parseCloseBracket = function(block) {
             ((dest = this.parseLinkDestination()) !== null) &&
             this.spnl() &&
             // make sure there's a space before the title:
-            (/^\s/.test(this.subject.charAt(this.pos - 1)) &&
+            (reWhitespaceChar.test(this.subject.charAt(this.pos - 1)) &&
              (title = this.parseLinkTitle() || '') || true) &&
             this.spnl() &&
-            this.match(/^\)/)) {
+            this.subject.charAt(this.pos) === ')') {
+            this.pos += 1;
             matched = true;
         }
     } else {
@@ -691,15 +703,15 @@ var parseNewline = function(block) {
     // check previous node for trailing spaces
     var lastc = block.lastChild;
     if (lastc && lastc.t === 'Text') {
-        var sps = / *$/.exec(lastc.literal)[0].length;
+        var sps = reFinalSpace.exec(lastc.literal)[0].length;
         if (sps > 0) {
-            lastc.literal = lastc.literal.replace(/ *$/, '');
+            lastc.literal = lastc.literal.replace(reFinalSpace, '');
         }
         block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
     } else {
         block.appendChild(new Node('Softbreak'));
     }
-    this.match(/^ */); // gobble leading spaces in next line
+    this.match(reInitialSpace); // gobble leading spaces in next line
     return true;
 };
 
@@ -748,6 +760,7 @@ var parseReference = function(s, refmap) {
         this.pos = beforetitle;
     }
 
+    // FIXME
     // make sure we're at line end:
     if (this.match(/^ *(?:\n|$)/) === null) {
         this.pos = startpos;
