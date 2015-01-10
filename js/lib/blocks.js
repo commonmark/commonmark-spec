@@ -482,7 +482,7 @@ var incorporateLine = function(ln, line_number) {
               container.t === 'FencedCode' ||
               (container.t === 'ListItem' &&
                !container.firstChild &&
-               container.sourceloc[0][0] === line_number));
+               container.sourcepos[0][0] === line_number));
 
         var cont = container;
         while (cont.parent) {
@@ -548,7 +548,7 @@ var finalize = function(block, line_number) {
         return 0;
     }
     block.open = false;
-    block.sourceloc[1] = [line_number, this.lastLineLength + 1];
+    block.sourcepos[1] = [line_number, this.lastLineLength + 1];
 
     switch (block.t) {
     case 'Paragraph':
