@@ -228,15 +228,16 @@ var renderNodes = function(block, options) {
 };
 
 var sub = function(s) {
-    if (s === '&') {
+    switch (s) {
+    case '&':
         return '&amp;';
-    } else if (s === '<') {
+    case '<':
         return '&lt;';
-    } else if (s === '>') {
+    case '>':
         return '&gt;';
-    } else if (s === '"') {
+    case '"':
         return '&quot;';
-    } else {
+    default:
         return s;
     }
 };
