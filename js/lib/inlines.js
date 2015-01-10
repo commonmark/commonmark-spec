@@ -65,6 +65,8 @@ var reEntityHere = new RegExp('^' + ENTITY, 'i');
 
 var reEntityOrEscapedChar = new RegExp('\\\\' + ESCAPABLE + '|' + ENTITY, 'gi');
 
+var reBackslashOrAmp = /[\\&]/;
+
 var reTicks = new RegExp('`+');
 
 var reTicksHere = new RegExp('^`+');
@@ -102,7 +104,11 @@ var unescapeChar = function(s) {
 // Replace entities and backslash escapes with literal characters.
 var unescapeString = function(s) {
     "use strict";
-    return s.replace(reEntityOrEscapedChar, unescapeChar);
+    if (reBackslashOrAmp.test(s)) {
+        return s.replace(reEntityOrEscapedChar, unescapeChar);
+    } else {
+        return s;
+    }
 };
 
 // Normalize reference label: collapse internal whitespace
