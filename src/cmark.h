@@ -165,13 +165,24 @@ cmark_node_last_child(cmark_node *node);
  *         cmark_iter_free(iter);
  *     }
  *
- * Note that if you delete the current node, its first child, or its
- * next sibling, the iterator may point to a nonexistent note.
- * Use 'cmark_iter_reset' to set its pointer to the next node that
- * should be traversed.
+ * Iterators will never return `EXIT` events for leaf nodes, which are nodes
+ * of type:
+ *
+ * * CMARK_NODE_HTML
+ * * CMARK_NODE_HRULE
+ * * CMARK_NODE_CODE_BLOCK
+ * * CMARK_NODE_TEXT
+ * * CMARK_NODE_SOFTBREAK
+ * * CMARK_NODE_LINEBREAK
+ * * CMARK_NODE_CODE
+ * * CMARK_NODE_INLINE_HTML
+ *
+ * Nodes must only be modified after an `EXIT` event, or an `ENTER` event for
+ * leaf nodes.
  */
 
-/** Creates a new iterator starting at 'root'.
+/** Creates a new iterator starting at 'root'.  The current node and event
+ * type are undefined until `cmark_iter_next` is called for the first time.
  */
 CMARK_EXPORT
 cmark_iter*
@@ -183,23 +194,14 @@ CMARK_EXPORT
 void
 cmark_iter_free(cmark_iter *iter);
 
-/** Resets the iterator so that the current node is 'current' and
-    the event type is 'event_type'.  Use this to resume after destructively
-    modifying the tree structure.
- */
-CMARK_EXPORT
-void
-cmark_iter_reset(cmark_iter *iter, cmark_node *current,
-                 cmark_event_type event_type);
-
-/** Returns the event type (`CMARK_EVENT_ENTER`, `CMARK_EVENT_EXIT`,
- * or `CMARK_EVENT_DONE`) for the next node.
+/** Advances to the next node and returns the event type (`CMARK_EVENT_ENTER`,
+ * `CMARK_EVENT_EXIT` or `CMARK_EVENT_DONE`).
  */
 CMARK_EXPORT
 cmark_event_type
 cmark_iter_next(cmark_iter *iter);
 
-/** Returns the next node in the sequence described above.
+/** Returns the current node.
  */
 CMARK_EXPORT
 cmark_node*
@@ -210,6 +212,15 @@ cmark_iter_get_node(cmark_iter *iter);
 CMARK_EXPORT
 cmark_event_type
 cmark_iter_get_event_type(cmark_iter *iter);
+
+/** Resets the iterator so that the current node is 'current' and
+ * the event type is 'event_type'.  The new current node must be a
+ * descendant of the root node or the root node itself.
+ */
+CMARK_EXPORT
+void
+cmark_iter_reset(cmark_iter *iter, cmark_node *current,
+                 cmark_event_type event_type);
 
 /**
  * ## Accessors
