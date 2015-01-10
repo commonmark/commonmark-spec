@@ -167,8 +167,7 @@ Node.prototype.toAST = function() {
     var cur;
     var result = { t: this.t };
 
-    var propsToShow = ['t', 'c', 'list_data', 'string_content',
-                       'pos', 'info', 'level'];
+    var propsToShow = ['t', 'c', 'list_data', 'pos', 'info', 'level'];
 
     for (var i = 0; i < propsToShow.length; i++) {
         var prop = propsToShow[i];
