@@ -90,7 +90,7 @@ var normalizeReference = function(s) {
 var text = function(s) {
     "use strict";
     var node = new Node('Text');
-    node.c = s;
+    node.literal = s;
     return node;
 };
 
@@ -150,7 +150,7 @@ var parseBackticks = function(block) {
     while (!foundCode && (matched = this.match(/`+/m))) {
         if (matched === ticks) {
             node = new Node('Code');
-            node.c = this.subject.slice(afterOpenTicks,
+            node.literal = this.subject.slice(afterOpenTicks,
                                         this.pos - ticks.length)
                           .replace(/[ \n]+/g, ' ')
                           .trim();
@@ -222,7 +222,7 @@ var parseHtmlTag = function(block) {
     var node;
     if (m) {
         node = new Node('Html');
-        node.c = m;
+        node.literal = m;
         block.appendChild(node);
         return true;
     } else {
@@ -358,8 +358,12 @@ var processEmphasis = function(block, stack_bottom) {
                 // remove used delimiters from stack elts and inlines
                 opener.numdelims -= use_delims;
                 closer.numdelims -= use_delims;
-                opener_inl.c = opener_inl.c.slice(0, opener_inl.c.length - use_delims);
-                closer_inl.c = closer_inl.c.slice(0, closer_inl.c.length - use_delims);
+                opener_inl.literal =
+                    opener_inl.literal.slice(0,
+                                     opener_inl.literal.length - use_delims);
+                closer_inl.literal =
+                    closer_inl.literal.slice(0,
+                                     closer_inl.literal.length - use_delims);
 
                 // build contents for new emph element
                 var emph = new Node(use_delims === 1 ? 'Emph' : 'Strong');
@@ -673,9 +677,9 @@ var parseNewline = function(block) {
         // check previous node for trailing spaces
         var lastc = block.lastChild;
         if (lastc && lastc.t === 'Text') {
-            var sps = / *$/.exec(lastc.c)[0].length;
+            var sps = / *$/.exec(lastc.literal)[0].length;
             if (sps > 0) {
-                lastc.c = lastc.c.replace(/ *$/,'');
+                lastc.literal = lastc.literal.replace(/ *$/,'');
             }
             block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
         } else {
@@ -792,7 +796,7 @@ var parseInline = function(block) {
     if (!res) {
         this.pos += 1;
         var textnode = new Node('Text');
-        textnode.c = fromCodePoint(c);
+        textnode.literal = fromCodePoint(c);
         block.appendChild(textnode);
     }
 

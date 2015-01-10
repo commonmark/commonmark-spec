@@ -572,11 +572,11 @@ var finalize = function(block, line_number) {
         break;
 
     case 'HtmlBlock':
-        block.c = block.strings.join('\n');
+        block.literal = block.strings.join('\n');
         break;
 
     case 'IndentedCode':
-        block.c = block.strings.join('\n').replace(/(\n *)*$/, '\n');
+        block.literal = block.strings.join('\n').replace(/(\n *)*$/, '\n');
         block.t = 'CodeBlock';
         break;
 
@@ -584,9 +584,9 @@ var finalize = function(block, line_number) {
         // first line becomes info string
         block.info = unescapeString(block.strings[0].trim());
         if (block.strings.length === 1) {
-            block.c = '';
+            block.literal = '';
         } else {
-            block.c = block.strings.slice(1).join('\n') + '\n';
+            block.literal = block.strings.slice(1).join('\n') + '\n';
         }
         block.t = 'CodeBlock';
         break;

@@ -61,7 +61,7 @@ var renderNodes = function(block, options) {
 
         switch (node.t) {
         case 'Text':
-            out(esc(node.c));
+            out(esc(node.literal));
             break;
 
         case 'Softbreak':
@@ -86,7 +86,7 @@ var renderNodes = function(block, options) {
             break;
 
         case 'Html':
-            out(node.c);
+            out(node.literal);
             break;
 
         case 'Link':
@@ -120,7 +120,7 @@ var renderNodes = function(block, options) {
             break;
 
         case 'Code':
-            out(tag('code') + esc(node.c) + tag('/code'));
+            out(tag('code') + esc(node.literal) + tag('/code'));
             break;
 
         case 'Document':
@@ -198,14 +198,14 @@ var renderNodes = function(block, options) {
             }
             cr();
             out(tag('pre') + tag('code', attrs));
-            out(this.escape(node.c));
+            out(this.escape(node.literal));
             out(tag('/code') + tag('/pre'));
             cr();
             break;
 
         case 'HtmlBlock':
             cr();
-            out(node.c);
+            out(node.literal);
             cr();
             break;
 
