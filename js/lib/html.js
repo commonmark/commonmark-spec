@@ -184,14 +184,14 @@ var renderNodes = function(block) {
                 ? [] : [['class', 'language-' + esc(info_words[0], true)]];
             cr();
             out(tag('pre') + tag('code', attrs));
-            out(this.escape(node.string_content));
+            out(this.escape(node.c));
             out(tag('/code') + tag('/pre'));
             cr();
             break;
 
         case 'HtmlBlock':
             cr();
-            out(node.string_content);
+            out(node.c);
             cr();
             break;
 

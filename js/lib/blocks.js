@@ -138,7 +138,7 @@ var addChild = function(tag, line_number, offset) {
     var column_number = offset + 1; // offset 0 = column 1
     var newBlock = new Node(tag, { start: [line_number, column_number], end: [] });
     newBlock.strings = [];
-    newBlock.string_content = "";
+    newBlock.string_content = undefined;
     this.tip.appendChild(newBlock);
     this.tip = newBlock;
     return newBlock;
@@ -571,12 +571,15 @@ var finalize = function(block, line_number) {
         break;
 
     case 'Header':
-    case 'HtmlBlock':
         block.string_content = block.strings.join('\n');
         break;
 
+    case 'HtmlBlock':
+        block.c = block.strings.join('\n');
+        break;
+
     case 'IndentedCode':
-        block.string_content = block.strings.join('\n').replace(/(\n *)*$/, '\n');
+        block.c = block.strings.join('\n').replace(/(\n *)*$/, '\n');
         block.t = 'CodeBlock';
         break;
 
@@ -584,9 +587,9 @@ var finalize = function(block, line_number) {
         // first line becomes info string
         block.info = unescapeString(block.strings[0].trim());
         if (block.strings.length === 1) {
-            block.string_content = '';
+            block.c = '';
         } else {
-            block.string_content = block.strings.slice(1).join('\n') + '\n';
+            block.c = block.strings.slice(1).join('\n') + '\n';
         }
         block.t = 'CodeBlock';
         break;
@@ -639,7 +642,7 @@ var processInlines = function(block) {
 
 var Document = function() {
     var doc = new Node('Document', { start: [1, 1], end: [] });
-    doc.string_content = "";
+    doc.string_content = undefined;
     doc.strings = [];
     return doc;
 };
