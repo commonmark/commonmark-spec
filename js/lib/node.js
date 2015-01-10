@@ -162,34 +162,47 @@ Node.prototype.walker = function() {
     return walker;
 };
 
-Node.prototype.toAST = function() {
-    var children;
-    var cur;
-    var result = { t: this.t };
-
+var toASTNode = function(node) {
+    var result = {};
     var propsToShow = ['t', 'literal', 'list_data', 'sourcepos',
                        'info', 'level'];
 
     for (var i = 0; i < propsToShow.length; i++) {
         var prop = propsToShow[i];
-        if (this[prop] !== undefined) {
-            result[prop] = this[prop];
-        }
-    }
-
-    if (isContainer(this)) {
-        children = [];
-        if (this.firstChild) {
-            cur = this.firstChild;
-            while (cur) {
-                // TODO avoid recursion here...
-                children.push(cur.toAST());
-                cur = cur.next;
-            }
-            result.children = children;
+        if (node[prop] !== undefined) {
+            result[prop] = node[prop];
         }
     }
     return result;
+};
+
+Node.prototype.toAST = function() {
+    var childrenStack = [];
+    var walker = this.walker();
+    var event;
+    while ((event = walker.next())) {
+        var node = event.node;
+        var entering = event.entering;
+        var container = node.isContainer();
+        var astnode;
+
+        if (container) {
+            if (entering) {
+                childrenStack.push([]);
+            } else {
+                astnode = toASTNode(node);
+                astnode.children = childrenStack.pop();
+                if (childrenStack.length > 0) {
+                    childrenStack[childrenStack.length - 1].push(astnode);
+                }
+            }
+        } else {
+            astnode = toASTNode(node);
+            childrenStack[childrenStack.length - 1].push(astnode);
+        }
+    }
+
+    return astnode;
 
 };
 
