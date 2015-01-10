@@ -5,7 +5,35 @@ var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
 
 var InlineParser = require('./inlines');
+
 var unescapeString = new InlineParser().unescapeString;
+
+var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
+
+var HTMLBLOCKOPEN = "<(?:" + BLOCKTAGNAME + "[\\s/>]" + "|" +
+        "/" + BLOCKTAGNAME + "[\\s>]" + "|" + "[?!])";
+
+var reHtmlBlockOpen = new RegExp('^' + HTMLBLOCKOPEN, 'i');
+
+var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
+
+var reMaybeSpecial = /^[ #`~*+_=<>0-9-]/;
+
+var reNonSpace = /[^ \t\n]/;
+
+var reBulletListMarker = /^[*+-]( +|$)/;
+
+var reOrderedListMarker = /^(\d+)([.)])( +|$)/;
+
+var reATXHeaderMarker = /^#{1,6}(?: +|$)/;
+
+var reCodeFence = /^`{3,}(?!.*`)|^~{3,}(?!.*~)/;
+
+var reClosingCodeFence = /^(?:`{3,}|~{3,})(?= *$)/;
+
+var reSetextHeaderLine = /^(?:=+|-+) *$/;
+
+var reLineEnding = /\r\n|\n|\r/;
 
 // Returns true if string contains only space characters.
 var isBlank = function(s) {
@@ -44,35 +72,9 @@ var matchAt = function(re, s, offset) {
     }
 };
 
-var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
-var HTMLBLOCKOPEN = "<(?:" + BLOCKTAGNAME + "[\\s/>]" + "|" +
-        "/" + BLOCKTAGNAME + "[\\s>]" + "|" + "[?!])";
-var reHtmlBlockOpen = new RegExp('^' + HTMLBLOCKOPEN, 'i');
-
-var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
-
-var reMaybeSpecial = /^[ #`~*+_=<>0-9-]/;
-
-var reNonSpace = /[^ \t\n]/;
-
-var reBulletListMarker = /^[*+-]( +|$)/;
-
-var reOrderedListMarker = /^(\d+)([.)])( +|$)/;
-
-var reATXHeaderMarker = /^#{1,6}(?: +|$)/;
-
-var reCodeFence = /^`{3,}(?!.*`)|^~{3,}(?!.*~)/;
-
-var reClosingCodeFence = /^(?:`{3,}|~{3,})(?= *$)/;
-
-var reSetextHeaderLine = /^(?:=+|-+) *$/;
-
-var reFinalNewlines = /(?:\n *)+$/;
-
-var reLineEnding = /\r\n|\n|\r/;
-
 // destructively trip final blank lines in an array of strings
 var stripFinalBlankLines = function(lns) {
+    "use strict";
     var i = lns.length - 1;
     while (!reNonSpace.test(lns[i])) {
         lns.pop();
