@@ -16,7 +16,7 @@ for (var i = 2; i < process.argv.length; i++) {
     var arg = process.argv[i];
     if (arg == '--ast') {
         renderer = { render: function(x) {
-            return util.inspect(x.toAST(), null, Infinity, true) + '\n';
+            return util.inspect(x.toAST(), null, 20, true) + '\n';
         } };
     } else if (arg == '--sourcepos') {
         options.sourcepos = true;
