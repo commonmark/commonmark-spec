@@ -16,7 +16,7 @@ var isBlank = function(s) {
 // Convert tabs to spaces on each line using a 4-space tab stop.
 var detabLine = function(text) {
     "use strict";
-    if (text.indexOf('\0') !== -1) {
+    if (text.indexOf('\u0000') !== -1) {
         // replace NUL for security
         text = text.replace(/\0/g, '\uFFFD');
     }
@@ -637,6 +637,7 @@ var processInlines = function(block) {
 };
 
 var Document = function() {
+    "use strict";
     var doc = new Node('Document', [[1, 1], [0, 0]]);
     doc.string_content = undefined;
     doc.strings = [];

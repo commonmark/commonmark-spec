@@ -6,7 +6,6 @@ var entityToChar = require('./html5-entities.js').entityToChar;
 // Constants for character codes:
 
 var C_NEWLINE = 10;
-var C_SPACE = 32;
 var C_ASTERISK = 42;
 var C_UNDERSCORE = 95;
 var C_BACKTICK = 96;
@@ -62,11 +61,7 @@ var reLinkDestination = new RegExp(
 
 var reEscapable = new RegExp(ESCAPABLE);
 
-var reAllEscapedChar = new RegExp('\\\\(' + ESCAPABLE + ')', 'g');
-
 var reEntityHere = new RegExp('^' + ENTITY, 'i');
-
-var reEntity = new RegExp(ENTITY, 'gi');
 
 var reEntityOrEscapedChar = new RegExp('\\\\' + ESCAPABLE + '|' + ENTITY, 'gi');
 
@@ -74,6 +69,7 @@ var reEntityOrEscapedChar = new RegExp('\\\\' + ESCAPABLE + '|' + ENTITY, 'gi');
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
 var unescapeChar = function(s) {
+    "use strict";
     if (s[0] === '\\') {
         return s[1];
     } else {
@@ -687,7 +683,7 @@ var parseNewline = function(block) {
     if (lastc && lastc.t === 'Text') {
         var sps = / *$/.exec(lastc.literal)[0].length;
         if (sps > 0) {
-            lastc.literal = lastc.literal.replace(/ *$/,'');
+            lastc.literal = lastc.literal.replace(/ *$/, '');
         }
         block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
     } else {

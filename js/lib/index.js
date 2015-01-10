@@ -14,7 +14,7 @@
 var util = require('util');
 
 var renderAST = function(tree) {
-    return util.inspect(tree.toAST(), {depth: 20});
+    return util.inspect(tree.toAST(), {depth: 20}) + '\n';
 };
 
 module.exports.Node = require('./node');
