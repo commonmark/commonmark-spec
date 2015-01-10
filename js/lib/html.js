@@ -19,6 +19,8 @@ var tag = function(name, attrs, selfclosing) {
     return result;
 };
 
+var reHtmlTag = /\<[^>]*\>/;
+
 var renderNodes = function(block, options) {
 
     var attrs;
@@ -32,7 +34,7 @@ var renderNodes = function(block, options) {
     var grandparent;
     var out = function(s) {
         if (disableTags > 0) {
-            buffer += s.replace(/\<[^>]*\>/g, '');
+            buffer += s.replace(reHtmlTag, '');
         } else {
             buffer += s;
         }
