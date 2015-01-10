@@ -132,7 +132,7 @@ var addLine = function(ln, offset) {
 var addChild = function(tag, line_number, offset) {
     "use strict";
     while (!canContain(this.tip.t, tag)) {
-        this.finalize(this.tip, line_number);
+        this.finalize(this.tip, line_number - 1);
     }
 
     var column_number = offset + 1; // offset 0 = column 1
@@ -322,7 +322,7 @@ var incorporateLine = function(ln, line_number) {
         var already_done = false;
         // finalize any blocks not matched
         while (!already_done && oldtip !== last_matched_container) {
-            mythis.finalize(oldtip, line_number);
+            mythis.finalize(oldtip, line_number - 1);
             oldtip = oldtip.parent;
         }
         already_done = true;
@@ -547,11 +547,7 @@ var finalize = function(block, line_number) {
         return 0;
     }
     block.open = false;
-    if (line_number > block.pos.start[0]) {
-        block.pos.end = [line_number - 1]; // TODO end column
-    } else {
-        block.pos.end = [line_number];
-    }
+    block.pos.end = [line_number]; // TODO end column
 
     switch (block.t) {
     case 'Paragraph':
@@ -659,7 +655,7 @@ var parse = function(input) {
         this.incorporateLine(lines[i], i + 1);
     }
     while (this.tip) {
-        this.finalize(this.tip, len - 1);
+        this.finalize(this.tip, len);
     }
     this.processInlines(this.doc);
     return this.doc;
