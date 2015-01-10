@@ -44,10 +44,6 @@ NodeWalker.prototype.next = function(){
             this.entering = false;
         }
 
-    } else if (!entering && cur === this.root) {
-        // don't move past root
-        this.current = null;
-
     } else if (cur.next) {
         this.current = cur.next;
         this.entering = true;
