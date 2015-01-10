@@ -10,7 +10,7 @@ var unescapeString = new InlineParser().unescapeString;
 // Returns true if string contains only space characters.
 var isBlank = function(s) {
     "use strict";
-    return /^\s*$/.test(s);
+    return !(reNonSpace.test(s));
 };
 
 // Convert tabs to spaces on each line using a 4-space tab stop.
@@ -51,6 +51,34 @@ var reHtmlBlockOpen = new RegExp('^' + HTMLBLOCKOPEN, 'i');
 
 var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
+var reMaybeSpecial = /^[ #`~*+_=<>0-9-]/;
+
+var reNonSpace = /[^ \t\n]/;
+
+var reBulletListMarker = /^[*+-]( +|$)/;
+
+var reOrderedListMarker = /^(\d+)([.)])( +|$)/;
+
+var reATXHeaderMarker = /^#{1,6}(?: +|$)/;
+
+var reCodeFence = /^`{3,}(?!.*`)|^~{3,}(?!.*~)/;
+
+var reClosingCodeFence = /^(?:`{3,}|~{3,})(?= *$)/;
+
+var reSetextHeaderLine = /^(?:=+|-+) *$/;
+
+var reFinalNewlines = /(?:\n *)+$/;
+
+var reLineEnding = /\r\n|\n|\r/;
+
+// destructively trip final blank lines in an array of strings
+var stripFinalBlankLines = function(lns) {
+    var i = lns.length - 1;
+    while (!reNonSpace.test(lns[i])) {
+        lns.pop();
+        i--;
+    }
+};
 
 // DOC PARSER
 
@@ -160,12 +188,12 @@ var parseListMarker = function(ln, offset) {
     if (rest.match(reHrule)) {
         return null;
     }
-    if ((match = rest.match(/^[*+-]( +|$)/))) {
+    if ((match = rest.match(reBulletListMarker))) {
         spaces_after_marker = match[1].length;
         data.type = 'Bullet';
         data.bullet_char = match[0][0];
 
-    } else if ((match = rest.match(/^(\d+)([.)])( +|$)/))) {
+    } else if ((match = rest.match(reOrderedListMarker))) {
         spaces_after_marker = match[3].length;
         data.type = 'Ordered';
         data.start = parseInt(match[1]);
@@ -226,7 +254,7 @@ var incorporateLine = function(ln, line_number) {
         }
         container = container.lastChild;
 
-        match = matchAt(/[^ ]/, ln, offset);
+        match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
@@ -339,9 +367,9 @@ var incorporateLine = function(ln, line_number) {
            container.t !== 'IndentedCode' &&
            container.t !== 'HtmlBlock' &&
            // this is a little performance optimization:
-           matchAt(/^[ #`~*+_=<>0-9-]/, ln, offset) !== -1) {
+           matchAt(reMaybeSpecial, ln, offset) !== -1) {
 
-        match = matchAt(/[^ ]/, ln, offset);
+        match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
@@ -371,7 +399,7 @@ var incorporateLine = function(ln, line_number) {
             closeUnmatchedBlocks(this);
             container = this.addChild('BlockQuote', line_number, offset);
 
-        } else if ((match = ln.slice(first_nonspace).match(/^#{1,6}(?: +|$)/))) {
+        } else if ((match = ln.slice(first_nonspace).match(reATXHeaderMarker))) {
             // ATX header
             offset = first_nonspace + match[0].length;
             closeUnmatchedBlocks(this);
@@ -382,7 +410,7 @@ var incorporateLine = function(ln, line_number) {
                 [ln.slice(offset).replace(/^ *#+ *$/, '').replace(/ +#+ *$/, '')];
             break;
 
-        } else if ((match = ln.slice(first_nonspace).match(/^`{3,}(?!.*`)|^~{3,}(?!.*~)/))) {
+        } else if ((match = ln.slice(first_nonspace).match(reCodeFence))) {
             // fenced code block
             var fence_length = match[0].length;
             closeUnmatchedBlocks(this);
@@ -402,7 +430,7 @@ var incorporateLine = function(ln, line_number) {
 
         } else if (container.t === 'Paragraph' &&
                    container.strings.length === 1 &&
-                   ((match = ln.slice(first_nonspace).match(/^(?:=+|-+) *$/)))) {
+                   ((match = ln.slice(first_nonspace).match(reSetextHeaderLine)))) {
             // setext header line
             closeUnmatchedBlocks(this);
             container.t = 'Header'; // convert Paragraph to SetextHeader
@@ -447,7 +475,7 @@ var incorporateLine = function(ln, line_number) {
     // What remains at the offset is a text line.  Add the text to the
     // appropriate container.
 
-    match = matchAt(/[^ ]/, ln, offset);
+    match = matchAt(reNonSpace, ln, offset);
     if (match === -1) {
         first_nonspace = ln.length;
         blank = true;
@@ -500,7 +528,7 @@ var incorporateLine = function(ln, line_number) {
             // check for closing code fence:
             match = (indent <= 3 &&
                      ln.charAt(first_nonspace) === container.fence_char &&
-                     ln.slice(first_nonspace).match(/^(?:`{3,}|~{3,})(?= *$)/));
+                     ln.slice(first_nonspace).match(reClosingCodeFence));
             if (match && match[0].length >= container.fence_length) {
                 // don't add closing fence to container; instead, close it:
                 this.finalize(container, line_number);
@@ -569,7 +597,8 @@ var finalize = function(block, line_number) {
         break;
 
     case 'IndentedCode':
-        block.literal = block.strings.join('\n').replace(/(\n *)*$/, '\n');
+        stripFinalBlankLines(block.strings);
+        block.literal = block.strings.join('\n') + '\n';
         block.t = 'CodeBlock';
         break;
 
@@ -644,7 +673,7 @@ var parse = function(input) {
     this.doc = Document();
     this.tip = this.doc;
     this.refmap = {};
-    var lines = input.replace(/\n$/, '').split(/\r\n|\n|\r/);
+    var lines = input.replace(/\n$/, '').split(reLineEnding);
     var len = lines.length;
     for (var i = 0; i < len; i++) {
         this.incorporateLine(lines[i], i + 1);
