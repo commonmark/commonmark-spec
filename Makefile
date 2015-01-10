@@ -177,7 +177,7 @@ npm:
 	cd js; npm publish
 
 dingus: js/commonmark.js
-	echo "Starting dingus server at http://localhost:9000" && python -m SimpleHTTPServer 9000
+	echo "Starting dingus server at http://localhost:9000/dingus.html" && python -m SimpleHTTPServer 9000
 
 ### Spec ###
 

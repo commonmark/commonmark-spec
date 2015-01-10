@@ -52,7 +52,7 @@ $(document).ready(function() {
       return;
     }
     var startTime = new Date().getTime();
-    var result = writer.renderBlock(parsed);
+    var result = writer.render(parsed);
     var endTime = new Date().getTime();
     var renderTime = endTime - startTime;
     $("#preview").html(result);
