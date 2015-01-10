@@ -519,16 +519,10 @@ var incorporateLine = function(ln, line_number) {
                 this.addLine(ln, first_nonspace);
             } else if (blank) {
                 break;
-            } else if (container.t !== 'HorizontalRule' &&
-                       container.t !== 'Header') {
+            } else {
                 // create paragraph container for line
                 container = this.addChild('Paragraph', line_number, first_nonspace);
                 this.addLine(ln, first_nonspace);
-            } else {
-                console.log("Line " + line_number.toString() +
-                            " with container type " + container.t +
-                            " did not match any condition.");
-
             }
         }
     }
