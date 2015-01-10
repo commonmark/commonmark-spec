@@ -225,7 +225,7 @@ var renderNodes = function(block, options) {
             break;
 
         default:
-            console.log("Unknown node type " + node.t);
+            throw("Unknown node type " + node.t);
         }
 
     }
