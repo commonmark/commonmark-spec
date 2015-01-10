@@ -253,8 +253,6 @@ var reNeedsEscaping = /[&<>"]/;
 function HtmlRenderer(){
     return {
         // default options:
-        blocksep: '\n',  // space between blocks
-        innersep: '\n',  // space between block container tag and contents
         softbreak: '\n', // by default, soft breaks are rendered as newlines in HTML
         // set to "<br />" to make them hard breaks
         // set to " " if you want to ignore line wrapping in source
