@@ -10,7 +10,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | lunamark          | 6.295      |    31.5 |
 | cheapskate        | 5.760      |    28.8 |
 | peg-markdown      | 5.450      |    27.3 |
-| **commonmark.js** | 2.335      |    11.6 |
+| **commonmark.js** | 2.310      |    11.5 |
 | marked            | 1.855      |     9.3 |
 | discount          | 1.705      |     8.5 |
 | **cmark**         | 0.280      |     1.4 |
@@ -38,7 +38,8 @@ They can be run using `make benchjs`:
 
 |Implementation     |  ops/sec    |
 |-------------------|-------------|
-| showdown.js       | 173 ±1.45%  |
-| **commonmark.js** | 443 ±0.81%  |
-| marked.js         | 531 ±0.69%  |
-| markdown-it       | 684 ±1.15%  |
+| showdown.js       | 170 ±1.68%  |
+| **commonmark.js** | 474 ±1.04%  |
+| marked.js         | 545 ±0.53%  |
+| markdown-it       | 689 ±0.84%  |
+
