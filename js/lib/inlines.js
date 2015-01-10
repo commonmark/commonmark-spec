@@ -760,7 +760,6 @@ var parseReference = function(s, refmap) {
         this.pos = beforetitle;
     }
 
-    // FIXME
     // make sure we're at line end:
     if (this.match(/^ *(?:\n|$)/) === null) {
         this.pos = startpos;
