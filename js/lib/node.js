@@ -60,14 +60,14 @@ NodeWalker.prototype.next = function(){
     return {entering: entering, node: cur};
 };
 
-function Node(nodeType, pos) {
+function Node(nodeType, sourceloc) {
     this.t = nodeType;
     this.parent = null;
     this.firstChild = null;
     this.lastChild = null;
     this.prev = null;
     this.next = null;
-    this.pos = pos || {};
+    this.sourceloc = sourceloc;
     this.last_line_blank = false;
     this.open = true;
     this.strings = undefined;
@@ -167,7 +167,7 @@ Node.prototype.toAST = function() {
     var cur;
     var result = { t: this.t };
 
-    var propsToShow = ['t', 'c', 'list_data', 'pos', 'info', 'level'];
+    var propsToShow = ['t', 'c', 'list_data', 'sourceloc', 'info', 'level'];
 
     for (var i = 0; i < propsToShow.length; i++) {
         var prop = propsToShow[i];
