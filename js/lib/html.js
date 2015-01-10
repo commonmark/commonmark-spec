@@ -27,6 +27,7 @@ var renderNodes = function(block, options) {
     var walker = block.walker();
     var event, node, entering;
     var buffer = "";
+    var lastOut = "\n";
     var disableTags = 0;
     var grandparent;
     var out = function(s) {
@@ -35,11 +36,13 @@ var renderNodes = function(block, options) {
         } else {
             buffer += s;
         }
+        lastOut = s;
     };
     var esc = this.escape;
     var cr = function() {
-        if (buffer.length > 0 && buffer.charAt[buffer.length - 1] !== '\n') {
-            out('\n');
+        if (lastOut !== '\n') {
+            buffer += '\n';
+            lastOut = '\n';
         }
     };
 
