@@ -5,6 +5,16 @@
 #include "cmark.h"
 #include "iterator.h"
 
+static const int S_leaf_mask =
+	(1 << CMARK_NODE_HTML)        |
+	(1 << CMARK_NODE_HRULE)       |
+	(1 << CMARK_NODE_CODE_BLOCK)  |
+	(1 << CMARK_NODE_TEXT)        |
+	(1 << CMARK_NODE_SOFTBREAK)   |
+	(1 << CMARK_NODE_LINEBREAK)   |
+	(1 << CMARK_NODE_CODE)        |
+	(1 << CMARK_NODE_INLINE_HTML);
+
 cmark_iter*
 cmark_iter_new(cmark_node *root)
 {
@@ -31,21 +41,10 @@ cmark_iter_next(cmark_iter *iter)
 	return iter->event_type;
 }
 
-int S_is_leaf(cmark_node *node)
+static bool
+S_is_leaf(cmark_node *node)
 {
-	switch (cmark_node_get_type(node)) {
-	case CMARK_NODE_HTML:
-	case CMARK_NODE_HRULE:
-	case CMARK_NODE_CODE_BLOCK:
-	case CMARK_NODE_TEXT:
-	case CMARK_NODE_SOFTBREAK:
-	case CMARK_NODE_LINEBREAK:
-	case CMARK_NODE_CODE:
-	case CMARK_NODE_INLINE_HTML:
-		return 1;
-	default:
-		return 0;
-	}
+	return (1 << node->type) & S_leaf_mask;
 }
 
 void
