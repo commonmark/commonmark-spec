@@ -14,18 +14,12 @@ function isContainer(node) {
             t === 'Image');
 }
 
-function NodeWalker(root) {
-    this.current = root;
-    this.root = root;
-    this.entering = true;
-}
-
-NodeWalker.prototype.resumeAt = function(node, entering) {
+var resumeAt = function(node, entering) {
     this.current = node;
     this.entering = (entering === true);
 };
 
-NodeWalker.prototype.next = function(){
+var next = function(){
     var cur = this.current;
     var entering = this.entering;
 
@@ -55,6 +49,14 @@ NodeWalker.prototype.next = function(){
 
     return {entering: entering, node: cur};
 };
+
+var NodeWalker = function(root) {
+    return { current: root,
+             root: root,
+             entering: true,
+             next: next,
+             resumeAt: resumeAt };
+}
 
 function Node(nodeType, sourcepos) {
     this.t = nodeType;
@@ -154,7 +156,7 @@ Node.prototype.insertBefore = function(sibling) {
 };
 
 Node.prototype.walker = function() {
-    var walker = new NodeWalker(this);
+    var walker = NodeWalker(this);
     return walker;
 };
 
