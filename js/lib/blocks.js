@@ -136,7 +136,8 @@ var addChild = function(tag, line_number, offset) {
     }
 
     var column_number = offset + 1; // offset 0 = column 1
-    var newBlock = new Node(tag, { start: [line_number, column_number], end: [] });
+    var newBlock = new Node(tag, { start: [line_number, column_number],
+                                   end: [0, 0] });
     newBlock.strings = [];
     newBlock.string_content = undefined;
     this.tip.appendChild(newBlock);
@@ -532,6 +533,7 @@ var incorporateLine = function(ln, line_number) {
             }
         }
     }
+    this.lastLineLength = ln.length - 1; // -1 for newline
 };
 
 // Finalize a block.  Close it and do any necessary postprocessing,
@@ -547,7 +549,7 @@ var finalize = function(block, line_number) {
         return 0;
     }
     block.open = false;
-    block.pos.end = [line_number]; // TODO end column
+    block.pos.end = [line_number, this.lastLineLength + 1];
 
     switch (block.t) {
     case 'Paragraph':
@@ -637,7 +639,7 @@ var processInlines = function(block) {
 };
 
 var Document = function() {
-    var doc = new Node('Document', { start: [1, 1], end: [] });
+    var doc = new Node('Document', { start: [1, 1], end: [0, 0] });
     doc.string_content = undefined;
     doc.strings = [];
     return doc;
@@ -669,6 +671,7 @@ function DocParser(){
         doc: Document(),
         tip: this.doc,
         refmap: {},
+        lastLineLength: 0,
         inlineParser: new InlineParser(),
         breakOutOfLists: breakOutOfLists,
         addLine: addLine,
