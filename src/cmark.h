@@ -83,6 +83,7 @@ typedef struct cmark_parser cmark_parser;
 typedef struct cmark_iter cmark_iter;
 
 typedef enum {
+	CMARK_EVENT_NONE,
 	CMARK_EVENT_DONE,
 	CMARK_EVENT_ENTER,
 	CMARK_EVENT_EXIT
@@ -203,6 +204,12 @@ cmark_iter_next(cmark_iter *iter);
 CMARK_EXPORT
 cmark_node*
 cmark_iter_get_node(cmark_iter *iter);
+
+/** Returns the current event type.
+ */
+CMARK_EXPORT
+cmark_event_type
+cmark_iter_get_event_type(cmark_iter *iter);
 
 /**
  * ## Accessors

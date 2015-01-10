@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -18,15 +19,19 @@ static const int S_leaf_mask =
 cmark_iter*
 cmark_iter_new(cmark_node *root)
 {
+	if (root == NULL) {
+		return NULL;
+	}
 	cmark_iter *iter = (cmark_iter*)malloc(sizeof(cmark_iter));
 	if (iter == NULL) {
 		return NULL;
-	} else {
-		iter->root = root;
-		iter->current = root;
-		iter->event_type = CMARK_EVENT_ENTER;
-		return iter;
 	}
+	iter->root         = root;
+	iter->cur.ev_type  = CMARK_EVENT_NONE;
+	iter->cur.node     = NULL;
+	iter->next.ev_type = CMARK_EVENT_ENTER;
+	iter->next.node    = root;
+	return iter;
 }
 
 void
@@ -35,61 +40,72 @@ cmark_iter_free(cmark_iter *iter)
 	free(iter);
 }
 
-cmark_event_type
-cmark_iter_next(cmark_iter *iter)
-{
-	return iter->event_type;
-}
-
 static bool
 S_is_leaf(cmark_node *node)
 {
 	return (1 << node->type) & S_leaf_mask;
 }
 
+cmark_event_type
+cmark_iter_next(cmark_iter *iter)
+{
+	cmark_event_type  ev_type = iter->next.ev_type;
+	cmark_node       *node    = iter->next.node;
+
+	iter->cur.ev_type = ev_type;
+	iter->cur.node    = node;
+
+	if (ev_type == CMARK_EVENT_DONE) {
+		return ev_type;
+	}
+
+	/* roll forward to next item, setting both fields */
+	if (ev_type == CMARK_EVENT_ENTER && !S_is_leaf(node)) {
+		if (node->first_child == NULL) {
+			/* stay on this node but exit */
+			iter->next.ev_type = CMARK_EVENT_EXIT;
+		} else {
+			iter->next.ev_type = CMARK_EVENT_ENTER;
+			iter->next.node    = node->first_child;
+		}
+	} else if (node == iter->root) {
+		/* don't move past root */
+		iter->next.ev_type = CMARK_EVENT_DONE;
+		iter->next.node    = NULL;
+	} else if (node->next) {
+		iter->next.ev_type = CMARK_EVENT_ENTER;
+		iter->next.node    = node->next;
+	} else if (node->parent) {
+		iter->next.ev_type = CMARK_EVENT_EXIT;
+		iter->next.node    = node->parent;
+	} else {
+		assert(false);
+		iter->next.ev_type = CMARK_EVENT_DONE;
+		iter->next.node    = NULL;
+	}
+
+	return ev_type;
+}
+
 void
 cmark_iter_reset(cmark_iter *iter, cmark_node *current,
                  cmark_event_type event_type)
 {
-	iter->event_type = event_type;
-	iter->current = current;
+	iter->next.ev_type = event_type;
+	iter->next.node    = current;
+	cmark_iter_next(iter);
 }
 
 cmark_node*
 cmark_iter_get_node(cmark_iter *iter)
 {
-	/* we'll return current */
-	cmark_node *cur = iter->current;
+	return iter->cur.node;
+}
 
-	if (cur == NULL || iter->event_type == CMARK_EVENT_DONE) {
-		return NULL;
-	}
-
-	/* roll forward to next item, setting both fields */
-	if (iter->event_type == CMARK_EVENT_ENTER && !S_is_leaf(cur)) {
-		if (cur->first_child == NULL) {
-			/* stay on this node but exit */
-			iter->event_type = CMARK_EVENT_EXIT;
-		} else {
-			iter->current = cur->first_child;
-			iter->event_type = CMARK_EVENT_ENTER;
-		}
-	} else if (cur == iter->root) {
-		/* don't move past root */
-		iter->event_type = CMARK_EVENT_DONE;
-		iter->current = NULL;
-	} else if (cur->next) {
-		iter->event_type = CMARK_EVENT_ENTER;
-		iter->current = cur->next;
-	} else if (cur->parent) {
-		iter->event_type = CMARK_EVENT_EXIT;
-		iter->current = cur->parent;
-	} else {
-		iter->event_type = CMARK_EVENT_DONE;
-		iter->current = NULL;
-	}
-
-	return cur;
+cmark_event_type
+cmark_iter_get_event_type(cmark_iter *iter)
+{
+	return iter->cur.ev_type;
 }
 
 
