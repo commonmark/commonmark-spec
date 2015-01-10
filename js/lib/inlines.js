@@ -65,6 +65,10 @@ var reEntityHere = new RegExp('^' + ENTITY, 'i');
 
 var reEntityOrEscapedChar = new RegExp('\\\\' + ESCAPABLE + '|' + ENTITY, 'gi');
 
+var reTicks = new RegExp('`+');
+
+var reTicksHere = new RegExp('^`+');
+
 // Matches a string of non-special characters.
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
@@ -144,7 +148,7 @@ var spnl = function() {
 // literal sequence of backticks.
 var parseBackticks = function(block) {
     "use strict";
-    var ticks = this.match(/^`+/);
+    var ticks = this.match(reTicksHere);
     if (!ticks) {
         return 0;
     }
@@ -152,7 +156,7 @@ var parseBackticks = function(block) {
     var foundCode = false;
     var matched;
     var node;
-    while (!foundCode && (matched = this.match(/`+/m))) {
+    while (!foundCode && (matched = this.match(reTicks))) {
         if (matched === ticks) {
             node = new Node('Code');
             node.literal = this.subject.slice(afterOpenTicks,
@@ -757,11 +761,11 @@ var parseReference = function(s, refmap) {
 // On failure, return false.
 var parseInline = function(block) {
     "use strict";
+    var res;
     var c = this.peek();
     if (c === -1) {
         return false;
     }
-    var res;
     switch(c) {
     case C_NEWLINE:
         res = this.parseNewline(block);
