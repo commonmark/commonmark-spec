@@ -201,7 +201,7 @@ var renderNodes = function(block, options) {
             }
             cr();
             out(tag('pre') + tag('code', attrs));
-            out(this.escape(node.literal));
+            out(esc(node.literal));
             out(tag('/code') + tag('/pre'));
             cr();
             break;
@@ -230,7 +230,7 @@ var renderNodes = function(block, options) {
     return buffer;
 };
 
-var sub = function(s) {
+var replaceUnsafeChar = function(s) {
     switch (s) {
     case '&':
         return '&amp;';
@@ -245,6 +245,7 @@ var sub = function(s) {
     }
 };
 
+var reNeedsEscaping = /[&<>"]/;
 
 // The HtmlRenderer object.
 function HtmlRenderer(){
@@ -256,10 +257,14 @@ function HtmlRenderer(){
         // set to "<br />" to make them hard breaks
         // set to " " if you want to ignore line wrapping in source
         escape: function(s, preserve_entities) {
-            if (preserve_entities) {
-                return s.replace(/[&](?:[#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)|[&<>"]/gi, sub);
+            if (reNeedsEscaping.test(s)) {
+                if (preserve_entities) {
+                    return s.replace(/[&](?:[#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)|[&<>"]/gi, replaceUnsafeChar);
+                } else {
+                    return s.replace(/[&<>"]/g, replaceUnsafeChar);
+                }
             } else {
-                return s.replace(/[&<>"]/g, sub);
+                return s;
             }
         },
         render: renderNodes
