@@ -5,11 +5,13 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 |Implementation     |  Time (sec)| Factor  |
 |-------------------|-----------:|--------:|
 | Markdown.pl       | 2921.24    | 14606.2 |
+| Python markdown   | 55.32      |   276.6 |
 | PHP markdown      | 20.85      |   104.3 |
 | kramdown          | 20.83      |   104.1 |
 | lunamark          | 6.295      |    31.5 |
 | cheapskate        | 5.760      |    28.8 |
 | peg-markdown      | 5.450      |    27.3 |
+| parsedown         | 3.490      |    17.4 |
 | **commonmark.js** | 2.070      |    10.3 |
 | marked            | 1.855      |     9.3 |
 | discount          | 1.705      |     8.5 |
