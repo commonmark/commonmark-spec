@@ -320,6 +320,46 @@ iterator(test_batch_runner *runner) {
 }
 
 static void
+iterator_delete(test_batch_runner *runner) {
+	static const char md[] =
+		"a *b* c\n"
+		"\n"
+		"* item1\n"
+		"* item2\n"
+		"\n"
+		"a `b` c\n"
+		"\n"
+		"* item1\n"
+		"* item2\n";
+	cmark_node *doc  = cmark_parse_document(md, sizeof(md) - 1);
+	cmark_iter *iter = cmark_iter_new(doc);
+	cmark_event_type ev_type;
+
+	while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+		cmark_node *node = cmark_iter_get_node(iter);
+		// Delete list, emph, and code nodes.
+		if ((ev_type == CMARK_EVENT_EXIT &&
+		     node->type == CMARK_NODE_LIST) ||
+		    (ev_type == CMARK_EVENT_EXIT &&
+		     node->type == CMARK_NODE_EMPH) ||
+		    (ev_type == CMARK_EVENT_ENTER &&
+		     node->type == CMARK_NODE_CODE)) {
+			cmark_node_free(node);
+		}
+	}
+
+	char *html = cmark_render_html(doc, CMARK_OPT_DEFAULT);
+	static const char expected[] =
+		"<p>a  c</p>\n"
+		"<p>a  c</p>\n";
+	STR_EQ(runner, html, expected, "iterate and delete nodes");
+
+	free(html);
+	cmark_iter_free(iter);
+	cmark_node_free(doc);
+}
+
+static void
 create_tree(test_batch_runner *runner)
 {
 	char *html;
@@ -630,6 +670,7 @@ int main() {
 	accessors(runner);
 	node_check(runner);
 	iterator(runner);
+	iterator_delete(runner);
 	create_tree(runner);
 	hierarchy(runner);
 	parser(runner);
