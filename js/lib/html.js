@@ -50,6 +50,8 @@ var renderNodes = function(block) {
 
     var options = this.options;
 
+    if (options.time) { console.time("rendering"); }
+
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
@@ -225,6 +227,7 @@ var renderNodes = function(block) {
         }
 
     }
+    if (options.time) { console.timeEnd("rendering"); }
     return buffer;
 };
 

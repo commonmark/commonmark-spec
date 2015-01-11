@@ -671,6 +671,7 @@ var Document = function() {
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
     "use strict";
+    if (this.options.time) { console.time("block parsing"); }
     this.doc = Document();
     this.tip = this.doc;
     this.refmap = {};
@@ -686,13 +687,16 @@ var parse = function(input) {
     while (this.tip) {
         this.finalize(this.tip, len);
     }
+    if (this.options.time) { console.timeEnd("block parsing"); }
+    if (this.options.time) { console.time("inline parsing"); }
     this.processInlines(this.doc);
+    if (this.options.time) { console.timeEnd("inline parsing"); }
     return this.doc;
 };
 
 
 // The DocParser object.
-function DocParser(){
+function DocParser(options){
     "use strict";
     return {
         doc: Document(),
@@ -706,7 +710,8 @@ function DocParser(){
         incorporateLine: incorporateLine,
         finalize: finalize,
         processInlines: processInlines,
-        parse: parse
+        parse: parse,
+        options: options || {}
     };
 }
 

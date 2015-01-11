@@ -7,9 +7,8 @@ var commonmark = require('../lib/index.js');
 var inps = [];
 var file;
 var files = [];
-var options = { sourcepos: false };
+var options = { sourcepos: false, time: false };
 var format = 'html';
-var time = false;
 var i;
 
 for (i = 2; i < process.argv.length; i++) {
@@ -17,7 +16,7 @@ for (i = 2; i < process.argv.length; i++) {
     if (arg === '--ast') {
         format = 'ast';
     } else if (arg === '--time') {
-        time = true;
+        options.time = true;
     } else if (arg === '--sourcepos') {
         options.sourcepos = true;
     } else if (/^--/.test(arg)) {
@@ -28,7 +27,7 @@ for (i = 2; i < process.argv.length; i++) {
     }
 }
 
-var parser = new commonmark.DocParser();
+var parser = new commonmark.DocParser(options);
 var renderer;
 
 if (format === 'html') {
@@ -48,12 +47,8 @@ for (i = 0; i < files.length; i++) {
 }
 
 var inp = inps.join('\n');
-if (time) { console.time("parsing"); }
 var doc = parser.parse(inp);
-if (time) { console.timeEnd("parsing"); }
 
-if (time) { console.time("rendering"); }
 var rendered = renderer.render(doc);
-if (time) { console.timeEnd("rendering"); }
 
-if (!time) { process.stdout.write(rendered); }
+if (!options.time) { process.stdout.write(rendered); }
