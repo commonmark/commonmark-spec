@@ -97,7 +97,7 @@ $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -b -i --no-generation-date -o $@ $<
 
 test: $(SPEC) $(BUILDDIR)
-	make -C $(BUILDDIR) test ARGS="-V"
+	make -C $(BUILDDIR) test || (cat $(BUILDDIR)/Testing/Temporary/LastTest.log && exit 1)
 
 $(TARBALL): archive
 
