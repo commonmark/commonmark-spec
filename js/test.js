@@ -3,26 +3,24 @@
 
 var fs = require('fs');
 var commonmark = require('./lib/index.js');
-var ansi;
-var cursor;
 
-try {
-  ansi = require('ansi');
-  cursor = ansi(process.stdout);
-}
-catch(err) {
-  var noOp = function() { return this; };
-  cursor = {
-        write: function (s) {
-            process.stdout.write(s);
-            return this;
-        },
-        green: noOp,
-        red: noOp,
-        cyan: noOp,
-        reset: noOp,
-  };
-}
+// Home made mini-version of the npm ansi module:
+var escSeq = function(s) {
+    return function (){
+        process.stdout.write('\u001b' + s);
+        return this;
+    };
+};
+var cursor = {
+    write: function (s) {
+        process.stdout.write(s);
+        return this;
+    },
+    green: escSeq('[0;32m'),
+    red: escSeq('[0;31m'),
+    cyan: escSeq('[0;36m'),
+    reset: escSeq('[0;30m'),
+};
 
 var writer = new commonmark.HtmlRenderer();
 var reader = new commonmark.DocParser();
