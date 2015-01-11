@@ -350,13 +350,11 @@ var incorporateLine = function(ln, line_number) {
     // want to close unmatched blocks.  So we store this closure for
     // use later, when we have more information.
     var closeUnmatchedBlocks = function(mythis) {
-        var already_done = false;
         // finalize any blocks not matched
-        while (!already_done && oldtip !== last_matched_container) {
+        while (oldtip !== last_matched_container) {
             mythis.finalize(oldtip, line_number - 1);
             oldtip = oldtip.parent;
         }
-        already_done = true;
     };
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
