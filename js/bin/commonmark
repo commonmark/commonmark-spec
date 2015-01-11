@@ -9,12 +9,15 @@ var file;
 var files = [];
 var options = { sourcepos: false };
 var format = 'html';
+var time = false;
 var i;
 
 for (i = 2; i < process.argv.length; i++) {
     var arg = process.argv[i];
     if (arg === '--ast') {
         format = 'ast';
+    } else if (arg === '--time') {
+        time = true;
     } else if (arg === '--sourcepos') {
         options.sourcepos = true;
     } else if (/^--/.test(arg)) {
@@ -44,4 +47,13 @@ for (i = 0; i < files.length; i++) {
   inps.push(fs.readFileSync(file, 'utf8'));
 }
 
-process.stdout.write(renderer.render(parser.parse(inps.join('\n'))));
+var inp = inps.join('\n');
+if (time) { console.time("parsing"); }
+var doc = parser.parse(inp);
+if (time) { console.timeEnd("parsing"); }
+
+if (time) { console.time("rendering"); }
+var rendered = renderer.render(doc);
+if (time) { console.timeEnd("rendering"); }
+
+if (!time) { process.stdout.write(rendered); }
