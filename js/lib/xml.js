@@ -120,8 +120,8 @@ var replaceUnsafeChar = function(s) {
 
 var reNeedsEscaping = /[&<>"]/;
 
-// The XMLRenderer object.
-function XMLRenderer(options){
+// The XmlRenderer object.
+function XmlRenderer(options){
     return {
         // default options:
         softbreak: '\n', // by default, soft breaks are rendered as newlines in HTML
@@ -143,4 +143,4 @@ function XMLRenderer(options){
     };
 }
 
-module.exports = XMLRenderer;
+module.exports = XmlRenderer;

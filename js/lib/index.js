@@ -14,4 +14,4 @@
 module.exports.Node = require('./node');
 module.exports.DocParser = require('./blocks');
 module.exports.HtmlRenderer = require('./html');
-module.exports.XMLRenderer = require('./xml');
+module.exports.XmlRenderer = require('./xml');

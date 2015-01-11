@@ -36,7 +36,7 @@ var renderer;
 if (format === 'html') {
     renderer = new commonmark.HtmlRenderer(options);
 } else if (format === 'xml') {
-    renderer = new commonmark.XMLRenderer(options);
+    renderer = new commonmark.XmlRenderer(options);
 } else if (format === 'ast') {
     renderer = { render: function(node) {
                    return util.inspect(node.toAST(), null, 20, true) + '\n';
