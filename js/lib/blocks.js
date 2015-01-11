@@ -671,16 +671,18 @@ var Document = function() {
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
     "use strict";
-    if (this.options.time) { console.time("block parsing"); }
     this.doc = Document();
     this.tip = this.doc;
     this.refmap = {};
+    if (this.options.time) { console.time("preparing input"); }
     var lines = input.split(reLineEnding);
     var len = lines.length;
     if (input.charCodeAt(input.length - 1) === C_NEWLINE) {
         // ignore last blank line created by final newline
         len -= 1;
     }
+    if (this.options.time) { console.timeEnd("preparing input"); }
+    if (this.options.time) { console.time("block parsing"); }
     for (var i = 0; i < len; i++) {
         this.incorporateLine(lines[i], i + 1);
     }
