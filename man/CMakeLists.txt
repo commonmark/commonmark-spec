@@ -1,4 +1,5 @@
 set(PYTHON python)
+set(LIBRARY "libcmark")
 
 if (NOT MSVC)
   add_custom_target(man ALL
@@ -8,6 +9,7 @@ if (NOT MSVC)
   add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/cmark.3
     DEPENDS ${CMAKE_SOURCE_DIR}/src/cmark.h
+    DEPENDS ${LIBRARY}
     COMMAND ${PYTHON} ${CMAKE_CURRENT_SOURCE_DIR}/make_man_page.py
     ${CMAKE_SOURCE_DIR}/src/cmark.h >
     ${CMAKE_CURRENT_BINARY_DIR}/cmark.3
