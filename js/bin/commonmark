@@ -15,6 +15,8 @@ for (i = 2; i < process.argv.length; i++) {
     var arg = process.argv[i];
     if (arg === '--ast') {
         format = 'ast';
+    } else if (arg === '--xml') {
+        format = 'xml';
     } else if (arg === '--time') {
         options.time = true;
     } else if (arg === '--sourcepos') {
@@ -32,6 +34,8 @@ var renderer;
 
 if (format === 'html') {
     renderer = new commonmark.HtmlRenderer(options);
+} else if (format === 'xml') {
+    renderer = new commonmark.XMLRenderer(options);
 } else if (format === 'ast') {
     renderer = new commonmark.ASTRenderer(options);
     renderer.options.colors = true;
