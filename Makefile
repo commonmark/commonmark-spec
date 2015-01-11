@@ -117,6 +117,8 @@ $(ALLTESTS): spec.txt
 
 leakcheck: $(ALLTESTS)
 	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) >/dev/null
+	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) -t man >/dev/null
+	cat $< | valgrind --leak-check=full --dsymutil=yes --error-exitcode=1 $(PROG) -t xml >/dev/null
 
 fuzztest:
 	{ for i in `seq 1 10`; do \
