@@ -50,7 +50,7 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-man/man3/cmark.3: src/cmark.h
+man/man3/cmark.3: src/cmark.h $(PROG)
 	mkdir -p man/man3 && \
 	python3 man/make_man_page.py $< > $@
 
