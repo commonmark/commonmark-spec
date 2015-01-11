@@ -21,7 +21,7 @@ JSMODULES=$(wildcard js/lib/*.js)
 
 .PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testarchive testtarball testziparchive testlib bench astyle
 
-all: $(PROG)
+all: $(PROG) man/man3/cmark.3
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
 $(PROG): $(BUILDDIR)
@@ -30,12 +30,12 @@ $(PROG): $(BUILDDIR)
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man3/cmark.3
+$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
-install: $(BUILDDIR)
+install: $(BUILDDIR) man/man3/cmark.3
 	make -C $(BUILDDIR) install
 
 debug:
@@ -110,13 +110,17 @@ testtarball: $(TARBALL)
 	rm -rf $(PKGDIR); \
 	tar xvzf $(TARBALL); \
 	cd $(PKGDIR); \
-	mkdir build && cd build && cmake .. && make && ctest -V
+	mkdir build && cd build && cmake .. && make && \
+		(ctest -V || \
+		(cat build/Testing/Temporary/LastTest.log && exit 1))
 
 testziparchive: $(ZIPARCHIVE)
 	rm -rf $(PKGDIR); \
 	unzip $(ZIPARCHIVE); \
 	cd $(PKGDIR); \
-	mkdir build && cd build && cmake .. && make && ctest -V
+	mkdir build && cd build && cmake .. && make && \
+		(ctest -V || \
+		(cat build/Testing/Temporary/LastTest.log && exit 1))
 
 $(ALLTESTS): spec.txt
 	python3 test/spec_tests.py --spec $< --dump-tests | python3 -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print("\n".join([test["markdown"] for test in tests]))' > $@
