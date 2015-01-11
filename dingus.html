@@ -10,7 +10,6 @@
   <script type="text/javascript">
 
 var writer = new commonmark.HtmlRenderer();
-var astwriter = new commonmark.ASTRenderer();
 var reader = new commonmark.DocParser();
 
 function getQueryVariable(variable) {
@@ -58,7 +57,7 @@ $(document).ready(function() {
     var renderTime = endTime - startTime;
     $("#preview").html(result);
     $("#html").text(result);
-    $("#ast").text(astwriter.render(parsed));
+    $("#ast").text("UNDER CONSTRUCTION"); // TODO - replace with xml
     $("#rendertime").text(renderTime);
   };
   var parseAndRender = function() {

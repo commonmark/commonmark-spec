@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
+var util = require('util');
 var fs = require('fs');
 var commonmark = require('../lib/index.js');
 
@@ -37,8 +38,10 @@ if (format === 'html') {
 } else if (format === 'xml') {
     renderer = new commonmark.XMLRenderer(options);
 } else if (format === 'ast') {
-    renderer = new commonmark.ASTRenderer(options);
-    renderer.options.colors = true;
+    renderer = { render: function(node) {
+                   return util.inspect(node.toAST(), null, 20, true) + '\n';
+                 },
+                 options: {} };
 }
 
 if (files.length === 0) {
