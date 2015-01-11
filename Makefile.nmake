@@ -29,9 +29,6 @@ clean:
 $(SRCDIR)\case_fold_switch.inc: $(DATADIR)\CaseFolding-3.2.0.txt
 	perl mkcasefold.pl < $? > $@
 
-man\man1\cmark.1: man\cmark.1.md
-	pandoc $? -o $@ -s -t man
-
 test: $(SPEC) all
 	@pushd $(BUILDDIR) && $(MAKE) /nologo test ARGS="-V" && popd
 
@@ -41,17 +38,14 @@ distclean: clean
 
 ### Spec ###
 
-spec.md: $(SPEC)
-	perl spec2md.pl < $? > $@
+spec.html: spec.txt template.html $(PROG)
+	python3 makespec.py html > $@
 
-spec.html: spec.md template.html
-	pandoc --no-highlight --number-sections --template template.html -s --toc -S $? | \
-	perl -pe "s/a href=\"@([^"]*)\"/a id=\"\\1\" href=\"#\\1\" class=\"definition\"/g" | \
-	perl -pe "s/\\x{2423}/<span class=\"space\"> <\\/span>/g" \
-	> $@
+spec.md: spec.txt
+	python3 makespec.py markdown > $@
 
 spec.pdf: spec.md template.tex specfilter.hs
-	pandoc -s $? --template template.tex \
-	   --filter specfilter.hs -o $@ --latex-engine=xelatex --toc \
+	pandoc -s $< --template template.tex \
+	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
 	   --number-sections -V documentclass=report -V tocdepth=2 \
 	   -V classoption=twosides

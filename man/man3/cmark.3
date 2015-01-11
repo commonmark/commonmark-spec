@@ -1,0 +1,520 @@
+.TH cmark 3 "January 11, 2015" "LOCAL" "Library Functions Manual"
+.SH
+NAME
+.PP
+\f[B]cmark\f[] \- CommonMark parsing, manipulating, and rendering
+
+.SH
+DESCRIPTION
+.SS
+Simple Interface
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_VERSION "0.1"
+.RE
+\f[]
+.fi
+
+.PP
+Current version of library.
+
+.PP
+\fIchar *\f[] \fBcmark_markdown_to_html\f[](\fIconst char *text\f[], \fIint len\f[])
+
+.PP
+Convert \f[I]text\f[] (assumed to be a UTF\-8 encoded string with length
+\f[I]len\f[] from CommonMark Markdown to HTML, returning a null\-terminated,
+UTF\-8\-encoded string.
+
+.SS
+Node Structure
+
+.SS
+Creating and Destroying Nodes
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_new\f[](\fIcmark_node_type type\f[])
+
+.PP
+Creates a new node of type \f[I]type\f[]\&.  Note that the node may have
+other required properties, which it is the caller's responsibility
+to assign.
+
+.PP
+\fIvoid\f[] \fBcmark_node_free\f[](\fIcmark_node *node\f[])
+
+.PP
+Frees the memory allocated for a node.
+
+.SS
+Tree Traversal
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_next\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the next node in the sequence after \f[I]node\f[], or NULL if
+there is none.
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_previous\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the previous node in the sequence after \f[I]node\f[], or NULL if
+there is none.
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_parent\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the parent of \f[I]node\f[], or NULL if there is none.
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_first_child\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the first child of \f[I]node\f[], or NULL if \f[I]node\f[] has no children.
+
+.PP
+\fIcmark_node*\f[] \fBcmark_node_last_child\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the last child of \f[I]node\f[], or NULL if \f[I]node\f[] has no children.
+
+.SS
+Iterator
+.PP
+An iterator will walk through a tree of nodes, starting from a root
+node, returning one node at a time, together with information about
+whether the node is being entered or exited.  The iterator will
+first descend to a child node, if there is one.  When there is no
+child, the iterator will go to the next sibling.  When there is no
+next sibling, the iterator will return to the parent (but with
+a \f[I]cmark_event_type\f[] of \f[C]CMARK_EVENT_EXIT\f[]).  The iterator will
+return \f[C]CMARK_EVENT_DONE\f[] when it reaches the root node again.
+One natural application is an HTML renderer, where an \f[C]ENTER\f[] event
+outputs an open tag and an \f[C]EXIT\f[] event outputs a close tag.
+An iterator might also be used to transform an AST in some systematic
+way, for example, turning all level\-3 headers into regular paragraphs.
+.IP
+.nf
+\f[C]
+void
+usage_example(cmark_node *root) {
+    cmark_event_type ev_type;
+    cmark_iter *iter = cmark_iter_new(root);
+
+    while ((ev_type = cmark_iter_next(iter)) != CMARK_EVENT_DONE) {
+        cmark_node *cur = cmark_iter_get_node(iter);
+        // Do something with `cur` and `ev_type`
+    }
+
+    cmark_iter_free(iter);
+}
+\f[]
+.fi
+.PP
+Iterators will never return \f[C]EXIT\f[] events for leaf nodes, which are nodes
+of type:
+.IP \[bu] 2
+CMARK_NODE_HTML
+.IP \[bu] 2
+CMARK_NODE_HRULE
+.IP \[bu] 2
+CMARK_NODE_CODE_BLOCK
+.IP \[bu] 2
+CMARK_NODE_TEXT
+.IP \[bu] 2
+CMARK_NODE_SOFTBREAK
+.IP \[bu] 2
+CMARK_NODE_LINEBREAK
+.IP \[bu] 2
+CMARK_NODE_CODE
+.IP \[bu] 2
+CMARK_NODE_INLINE_HTML
+.PP
+Nodes must only be modified after an \f[C]EXIT\f[] event, or an \f[C]ENTER\f[] event for
+leaf nodes.
+
+.PP
+\fIcmark_iter*\f[] \fBcmark_iter_new\f[](\fIcmark_node *root\f[])
+
+.PP
+Creates a new iterator starting at \f[I]root\f[]\&.  The current node and event
+type are undefined until \f[C]cmark_iter_next\f[] is called for the first time.
+
+.PP
+\fIvoid\f[] \fBcmark_iter_free\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Frees the memory allocated for an iterator.
+
+.PP
+\fIcmark_event_type\f[] \fBcmark_iter_next\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Advances to the next node and returns the event type (\f[C]CMARK_EVENT_ENTER\f[],
+\f[C]CMARK_EVENT_EXIT\f[] or \f[C]CMARK_EVENT_DONE\f[]).
+
+.PP
+\fIcmark_node*\f[] \fBcmark_iter_get_node\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Returns the current node.
+
+.PP
+\fIcmark_event_type\f[] \fBcmark_iter_get_event_type\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Returns the current event type.
+
+.PP
+\fIvoid\f[] \fBcmark_iter_reset\f[](\fIcmark_iter *iter\f[], \fIcmark_node *current\f[], \fIcmark_event_type event_type\f[])
+
+.PP
+Resets the iterator so that the current node is \f[I]current\f[] and
+the event type is \f[I]event_type\f[]\&.  The new current node must be a
+descendant of the root node or the root node itself.
+
+.SS
+Accessors
+
+.PP
+\fIcmark_node_type\f[] \fBcmark_node_get_type\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the type of \f[I]node\f[], or \f[C]CMARK_NODE_NONE\f[] on error.
+
+.PP
+\fIconst char*\f[] \fBcmark_node_get_type_string\f[](\fIcmark_node *node\f[])
+
+.PP
+Like \f[I]cmark_node_get_type\f[], but returns a string representation
+of the type, or \f[C]"<unknown>"\f[]\&.
+
+.PP
+\fIconst char*\f[] \fBcmark_node_get_literal\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the string contents of \f[I]node\f[], or NULL if none.
+
+.PP
+\fIint\f[] \fBcmark_node_set_literal\f[](\fIcmark_node *node\f[], \fIconst char *content\f[])
+
+.PP
+Sets the string contents of \f[I]node\f[]\&.  Returns 1 on success,
+0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_get_header_level\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the header level of \f[I]node\f[], or 0 if \f[I]node\f[] is not a header.
+
+.PP
+\fIint\f[] \fBcmark_node_set_header_level\f[](\fIcmark_node *node\f[], \fIint level\f[])
+
+.PP
+Sets the header level of \f[I]node\f[], returning 1 on success and 0 on error.
+
+.PP
+\fIcmark_list_type\f[] \fBcmark_node_get_list_type\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the list type of \f[I]node\f[], or \f[C]CMARK_NO_LIST\f[] if \f[I]node\f[]
+is not a list.
+
+.PP
+\fIint\f[] \fBcmark_node_set_list_type\f[](\fIcmark_node *node\f[], \fIcmark_list_type type\f[])
+
+.PP
+Sets the list type of \f[I]node\f[], returning 1 on success and 0 on error.
+
+.PP
+\fIcmark_delim_type\f[] \fBcmark_node_get_list_delim\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the list delimiter type of \f[I]node\f[], or \f[C]CMARK_NO_DELIM\f[] if \f[I]node\f[]
+is not a list.
+
+.PP
+\fIint\f[] \fBcmark_node_set_list_delim\f[](\fIcmark_node *node\f[], \fIcmark_delim_type delim\f[])
+
+.PP
+Sets the list delimiter type of \f[I]node\f[], returning 1 on success and 0
+on error.
+
+.PP
+\fIint\f[] \fBcmark_node_get_list_start\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns starting number of \f[I]node\f[], if it is an ordered list, otherwise 0.
+
+.PP
+\fIint\f[] \fBcmark_node_set_list_start\f[](\fIcmark_node *node\f[], \fIint start\f[])
+
+.PP
+Sets starting number of \f[I]node\f[], if it is an ordered list. Returns 1
+on success, 0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_get_list_tight\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns 1 if \f[I]node\f[] is a tight list, 0 otherwise.
+
+.PP
+\fIint\f[] \fBcmark_node_set_list_tight\f[](\fIcmark_node *node\f[], \fIint tight\f[])
+
+.PP
+Sets the "tightness" of a list.  Returns 1 on success, 0 on failure.
+
+.PP
+\fIconst char*\f[] \fBcmark_node_get_fence_info\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the info string from a fenced code block, or NULL if none.
+
+.PP
+\fIint\f[] \fBcmark_node_set_fence_info\f[](\fIcmark_node *node\f[], \fIconst char *info\f[])
+
+.PP
+Sets the info string in a fenced code block, returning 1 on
+success and 0 on failure.
+
+.PP
+\fIconst char*\f[] \fBcmark_node_get_url\f[](\fIcmark_node *node\f[])
+
+.PP
+Gets the URL of a link or image \f[I]node\f[], or NULL if none.
+
+.PP
+\fIint\f[] \fBcmark_node_set_url\f[](\fIcmark_node *node\f[], \fIconst char *url\f[])
+
+.PP
+Sets the URL of a link or image \f[I]node\f[]\&. Returns 1 on success,
+0 on failure.
+
+.PP
+\fIconst char*\f[] \fBcmark_node_get_title\f[](\fIcmark_node *node\f[])
+
+.PP
+Gets the title of a link or image \f[I]node\f[], or NULL if none.
+
+.PP
+\fIint\f[] \fBcmark_node_set_title\f[](\fIcmark_node *node\f[], \fIconst char *title\f[])
+
+.PP
+Sets the title of a link or image \f[I]node\f[]\&. Returns 1 on success,
+0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_get_start_line\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the line on which \f[I]node\f[] begins.
+
+.PP
+\fIint\f[] \fBcmark_node_get_start_column\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the column at which \f[I]node\f[] begins.
+
+.PP
+\fIint\f[] \fBcmark_node_get_end_line\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the line on which \f[I]node\f[] ends.
+
+.PP
+\fIint\f[] \fBcmark_node_get_end_column\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the column at which \f[I]node\f[] ends.
+
+.SS
+Tree Manipulation
+
+.PP
+\fIvoid\f[] \fBcmark_node_unlink\f[](\fIcmark_node *node\f[])
+
+.PP
+Unlinks a \f[I]node\f[], removing it from the tree, but not freeing its
+memory.  (Use \f[I]cmark_node_free\f[] for that.)
+
+.PP
+\fIint\f[] \fBcmark_node_insert_before\f[](\fIcmark_node *node\f[], \fIcmark_node *sibling\f[])
+
+.PP
+Inserts \f[I]sibling\f[] before \f[I]node\f[]\&.  Returns 1 on success, 0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_insert_after\f[](\fIcmark_node *node\f[], \fIcmark_node *sibling\f[])
+
+.PP
+Inserts \f[I]sibling\f[] after \f[I]node\f[]\&. Returns 1 on success, 0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_prepend_child\f[](\fIcmark_node *node\f[], \fIcmark_node *child\f[])
+
+.PP
+Adds \f[I]child\f[] to the beginning of the children of \f[I]node\f[]\&.
+Returns 1 on success, 0 on failure.
+
+.PP
+\fIint\f[] \fBcmark_node_append_child\f[](\fIcmark_node *node\f[], \fIcmark_node *child\f[])
+
+.PP
+Adds \f[I]child\f[] to the end of the children of \f[I]node\f[]\&.
+Returns 1 on success, 0 on failure.
+
+.PP
+\fIvoid\f[] \fBcmark_consolidate_text_nodes\f[](\fIcmark_node *root\f[])
+
+.PP
+Consolidates adjacent text nodes.
+
+.SS
+Parsing
+.PP
+Simple interface:
+.IP
+.nf
+\f[C]
+cmark_node *document = cmark_parse_document("Hello *world*", 12);
+\f[]
+.fi
+.PP
+Streaming interface:
+.IP
+.nf
+\f[C]
+cmark_parser *parser = cmark_parser_new();
+FILE *fp = fopen("myfile.md", "r");
+while ((bytes = fread(buffer, 1, sizeof(buffer), fp)) > 0) {
+       cmark_parser_feed(parser, buffer, bytes);
+       if (bytes < sizeof(buffer)) {
+           break;
+       }
+}
+document = cmark_parser_finish(parser);
+cmark_parser_free(parser);
+\f[]
+.fi
+
+.PP
+\fIcmark_parser *\f[] \fBcmark_parser_new\f[](\fI\f[])
+
+.PP
+Creates a new parser object.
+
+.PP
+\fIvoid\f[] \fBcmark_parser_free\f[](\fIcmark_parser *parser\f[])
+
+.PP
+Frees memory allocated for a parser object.
+
+.PP
+\fIvoid\f[] \fBcmark_parser_feed\f[](\fIcmark_parser *parser\f[], \fIconst char *buffer\f[], \fIsize_t len\f[])
+
+.PP
+Feeds a string of length \f[I]len\f[] to \f[I]parser\f[]\&.
+
+.PP
+\fIcmark_node *\f[] \fBcmark_parser_finish\f[](\fIcmark_parser *parser\f[])
+
+.PP
+Finish parsing and return a pointer to a tree of nodes.
+
+.PP
+\fIcmark_node *\f[] \fBcmark_parse_document\f[](\fIconst char *buffer\f[], \fIsize_t len\f[])
+
+.PP
+Parse a CommonMark document in \f[I]buffer\f[] of length \f[I]len\f[]\&.
+Returns a pointer to a tree of nodes.
+
+.PP
+\fIcmark_node *\f[] \fBcmark_parse_file\f[](\fIFILE *f\f[])
+
+.PP
+Parse a CommonMark document in file \f[I]f\f[], returning a pointer to
+a tree of nodes.
+
+.SS
+Rendering
+
+.PP
+\fIchar *\f[] \fBcmark_render_xml\f[](\fIcmark_node *root\f[], \fIlong options\f[])
+
+.PP
+Render a \f[I]node\f[] tree as XML.
+
+.PP
+\fIchar *\f[] \fBcmark_render_html\f[](\fIcmark_node *root\f[], \fIlong options\f[])
+
+.PP
+Render a \f[I]node\f[] tree as an HTML fragment.  It is up to the user
+to add an appropriate header and footer.
+
+.PP
+\fIchar *\f[] \fBcmark_render_man\f[](\fIcmark_node *root\f[], \fIlong options\f[])
+
+.PP
+Render a \f[I]node\f[] tree as a groff man page, without the header.
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_OPT_DEFAULT 0
+.RE
+\f[]
+.fi
+
+.PP
+Default writer options.
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_OPT_SOURCEPOS 1
+.RE
+\f[]
+.fi
+
+.PP
+Include a \f[C]data\-sourcepos\f[] attribute on all block elements.
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_OPT_HARDBREAKS 2
+.RE
+\f[]
+.fi
+
+.PP
+Render \f[C]softbreak\f[] elements as hard line breaks.
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_OPT_NORMALIZE 4
+.RE
+\f[]
+.fi
+
+.PP
+Normalize tree by consolidating adjacent text nodes.
+
+.SH
+AUTHORS
+.PP
+John MacFarlane, Vicent Marti,  Kārlis Gaņģis, Nick Wellnhofer.
+

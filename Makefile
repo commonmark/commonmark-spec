@@ -30,7 +30,7 @@ $(PROG): $(BUILDDIR)
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 
-$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
+$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc man/man3/cmark.3
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -50,22 +50,28 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-archive: spec.html $(BUILDDIR) man/man1/cmark.1 man/make_man_page.py
+man/man3/cmark.3: src/cmark.h
+	mkdir -p man/man3 && \
+	python3 man/make_man_page.py $< > $@
+
+archive: spec.html man/man1/cmark.1 man/man3/cmark.3
 	@rm -rf $(PKGDIR); \
-	mkdir -p $(PKGDIR)/$(SRCDIR); \
-	mkdir -p $(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 ; \
-	mkdir -p  $(PKGDIR)/test ; \
+	mkdir -p $(PKGDIR)/$(SRCDIR) \
+		$(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 \
+		$(PKGDIR)/test $(PKGDIR)/data ; \
 	srcfiles=`git ls-tree --full-tree -r HEAD --name-only $(SRCDIR) test api_test`; \
-	for f in $$srcfiles; do cp -a $$f $(PKGDIR)/$$f; done; \
+	for f in $$srcfiles; \
+		do cp -a $$f $(PKGDIR)/$$f; \
+	 done; \
 	cp -a $(SRCDIR)/scanners.c $(PKGDIR)/$(SRCDIR)/; \
-	cp -a spec.html $(PKGDIR); \
-	cp -a man/CMakeLists.txt $(PKGDIR)/man;\
-	cp -a man/make_man_page.py $(PKGDIR)/man;\
+	cp -a man/CMakeLists.txt man/make_man_page.py $(PKGDIR)/man;\
 	cp -a man/man1/cmark.1 $(PKGDIR)/man/man1;\
+	cp -a man/man3/cmark.3 $(PKGDIR)/man/man3;\
+	cp -a data/CaseFolding-3.2.0.txt $(PKGDIR)/data/;\
 	cp CMakeLists.txt $(PKGDIR); \
 	perl -ne '$$p++ if /^### JavaScript/; print if (!$$p)' Makefile > $(PKGDIR)/Makefile; \
 	cp -a Makefile.nmake nmake.bat $(PKGDIR); \
-	cp -a README.md COPYING spec.txt $(PKGDIR)/; \
+	cp -a README.md COPYING spec.txt spec.html $(PKGDIR)/; \
 	tar czf $(TARBALL) $(PKGDIR); \
 	zip -q -r $(ZIPARCHIVE) $(PKGDIR); \
 	rm -rf $(PKGDIR) ; \
