@@ -21,7 +21,7 @@ var tag = function(name, attrs, selfclosing) {
 
 var reHtmlTag = /\<[^>]*\>/;
 
-var renderNodes = function(block, options) {
+var renderNodes = function(block) {
 
     var attrs;
     var info_words;
@@ -48,7 +48,7 @@ var renderNodes = function(block, options) {
         }
     };
 
-    options = options || {};
+    var options = this.options;
 
     while ((event = walker.next())) {
         entering = event.entering;
@@ -250,7 +250,7 @@ var replaceUnsafeChar = function(s) {
 var reNeedsEscaping = /[&<>"]/;
 
 // The HtmlRenderer object.
-function HtmlRenderer(){
+function HtmlRenderer(options){
     return {
         // default options:
         softbreak: '\n', // by default, soft breaks are rendered as newlines in HTML
@@ -267,6 +267,7 @@ function HtmlRenderer(){
                 return s;
             }
         },
+        options: options || {},
         render: renderNodes
     };
 }

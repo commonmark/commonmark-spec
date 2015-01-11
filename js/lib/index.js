@@ -13,11 +13,15 @@
 
 var util = require('util');
 
-var renderAST = function(tree) {
-    return util.inspect(tree.toAST(), {depth: 20}) + '\n';
-};
-
 module.exports.Node = require('./node');
 module.exports.DocParser = require('./blocks');
 module.exports.HtmlRenderer = require('./html');
-module.exports.ASTRenderer = renderAST;
+module.exports.ASTRenderer = function(options) {
+    return {
+        render: function(tree) {
+            return util.inspect(tree.toAST(), null, 20,
+                                this.options.colors) + '\n';
+        },
+        options: options || {}
+    };
+}
