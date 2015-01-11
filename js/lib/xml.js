@@ -71,6 +71,29 @@ var renderNodes = function(block) {
         tagname = node.t.toLowerCase();
 
         attrs = [];
+
+        if (node.list_data) {
+            var data = node.list_data;
+            if (data.type) {
+                attrs.push(['type', data.type.toLowerCase()]);
+            }
+            if (data.start) {
+                attrs.push(['start', String(data.start)]);
+            }
+            if (data.tight) {
+                attrs.push(['tight', (data.tight ? 'true' : 'false')]);
+            }
+            if (data.delimiter) {
+                var delimword = '';
+                if (data.delimiter === '.') {
+                  delimword = 'period';
+                } else {
+                  delimword = 'paren';
+                }
+                attrs.push(['delimiter', delimword]);
+            }
+        }
+
         if (options.sourcepos) {
             var pos = node.sourcepos;
             if (pos) {
@@ -100,6 +123,7 @@ var renderNodes = function(block) {
 
     }
     if (options.time) { console.timeEnd("rendering"); }
+    buffer += '\n';
     return buffer;
 };
 
