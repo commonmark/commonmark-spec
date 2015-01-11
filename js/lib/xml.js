@@ -34,6 +34,10 @@ var renderNodes = function(block) {
     var indentLevel = 0;
     var indent = '  ';
     var grandparent;
+    var unescapedContents;
+    var container;
+    var selfClosing;
+
     var out = function(s) {
         if (disableTags > 0) {
             buffer += s.replace(reXMLTag, '');
@@ -60,6 +64,11 @@ var renderNodes = function(block) {
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
+        container = node.isContainer();
+        selfClosing = node.t === 'HorizontalRule' || node.t === 'Hardbreak' ||
+            node.t === 'Softbreak' || node.t === 'Image';
+        unescapedContents = node.t === 'Html' || node.t === 'HtmlInline';
+        tagname = node.t.toLowerCase();
 
         attrs = [];
         if (options.sourcepos) {
@@ -71,161 +80,23 @@ var renderNodes = function(block) {
             }
         }
 
-        switch (node.t) {
-        case 'Text':
-            out(esc(node.literal));
-            break;
-
-        case 'Softbreak':
-            out(this.softbreak);
-            break;
-
-        case 'Hardbreak':
-            out(tag('br', [], true));
+        if (entering) {
             cr();
-            break;
-
-        case 'Emph':
-            out(tag(entering ? 'em' : '/em'));
-            break;
-
-        case 'Strong':
-            out(tag(entering ? 'strong' : '/strong'));
-            break;
-
-        case 'XML':
-            out(node.literal);
-            break;
-
-        case 'Link':
-            if (entering) {
-                attrs.push(['href', esc(node.destination, true)]);
-                if (node.title) {
-                    attrs.push(['title', esc(node.title, true)]);
-                }
-                out(tag('a', attrs));
-            } else {
-                out(tag('/a'));
-            }
-            break;
-
-        case 'Image':
-            if (entering) {
-                if (disableTags === 0) {
-                    out('<img src="' + esc(node.destination, true) +
-                        '" alt="');
-                }
-                disableTags += 1;
-            } else {
-                disableTags -= 1;
-                if (disableTags === 0) {
-                    if (node.title) {
-                        out('" title="' + esc(node.title, true));
-                    }
-                    out('" />');
-                }
-            }
-            break;
-
-        case 'Code':
-            out(tag('code') + esc(node.literal) + tag('/code'));
-            break;
-
-        case 'Document':
-            if (!entering) {
-                cr();
-            }
-            break;
-
-        case 'Paragraph':
-            grandparent = node.parent.parent;
-            if (grandparent !== null &&
-                grandparent.t === 'List') {
-                if (grandparent.list_data.tight) {
-                    break;
-                }
-            }
-            if (entering) {
-                cr();
-                out(tag('p', attrs));
-            } else {
-                out(tag('/p'));
-            }
-            break;
-
-        case 'BlockQuote':
-            if (entering) {
-                cr();
-                out(tag('blockquote', attrs));
+            out(tag(tagname, attrs, selfClosing));
+            if (container) {
                 indentLevel += 1;
-            } else {
-                indentLevel -= 1;
-                cr();
-                out(tag('/blockquote'));
-            }
-            break;
-
-        case 'ListItem':
-            if (entering) {
-                cr();
-                out(tag('li', attrs));
-            } else {
-                out(tag('/li'));
-            }
-            break;
-
-        case 'List':
-            tagname = node.list_data.type === 'Bullet' ? 'ul' : 'ol';
-            if (entering) {
-                if (node.list_data.start && node.list_data.start > 1) {
-                    attrs.push(['start', node.list_data.start.toString()]);
+            } else if (!container && !selfClosing) {
+                if (node.literal) {
+                    out(unescapedContents ? node.literal : esc(node.literal));
                 }
-                cr();
-                out(tag(tagname, attrs));
-            } else {
-                cr();
                 out(tag('/' + tagname));
             }
-            break;
-
-        case 'Header':
-            tagname = 'h' + node.level;
-            if (entering) {
-                cr();
-                out(tag(tagname, attrs));
-            } else {
-                out(tag('/' + tagname));
-            }
-            break;
-
-        case 'CodeBlock':
-            info_words = node.info ? node.info.split(/ +/) : [];
-            if (info_words.length > 0 && info_words[0].length > 0) {
-                attrs.push(['class', 'language-' + esc(info_words[0], true)]);
-            }
+        } else {
+            indentLevel -= 1;
             cr();
-            out(tag('pre') + tag('code', attrs));
-            out(esc(node.literal));
-            out(tag('/code') + tag('/pre'));
-            break;
-
-        case 'XMLBlock':
-            cr();
-            out(node.literal);
-            break;
-
-        case 'HorizontalRule':
-            cr();
-            out(tag('hr', attrs, true));
-            break;
-
-
-        case 'ReferenceDef':
-            break;
-
-        default:
-            throw("Unknown node type " + node.t);
+            out(tag('/' + tagname));
         }
+
 
     }
     if (options.time) { console.timeEnd("rendering"); }
