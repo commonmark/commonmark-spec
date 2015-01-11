@@ -42,23 +42,25 @@ var isBlank = function(s) {
     return !(reNonSpace.test(s));
 };
 
+var tabSpaces = ['    ', '   ', '  ', ' '];
+
 // Convert tabs to spaces on each line using a 4-space tab stop.
 var detabLine = function(text) {
     "use strict";
-    if (text.indexOf('\u0000') !== -1) {
-        // replace NUL for security
-        text = text.replace(/\0/g, '\uFFFD');
+
+    var start = 0;
+    var offset;
+    var lastStop = 0;
+
+    while ((offset = text.indexOf('\t', start)) !== -1) {
+        var numspaces = (offset - lastStop) % 4;
+        var spaces = tabSpaces[numspaces];
+        text = text.slice(0, offset) + spaces + text.slice(offset + 1);
+        lastStop = offset + numspaces;
+        start = lastStop;
     }
-    if (text.indexOf('\t') === -1) {
-        return text;
-    } else {
-        var lastStop = 0;
-        return text.replace(/\t/g, function(match, offset) {
-            var result = '    '.slice((offset - lastStop) % 4);
-            lastStop = offset + 1;
-            return result;
-        });
-    }
+
+    return text;
 };
 
 // Attempt to match a regex in string s at offset offset.
@@ -244,6 +246,11 @@ var incorporateLine = function(ln, line_number) {
 
     var container = this.doc;
     var oldtip = this.tip;
+
+    // replace NUL characters for security
+    if (ln.indexOf('\u0000') !== -1) {
+        ln = ln.replace(/\0/g, '\uFFFD');
+    }
 
     // Convert tabs to spaces:
     ln = detabLine(ln);
