@@ -1,17 +1,21 @@
 "use strict";
 
 function isContainer(node) {
-    var t = node.t;
-    return (t === 'Document' ||
-            t === 'BlockQuote' ||
-            t === 'List' ||
-            t === 'ListItem' ||
-            t === 'Paragraph' ||
-            t === 'Header' ||
-            t === 'Emph' ||
-            t === 'Strong' ||
-            t === 'Link' ||
-            t === 'Image');
+    switch (node.t) {
+    case 'Document':
+    case 'BlockQuote':
+    case 'List':
+    case 'ListItem':
+    case 'Paragraph':
+    case 'Header':
+    case 'Emph':
+    case 'Strong':
+    case 'Link':
+    case 'Image':
+        return true;
+    default:
+        return false;
+    }
 }
 
 var resumeAt = function(node, entering) {
