@@ -3,8 +3,26 @@
 
 var fs = require('fs');
 var commonmark = require('./lib/index.js');
-var ansi = require('./ansi/ansi');
-var cursor = ansi(process.stdout);
+var ansi;
+var cursor;
+
+try {
+  ansi = require('ansi');
+  cursor = ansi(process.stdout);
+}
+catch(err) {
+  var noOp = function() { return this; };
+  cursor = {
+        write: function (s) {
+            process.stdout.write(s);
+            return this;
+        },
+        green: noOp,
+        red: noOp,
+        cyan: noOp,
+        reset: noOp,
+  };
+}
 
 var writer = new commonmark.HtmlRenderer();
 var reader = new commonmark.DocParser();
