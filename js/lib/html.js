@@ -86,10 +86,6 @@ var renderNodes = function(block) {
             out(tag(entering ? 'strong' : '/strong'));
             break;
 
-        case 'Emph':
-            out(tag(entering ? 'strong' : '/strong'));
-            break;
-
         case 'Html':
             out(node.literal);
             break;
