@@ -25,7 +25,7 @@ all: $(PROG) man/man3/cmark.3
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
 $(PROG): $(BUILDDIR)
-	@make -C $(BUILDDIR)
+	@make -j2 -C $(BUILDDIR)
 
 check:
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
@@ -35,7 +35,7 @@ $(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
-install: $(BUILDDIR) man/man3/cmark.3
+install: $(BUILDDIR)
 	make -C $(BUILDDIR) install
 
 debug:
@@ -51,10 +51,9 @@ mingw:
 	make && make install
 
 man/man3/cmark.3: src/cmark.h $(PROG)
-	mkdir -p man/man3 && \
-	python3 man/make_man_page.py $< > $@
+	python3 man/make_man_page.py $< > $@ \
 
-archive: spec.html man/man1/cmark.1 man/man3/cmark.3
+archive: spec.html
 	@rm -rf $(PKGDIR); \
 	mkdir -p $(PKGDIR)/$(SRCDIR) \
 		$(PKGDIR)/api_test $(PKGDIR)/man/man1 $(PKGDIR)/man/man3 \
@@ -110,14 +109,14 @@ testtarball: $(TARBALL)
 	rm -rf $(PKGDIR); \
 	tar xvzf $(TARBALL); \
 	cd $(PKGDIR); \
-	mkdir build && cd build && cmake .. && make && \
+	mkdir build && cd build && cmake .. && make -j2 && \
 		(ctest || (cat build/Testing/Temporary/LastTest.log && exit 1))
 
 testziparchive: $(ZIPARCHIVE)
 	rm -rf $(PKGDIR); \
 	unzip $(ZIPARCHIVE); \
 	cd $(PKGDIR); \
-	mkdir build && cd build && cmake .. && make && \
+	mkdir build && cd build && cmake .. && make -j2 && \
 		(ctest || (cat build/Testing/Temporary/LastTest.log && exit 1))
 
 $(ALLTESTS): spec.txt
