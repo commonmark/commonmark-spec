@@ -1,12 +1,18 @@
 {
     "env": {
-        "browser": true,
+        "browser": false,
         "node": true,
     },
     "rules": {
         "camelcase": false,
         "quotes": false,
         "no-process-exit": false,
-        "no-empty": false
+        "no-empty": false,
+        "new-caps": {
+            "newIsCap": true,
+            "capIsNew": true,
+            "newIsCapExceptions": [],
+            "capIsNewExceptions": []
+        }
     }
 }
