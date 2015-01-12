@@ -5,7 +5,7 @@ function isContainer(node) {
     case 'Document':
     case 'BlockQuote':
     case 'List':
-    case 'ListItem':
+    case 'Item':
     case 'Paragraph':
     case 'Header':
     case 'Emph':

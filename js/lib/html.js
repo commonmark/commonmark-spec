@@ -158,7 +158,7 @@ var renderNodes = function(block) {
             }
             break;
 
-        case 'ListItem':
+        case 'Item':
             if (entering) {
                 out(tag('li', attrs));
             } else {

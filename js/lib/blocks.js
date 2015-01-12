@@ -94,8 +94,8 @@ var canContain = function(parent_type, child_type) {
     "use strict";
     return ( parent_type === 'Document' ||
              parent_type === 'BlockQuote' ||
-             parent_type === 'ListItem' ||
-             (parent_type === 'List' && child_type === 'ListItem') );
+             parent_type === 'Item' ||
+             (parent_type === 'List' && child_type === 'Item') );
 };
 
 // Returns true if block type can accept lines of text.
@@ -114,7 +114,7 @@ var endsWithBlankLine = function(block) {
         if (block.last_line_blank) {
             return true;
         }
-        if (block.t === 'List' || block.t === 'ListItem') {
+        if (block.t === 'List' || block.t === 'Item') {
             block = block.lastChild;
         } else {
             break;
@@ -286,7 +286,7 @@ var incorporateLine = function(ln, line_number) {
             }
             break;
 
-        case 'ListItem':
+        case 'Item':
             if (indent >= container.list_data.marker_offset +
                 container.list_data.padding) {
                 offset += container.list_data.marker_offset +
@@ -466,7 +466,7 @@ var incorporateLine = function(ln, line_number) {
             }
 
             // add the list item
-            container = this.addChild('ListItem', line_number, first_nonspace);
+            container = this.addChild('Item', line_number, first_nonspace);
             container.list_data = data;
 
         } else {
@@ -516,7 +516,7 @@ var incorporateLine = function(ln, line_number) {
             !(container.t === 'BlockQuote' ||
               container.t === 'Header' ||
               container.t === 'FencedCode' ||
-              (container.t === 'ListItem' &&
+              (container.t === 'Item' &&
                !container.firstChild &&
                container.sourcepos[0][0] === line_number));
 
