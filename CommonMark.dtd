@@ -59,7 +59,7 @@
 
 <!ELEMENT link (%inline;)*>
 <!ATTLIST link
-          url CDATA #REQUIRED
+          destination CDATA #REQUIRED
           title CDATA #IMPLIED>
 
 <!ELEMENT image (%inline;)*>

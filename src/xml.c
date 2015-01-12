@@ -113,7 +113,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 			break;
 		case CMARK_NODE_LINK:
 		case CMARK_NODE_IMAGE:
-			cmark_strbuf_puts(xml, " url=\"");
+			cmark_strbuf_puts(xml, " destination=\"");
 			escape_xml(xml, node->as.link.url, -1);
 			cmark_strbuf_putc(xml, '"');
 			cmark_strbuf_puts(xml, " title=\"");
