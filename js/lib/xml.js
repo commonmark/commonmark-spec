@@ -41,6 +41,7 @@ var renderNodes = function(block) {
     var unescapedContents;
     var container;
     var selfClosing;
+    var nodetype;
 
     var out = function(s) {
         if (disableTags > 0) {
@@ -71,22 +72,24 @@ var renderNodes = function(block) {
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
+        nodetype = node.t;
 
-        if (node.t === 'ReferenceDef') {
+        if (nodetype === 'ReferenceDef') {
             continue;
         }
 
         container = node.isContainer();
-        selfClosing = node.t === 'HorizontalRule' || node.t === 'Hardbreak' ||
-            node.t === 'Softbreak' || node.t === 'Image';
-        unescapedContents = node.t === 'Html' || node.t === 'HtmlInline';
-        tagname = toTagName(node.t);
+        selfClosing = nodetype === 'HorizontalRule' || nodetype === 'Hardbreak' ||
+            nodetype === 'Softbreak' || nodetype === 'Image';
+        unescapedContents = nodetype === 'Html' || nodetype === 'HtmlInline';
+        tagname = toTagName(nodetype);
 
         if (entering) {
 
             attrs = [];
 
-            if (node.list_data) {
+            switch (nodetype) {
+            case 'List':
                 var data = node.list_data;
                 if (data.type !== undefined) {
                     attrs.push(['type', data.type.toLowerCase()]);
@@ -106,21 +109,21 @@ var renderNodes = function(block) {
                     }
                     attrs.push(['delimiter', delimword]);
                 }
-            }
-
-            if (node.info !== undefined) {
+                break;
+            case 'CodeBlock':
                 attrs.push(['info', node.info]);
-            }
-            if (node.level !== undefined) {
+                break;
+            case 'Header':
                 attrs.push(['level', String(node.level)]);
-            }
-            if (node.destination !== undefined) {
+                break;
+            case 'Link':
+            case 'Image':
                 attrs.push(['destination', node.destination]);
-            }
-            if (node.title !== undefined) {
                 attrs.push(['title', node.title]);
+                break;
+            default:
+                break;
             }
-
             if (options.sourcepos) {
                 var pos = node.sourcepos;
                 if (pos !== undefined) {
@@ -129,8 +132,6 @@ var renderNodes = function(block) {
                                 String(pos[1][1])]);
                 }
             }
-
-
 
             cr();
             out(tag(tagname, attrs, selfClosing));
