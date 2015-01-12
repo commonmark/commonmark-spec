@@ -660,7 +660,7 @@ var Document = function() {
 
 // The main parsing function.  Returns a parsed document AST.
 var parse = function(input) {
-    this.doc = Document();
+    this.doc = new Document();
     this.tip = this.doc;
     this.refmap = {};
     if (this.options.time) { console.time("preparing input"); }
@@ -689,7 +689,7 @@ var parse = function(input) {
 // The DocParser object.
 function DocParser(options){
     return {
-        doc: Document(),
+        doc: new Document(),
         tip: this.doc,
         refmap: {},
         lastLineLength: 0,

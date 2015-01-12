@@ -160,7 +160,7 @@ Node.prototype.insertBefore = function(sibling) {
 };
 
 Node.prototype.walker = function() {
-    var walker = NodeWalker(this);
+    var walker = new NodeWalker(this);
     return walker;
 };
 
