@@ -6,10 +6,17 @@ compiler:
  - clang
  - gcc
 before_install:
- # we need a more recent cmake than travis provides (at least 2.8.9):
- - echo "yes" | sudo add-apt-repository ppa:kalakris/cmake
- - sudo apt-get update -qq
- - sudo apt-get install -qq cmake python3 valgrind
+ # we need a more recent cmake than travis/linux provides (at least 2.8.9):
+ - |
+     if [ ${TRAVIS_OS_NAME:-'linux'} = 'linux' ];
+         then echo 'yes' | sudo add-apt-repository ppa:kalakris/cmake
+         sudo apt-get update -qq
+         sudo apt-get install -qq cmake python3 valgrind
+     elif [ ${TRAVIS_OS_NAME:-'linux'} = 'osx' ];
+         brew update
+         brew outdated python3 || brew upgrade python3
+         brew outdated valgrind || brew upgrade valgrind
+     fi
 script:
  - make testtarball
  - PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
