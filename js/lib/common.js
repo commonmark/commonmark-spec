@@ -1,7 +1,5 @@
 "use strict";
 
-/* global unescape */
-
 var entityToChar = require('./html5-entities.js').entityToChar;
 
 var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
@@ -36,7 +34,7 @@ var unescapeString = function(s) {
 };
 
 var normalizeURI = function(uri) {
-    return encodeURI(unescape(uri));
+    return encodeURI(decodeURI(uri));
 };
 
 var replaceUnsafeChar = function(s) {
