@@ -110,8 +110,8 @@ var renderNodes = function(block) {
             if (node.level) {
                 attrs.push(['level', String(node.level)]);
             }
-            if (node.url) {
-                attrs.push(['url', node.url]);
+            if (node.destination) {
+                attrs.push(['destination', node.destination]);
             }
             if (node.title) {
                 attrs.push(['title', node.title]);
