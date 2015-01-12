@@ -167,7 +167,7 @@ Node.prototype.walker = function() {
 var toASTNode = function(node) {
     var result = {};
     var propsToShow = ['t', 'literal', 'list_data', 'sourcepos',
-                       'info', 'level'];
+                       'info', 'level', 'title', 'destination'];
 
     for (var i = 0, len = propsToShow.length; i < len; i++) {
         var prop = propsToShow[i];
