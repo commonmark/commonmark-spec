@@ -9,7 +9,7 @@ var tag = function(name, attrs, selfclosing) {
         var i = 0;
         var attrib;
         while ((attrib = attrs[i]) !== undefined) {
-            result = result.concat(' ', attrib[0], '="', attrib[1], '"');
+            result += ' ' + attrib[0] + '="' + attrib[1] + '"';
             i++;
         }
     }
