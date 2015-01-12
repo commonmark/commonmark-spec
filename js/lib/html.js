@@ -225,27 +225,12 @@ var renderNodes = function(block) {
             break;
 
         default:
-            throw("Unknown node type " + node.t);
+            throw "Unknown node type " + node.t;
         }
 
     }
     if (options.time) { console.timeEnd("rendering"); }
     return buffer;
-};
-
-var replaceUnsafeChar = function(s) {
-    switch (s) {
-    case '&':
-        return '&amp;';
-    case '<':
-        return '&lt;';
-    case '>':
-        return '&gt;';
-    case '"':
-        return '&quot;';
-    default:
-        return s;
-    }
 };
 
 // The HtmlRenderer object.

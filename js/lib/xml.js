@@ -30,7 +30,6 @@ var toTagName = function(s) {
 var renderNodes = function(block) {
 
     var attrs;
-    var info_words;
     var tagname;
     var walker = block.walker();
     var event, node, entering;
@@ -39,7 +38,6 @@ var renderNodes = function(block) {
     var disableTags = 0;
     var indentLevel = 0;
     var indent = '  ';
-    var grandparent;
     var unescapedContents;
     var container;
     var selfClosing;
