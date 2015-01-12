@@ -27,4 +27,11 @@ var unescapeString = function(s) {
     }
 };
 
-module.exports = { unescapeString: unescapeString };
+var normalizeURI = function(uri) {
+    "use strict";
+    return encodeURI(unescape(uri));
+}
+
+module.exports = { unescapeString: unescapeString,
+                   normalizeURI: normalizeURI
+                 };

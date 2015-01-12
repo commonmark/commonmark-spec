@@ -1,6 +1,7 @@
 var Node = require('./node');
-var unescapeString = require('./common').unescapeString;
-
+var common = require('./common');
+var normalizeURI = common.normalizeURI;
+var unescapeString = common.unescapeString;
 var fromCodePoint = require('./from-code-point.js');
 var entityToChar = require('./html5-entities.js').entityToChar;
 
@@ -209,7 +210,7 @@ var parseAutolink = function(block) {
     if ((m = this.match(reEmailAutolink))) {
         dest = m.slice(1, -1);
         node = new Node('Link');
-        node.destination = 'mailto:' + encodeURI(unescape(dest));
+        node.destination = normalizeURI('mailto:' + dest);
         node.title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
@@ -217,7 +218,7 @@ var parseAutolink = function(block) {
     } else if ((m = this.match(reAutolink))) {
         dest = m.slice(1, -1);
         node = new Node('Link');
-        node.destination = encodeURI(unescape(dest));
+        node.destination = normalizeURI(dest);
         node.title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
@@ -446,11 +447,11 @@ var parseLinkDestination = function() {
     "use strict";
     var res = this.match(reLinkDestinationBraces);
     if (res) {  // chop off surrounding <..>:
-        return encodeURI(unescape(unescapeString(res.substr(1, res.length - 2))));
+        return normalizeURI(unescapeString(res.substr(1, res.length - 2)));
     } else {
         res = this.match(reLinkDestination);
         if (res !== null) {
-            return encodeURI(unescape(unescapeString(res)));
+            return normalizeURI(unescapeString(res));
         } else {
             return null;
         }
