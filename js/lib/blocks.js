@@ -1,4 +1,5 @@
 var Node = require('./node');
+var unescapeString = require('./common').unescapeString;
 
 var C_GREATERTHAN = 62;
 var C_NEWLINE = 10;
@@ -6,8 +7,6 @@ var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
 
 var InlineParser = require('./inlines');
-
-var unescapeString = new InlineParser().unescapeString;
 
 var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
 

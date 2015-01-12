@@ -1,4 +1,5 @@
 var Node = require('./node');
+var unescapeString = require('./common').unescapeString;
 
 var fromCodePoint = require('./from-code-point.js');
 var entityToChar = require('./html5-entities.js').entityToChar;
@@ -63,10 +64,6 @@ var reEscapable = new RegExp(ESCAPABLE);
 
 var reEntityHere = new RegExp('^' + ENTITY, 'i');
 
-var reEntityOrEscapedChar = new RegExp('\\\\' + ESCAPABLE + '|' + ENTITY, 'gi');
-
-var reBackslashOrAmp = /[\\&]/;
-
 var reTicks = new RegExp('`+');
 
 var reTicksHere = new RegExp('^`+');
@@ -91,25 +88,6 @@ var reLinkLabel = /^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/;
 
 // Matches a string of non-special characters.
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
-
-var unescapeChar = function(s) {
-    "use strict";
-    if (s[0] === '\\') {
-        return s[1];
-    } else {
-        return entityToChar(s);
-    }
-};
-
-// Replace entities and backslash escapes with literal characters.
-var unescapeString = function(s) {
-    "use strict";
-    if (reBackslashOrAmp.test(s)) {
-        return s.replace(reEntityOrEscapedChar, unescapeChar);
-    } else {
-        return s;
-    }
-};
 
 // Normalize reference label: collapse internal whitespace
 // to single space, remove leading/trailing whitespace, case fold.
@@ -859,7 +837,6 @@ function InlineParser(){
         match: match,
         peek: peek,
         spnl: spnl,
-        unescapeString: unescapeString,
         parseBackticks: parseBackticks,
         parseBackslash: parseBackslash,
         parseAutolink: parseAutolink,
