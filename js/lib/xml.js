@@ -111,7 +111,9 @@ var renderNodes = function(block) {
                 }
                 break;
             case 'CodeBlock':
-                attrs.push(['info', node.info]);
+                if (node.info) {
+                    attrs.push(['info', node.info]);
+                }
                 break;
             case 'Header':
                 attrs.push(['level', String(node.level)]);

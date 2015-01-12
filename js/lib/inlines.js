@@ -232,6 +232,7 @@ var parseAutolink = function(block) {
         dest = m.slice(1, -1);
         node = new Node('Link');
         node.destination = 'mailto:' + encodeURI(unescape(dest));
+        node.title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
         return true;
@@ -239,6 +240,7 @@ var parseAutolink = function(block) {
         dest = m.slice(1, -1);
         node = new Node('Link');
         node.destination = encodeURI(unescape(dest));
+        node.title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
         return true;
@@ -599,7 +601,7 @@ var parseCloseBracket = function(block) {
             this.spnl() &&
             // make sure there's a space before the title:
             (reWhitespaceChar.test(this.subject.charAt(this.pos - 1)) &&
-             (title = this.parseLinkTitle() || '') || true) &&
+             (title = this.parseLinkTitle()) || true) &&
             this.spnl() &&
             this.subject.charAt(this.pos) === ')') {
             this.pos += 1;
@@ -635,7 +637,7 @@ var parseCloseBracket = function(block) {
     if (matched) {
         var node = new Node(is_image ? 'Image' : 'Link');
         node.destination = dest;
-        node.title = title;
+        node.title = title || '';
 
         var tmp, next;
         tmp = opener.node.next;
