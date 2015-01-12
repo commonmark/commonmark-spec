@@ -61,49 +61,73 @@ var renderNodes = function(block) {
 
     if (options.time) { console.time("rendering"); }
 
+    buffer += '<?xml version="1.0" encoding="UTF-8"?>\n';
+    buffer += '<!DOCTYPE CommonMark SYSTEM "CommonMark.dtd">\n';
+
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
+
+        if (node.t === 'ReferenceDef') {
+            continue;
+        }
+
         container = node.isContainer();
         selfClosing = node.t === 'HorizontalRule' || node.t === 'Hardbreak' ||
             node.t === 'Softbreak' || node.t === 'Image';
         unescapedContents = node.t === 'Html' || node.t === 'HtmlInline';
         tagname = node.t.toLowerCase();
 
-        attrs = [];
-
-        if (node.list_data) {
-            var data = node.list_data;
-            if (data.type) {
-                attrs.push(['type', data.type.toLowerCase()]);
-            }
-            if (data.start) {
-                attrs.push(['start', String(data.start)]);
-            }
-            if (data.tight) {
-                attrs.push(['tight', (data.tight ? 'true' : 'false')]);
-            }
-            if (data.delimiter) {
-                var delimword = '';
-                if (data.delimiter === '.') {
-                  delimword = 'period';
-                } else {
-                  delimword = 'paren';
-                }
-                attrs.push(['delimiter', delimword]);
-            }
-        }
-
-        if (options.sourcepos) {
-            var pos = node.sourcepos;
-            if (pos) {
-                attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
-                            String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
-                            String(pos[1][1])]);
-            }
-        }
-
         if (entering) {
+
+            attrs = [];
+
+            if (node.list_data) {
+                var data = node.list_data;
+                if (data.type) {
+                    attrs.push(['type', data.type.toLowerCase()]);
+                }
+                if (data.start) {
+                    attrs.push(['start', String(data.start)]);
+                }
+                if (data.tight) {
+                    attrs.push(['tight', (data.tight ? 'true' : 'false')]);
+                }
+                if (data.delimiter) {
+                    var delimword = '';
+                    if (data.delimiter === '.') {
+                        delimword = 'period';
+                    } else {
+                        delimword = 'paren';
+                    }
+                    attrs.push(['delimiter', delimword]);
+                }
+            }
+
+            if (node.info) {
+                attrs.push(['info', node.info]);
+            }
+            if (node.level) {
+                attrs.push(['level', String(node.level)]);
+            }
+            if (node.url) {
+                attrs.push(['url', node.url]);
+            }
+            if (node.title) {
+                attrs.push(['title', node.title]);
+            }
+
+            if (options.sourcepos) {
+                var pos = node.sourcepos;
+                if (pos) {
+                    attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
+                                String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
+                                String(pos[1][1])]);
+                }
+            }
+
+
+
             cr();
             out(tag(tagname, attrs, selfClosing));
             if (container) {
