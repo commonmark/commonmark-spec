@@ -19,7 +19,7 @@ var cursor = {
     green: escSeq('[0;32m'),
     red: escSeq('[0;31m'),
     cyan: escSeq('[0;36m'),
-    reset: escSeq('[0;30m')
+    reset: escSeq('[0m')
 };
 
 var writer = new commonmark.HtmlRenderer();
