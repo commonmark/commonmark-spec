@@ -1,5 +1,7 @@
 "use strict";
 
+var escapeXml = require('./common').escapeXml;
+
 // Helper function to produce an XML tag.
 var tag = function(name, attrs, selfclosing) {
     var result = '<' + name;
@@ -158,23 +160,6 @@ var renderNodes = function(block) {
     return buffer;
 };
 
-var replaceUnsafeChar = function(s) {
-    switch (s) {
-    case '&':
-        return '&amp;';
-    case '<':
-        return '&lt;';
-    case '>':
-        return '&gt;';
-    case '"':
-        return '&quot;';
-    default:
-        return s;
-    }
-};
-
-var reNeedsEscaping = /[&<>"]/;
-
 // The XmlRenderer object.
 function XmlRenderer(options){
     return {
@@ -182,17 +167,7 @@ function XmlRenderer(options){
         softbreak: '\n', // by default, soft breaks are rendered as newlines in HTML
         // set to "<br />" to make them hard breaks
         // set to " " if you want to ignore line wrapping in source
-        escape: function(s, preserve_entities) {
-            if (reNeedsEscaping.test(s)) {
-                if (preserve_entities) {
-                    return s.replace(/[&](?:[#](x[a-f0-9]{1,8}|[0-9]{1,8});|[a-z][a-z0-9]{1,31};)|[&<>"]/gi, replaceUnsafeChar);
-                } else {
-                    return s.replace(/[&<>"]/g, replaceUnsafeChar);
-                }
-            } else {
-                return s;
-            }
-        },
+        escape: escapeXml,
         options: options || {},
         render: renderNodes
     };
