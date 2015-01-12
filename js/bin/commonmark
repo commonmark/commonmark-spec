@@ -39,7 +39,7 @@ if (format === 'html') {
     renderer = new commonmark.XmlRenderer(options);
 } else if (format === 'ast') {
     renderer = { render: function(node) {
-                   return util.inspect(node.toAST(), null, 20, true) + '\n';
+                   return util.inspect(node.toObject(), null, 20, true) + '\n';
                  },
                  options: {} };
 }

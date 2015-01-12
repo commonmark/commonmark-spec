@@ -164,7 +164,7 @@ Node.prototype.walker = function() {
     return walker;
 };
 
-var toASTNode = function(node) {
+var nodeToObject = function(node) {
     var result = {};
     var propsToShow = ['t', 'literal', 'list_data', 'sourcepos',
                        'info', 'level', 'title', 'destination'];
@@ -178,7 +178,7 @@ var toASTNode = function(node) {
     return result;
 };
 
-Node.prototype.toAST = function() {
+Node.prototype.toObject = function() {
     var childrenStack = [];
     var walker = this.walker();
     var event;
@@ -192,14 +192,14 @@ Node.prototype.toAST = function() {
             if (entering) {
                 childrenStack.push([]);
             } else {
-                astnode = toASTNode(node);
+                astnode = nodeToObject(node);
                 astnode.children = childrenStack.pop();
                 if (childrenStack.length > 0) {
                     childrenStack[childrenStack.length - 1].push(astnode);
                 }
             }
         } else {
-            astnode = toASTNode(node);
+            astnode = nodeToObject(node);
             childrenStack[childrenStack.length - 1].push(astnode);
         }
     }
