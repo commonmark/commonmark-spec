@@ -3,7 +3,7 @@ var suite = new Benchmark.Suite();
 var fs = require('fs');
 var sm = require('./lib/index.js');
 // npm install showdown
-var showdown = require('showdown');
+var Showdown = require('showdown').converter;
 // npm install marked
 var marked = require('marked');
 // npm install markdown-it
@@ -22,7 +22,7 @@ suite.add('commonmark.js markdown->html', function() {
 
 .add('showdown.js markdown->html', function() {
   "use strict";
-  var converter = new showdown.converter();
+  var converter = new Showdown();
   converter.makeHtml(contents);
 })
 
