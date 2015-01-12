@@ -34,7 +34,12 @@ var unescapeString = function(s) {
 };
 
 var normalizeURI = function(uri) {
-    return encodeURI(decodeURI(uri));
+    try {
+        return encodeURI(decodeURI(uri));
+    }
+    catch(err) {
+        return uri;
+    }
 };
 
 var replaceUnsafeChar = function(s) {
