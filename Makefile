@@ -133,15 +133,14 @@ fuzztest:
 		/usr/bin/env time -p $(PROG) >/dev/null && rm fuzz-$$i.txt ; \
 	done } 2>&1 | grep 'user\|abnormally'
 
-# for benchmarking
-$(BENCHFILE): progit/progit.md
-	-rm $@; for x in `seq 1 20` ; do cat $< >> $@; done
-
 progit:
 	git clone https://github.com/progit/progit.git
 
-progit/progit.md: progit
-	cat progit/en/*/*.markdown > $@
+$(BENCHFILE): progit
+	echo "" > $@
+	for lang in ar az be ca cs de en eo es es-ni fa fi fr hi hu id it ja ko mk nl no-nb pl pt-br ro ru sr th tr uk vi zh zh-tw; do \
+		cat progit/$$lang/*/*.markdown >> $@; \
+	done
 
 bench: $(BENCHFILE)
 	{ sudo renice 99 $$$$; \
