@@ -1,3 +1,5 @@
+"use strict";
+
 var Node = require('./node');
 var common = require('./common');
 var normalizeURI = common.normalizeURI;
@@ -93,14 +95,12 @@ var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 // Normalize reference label: collapse internal whitespace
 // to single space, remove leading/trailing whitespace, case fold.
 var normalizeReference = function(s) {
-    "use strict";
     return s.trim()
         .replace(/\s+/, ' ')
         .toUpperCase();
 };
 
 var text = function(s) {
-    "use strict";
     var node = new Node('Text');
     node.literal = s;
     return node;
@@ -115,7 +115,6 @@ var text = function(s) {
 // If re matches at current position in the subject, advance
 // position in subject and return the match; otherwise return null.
 var match = function(re) {
-    "use strict";
     var m = re.exec(this.subject.slice(this.pos));
     if (m) {
         this.pos += m.index + m[0].length;
@@ -128,7 +127,6 @@ var match = function(re) {
 // Returns the code for the character at the current subject position, or -1
 // there are no more characters.
 var peek = function() {
-    "use strict";
     if (this.pos < this.subject.length) {
         return this.subject.charCodeAt(this.pos);
     } else {
@@ -138,7 +136,6 @@ var peek = function() {
 
 // Parse zero or more space characters, including at most one newline
 var spnl = function() {
-    "use strict";
     this.match(reSpnl);
     return 1;
 };
@@ -150,7 +147,6 @@ var spnl = function() {
 // Attempt to parse backticks, adding either a backtick code span or a
 // literal sequence of backticks.
 var parseBackticks = function(block) {
-    "use strict";
     var ticks = this.match(reTicksHere);
     if (!ticks) {
         return 0;
@@ -179,7 +175,6 @@ var parseBackticks = function(block) {
 // character, a hard line break (if the backslash is followed by a newline),
 // or a literal backslash to the block's children.
 var parseBackslash = function(block) {
-    "use strict";
     var subj = this.subject,
         pos = this.pos;
     var node;
@@ -203,7 +198,6 @@ var parseBackslash = function(block) {
 
 // Attempt to parse an autolink (URL or email in pointy brackets).
 var parseAutolink = function(block) {
-    "use strict";
     var m;
     var dest;
     var node;
@@ -230,7 +224,6 @@ var parseAutolink = function(block) {
 
 // Attempt to parse a raw HTML tag.
 var parseHtmlTag = function(block) {
-    "use strict";
     var m = this.match(reHtmlTag);
     var node;
     if (m) {
@@ -248,7 +241,6 @@ var parseHtmlTag = function(block) {
 // they can open and/or close emphasis or strong emphasis.  A utility
 // function for strong/emph parsing.
 var scanDelims = function(cc) {
-    "use strict";
     var numdelims = 0;
     var char_before, char_after, cc_after;
     var startpos = this.pos;
@@ -288,8 +280,6 @@ var scanDelims = function(cc) {
 
 // Attempt to parse emphasis or strong emphasis.
 var parseEmphasis = function(cc, block) {
-    "use strict";
-
     var res = this.scanDelims(cc);
     var numdelims = res.numdelims;
     var startpos = this.pos;
@@ -320,7 +310,6 @@ var parseEmphasis = function(cc, block) {
 };
 
 var removeDelimiter = function(delim) {
-    "use strict";
     if (delim.previous !== null) {
         delim.previous.next = delim.next;
     }
@@ -333,7 +322,6 @@ var removeDelimiter = function(delim) {
 };
 
 var processEmphasis = function(block, stack_bottom) {
-    "use strict";
     var opener, closer;
     var opener_inl, closer_inl;
     var nextstack, tempstack;
@@ -431,7 +419,6 @@ var processEmphasis = function(block, stack_bottom) {
 // Attempt to parse link title (sans quotes), returning the string
 // or null if no match.
 var parseLinkTitle = function() {
-    "use strict";
     var title = this.match(reLinkTitle);
     if (title) {
         // chop off quotes from title and unescape:
@@ -444,7 +431,6 @@ var parseLinkTitle = function() {
 // Attempt to parse link destination, returning the string or
 // null if no match.
 var parseLinkDestination = function() {
-    "use strict";
     var res = this.match(reLinkDestinationBraces);
     if (res) {  // chop off surrounding <..>:
         return normalizeURI(unescapeString(res.substr(1, res.length - 2)));
@@ -460,15 +446,12 @@ var parseLinkDestination = function() {
 
 // Attempt to parse a link label, returning number of characters parsed.
 var parseLinkLabel = function() {
-    "use strict";
     var m = this.match(reLinkLabel);
     return m === null ? 0 : m.length;
 };
 
 // Add open bracket to delimiter stack and add a text node to block's children.
 var parseOpenBracket = function(block) {
-    "use strict";
-
     var startpos = this.pos;
     this.pos += 1;
 
@@ -496,8 +479,6 @@ var parseOpenBracket = function(block) {
 // IF next character is [, and ! delimiter to delimiter stack and
 // add a text node to block's children.  Otherwise just add a text node.
 var parseBang = function(block) {
-    "use strict";
-
     var startpos = this.pos;
     this.pos += 1;
     if (this.peek() === C_OPEN_BRACKET) {
@@ -530,8 +511,6 @@ var parseBang = function(block) {
 // to block's children.  If there is a matching delimiter,
 // remove it from the delimiter stack.
 var parseCloseBracket = function(block) {
-    "use strict";
-
     var startpos;
     var is_image;
     var dest;
@@ -658,8 +637,6 @@ var parseCloseBracket = function(block) {
 
 // Attempt to parse an entity, return Entity object if successful.
 var parseEntity = function(block) {
-    "use strict";
-
     var m;
     if ((m = this.match(reEntityHere))) {
         block.appendChild(text(entityToChar(m)));
@@ -672,7 +649,6 @@ var parseEntity = function(block) {
 // Parse a run of ordinary characters, or a single character with
 // a special meaning in markdown, as a plain string.
 var parseString = function(block) {
-    "use strict";
     var m;
     if ((m = this.match(reMain))) {
         block.appendChild(text(m));
@@ -685,7 +661,6 @@ var parseString = function(block) {
 // Parse a newline.  If it was preceded by two spaces, return a hard
 // line break; otherwise a soft line break.
 var parseNewline = function(block) {
-    "use strict";
     this.pos += 1; // assume we're at a \n
     // check previous node for trailing spaces
     var lastc = block.lastChild;
@@ -704,7 +679,6 @@ var parseNewline = function(block) {
 
 // Attempt to parse a link reference, modifying refmap.
 var parseReference = function(s, refmap) {
-    "use strict";
     this.subject = s;
     this.pos = 0;
     var rawlabel;
@@ -765,7 +739,6 @@ var parseReference = function(s, refmap) {
 // On success, add the result to block's children and return true.
 // On failure, return false.
 var parseInline = function(block) {
-    "use strict";
     var res;
     var c = this.peek();
     if (c === -1) {
@@ -817,7 +790,6 @@ var parseInline = function(block) {
 // Parse string_content in block into inline children,
 // using refmap to resolve references.
 var parseInlines = function(block, refmap) {
-    "use strict";
     this.subject = block.string_content.trim();
     this.pos = 0;
     this.refmap = refmap || {};
@@ -829,7 +801,6 @@ var parseInlines = function(block, refmap) {
 
 // The InlineParser object.
 function InlineParser(){
-    "use strict";
     return {
         subject: '',
         delimiters: null,  // used by parseEmphasis method

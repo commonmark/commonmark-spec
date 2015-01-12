@@ -1,3 +1,5 @@
+"use strict";
+
 var fromCodePoint = require('./from-code-point');
 
 var entities = {
@@ -2128,7 +2130,6 @@ var entities = {
   zwnj: 8204 };
 
 var entityToChar = function(m) {
-    "use strict";
     var isNumeric = /^&#/.test(m);
     var isHex = /^&#[Xx]/.test(m);
     var uchar;

@@ -1,3 +1,5 @@
+"use strict";
+
 var entityToChar = require('./html5-entities.js').entityToChar;
 
 var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
@@ -15,7 +17,6 @@ var reXmlSpecial = new RegExp(XMLSPECIAL, 'g');
 var reXmlSpecialOrEntity = new RegExp(ENTITY + '|' + XMLSPECIAL, 'gi');
 
 var unescapeChar = function(s) {
-    "use strict";
     if (s[0] === '\\') {
         return s[1];
     } else {
@@ -25,7 +26,6 @@ var unescapeChar = function(s) {
 
 // Replace entities and backslash escapes with literal characters.
 var unescapeString = function(s) {
-    "use strict";
     if (reBackslashOrAmp.test(s)) {
         return s.replace(reEntityOrEscapedChar, unescapeChar);
     } else {
@@ -34,7 +34,6 @@ var unescapeString = function(s) {
 };
 
 var normalizeURI = function(uri) {
-    "use strict";
     return encodeURI(unescape(uri));
 }
 

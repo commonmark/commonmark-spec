@@ -1,3 +1,5 @@
+"use strict";
+
 // commonmark.js - CommomMark in JavaScript
 // Copyright (C) 2014 John MacFarlane
 // License: BSD3.
@@ -8,8 +10,6 @@
 // var parser = new commonmark.DocParser();
 // var renderer = new commonmark.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
-
-"use strict";
 
 module.exports.Node = require('./node');
 module.exports.DocParser = require('./blocks');

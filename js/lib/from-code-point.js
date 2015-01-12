@@ -1,8 +1,9 @@
+"use strict";
+
 // derived from https://github.com/mathiasbynens/String.fromCodePoint
 /*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
 if (String.fromCodePoint) {
     module.exports = function (_) {
-        "use strict";
         try {
             return String.fromCodePoint(_);
         } catch (e) {
@@ -18,7 +19,6 @@ if (String.fromCodePoint) {
   var stringFromCharCode = String.fromCharCode;
   var floor = Math.floor;
   var fromCodePoint = function() {
-      "use strict";
       var MAX_SIZE = 0x4000;
       var codeUnits = [];
       var highSurrogate;
