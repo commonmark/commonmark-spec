@@ -21,6 +21,10 @@ var tag = function(name, attrs, selfclosing) {
 
 var reXMLTag = /\<[^>]*\>/;
 
+var toTagName = function(s) {
+    return s.replace(/([a-z])([A-Z])/g, "$1_$2").toLowerCase();
+};
+
 var renderNodes = function(block) {
 
     var attrs;
@@ -76,7 +80,7 @@ var renderNodes = function(block) {
         selfClosing = node.t === 'HorizontalRule' || node.t === 'Hardbreak' ||
             node.t === 'Softbreak' || node.t === 'Image';
         unescapedContents = node.t === 'Html' || node.t === 'HtmlInline';
-        tagname = node.t.toLowerCase();
+        tagname = toTagName(node.t);
 
         if (entering) {
 
@@ -84,16 +88,16 @@ var renderNodes = function(block) {
 
             if (node.list_data) {
                 var data = node.list_data;
-                if (data.type) {
+                if (data.type !== undefined) {
                     attrs.push(['type', data.type.toLowerCase()]);
                 }
-                if (data.start) {
+                if (data.start !== undefined) {
                     attrs.push(['start', String(data.start)]);
                 }
-                if (data.tight) {
+                if (data.tight !== undefined) {
                     attrs.push(['tight', (data.tight ? 'true' : 'false')]);
                 }
-                if (data.delimiter) {
+                if (data.delimiter !== undefined) {
                     var delimword = '';
                     if (data.delimiter === '.') {
                         delimword = 'period';
@@ -104,22 +108,22 @@ var renderNodes = function(block) {
                 }
             }
 
-            if (node.info) {
+            if (node.info !== undefined) {
                 attrs.push(['info', node.info]);
             }
-            if (node.level) {
+            if (node.level !== undefined) {
                 attrs.push(['level', String(node.level)]);
             }
-            if (node.destination) {
+            if (node.destination !== undefined) {
                 attrs.push(['destination', node.destination]);
             }
-            if (node.title) {
+            if (node.title !== undefined) {
                 attrs.push(['title', node.title]);
             }
 
             if (options.sourcepos) {
                 var pos = node.sourcepos;
-                if (pos) {
+                if (pos !== undefined) {
                     attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
                                 String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
                                 String(pos[1][1])]);
