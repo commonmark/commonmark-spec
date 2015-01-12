@@ -5,6 +5,8 @@
     },
     "rules": {
         "camelcase": false,
-        "quotes": false
+        "quotes": false,
+        "no-process-exit": false,
+        "no-empty": false
     }
 }
