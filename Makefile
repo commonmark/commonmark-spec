@@ -8,8 +8,6 @@ SPEC=spec.txt
 SITE=_site
 SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
 PKGDIR?=cmark-$(SPECVERSION)
-TARBALL?=cmark-$(SPECVERSION).tar.gz
-ZIPARCHIVE?=cmark-$(SPECVERSION).zip
 FUZZCHARS?=2000000  # for fuzztest
 BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
@@ -60,7 +58,7 @@ archive:
 	git archive --prefix=$(RELEASE)/ -o $(RELEASE).zip HEAD
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(TARBALL) $(ZIPARCHIVE) $(PKGDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(PKGDIR)
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
@@ -80,10 +78,6 @@ $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 
 test: $(SPEC) $(BUILDDIR)
 	make -C $(BUILDDIR) test || (cat $(BUILDDIR)/Testing/Temporary/LastTest.log && exit 1)
-
-$(TARBALL): archive
-
-$(ZIPARCHIVE): archive
 
 $(ALLTESTS): spec.txt
 	python3 test/spec_tests.py --spec $< --dump-tests | python3 -c 'import json; import sys; tests = json.loads(sys.stdin.read()); print("\n".join([test["markdown"] for test in tests]))' > $@
