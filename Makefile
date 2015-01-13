@@ -142,7 +142,7 @@ jshint:
 	jshint ${JSMODULES}
 
 lint:
-	eslint -c eslint.json ${JSMODULES} js/bin/commonmark js/test.js js/bench.js
+	eslint -c js/eslint.json ${JSMODULES} js/bin/commonmark js/test.js js/bench.js
 
 benchjs:
 	sudo renice 99 $$$$; node js/bench.js ${BENCHINP}
