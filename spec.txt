@@ -4670,7 +4670,7 @@ _foo bar_
 <p><em>foo bar</em></p>
 .
 
-This is not emphasis, because the opening `*` is followed by
+This is not emphasis, because the opening `_` is followed by
 whitespace:
 
 .
