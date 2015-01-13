@@ -21,7 +21,7 @@ script:
  - make
  - make test
  - |
-     if [ $(TRAVIS_ON_NAME:-'linux'} = 'linux' ]
+     if [ ${TRAVIS_ON_NAME:-'linux'} = 'linux' ]
      then
         PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
      fi
