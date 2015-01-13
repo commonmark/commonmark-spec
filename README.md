@@ -19,8 +19,7 @@ It is easy to use `libcmark` in python, lua, ruby, and other dynamic
 languages: see the `wrappers/` subdirectory for some simple examples.
 
 The JavaScript implementation is a single JavaScript file, with
-no dependencies, that can be linked to in an HTML page.  Here
-is a simple usage example:
+no dependencies, that can be linked into an HTML page.
 
 ``` javascript
 var reader = new commonmark.DocParser();
@@ -28,9 +27,6 @@ var writer = new commonmark.HtmlRenderer();
 var parsed = reader.parse("Hello *world*");
 var result = writer.render(parsed);
 ```
-
-A node package is also available (`npm install commonmark`). It includes
-a command-line tool called `commonmark`.
 
 **A note on security:**
 Neither implementation attempts to sanitize link attributes or
@@ -74,21 +70,26 @@ Or, to create Xcode project files on OSX:
     make install
 
 The GNU Makefile also provides a few other targets for developers.
+To run a benchmark:
+
+    make bench
+
 To run a "fuzz test" against ten long randomly generated inputs:
 
     make fuzztest
 
-To run a test for memory leaks using valgrind:
+To run a test for memory leaks using `valgrind`:
 
     make leakcheck
+
+To reformat source code using `astyle`:
+
+    make astyle
 
 To make a release tarball and zip archive:
 
     make archive
 
-To test the archives:
-
-    make testarchive
 
 Compiling for Windows
 ---------------------
@@ -111,20 +112,29 @@ The JavaScript library can be installed through `npm`:
 
     npm install commonmark
 
-To build the JavaScript library as a single standalone file:
+This includes a command-line converter called `commonmark`.
 
-    browserify --standalone commonmark js/lib/index.js -o js/commonmark.js
-
-Or fetch a pre-built copy from
+If you want to use it in a client application, you can fetch
+a pre-built copy of `commonmark.js` from
 <http://spec.commonmark.org/js/commonmark.js>.
+
+Or, to build it (this requires `browserify`):
+
+    make js/commonmark.js
 
 To run tests for the JavaScript library:
 
     make testjs
 
-or
+To run benchmarks against some other JavaScript converters:
 
-    node js/test.js
+    npm install showdown marked markdown-it
+    make benchjs
+
+To start an interactive dingus that you can use to try out
+the library:
+
+    make dingus
 
 The spec
 --------
@@ -132,12 +142,12 @@ The spec
 [The spec] contains over 500 embedded examples which serve as conformance
 tests. To run the tests using an executable `$PROG`:
 
-    python test/spec_tests.py --program $PROG
+    python3 test/spec_tests.py --program $PROG
 
 If you want to extract the raw test data from the spec without
 actually running the tests, you can do:
 
-    python test/spec_tests.py --dump-tests
+    python3 test/spec_tests.py --dump-tests
 
 and you'll get all the tests in JSON format.
 
@@ -153,8 +163,9 @@ file, with code examples written in a shorthand form:
     .
 
 To build an HTML version of the spec, do `make spec.html`.  To build a
-PDF version, do `make spec.pdf`.  Both these commands require that
-[pandoc] is installed, and creating a PDF requires a latex installation.
+PDF version, do `make spec.pdf`.  (Creating a PDF requires [pandoc]
+and a LaTeX installation.  Creating the HTML version requires only
+`libcmark` and `python3`.)
 
 The spec is written from the point of view of the human writer, not
 the computer reader.  It is not an algorithm---an English translation of
@@ -190,15 +201,13 @@ Differences from original Markdown
 There are only a few places where this spec says things that contradict
 the canonical syntax description:
 
--   It [allows all punctuation symbols to be
-    backslash-escaped](http://spec.commonmark.org/0.13/#backslash-escapes),
+-   It allows all punctuation symbols to be backslash-escaped,
     not just the symbols with special meanings in Markdown. We found
     that it was just too hard to remember which symbols could be
     escaped.
 
--   It introduces an [alternative syntax for hard line
-    breaks](http://spec.commonmark.org/0.13/#hard-line-breaks), a
-    backslash at the end of the line, supplementing the
+-   It introduces an alternative syntax for hard line
+    breaks, a backslash at the end of the line, supplementing the
     two-spaces-at-the-end-of-line rule. This is motivated by persistent
     complaints about the “invisible” nature of the two-space rule.
 
@@ -206,13 +215,11 @@ the canonical syntax description:
     backwards-compatible way). For example, `Markdown.pl` allows single
     quotes around a title in inline links, but not in reference links.
     This kind of difference is really hard for users to remember, so the
-    spec [allows single quotes in both
-    contexts](http://spec.commonmark.org/0.13/#links).
+    spec allows single quotes in both contexts.
 
 -   The rule for HTML blocks differs, though in most real cases it
-    shouldn't make a difference. (See
-    [here](http://spec.commonmark.org/0.13/#html-blocks) for
-    details.) The spec's proposal makes it easy to include Markdown
+    shouldn't make a difference. (See the section on HTML Blocks
+    for details.) The spec's proposal makes it easy to include Markdown
     inside HTML block-level tags, if you want to, but also allows you to
     exclude this. It is also makes parsing much easier, avoiding
     expensive backtracking.
@@ -231,7 +238,7 @@ the canonical syntax description:
 -   Rules for content in lists differ in a few respects, though (as with
     HTML blocks), most lists in existing documents should render as
     intended. There is some discussion of the choice points and
-    differences [here](http://spec.commonmark.org/0.13/#motivation).
+    differences in the subsection of List Items entitled Motivation.
     We think that the spec's proposal does better than any existing
     implementation in rendering lists the way a human writer or reader
     would intuitively understand them. (We could give numerous examples
@@ -253,7 +260,7 @@ the canonical syntax description:
 
 -   The start number of an ordered list is significant.
 
--   [Fenced code blocks](http://spec.commonmark.org/0.13/#fenced-code-blocks) are supported, delimited by either
+-   Fenced code blocks are supported, delimited by either
     backticks (```` ``` ```` or tildes (` ~~~ `).
 
 Contributing
@@ -289,7 +296,8 @@ optimized the C implementation for performance, increasing its speed
 tenfold.  Kārlis Gaņģis helped work out a better parsing algorithm
 for links and emphasis, eliminating several worst-case performance
 issues.  Nick Wellnhofer contributed many improvements, including
-most of the C library's API and its test harness.
+most of the C library's API and its test harness.  Vitaly Puzrin
+has offered much good advice about the JavaScript implementation.
 
 [cmake]: http://www.cmake.org/download/
 [pandoc]: http://johnmacfarlane.net/pandoc/
