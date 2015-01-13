@@ -215,6 +215,15 @@ var listsMatch = function(list_data, item_data) {
             list_data.bullet_char === item_data.bullet_char);
 };
 
+// Finalize and close any unmatched blocks.
+var closeUnmatchedBlocks = function() {
+    // finalize any blocks not matched
+    while (this.oldtip !== this.last_matched_container) {
+        this.finalize(this.oldtip, this.line_number - 1);
+        this.oldtip = this.oldtip.parent;
+    }
+};
+
 // Analyze a line of text and update the document appropriately.
 // We parse markdown text by calling this on each line of input,
 // then finalizing the document.
@@ -226,12 +235,11 @@ var incorporateLine = function(ln, line_number) {
     var data;
     var blank;
     var indent;
-    var last_matched_container;
     var i;
     var CODE_INDENT = 4;
 
     var container = this.doc;
-    var oldtip = this.tip;
+    this.oldtip = this.tip;
 
     // replace NUL characters for security
     if (ln.indexOf('\u0000') !== -1) {
@@ -335,20 +343,7 @@ var incorporateLine = function(ln, line_number) {
         }
     }
 
-    last_matched_container = container;
-
-    // This function is used to finalize and close any unmatched
-    // blocks.  We aren't ready to do this now, because we might
-    // have a lazy paragraph continuation, in which case we don't
-    // want to close unmatched blocks.  So we store this closure for
-    // use later, when we have more information.
-    var closeUnmatchedBlocks = function(mythis) {
-        // finalize any blocks not matched
-        while (oldtip !== last_matched_container) {
-            mythis.finalize(oldtip, line_number - 1);
-            oldtip = oldtip.parent;
-        }
-    };
+    this.last_matched_container = container;
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
     if (blank && container.last_line_blank) {
@@ -377,7 +372,7 @@ var incorporateLine = function(ln, line_number) {
             // indented code
             if (this.tip.t !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
-                closeUnmatchedBlocks(this);
+                this.closeUnmatchedBlocks();
                 container = this.addChild('IndentedCode', line_number, offset);
             } else { // indent > 4 in a lazy paragraph continuation
                 break;
@@ -390,13 +385,13 @@ var incorporateLine = function(ln, line_number) {
             if (ln.charCodeAt(offset) === C_SPACE) {
                 offset++;
             }
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container = this.addChild('BlockQuote', line_number, offset);
 
         } else if ((match = ln.slice(first_nonspace).match(reATXHeaderMarker))) {
             // ATX header
             offset = first_nonspace + match[0].length;
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container = this.addChild('Header', line_number, first_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
@@ -407,7 +402,7 @@ var incorporateLine = function(ln, line_number) {
         } else if ((match = ln.slice(first_nonspace).match(reCodeFence))) {
             // fenced code block
             var fence_length = match[0].length;
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container = this.addChild('FencedCode', line_number, first_nonspace);
             container.fence_length = fence_length;
             container.fence_char = match[0][0];
@@ -417,7 +412,7 @@ var incorporateLine = function(ln, line_number) {
 
         } else if (matchAt(reHtmlBlockOpen, ln, first_nonspace) !== -1) {
             // html block
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container = this.addChild('HtmlBlock', line_number, first_nonspace);
             // note, we don't adjust offset because the tag is part of the text
             break;
@@ -426,21 +421,21 @@ var incorporateLine = function(ln, line_number) {
                    container.strings.length === 1 &&
                    ((match = ln.slice(first_nonspace).match(reSetextHeaderLine)))) {
             // setext header line
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container.t = 'Header'; // convert Paragraph to SetextHeader
             container.level = match[0][0] === '=' ? 1 : 2;
             offset = ln.length;
 
         } else if (matchAt(reHrule, ln, first_nonspace) !== -1) {
             // hrule
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             container = this.addChild('HorizontalRule', line_number, first_nonspace);
             offset = ln.length - 1;
             break;
 
         } else if ((data = parseListMarker(ln, first_nonspace))) {
             // list item
-            closeUnmatchedBlocks(this);
+            this.closeUnmatchedBlocks();
             data.marker_offset = indent;
             offset = first_nonspace + data.padding;
 
@@ -480,7 +475,7 @@ var incorporateLine = function(ln, line_number) {
     indent = first_nonspace - offset;
 
     // First check for a lazy paragraph continuation:
-    if (this.tip !== last_matched_container &&
+    if (this.tip !== this.last_matched_container &&
         !blank &&
         this.tip.t === 'Paragraph' &&
         this.tip.strings.length > 0) {
@@ -492,7 +487,7 @@ var incorporateLine = function(ln, line_number) {
     } else { // not a lazy continuation
 
         // finalize any blocks not matched
-        closeUnmatchedBlocks(this);
+        this.closeUnmatchedBlocks();
 
         // Block quote lines are never blank as they start with >
         // and we don't count blanks in fenced code for purposes of tight/loose
@@ -691,6 +686,8 @@ function DocParser(options){
     return {
         doc: new Document(),
         tip: this.doc,
+        oldtip: this.doc,
+        last_matched_container: this.doc,
         refmap: {},
         lastLineLength: 0,
         inlineParser: new InlineParser(),
@@ -700,6 +697,7 @@ function DocParser(options){
         incorporateLine: incorporateLine,
         finalize: finalize,
         processInlines: processInlines,
+        closeUnmatchedBlocks: closeUnmatchedBlocks,
         parse: parse,
         options: options || {}
     };
