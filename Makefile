@@ -71,7 +71,7 @@ $(SRCDIR)/html_unescape.h: $(SRCDIR)/html_unescape.gperf
 # We include case_fold_switch.inc in the repository, so this shouldn't
 # normally need to be generated.
 $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
-	perl mkcasefold.pl < $< > $@
+	perl tools/mkcasefold.pl < $< > $@
 
 # We include scanners.c in the repository, so this shouldn't
 # normally need to be generated.
