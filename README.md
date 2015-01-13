@@ -16,8 +16,7 @@ written in standard C99 and has no library dependencies.  The parser is
 very fast (see [benchmarks](benchmarks.md)).
 
 It is easy to use `libcmark` in python, lua, ruby, and other dynamic
-languages: see `wrapper.py`, `wrapper.lua`, and `wrapper.rb` in the
-repository for simple examples.
+languages: see the `wrappers/` subdirectory for some simple examples.
 
 The JavaScript implementation is a single JavaScript file, with
 no dependencies, that can be linked to in an HTML page.  Here
@@ -30,8 +29,8 @@ var parsed = reader.parse("Hello *world*");
 var result = writer.render(parsed);
 ```
 
-A node package is also available; it includes a command-line tool called
-`commonmark`.
+A node package is also available (`npm install commonmark`). It includes
+a command-line tool called `commonmark`.
 
 **A note on security:**
 Neither implementation attempts to sanitize link attributes or
