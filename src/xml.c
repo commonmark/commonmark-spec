@@ -98,7 +98,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 			break;
 		case CMARK_NODE_HEADER:
 			cmark_strbuf_printf(xml, " level=\"%d\"",
-				node->as.header.level);
+			                    node->as.header.level);
 			break;
 		case CMARK_NODE_CODE_BLOCK:
 			if (node->as.code.info.len > 0) {

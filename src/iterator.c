@@ -7,14 +7,14 @@
 #include "iterator.h"
 
 static const int S_leaf_mask =
-	(1 << CMARK_NODE_HTML)        |
-	(1 << CMARK_NODE_HRULE)       |
-	(1 << CMARK_NODE_CODE_BLOCK)  |
-	(1 << CMARK_NODE_TEXT)        |
-	(1 << CMARK_NODE_SOFTBREAK)   |
-	(1 << CMARK_NODE_LINEBREAK)   |
-	(1 << CMARK_NODE_CODE)        |
-	(1 << CMARK_NODE_INLINE_HTML);
+    (1 << CMARK_NODE_HTML)        |
+    (1 << CMARK_NODE_HRULE)       |
+    (1 << CMARK_NODE_CODE_BLOCK)  |
+    (1 << CMARK_NODE_TEXT)        |
+    (1 << CMARK_NODE_SOFTBREAK)   |
+    (1 << CMARK_NODE_LINEBREAK)   |
+    (1 << CMARK_NODE_CODE)        |
+    (1 << CMARK_NODE_INLINE_HTML);
 
 cmark_iter*
 cmark_iter_new(cmark_node *root)
