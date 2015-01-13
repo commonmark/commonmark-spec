@@ -386,7 +386,7 @@ var incorporateLine = function(ln) {
                 offset++;
             }
             this.closeUnmatchedBlocks();
-            container = this.addChild('BlockQuote', offset);
+            container = this.addChild('BlockQuote', first_nonspace);
 
         } else if ((match = ln.slice(first_nonspace).match(reATXHeaderMarker))) {
             // ATX header
