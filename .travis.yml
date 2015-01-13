@@ -15,13 +15,11 @@ before_install:
          sudo apt-get install -qq cmake python3 valgrind
      elif [ ${TRAVIS_OS_NAME:-'linux'} = 'osx' ]
      then
-         echo 'Building without python3, to make sure that works.'
+         brew update
+         brew install valgrind
+         # Building without python3, to make sure that works.
      fi
 script:
  - make
  - make test
- - |
-     if [ ${TRAVIS_ON_NAME:-'linux'} = 'linux' ]
-     then
-        PROG=`ls cmark-*.*/build/src/cmark` make leakcheck
-     fi
+ - make leakcheck
