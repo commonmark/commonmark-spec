@@ -218,7 +218,7 @@ var listsMatch = function(list_data, item_data) {
 // Finalize and close any unmatched blocks. Returns true.
 var closeUnmatchedBlocks = function() {
     // finalize any blocks not matched
-    while (this.oldtip !== this.last_matched_container) {
+    while (this.oldtip !== this.lastMatchedContainer) {
         this.finalize(this.oldtip, this.lineNumber - 1);
         this.oldtip = this.oldtip.parent;
     }
@@ -346,7 +346,7 @@ var incorporateLine = function(ln) {
     }
 
     allClosed = (container === this.oldtip);
-    this.last_matched_container = container;
+    this.lastMatchedContainer = container;
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
     if (blank && container.last_line_blank) {
@@ -479,7 +479,7 @@ var incorporateLine = function(ln) {
     indent = first_nonspace - offset;
 
     // First check for a lazy paragraph continuation:
-    if (this.tip !== this.last_matched_container &&
+    if (this.tip !== this.lastMatchedContainer &&
         !blank &&
         this.tip.t === 'Paragraph' &&
         this.tip.strings.length > 0) {
@@ -693,7 +693,7 @@ function DocParser(options){
         tip: this.doc,
         oldtip: this.doc,
         lineNumber: 0,
-        last_matched_container: this.doc,
+        lastMatchedContainer: this.doc,
         refmap: {},
         lastLineLength: 0,
         inlineParser: new InlineParser(),
