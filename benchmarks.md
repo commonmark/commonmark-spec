@@ -11,7 +11,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | cheapskate        |    8.24    |
 | peg-markdown      |    5.45    |
 | parsedown         |    5.06    |
-| **commonmark.js** |    2.26    |
+| **commonmark.js** |    2.22    |
 | marked            |    1.93    |
 | discount          |    1.86    |
 | **cmark**         |    0.37    |
@@ -28,7 +28,7 @@ Markdown sources of all the localizations of the first edition of
 time is the *difference* between the time to run the program
 with the benchmark input and the time to run it with no input.
 (This procedure ensures that implementations in dynamic languages are
-not penalized by startup time.) A median of ten runs is taken.  The
+not penalized by startup time.) Amedian of ten runs is taken.  The
 process is reniced to a high priority so that the system doesn't
 interrupt runs.
 
@@ -41,8 +41,8 @@ setting the `BENCHINP` environment variable.
 
 Implementation  | Ops/sec
 ----------------|-------------------
-commonmark.js   | 485 ops/sec ±1.04%
-showdown.js     | 170 ops/sec ±2.06%
-marked.js       | 552 ops/sec ±0.43%
-markdown-it     | 700 ops/sec ±1.05%
+commonmark.js   | 516 ops/sec ±0.92%
+showdown.js     | 169 ops/sec ±1.44%
+marked.js       | 544 ops/sec ±0.76%
+markdown-it     | 746 ops/sec ±0.68%
 
