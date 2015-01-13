@@ -120,7 +120,7 @@ var endsWithBlankLine = function(block) {
 // document to the parent of the highest list, and finalizing
 // all the lists.  (This is used to implement the "two blank lines
 // break of of all lists" feature.)
-var breakOutOfLists = function(block, line_number) {
+var breakOutOfLists = function(block) {
     var b = block;
     var last_list = null;
     do {
@@ -132,10 +132,10 @@ var breakOutOfLists = function(block, line_number) {
 
     if (last_list) {
         while (block !== last_list) {
-            this.finalize(block, line_number);
+            this.finalize(block, this.lineNumber);
             block = block.parent;
         }
-        this.finalize(last_list, line_number);
+        this.finalize(last_list, this.lineNumber);
         this.tip = last_list.parent;
     }
 };
@@ -153,13 +153,13 @@ var addLine = function(ln, offset) {
 // Add block of type tag as a child of the tip.  If the tip can't
 // accept children, close and finalize it and try its parent,
 // and so on til we find a block that can accept children.
-var addChild = function(tag, line_number, offset) {
+var addChild = function(tag, offset) {
     while (!canContain(this.tip.t, tag)) {
-        this.finalize(this.tip, line_number - 1);
+        this.finalize(this.tip, this.lineNumber - 1);
     }
 
     var column_number = offset + 1; // offset 0 = column 1
-    var newBlock = new Node(tag, [[line_number, column_number], [0, 0]]);
+    var newBlock = new Node(tag, [[this.lineNumber, column_number], [0, 0]]);
     newBlock.strings = [];
     newBlock.string_content = undefined;
     this.tip.appendChild(newBlock);
@@ -219,7 +219,7 @@ var listsMatch = function(list_data, item_data) {
 var closeUnmatchedBlocks = function() {
     // finalize any blocks not matched
     while (this.oldtip !== this.last_matched_container) {
-        this.finalize(this.oldtip, this.line_number - 1);
+        this.finalize(this.oldtip, this.lineNumber - 1);
         this.oldtip = this.oldtip.parent;
     }
 };
@@ -227,7 +227,7 @@ var closeUnmatchedBlocks = function() {
 // Analyze a line of text and update the document appropriately.
 // We parse markdown text by calling this on each line of input,
 // then finalizing the document.
-var incorporateLine = function(ln, line_number) {
+var incorporateLine = function(ln) {
     var all_matched = true;
     var first_nonspace;
     var offset = 0;
@@ -347,7 +347,7 @@ var incorporateLine = function(ln, line_number) {
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
     if (blank && container.last_line_blank) {
-        this.breakOutOfLists(container, line_number);
+        this.breakOutOfLists(container);
     }
 
     // Unless last matched container is a code block, try new container starts,
@@ -373,7 +373,7 @@ var incorporateLine = function(ln, line_number) {
             if (this.tip.t !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
                 this.closeUnmatchedBlocks();
-                container = this.addChild('IndentedCode', line_number, offset);
+                container = this.addChild('IndentedCode', offset);
             } else { // indent > 4 in a lazy paragraph continuation
                 break;
             }
@@ -386,13 +386,13 @@ var incorporateLine = function(ln, line_number) {
                 offset++;
             }
             this.closeUnmatchedBlocks();
-            container = this.addChild('BlockQuote', line_number, offset);
+            container = this.addChild('BlockQuote', offset);
 
         } else if ((match = ln.slice(first_nonspace).match(reATXHeaderMarker))) {
             // ATX header
             offset = first_nonspace + match[0].length;
             this.closeUnmatchedBlocks();
-            container = this.addChild('Header', line_number, first_nonspace);
+            container = this.addChild('Header', first_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
             container.strings =
@@ -403,7 +403,7 @@ var incorporateLine = function(ln, line_number) {
             // fenced code block
             var fence_length = match[0].length;
             this.closeUnmatchedBlocks();
-            container = this.addChild('FencedCode', line_number, first_nonspace);
+            container = this.addChild('FencedCode', first_nonspace);
             container.fence_length = fence_length;
             container.fence_char = match[0][0];
             container.fence_offset = first_nonspace - offset;
@@ -413,7 +413,7 @@ var incorporateLine = function(ln, line_number) {
         } else if (matchAt(reHtmlBlockOpen, ln, first_nonspace) !== -1) {
             // html block
             this.closeUnmatchedBlocks();
-            container = this.addChild('HtmlBlock', line_number, first_nonspace);
+            container = this.addChild('HtmlBlock', first_nonspace);
             // note, we don't adjust offset because the tag is part of the text
             break;
 
@@ -429,7 +429,7 @@ var incorporateLine = function(ln, line_number) {
         } else if (matchAt(reHrule, ln, first_nonspace) !== -1) {
             // hrule
             this.closeUnmatchedBlocks();
-            container = this.addChild('HorizontalRule', line_number, first_nonspace);
+            container = this.addChild('HorizontalRule', first_nonspace);
             offset = ln.length - 1;
             break;
 
@@ -442,12 +442,12 @@ var incorporateLine = function(ln, line_number) {
             // add the list if needed
             if (container.t !== 'List' ||
                 !(listsMatch(container.list_data, data))) {
-                container = this.addChild('List', line_number, first_nonspace);
+                container = this.addChild('List', first_nonspace);
                 container.list_data = data;
             }
 
             // add the list item
-            container = this.addChild('Item', line_number, first_nonspace);
+            container = this.addChild('Item', first_nonspace);
             container.list_data = data;
 
         } else {
@@ -499,7 +499,7 @@ var incorporateLine = function(ln, line_number) {
               container.t === 'FencedCode' ||
               (container.t === 'Item' &&
                !container.firstChild &&
-               container.sourcepos[0][0] === line_number));
+               container.sourcepos[0][0] === this.lineNumber));
 
         var cont = container;
         while (cont.parent) {
@@ -520,7 +520,7 @@ var incorporateLine = function(ln, line_number) {
                      ln.slice(first_nonspace).match(reClosingCodeFence));
             if (match && match[0].length >= container.fence_length) {
                 // don't add closing fence to container; instead, close it:
-                this.finalize(container, line_number);
+                this.finalize(container, this.lineNumber);
             } else {
                 this.addLine(ln, offset);
             }
@@ -538,7 +538,7 @@ var incorporateLine = function(ln, line_number) {
                 break;
             } else {
                 // create paragraph container for line
-                container = this.addChild('Paragraph', line_number, first_nonspace);
+                container = this.addChild('Paragraph', this.lineNumber, first_nonspace);
                 this.addLine(ln, first_nonspace);
             }
         }
@@ -551,14 +551,14 @@ var incorporateLine = function(ln, line_number) {
 // or 'loose' status of a list, and parsing the beginnings
 // of paragraphs for reference definitions.  Reset the tip to the
 // parent of the closed block.
-var finalize = function(block, line_number) {
+var finalize = function(block, lineNumber) {
     var pos;
     // don't do anything if the block is already closed
     if (!block.open) {
         return 0;
     }
     block.open = false;
-    block.sourcepos[1] = [line_number, this.lastLineLength + 1];
+    block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
 
     switch (block.t) {
     case 'Paragraph':
@@ -668,7 +668,8 @@ var parse = function(input) {
     if (this.options.time) { console.timeEnd("preparing input"); }
     if (this.options.time) { console.time("block parsing"); }
     for (var i = 0; i < len; i++) {
-        this.incorporateLine(lines[i], i + 1);
+        this.lineNumber += 1;
+        this.incorporateLine(lines[i]);
     }
     while (this.tip) {
         this.finalize(this.tip, len);
@@ -687,6 +688,7 @@ function DocParser(options){
         doc: new Document(),
         tip: this.doc,
         oldtip: this.doc,
+        lineNumber: 0,
         last_matched_container: this.doc,
         refmap: {},
         lastLineLength: 0,
