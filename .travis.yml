@@ -15,7 +15,7 @@ before_install:
          sudo apt-get install -qq cmake python3 valgrind
      elif [ ${TRAVIS_OS_NAME:-'linux'} = 'osx' ]
      then
-         # We test on OSX without python3, to make sure that works
+         echo 'Building without python3, to make sure that works.'
      fi
 script:
  - make
