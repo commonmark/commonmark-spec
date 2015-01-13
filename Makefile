@@ -156,14 +156,14 @@ dingus: js/commonmark.js
 ### Spec ###
 
 spec.md: $(SPEC)
-	python3 makespec.py markdown > $@
+	python3 tools/makespec.py markdown > $@
 
-spec.html: spec.txt template.html ${PROG}
-	python3 makespec.py html > $@
+spec.html: spec.txt tools/template.html ${PROG}
+	python3 tools/makespec.py html > $@
 
-spec.pdf: spec.md template.tex specfilter.hs
-	pandoc -s $< --template template.tex \
-	   --filter ./specfilter.hs -o $@ --latex-engine=xelatex --toc \
+spec.pdf: spec.md tools/template.tex tools/specfilter.hs
+	pandoc -s $< --template tools/template.tex \
+	   --filter tools/specfilter.hs -o $@ --latex-engine=xelatex --toc \
 	   --number-sections -V documentclass=report -V tocdepth=2 \
 	   -V classoption=twosides
 
