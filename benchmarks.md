@@ -2,28 +2,27 @@
 
 Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 
-|Implementation     |  Time (sec)| Factor  |
-|-------------------|-----------:|--------:|
-| Markdown.pl       | 2921.24    | 14606.2 |
-| Python markdown   | 55.32      |   276.6 |
-| PHP markdown      | 20.85      |   104.3 |
-| kramdown          | 20.83      |   104.1 |
-| lunamark          | 6.295      |    31.5 |
-| cheapskate        | 5.760      |    28.8 |
-| peg-markdown      | 5.450      |    27.3 |
-| parsedown         | 3.490      |    17.4 |
-| **commonmark.js** | 2.070      |    10.3 |
-| marked            | 1.855      |     9.3 |
-| discount          | 1.705      |     8.5 |
-| **cmark**         | 0.280      |     1.4 |
-| sundown           | 0.200      |     1.0 |
+|Implementation     |  Time (sec)|
+|-------------------|-----------:|
+| Markdown.pl       | 2921.24    |
+| Python markdown   |  291.25    |
+| PHP markdown      |   20.82    |
+| kramdown          |   17.32    |
+| cheapskate        |    8.24    |
+| peg-markdown      |    5.45    |
+| parsedown         |    5.06    |
+| **commonmark.js** |    2.26    |
+| marked            |    1.93    |
+| discount          |    1.86    |
+| **cmark**         |    0.37    |
+| sundown           |    0.34    |
 
 
 To run these benchmarks, use `make bench PROG=/path/to/program`.
 
-The input text is a 10MB Markdown file built by concatenating 20 copies
-of the Markdown source of the first edition of [*Pro
-Git*](https://github.com/progit/progit/tree/master/en) by Scott Chacon.
+The input text is a 11MB Markdown file built by concatenating the
+Markdown sources of all the localizations of the first edition of
+[*Pro Git*](https://github.com/progit/progit/tree/master/en) by Scott Chacon.
 
 `time` is used to measure execution speed.  The reported
 time is the *difference* between the time to run the program
@@ -36,12 +35,14 @@ interrupt runs.
 ## JavaScript libraries
 
 Here are some JavaScript benchmarks using `node.js`.
-They can be run using `make benchjs`:
+They can be run using `make benchjs`.  The source text is
+the CommonMark `README.md` file, but can be configured by
+setting the `BENCHINP` environment variable.
 
-|Implementation     |  ops/sec    |
-|-------------------|-------------|
-| showdown.js       | 168 ±1.65%  |
-| **commonmark.js** | 503 ±0.92%  |
-| marked.js         | 549 ±0.52%  |
-| markdown-it       | 687 ±1.02%  |
+Implementation  | Ops/sec
+----------------|-------------------
+commonmark.js   | 485 ops/sec ±1.04%
+showdown.js     | 170 ops/sec ±2.06%
+marked.js       | 552 ops/sec ±0.43%
+markdown-it     | 700 ops/sec ±1.05%
 
