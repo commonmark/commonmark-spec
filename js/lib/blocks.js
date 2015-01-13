@@ -215,13 +215,14 @@ var listsMatch = function(list_data, item_data) {
             list_data.bullet_char === item_data.bullet_char);
 };
 
-// Finalize and close any unmatched blocks.
+// Finalize and close any unmatched blocks. Returns true.
 var closeUnmatchedBlocks = function() {
     // finalize any blocks not matched
     while (this.oldtip !== this.last_matched_container) {
         this.finalize(this.oldtip, this.lineNumber - 1);
         this.oldtip = this.oldtip.parent;
     }
+    return true;
 };
 
 // Analyze a line of text and update the document appropriately.
@@ -237,6 +238,7 @@ var incorporateLine = function(ln) {
     var indent;
     var i;
     var CODE_INDENT = 4;
+    var allClosed;
 
     var container = this.doc;
     this.oldtip = this.tip;
@@ -343,6 +345,7 @@ var incorporateLine = function(ln) {
         }
     }
 
+    allClosed = (container === this.oldtip);
     this.last_matched_container = container;
 
     // Check to see if we've hit 2nd blank line; if so break out of list:
@@ -372,7 +375,8 @@ var incorporateLine = function(ln) {
             // indented code
             if (this.tip.t !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
-                this.closeUnmatchedBlocks();
+                allClosed = allClosed ||
+                    this.closeUnmatchedBlocks();
                 container = this.addChild('IndentedCode', offset);
             } else { // indent > 4 in a lazy paragraph continuation
                 break;
@@ -385,13 +389,13 @@ var incorporateLine = function(ln) {
             if (ln.charCodeAt(offset) === C_SPACE) {
                 offset++;
             }
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('BlockQuote', first_nonspace);
 
         } else if ((match = ln.slice(first_nonspace).match(reATXHeaderMarker))) {
             // ATX header
             offset = first_nonspace + match[0].length;
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('Header', first_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
@@ -402,7 +406,7 @@ var incorporateLine = function(ln) {
         } else if ((match = ln.slice(first_nonspace).match(reCodeFence))) {
             // fenced code block
             var fence_length = match[0].length;
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('FencedCode', first_nonspace);
             container.fence_length = fence_length;
             container.fence_char = match[0][0];
@@ -412,7 +416,7 @@ var incorporateLine = function(ln) {
 
         } else if (matchAt(reHtmlBlockOpen, ln, first_nonspace) !== -1) {
             // html block
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('HtmlBlock', first_nonspace);
             // note, we don't adjust offset because the tag is part of the text
             break;
@@ -421,21 +425,21 @@ var incorporateLine = function(ln) {
                    container.strings.length === 1 &&
                    ((match = ln.slice(first_nonspace).match(reSetextHeaderLine)))) {
             // setext header line
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container.t = 'Header'; // convert Paragraph to SetextHeader
             container.level = match[0][0] === '=' ? 1 : 2;
             offset = ln.length;
 
         } else if (matchAt(reHrule, ln, first_nonspace) !== -1) {
             // hrule
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('HorizontalRule', first_nonspace);
             offset = ln.length - 1;
             break;
 
         } else if ((data = parseListMarker(ln, first_nonspace))) {
             // list item
-            this.closeUnmatchedBlocks();
+            allClosed = allClosed || this.closeUnmatchedBlocks();
             data.marker_offset = indent;
             offset = first_nonspace + data.padding;
 
@@ -487,7 +491,7 @@ var incorporateLine = function(ln) {
     } else { // not a lazy continuation
 
         // finalize any blocks not matched
-        this.closeUnmatchedBlocks();
+        allClosed = allClosed || this.closeUnmatchedBlocks();
 
         // Block quote lines are never blank as they start with >
         // and we don't count blanks in fenced code for purposes of tight/loose
