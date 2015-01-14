@@ -6258,16 +6258,6 @@ following closing bracket:
 <p>*<a href="/url">foo*</a></p>
 .
 
-This is a link too, for the same reason:
-
-.
-[foo`]: /url
-
-[foo`]`
-.
-<p>[foo<code>]</code></p>
-.
-
 Full references take precedence over shortcut references:
 
 .
