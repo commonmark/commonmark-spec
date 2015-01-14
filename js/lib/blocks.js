@@ -65,10 +65,10 @@ var detabLine = function(text) {
 // Return index of match or -1.
 var matchAt = function(re, s, offset) {
     var res = s.slice(offset).match(re);
-    if (res) {
-        return offset + res.index;
-    } else {
+    if (res === null) {
         return -1;
+    } else {
+        return offset + res.index;
     }
 };
 
