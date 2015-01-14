@@ -27,7 +27,7 @@ var next = function(){
     var cur = this.current;
     var entering = this.entering;
 
-    if (!cur) {
+    if (cur === null) {
         return null;
     }
 
@@ -42,13 +42,13 @@ var next = function(){
             this.entering = false;
         }
 
-    } else if (cur.next) {
-        this.current = cur.next;
-        this.entering = true;
-
-    } else {
+    } else if (cur.next === null) {
         this.current = cur.parent;
         this.entering = false;
+
+    } else {
+        this.current = cur.next;
+        this.entering = true;
     }
 
     return {entering: entering, node: cur};
