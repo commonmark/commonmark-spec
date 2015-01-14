@@ -169,7 +169,7 @@ var addChild = function(tag, offset) {
 
 // Parse a list marker and return data on the marker (type,
 // start, delimiter, bullet character, padding) or null.
-var parseListMarker = function(ln, offset) {
+var parseListMarker = function(ln, offset, indent) {
     var rest = ln.slice(offset);
     var match;
     var spaces_after_marker;
@@ -178,7 +178,8 @@ var parseListMarker = function(ln, offset) {
                  bullet_char: undefined,
                  start: undefined,
                  delimiter: undefined,
-                 padding: undefined };
+                 padding: undefined,
+                 marker_offset: indent };
     if (rest.match(reHrule)) {
         return null;
     }
@@ -437,10 +438,9 @@ var incorporateLine = function(ln) {
             offset = ln.length - 1;
             break;
 
-        } else if ((data = parseListMarker(ln, first_nonspace))) {
+        } else if ((data = parseListMarker(ln, first_nonspace, indent))) {
             // list item
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            data.marker_offset = indent;
             offset = first_nonspace + data.padding;
 
             // add the list if needed
