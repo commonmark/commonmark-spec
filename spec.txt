@@ -5401,7 +5401,7 @@ _*foo*_
 <p><em><em>foo</em></em></p>
 .
 
-However, strong emphasis within strong emphasisis possible without
+However, strong emphasis within strong emphasis is possible without
 switching delimiters:
 
 .
