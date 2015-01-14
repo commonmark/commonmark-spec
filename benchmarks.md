@@ -11,7 +11,7 @@ Some benchmarks, run on an ancient Thinkpad running Intel Core 2 Duo at 2GHz.
 | cheapskate        |    8.24    |
 | peg-markdown      |    5.45    |
 | parsedown         |    5.06    |
-| **commonmark.js** |    2.15    |
+| **commonmark.js** |    2.09    |
 | marked            |    1.93    |
 | discount          |    1.86    |
 | **cmark**         |    0.37    |
@@ -41,8 +41,7 @@ setting the `BENCHINP` environment variable.
 
 Implementation  | Ops/sec
 ----------------|---------
-commonmark.js   | 525
-showdown.js     | 169
-marked.js       | 545
-markdown-it     | 750
-
+commonmark.js   | 557
+showdown.js     | 167
+marked.js       | 548
+markdown-it     | 739
