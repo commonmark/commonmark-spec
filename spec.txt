@@ -4145,24 +4145,18 @@ foo
 ## Entities
 
 With the goal of making this standard as HTML-agnostic as possible, all
-valid HTML entities in any context are recognized as such and
-converted into unicode characters before they are stored in the AST.
-
-This allows implementations that target HTML output to trivially escape
-the entities when generating HTML, and simplifies the job of
-implementations targetting other languages, as these will only need to
-handle the unicode chars and need not be HTML-entity aware.
+valid HTML entities (except in code blocks and code spans)
+are recognized as such and converted into unicode characters before
+they are stored in the AST. This means that renderers to formats other
+than HTML need not be HTML-entity aware.  HTML renderers may either escape
+unicode characters as entities or leave them as they are.  (However,
+`"`, `&`, `<`, and `>` must always be rendered as entities.)
 
 [Named entities](@name-entities) consist of `&`
 + any of the valid HTML5 entity names + `;`. The
 [following document](https://html.spec.whatwg.org/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
 corresponding codepoints.
-
-Conforming implementations that target HTML don't need to generate
-entities for all the valid named entities that exist, with the exception
-of `"` (`&quot;`), `&` (`&amp;`), `<` (`&lt;`) and `>` (`&gt;`), which
-always need to be written as entities for security reasons.
 
 .
 &nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral;
