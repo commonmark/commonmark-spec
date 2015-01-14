@@ -161,7 +161,7 @@ var addChild = function(tag, offset) {
     var column_number = offset + 1; // offset 0 = column 1
     var newBlock = new Node(tag, [[this.lineNumber, column_number], [0, 0]]);
     newBlock.strings = [];
-    newBlock.string_content = undefined;
+    newBlock.string_content = null;
     this.tip.appendChild(newBlock);
     this.tip = newBlock;
     return newBlock;
@@ -173,12 +173,12 @@ var parseListMarker = function(ln, offset, indent) {
     var rest = ln.slice(offset);
     var match;
     var spaces_after_marker;
-    var data = { type: undefined,
+    var data = { type: null,
                  tight: true,
-                 bullet_char: undefined,
-                 start: undefined,
-                 delimiter: undefined,
-                 padding: undefined,
+                 bullet_char: null,
+                 start: null,
+                 delimiter: null,
+                 padding: null,
                  marker_offset: indent };
     if (rest.match(reHrule)) {
         return null;
@@ -654,7 +654,7 @@ var processInlines = function(block) {
 
 var Document = function() {
     var doc = new Node('Document', [[1, 1], [0, 0]]);
-    doc.string_content = undefined;
+    doc.string_content = null;
     doc.strings = [];
     return doc;
 };

@@ -91,16 +91,16 @@ var renderNodes = function(block) {
             switch (nodetype) {
             case 'List':
                 var data = node.list_data;
-                if (data.type !== undefined) {
+                if (data.type !== null) {
                     attrs.push(['type', data.type.toLowerCase()]);
                 }
-                if (data.start !== undefined) {
+                if (data.start !== null) {
                     attrs.push(['start', String(data.start)]);
                 }
-                if (data.tight !== undefined) {
+                if (data.tight !== null) {
                     attrs.push(['tight', (data.tight ? 'true' : 'false')]);
                 }
-                if (data.delimiter !== undefined) {
+                if (data.delimiter !== null) {
                     var delimword = '';
                     if (data.delimiter === '.') {
                         delimword = 'period';
@@ -128,7 +128,7 @@ var renderNodes = function(block) {
             }
             if (options.sourcepos) {
                 var pos = node.sourcepos;
-                if (pos !== undefined) {
+                if (pos) {
                     attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
                                 String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
                                 String(pos[1][1])]);
