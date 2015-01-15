@@ -481,8 +481,7 @@ var incorporateLine = function(ln) {
     indent = first_nonspace - offset;
 
     // First check for a lazy paragraph continuation:
-    if (this.tip !== this.lastMatchedContainer &&
-        !blank &&
+    if (!allClosed && !blank &&
         this.tip.t === 'Paragraph' &&
         this.tip.strings.length > 0) {
         // lazy paragraph continuation
