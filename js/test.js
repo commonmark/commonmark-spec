@@ -21,7 +21,8 @@ var repeat = function(pattern, count) {
         if (count & 1) {
             result += pattern;
         }
-        count >>= 1, pattern += pattern;
+        count >>= 1;
+        pattern += pattern;
     }
     return result + pattern;
 };
@@ -156,7 +157,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
                     repeat('</blockquote>\n', 10000) }
     ];
 
-    for (var i = 0; i < cases.length; i++) {
+    for (i = 0; i < cases.length; i++) {
         pathologicalTest(cases[i], results);
     }
     cursor.write('\n');
