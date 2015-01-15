@@ -168,50 +168,6 @@ Node.prototype.walker = function() {
     return walker;
 };
 
-var nodeToObject = function(node) {
-    var result = {};
-    var propsToShow = ['t', 'literal', 'list_data', 'sourcepos',
-                       'info', 'level', 'title', 'destination'];
-
-    for (var i = 0, len = propsToShow.length; i < len; i++) {
-        var prop = propsToShow[i];
-        if (node[prop] !== undefined) {
-            result[prop] = node[prop];
-        }
-    }
-    return result;
-};
-
-Node.prototype.toObject = function() {
-    var childrenStack = [];
-    var walker = this.walker();
-    var event;
-    while ((event = walker.next())) {
-        var node = event.node;
-        var entering = event.entering;
-        var container = node.isContainer();
-        var astnode;
-
-        if (container) {
-            if (entering) {
-                childrenStack.push([]);
-            } else {
-                astnode = nodeToObject(node);
-                astnode.children = childrenStack.pop();
-                if (childrenStack.length > 0) {
-                    childrenStack[childrenStack.length - 1].push(astnode);
-                }
-            }
-        } else {
-            astnode = nodeToObject(node);
-            childrenStack[childrenStack.length - 1].push(astnode);
-        }
-    }
-
-    return astnode;
-
-};
-
 module.exports = Node;
 
 
