@@ -1,3 +1,35 @@
+[0.16]
+
+  * Rewrote beginning of Entities section, clarifying that only
+    entities not in code blocks or spans are decoded.
+  * Removed defective Example 449 (#284).
+  * Fixed typo (#283).
+  * Added intended two-space hard-breaks in Examples 521, 523.
+  * Clarified that brackets in general don't take precedence over emph
+    (#258).
+  * Clarified that final newline is removed from paragraph content
+    (#176).
+  * Talk of "info string" rather than "attributes" for code blocks
+    (#262).
+  * Clarified precedence of code spans, HTML tags, autolinks (#259).
+  * Fixed a number of internal links and duplicate references in the spec.
+  * Linkify "info string" in spec.
+  * Use shortcut reference links when possible in spec.txt.
+  * cmark itself is now used to build spec.html, rather than pandoc.
+  * Use shortcut reference links when possible in spec.txt. This
+    relies on the new `spec2md.py` behavior of creating references
+    for all internal anchors.
+  * Moved some examples from block to inline HTML section.
+  * Added examples of non-comments (#264).
+  * Changed rule for comments to conform to HTML5 spec.
+  * Made clear that any sequence of characters is a valid document
+    (#266).
+  * Changed wording: "is preferred" -> "takes precedence."
+  * Regularized spelling of "non-space character" and added links
+    (#260).
+  * Use four spaces rather than five to show "four spaces is too much"
+    (#261).
+
 [0.15]
 
   * Fixed some typos with "left-" and "right-flanking" delimiters in the
