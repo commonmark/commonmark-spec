@@ -1,6 +1,6 @@
 { "name": "commonmark",
   "description": "a strongly specified, highly compatible variant of Markdown",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "homepage": "http://commonmark.org",
   "keywords":
    [ "markdown",
