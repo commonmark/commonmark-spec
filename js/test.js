@@ -52,13 +52,13 @@ var showSpaces = function(s) {
         .replace(/ /g, '␣');
 };
 
-var pathologicalTest = function(testcase, results) {
+var pathologicalTest = function(testcase, res) {
     cursor.write(testcase.name + ' ');
     console.time('  elapsed time');
     var actual = writer.render(reader.parse(testcase.input));
     if (actual === testcase.expected) {
         cursor.green().write('✓\n').reset();
-        results.passed += 1;
+        res.passed += 1;
     } else {
         cursor.red().write('✘\n');
         cursor.cyan();
@@ -70,7 +70,7 @@ var pathologicalTest = function(testcase, results) {
         cursor.write(showSpaces(actual));
         cursor.write('\n');
         cursor.reset();
-        results.failed += 1;
+        res.failed += 1;
     }
     console.timeEnd('  elapsed time');
 };
