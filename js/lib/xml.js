@@ -72,7 +72,7 @@ var renderNodes = function(block) {
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
-        nodetype = node.t;
+        nodetype = node.getType();
 
         if (nodetype === 'ReferenceDef') {
             continue;

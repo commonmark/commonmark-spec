@@ -106,7 +106,8 @@ var endsWithBlankLine = function(block) {
         if (block.last_line_blank) {
             return true;
         }
-        if (block.t === 'List' || block.t === 'Item') {
+        var t = block.getType();
+        if (t === 'List' || t === 'Item') {
             block = block.lastChild;
         } else {
             break;
@@ -123,7 +124,7 @@ var breakOutOfLists = function(block) {
     var b = block;
     var last_list = null;
     do {
-        if (b.t === 'List') {
+        if (b.getType() === 'List') {
             last_list = b;
         }
         b = b.parent;
@@ -153,7 +154,7 @@ var addLine = function(ln, offset) {
 // accept children, close and finalize it and try its parent,
 // and so on til we find a block that can accept children.
 var addChild = function(tag, offset) {
-    while (!canContain(this.tip.t, tag)) {
+    while (!canContain(this.tip.getType(), tag)) {
         this.finalize(this.tip, this.lineNumber - 1);
     }
 
@@ -270,7 +271,7 @@ var incorporateLine = function(ln) {
         }
         indent = first_nonspace - offset;
 
-        switch (container.t) {
+        switch (container.getType()) {
         case 'BlockQuote':
             if (indent <= 3 && ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
                 offset = first_nonspace + 1;
@@ -355,8 +356,8 @@ var incorporateLine = function(ln) {
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    while (container.t !== 'CodeBlock' &&
-           container.t !== 'HtmlBlock' &&
+    var t = container.getType();
+    while (t !== 'CodeBlock' && t !== 'HtmlBlock' &&
            // this is a little performance optimization:
            matchAt(reMaybeSpecial, ln, offset) !== -1) {
 
@@ -373,7 +374,7 @@ var incorporateLine = function(ln) {
 
         if (indent >= CODE_INDENT) {
             // indented code
-            if (this.tip.t !== 'Paragraph' && !blank) {
+            if (this.tip.getType() !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
                 allClosed = allClosed ||
                     this.closeUnmatchedBlocks();
@@ -425,12 +426,12 @@ var incorporateLine = function(ln) {
             offset -= indent; // back up so spaces are part of block
             break;
 
-        } else if (container.t === 'Paragraph' &&
+        } else if (container.getType() === 'Paragraph' &&
                    container.strings.length === 1 &&
                    ((match = ln.slice(offset).match(reSetextHeaderLine)))) {
             // setext header line
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container.t = 'Header'; // convert Paragraph to SetextHeader
+            container.setType('Header'); // convert Paragraph to SetextHeader
             container.level = match[0][0] === '=' ? 1 : 2;
             offset = ln.length;
             break;
@@ -448,7 +449,7 @@ var incorporateLine = function(ln) {
             offset += data.padding;
 
             // add the list if needed
-            if (container.t !== 'List' ||
+            if (container.getType() !== 'List' ||
                 !(listsMatch(container.list_data, data))) {
                 container = this.addChild('List', first_nonspace);
                 container.list_data = data;
@@ -480,7 +481,7 @@ var incorporateLine = function(ln) {
 
     // First check for a lazy paragraph continuation:
     if (!allClosed && !blank &&
-        this.tip.t === 'Paragraph' &&
+        this.tip.getType() === 'Paragraph' &&
         this.tip.strings.length > 0) {
         // lazy paragraph continuation
 
@@ -496,7 +497,7 @@ var incorporateLine = function(ln) {
         // and we don't count blanks in fenced code for purposes of tight/loose
         // lists or breaking out of lists.  We also don't set last_line_blank
         // on an empty list item.
-        var t = container.t;
+        var t = container.getType();
         container.last_line_blank = blank &&
             !(t === 'BlockQuote' ||
               t === 'Header' ||
@@ -511,7 +512,7 @@ var incorporateLine = function(ln) {
             cont = cont.parent;
         }
 
-        switch (container.t) {
+        switch (container.getType()) {
         case 'HtmlBlock':
             this.addLine(ln, offset);
             break;
@@ -539,7 +540,7 @@ var incorporateLine = function(ln) {
             break;
 
         default:
-            if (acceptsLines(container.t)) {
+            if (acceptsLines(container.getType())) {
                 this.addLine(ln, first_nonspace);
             } else if (blank) {
                 break;
@@ -567,7 +568,7 @@ var finalize = function(block, lineNumber) {
     block.open = false;
     block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
 
-    switch (block.t) {
+    switch (block.getType()) {
     case 'Paragraph':
         block.string_content = block.strings.join('\n');
 
@@ -577,7 +578,7 @@ var finalize = function(block, lineNumber) {
                                                        this.refmap))) {
             block.string_content = block.string_content.slice(pos);
             if (isBlank(block.string_content)) {
-                block.t = 'ReferenceDef';
+                block.setType('ReferenceDef');
                 break;
             }
         }
@@ -640,12 +641,12 @@ var finalize = function(block, lineNumber) {
 // Walk through a block & children recursively, parsing string content
 // into inline content where appropriate.  Returns new object.
 var processInlines = function(block) {
-    var node, event;
+    var node, event, t;
     var walker = block.walker();
     while ((event = walker.next())) {
         node = event.node;
-        if (!event.entering && (node.t === 'Paragraph' ||
-                                node.t === 'Header')) {
+        t = node.getType();
+        if (!event.entering && (t === 'Paragraph' || t === 'Header')) {
             this.inlineParser.parse(node, this.refmap);
         }
     }

@@ -68,7 +68,7 @@ var renderNodes = function(block) {
             }
         }
 
-        switch (node.t) {
+        switch (node.getType()) {
         case 'Text':
             out(esc(node.literal));
             break;
@@ -134,7 +134,7 @@ var renderNodes = function(block) {
         case 'Paragraph':
             grandparent = node.parent.parent;
             if (grandparent !== null &&
-                grandparent.t === 'List') {
+                grandparent.getType() === 'List') {
                 if (grandparent.list_data.tight) {
                     break;
                 }
@@ -225,7 +225,7 @@ var renderNodes = function(block) {
             break;
 
         default:
-            throw "Unknown node type " + node.t;
+            throw "Unknown node type " + node.getType();
         }
 
     }

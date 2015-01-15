@@ -89,6 +89,14 @@ Node.prototype.isContainer = function() {
     return isContainer(this);
 };
 
+Node.prototype.getType = function() {
+    return this.t;
+}
+
+Node.prototype.setType = function(newtype) {
+    this.t = newtype;
+}
+
 Node.prototype.appendChild = function(child) {
     child.unlink();
     child.parent = this;
