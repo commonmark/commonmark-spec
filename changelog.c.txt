@@ -1,0 +1,17 @@
+[0.16]
+
+  * Added xml renderer (XML representation of the CommonMark AST,
+    which is described in `CommonMark.dtd`).
+  * Reduced size of gperf entity table (Nick Wellnhofer).
+  * Reworked iterators to allow deletion of nodes during iteration
+    (Nick Wellnhofer).
+  * Optimized `S_is_leaf`.
+  * Added `cmark_iter_reset` to iterator API.
+  * Added `cmark_consolidate_text_nodes` to API to combine adjacent
+    text nodes.
+  * Added `CMARK_OPT_NORMALIZE` to options (this combines adjacent
+    text nodes).
+  * Added `--normalize` option to command-line program.
+  * Improved regex for HTML comments in inline parsing.
+  * Python is no longer required for a basic build from the
+    repository.

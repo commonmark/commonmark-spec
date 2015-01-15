@@ -1,0 +1,38 @@
+[0.16]
+
+  * Improved regex for HTML comments (#263).
+  * Fixed CDATA regex (#267).
+  * Use linked list instead of arrays in AST: the same doubly linked
+    node structure as cmark uses.  This simplifies some code and
+    eliminates the need for recursive algorithms, so we can render
+    deeply-nested structures without stack overflows.
+  * Use `children` instead of `label` (in Image and Link),
+    `inline_content` (in Paragraph), and `c` (in Emph and Strong).
+  * Renamed the `c` property to `literal` to match `libcmark`.
+  * Use `literal` rather than `string_content` property for code
+    blocks, HTML.  `string_content` is reserved for raw string
+    content that has yet to be parsed as inlines.
+  * Improved end lines (#276).
+  * Added a node walker, for easy AST traversal (see `node.js`).
+  * Regularized position information into a `sourcepos` property.
+    Added end column information.
+  * Renamed `html-renderer.js` to `html.js`.
+  * Replace NUL characters with U+FFFD, as per spec.
+  * Optimized code, resulting in significant performance gains.
+    (We've gone from being twice as fast as showdown.js to being
+    three times as fast, on par with marked.)
+  * Made `tight` a property of `list_data` rather than `Node`.
+  * Added options to renderer, parser objections.
+  * Added a `--sourcepos` command line option to `js/bin/commonmark`.
+  * HTML renderer now throws an error on unknown tag type (which
+    indicates a programming error).
+  * Removed `ansi.js` code from the source tree. The test suite now
+    uses its own mini ansi colors implementation.
+  * Added `--time` option to `js/bin/commonmark`.
+  * Added an XML renderer (XML representation of the AST, matching
+    `Commonmark.dtd`).
+  * Changed `url` property to `destination` to match `cmark` and spec.
+  * Added `js/common.js` to hold some common code, like string
+    unescaping and URI normalization.
+  * Use `decodeURI` instead of `unescape`.
+  * Added some "pathological" test cases to test suite.
