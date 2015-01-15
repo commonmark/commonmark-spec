@@ -432,7 +432,7 @@ var incorporateLine = function(ln) {
                    ((match = ln.slice(offset).match(reSetextHeaderLine)))) {
             // setext header line
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            var header = new Node('Header', container.sourcepos);
+            var header = new Node('Header', container.sourcepos());
             header.level = match[0][0] === '=' ? 1 : 2;
             header.strings = container.strings;
             container.insertAfter(header);
@@ -510,7 +510,7 @@ var incorporateLine = function(ln) {
               (t === 'CodeBlock' && container.fence_length > 0) ||
               (t === 'Item' &&
                !container.firstChild &&
-               container.sourcepos[0][0] === this.lineNumber));
+               container.sourcepos()[0][0] === this.lineNumber));
 
         var cont = container;
         while (cont.parent) {
@@ -573,7 +573,7 @@ var finalize = function(block, lineNumber) {
         return 0;
     }
     block.open = false;
-    block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
+    block.sourcepos()[1] = [lineNumber, this.lastLineLength + 1];
 
     switch (block.type()) {
     case 'Paragraph':

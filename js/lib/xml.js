@@ -123,7 +123,7 @@ var renderNodes = function(block) {
                 break;
             }
             if (options.sourcepos) {
-                var pos = node.sourcepos;
+                var pos = node.sourcepos();
                 if (pos) {
                     attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
                                 String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +

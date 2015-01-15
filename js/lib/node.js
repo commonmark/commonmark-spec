@@ -69,7 +69,7 @@ var Node = function(nodeType, sourcepos) {
     this.lastChild = null;
     this.prev = null;
     this.next = null;
-    this.sourcepos = sourcepos;
+    this._sourcepos = sourcepos;
     this.last_line_blank = false;
     this.open = true;
     this.strings = null;
@@ -91,6 +91,10 @@ Node.prototype.isContainer = function() {
 
 Node.prototype.type = function() {
     return this._type;
+};
+
+Node.prototype.sourcepos = function() {
+    return this._sourcepos;
 };
 
 Node.prototype.appendChild = function(child) {
