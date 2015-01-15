@@ -2,6 +2,8 @@
 
 var Node = require('./node');
 var common = require('./common');
+var normalizeReference = require('./normalize-reference');
+
 var normalizeURI = common.normalizeURI;
 var unescapeString = common.unescapeString;
 var fromCodePoint = require('./from-code-point.js');
@@ -91,14 +93,6 @@ var reLinkLabel = /^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/;
 
 // Matches a string of non-special characters.
 var reMain = /^[^\n`\[\]\\!<&*_]+/m;
-
-// Normalize reference label: collapse internal whitespace
-// to single space, remove leading/trailing whitespace, case fold.
-var normalizeReference = function(s) {
-    return s.trim()
-        .replace(/\s+/, ' ')
-        .toUpperCase();
-};
 
 var text = function(s) {
     var node = new Node('Text');
