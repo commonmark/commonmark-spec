@@ -134,7 +134,7 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
     }
     cursor.write('\n');
     console.timeEnd("Elapsed time");
-/*
+
     // pathological cases
     cursor.write('\nPathological cases:\n');
 
@@ -150,13 +150,17 @@ fs.readFile('spec.txt', 'utf8', function(err, data) {
           input: repeat('[', 10000) + 'a' + repeat(']', 10000),
           expected: '<p>' + repeat('[', 10000) + 'a' + repeat(']', 10000) +
           '</p>\n' },
+        { name: 'nested block quote 10000 deep',
+          input: repeat('> ', 10000) + 'a\n',
+          expected: repeat('<blockquote>\n', 10000) + '<p>a</p>\n' +
+                    repeat('</blockquote>\n', 10000) }
     ];
 
     for (var i = 0; i < cases.length; i++) {
         pathologicalTest(cases[i], results);
     }
     cursor.write('\n');
-*/
-    cursor.write('\n' + results.passed.toString() + ' tests passed, ' +
+
+    cursor.write(results.passed.toString() + ' tests passed, ' +
                  results.failed.toString() + ' failed.\n');
 });
