@@ -96,8 +96,7 @@ var canContain = function(parent_type, child_type) {
 // Returns true if block type can accept lines of text.
 var acceptsLines = function(block_type) {
     return ( block_type === 'Paragraph' ||
-             block_type === 'IndentedCode' ||
-             block_type === 'FencedCode' );
+             block_type === 'CodeBlock' );
 };
 
 // Returns true if block ends with a blank line, descending if needed
@@ -295,16 +294,6 @@ var incorporateLine = function(ln) {
             }
             break;
 
-        case 'IndentedCode':
-            if (indent >= CODE_INDENT) {
-                offset += CODE_INDENT;
-            } else if (blank) {
-                offset = first_nonspace;
-            } else {
-                all_matched = false;
-            }
-            break;
-
         case 'Header':
         case 'HorizontalRule':
             // a header can never container > 1 line, so fail to match:
@@ -314,12 +303,22 @@ var incorporateLine = function(ln) {
             }
             break;
 
-        case 'FencedCode':
-            // skip optional spaces of fence offset
-            i = container.fence_offset;
-            while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
-                offset++;
-                i--;
+        case 'CodeBlock':
+            if (container.fence_length > 0) { // fenced
+                // skip optional spaces of fence offset
+                i = container.fence_offset;
+                while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
+                    offset++;
+                    i--;
+                }
+            } else { // indented
+                if (indent >= CODE_INDENT) {
+                    offset += CODE_INDENT;
+                } else if (blank) {
+                    offset = first_nonspace;
+                } else {
+                    all_matched = false;
+                }
             }
             break;
 
@@ -356,8 +355,7 @@ var incorporateLine = function(ln) {
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    while (container.t !== 'FencedCode' &&
-           container.t !== 'IndentedCode' &&
+    while (container.t !== 'CodeBlock' &&
            container.t !== 'HtmlBlock' &&
            // this is a little performance optimization:
            matchAt(reMaybeSpecial, ln, offset) !== -1) {
@@ -379,7 +377,7 @@ var incorporateLine = function(ln) {
                 offset += CODE_INDENT;
                 allClosed = allClosed ||
                     this.closeUnmatchedBlocks();
-                container = this.addChild('IndentedCode', offset);
+                container = this.addChild('CodeBlock', offset);
             }
             break;
         }
@@ -413,7 +411,7 @@ var incorporateLine = function(ln) {
             // fenced code block
             var fence_length = match[0].length;
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('FencedCode', first_nonspace);
+            container = this.addChild('CodeBlock', first_nonspace);
             container.fence_length = fence_length;
             container.fence_char = match[0][0];
             container.fence_offset = indent;
@@ -498,11 +496,12 @@ var incorporateLine = function(ln) {
         // and we don't count blanks in fenced code for purposes of tight/loose
         // lists or breaking out of lists.  We also don't set last_line_blank
         // on an empty list item.
+        var t = container.t;
         container.last_line_blank = blank &&
-            !(container.t === 'BlockQuote' ||
-              container.t === 'Header' ||
-              container.t === 'FencedCode' ||
-              (container.t === 'Item' &&
+            !(t === 'BlockQuote' ||
+              t === 'Header' ||
+              (t === 'CodeBlock' && container.fence_length > 0) ||
+              (t === 'Item' &&
                !container.firstChild &&
                container.sourcepos[0][0] === this.lineNumber));
 
@@ -513,20 +512,23 @@ var incorporateLine = function(ln) {
         }
 
         switch (container.t) {
-        case 'IndentedCode':
         case 'HtmlBlock':
             this.addLine(ln, offset);
             break;
 
-        case 'FencedCode':
-            // check for closing code fence:
-            match = (indent <= 3 &&
-                     ln.charAt(first_nonspace) === container.fence_char &&
-                     ln.slice(first_nonspace).match(reClosingCodeFence));
-            if (match && match[0].length >= container.fence_length) {
-                // don't add closing fence to container; instead, close it:
-                this.finalize(container, this.lineNumber);
-            } else {
+        case 'CodeBlock':
+            if (container.fence_length > 0) { // fenced
+                // check for closing code fence:
+                match = (indent <= 3 &&
+                         ln.charAt(first_nonspace) === container.fence_char &&
+                         ln.slice(first_nonspace).match(reClosingCodeFence));
+                if (match && match[0].length >= container.fence_length) {
+                    // don't add closing fence to container; instead, close it:
+                    this.finalize(container, this.lineNumber);
+                } else {
+                    this.addLine(ln, offset);
+                }
+            } else { // indented
                 this.addLine(ln, offset);
             }
             break;
@@ -589,21 +591,19 @@ var finalize = function(block, lineNumber) {
         block.literal = block.strings.join('\n');
         break;
 
-    case 'IndentedCode':
-        stripFinalBlankLines(block.strings);
-        block.literal = block.strings.join('\n') + '\n';
-        block.t = 'CodeBlock';
-        break;
-
-    case 'FencedCode':
-        // first line becomes info string
-        block.info = unescapeString(block.strings[0].trim());
-        if (block.strings.length === 1) {
-            block.literal = '';
-        } else {
-            block.literal = block.strings.slice(1).join('\n') + '\n';
+    case 'CodeBlock':
+        if (block.fence_length > 0) { // fenced
+            // first line becomes info string
+            block.info = unescapeString(block.strings[0].trim());
+            if (block.strings.length === 1) {
+                block.literal = '';
+            } else {
+                block.literal = block.strings.slice(1).join('\n') + '\n';
+            }
+        } else { // indented
+            stripFinalBlankLines(block.strings);
+            block.literal = block.strings.join('\n') + '\n';
         }
-        block.t = 'CodeBlock';
         break;
 
     case 'List':

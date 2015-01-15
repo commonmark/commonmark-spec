@@ -80,7 +80,7 @@ var Node = function(nodeType, sourcepos) {
     this.destination = null;
     this.title = null;
     this.fence_char = null;
-    this.fence_length = null;
+    this.fence_length = 0;
     this.fence_offset = null;
     this.level = null;
 };
