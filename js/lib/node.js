@@ -1,7 +1,7 @@
 "use strict";
 
 function isContainer(node) {
-    switch (node.t) {
+    switch (node._type) {
     case 'Document':
     case 'BlockQuote':
     case 'List':
@@ -63,7 +63,7 @@ var NodeWalker = function(root) {
 };
 
 var Node = function(nodeType, sourcepos) {
-    this.t = nodeType;
+    this._type = nodeType;
     this.parent = null;
     this.firstChild = null;
     this.lastChild = null;
@@ -90,7 +90,7 @@ Node.prototype.isContainer = function() {
 };
 
 Node.prototype.type = function() {
-    return this.t;
+    return this._type;
 };
 
 Node.prototype.appendChild = function(child) {
@@ -221,7 +221,7 @@ module.exports = Node;
  var event;
 
  while (event = walker.next()) {
- console.log(event.entering, event.node.t);
+ console.log(event.entering, event.node.type());
  }
 
  */
