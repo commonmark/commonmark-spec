@@ -106,7 +106,7 @@ var endsWithBlankLine = function(block) {
         if (block.last_line_blank) {
             return true;
         }
-        var t = block.getType();
+        var t = block.type();
         if (t === 'List' || t === 'Item') {
             block = block.lastChild;
         } else {
@@ -124,7 +124,7 @@ var breakOutOfLists = function(block) {
     var b = block;
     var last_list = null;
     do {
-        if (b.getType() === 'List') {
+        if (b.type() === 'List') {
             last_list = b;
         }
         b = b.parent;
@@ -154,7 +154,7 @@ var addLine = function(ln, offset) {
 // accept children, close and finalize it and try its parent,
 // and so on til we find a block that can accept children.
 var addChild = function(tag, offset) {
-    while (!canContain(this.tip.getType(), tag)) {
+    while (!canContain(this.tip.type(), tag)) {
         this.finalize(this.tip, this.lineNumber - 1);
     }
 
@@ -272,7 +272,7 @@ var incorporateLine = function(ln) {
         }
         indent = first_nonspace - offset;
 
-        switch (container.getType()) {
+        switch (container.type()) {
         case 'BlockQuote':
             if (indent <= 3 && ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
                 offset = first_nonspace + 1;
@@ -357,7 +357,7 @@ var incorporateLine = function(ln) {
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    var t = container.getType();
+    var t = container.type();
     while (t !== 'CodeBlock' && t !== 'HtmlBlock' &&
            // this is a little performance optimization:
            matchAt(reMaybeSpecial, ln, offset) !== -1) {
@@ -375,7 +375,7 @@ var incorporateLine = function(ln) {
 
         if (indent >= CODE_INDENT) {
             // indented code
-            if (this.tip.getType() !== 'Paragraph' && !blank) {
+            if (this.tip.type() !== 'Paragraph' && !blank) {
                 offset += CODE_INDENT;
                 allClosed = allClosed ||
                     this.closeUnmatchedBlocks();
@@ -427,13 +427,18 @@ var incorporateLine = function(ln) {
             offset -= indent; // back up so spaces are part of block
             break;
 
-        } else if (container.getType() === 'Paragraph' &&
+        } else if (t === 'Paragraph' &&
                    container.strings.length === 1 &&
                    ((match = ln.slice(offset).match(reSetextHeaderLine)))) {
             // setext header line
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container.setType('Header'); // convert Paragraph to SetextHeader
-            container.level = match[0][0] === '=' ? 1 : 2;
+            var header = new Node('Header', container.sourcepos);
+            header.level = match[0][0] === '=' ? 1 : 2;
+            header.strings = container.strings;
+            container.insertAfter(header);
+            container.unlink();
+            container = header;
+            this.tip = header;
             offset = ln.length;
             break;
 
@@ -450,7 +455,7 @@ var incorporateLine = function(ln) {
             offset += data.padding;
 
             // add the list if needed
-            if (container.getType() !== 'List' ||
+            if (t !== 'List' ||
                 !(listsMatch(container.list_data, data))) {
                 container = this.addChild('List', first_nonspace);
                 container.list_data = data;
@@ -482,7 +487,7 @@ var incorporateLine = function(ln) {
 
     // First check for a lazy paragraph continuation:
     if (!allClosed && !blank &&
-        this.tip.getType() === 'Paragraph' &&
+        this.tip.type() === 'Paragraph' &&
         this.tip.strings.length > 0) {
         // lazy paragraph continuation
 
@@ -493,12 +498,12 @@ var incorporateLine = function(ln) {
 
         // finalize any blocks not matched
         allClosed = allClosed || this.closeUnmatchedBlocks();
+        t = container.type();
 
         // Block quote lines are never blank as they start with >
         // and we don't count blanks in fenced code for purposes of tight/loose
         // lists or breaking out of lists.  We also don't set last_line_blank
         // on an empty list item.
-        var t = container.getType();
         container.last_line_blank = blank &&
             !(t === 'BlockQuote' ||
               t === 'Header' ||
@@ -513,7 +518,7 @@ var incorporateLine = function(ln) {
             cont = cont.parent;
         }
 
-        switch (container.getType()) {
+        switch (t) {
         case 'HtmlBlock':
             this.addLine(ln, offset);
             break;
@@ -541,7 +546,7 @@ var incorporateLine = function(ln) {
             break;
 
         default:
-            if (acceptsLines(container.getType())) {
+            if (acceptsLines(t)) {
                 this.addLine(ln, first_nonspace);
             } else if (blank) {
                 break;
@@ -570,7 +575,7 @@ var finalize = function(block, lineNumber) {
     block.open = false;
     block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
 
-    switch (block.getType()) {
+    switch (block.type()) {
     case 'Paragraph':
         block.string_content = block.strings.join('\n');
 
@@ -647,7 +652,7 @@ var processInlines = function(block) {
     var walker = block.walker();
     while ((event = walker.next())) {
         node = event.node;
-        t = node.getType();
+        t = node.type();
         if (!event.entering && (t === 'Paragraph' || t === 'Header')) {
             this.inlineParser.parse(node, this.refmap);
         }

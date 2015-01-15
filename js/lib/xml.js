@@ -72,7 +72,7 @@ var renderNodes = function(block) {
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
-        nodetype = node.getType();
+        nodetype = node.type();
 
         container = node.isContainer();
         selfClosing = nodetype === 'HorizontalRule' || nodetype === 'Hardbreak' ||

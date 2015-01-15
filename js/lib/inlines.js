@@ -658,7 +658,7 @@ var parseNewline = function(block) {
     this.pos += 1; // assume we're at a \n
     // check previous node for trailing spaces
     var lastc = block.lastChild;
-    if (lastc && lastc.getType() === 'Text') {
+    if (lastc && lastc.type() === 'Text') {
         var sps = reFinalSpace.exec(lastc.literal)[0].length;
         if (sps > 0) {
             lastc.literal = lastc.literal.replace(reFinalSpace, '');
