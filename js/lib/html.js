@@ -220,10 +220,6 @@ var renderNodes = function(block) {
             cr();
             break;
 
-
-        case 'ReferenceDef':
-            break;
-
         default:
             throw "Unknown node type " + node.getType();
         }

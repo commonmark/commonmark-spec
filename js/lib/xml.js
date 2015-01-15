@@ -74,10 +74,6 @@ var renderNodes = function(block) {
         node = event.node;
         nodetype = node.getType();
 
-        if (nodetype === 'ReferenceDef') {
-            continue;
-        }
-
         container = node.isContainer();
         selfClosing = nodetype === 'HorizontalRule' || nodetype === 'Hardbreak' ||
             nodetype === 'Softbreak' || nodetype === 'Image';

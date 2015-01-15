@@ -220,8 +220,9 @@ var listsMatch = function(list_data, item_data) {
 var closeUnmatchedBlocks = function() {
     // finalize any blocks not matched
     while (this.oldtip !== this.lastMatchedContainer) {
+        var parent = this.oldtip.parent;
         this.finalize(this.oldtip, this.lineNumber - 1);
-        this.oldtip = this.oldtip.parent;
+        this.oldtip = parent;
     }
     return true;
 };
@@ -561,6 +562,7 @@ var incorporateLine = function(ln) {
 // parent of the closed block.
 var finalize = function(block, lineNumber) {
     var pos;
+    var above = block.parent || this.top;
     // don't do anything if the block is already closed
     if (!block.open) {
         return 0;
@@ -578,7 +580,7 @@ var finalize = function(block, lineNumber) {
                                                        this.refmap))) {
             block.string_content = block.string_content.slice(pos);
             if (isBlank(block.string_content)) {
-                block.setType('ReferenceDef');
+                block.unlink();
                 break;
             }
         }
@@ -635,7 +637,7 @@ var finalize = function(block, lineNumber) {
         break;
     }
 
-    this.tip = block.parent || this.top;
+    this.tip = above;
 };
 
 // Walk through a block & children recursively, parsing string content
