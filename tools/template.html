@@ -71,13 +71,13 @@ a.footnoteRef > sup {
 <script type="text/javascript">
 $$(document).ready(function() {
   $$("div.example").each(function(e) {
-    var t = $$(this).find('code.markdown').text();
+    var t = $$(this).find('code.language-markdown').text();
     $$(this).find('a.dingus').click(function(f) {
       window.open('/dingus.html?text=' +
         encodeURIComponent(t.replace(/→/g,"\t")));
     });
   });
-  $$("code.markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
+  $$("code.language-markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
       encodeURIComponent($$(this).find('code').text()));
   });
 });
