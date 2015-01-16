@@ -18,15 +18,10 @@ very fast (see [benchmarks](benchmarks.md)).
 It is easy to use `libcmark` in python, lua, ruby, and other dynamic
 languages: see the `wrappers/` subdirectory for some simple examples.
 
-The JavaScript implementation is a single JavaScript file, with
-no dependencies, that can be linked into an HTML page.
-
-``` javascript
-var reader = new commonmark.DocParser();
-var writer = new commonmark.HtmlRenderer();
-var parsed = reader.parse("Hello *world*");
-var result = writer.render(parsed);
-```
+The JavaScript implementation provides both an NPM package and a
+single JavaScript file, with no dependencies, that can be linked into
+an HTML page. For further information, see the
+[README in the js directory](js/README.md).
 
 **A note on security:**
 Neither implementation attempts to sanitize link attributes or
@@ -118,23 +113,8 @@ If you want to use it in a client application, you can fetch
 a pre-built copy of `commonmark.js` from
 <http://spec.commonmark.org/js/commonmark.js>.
 
-Or, to build it (this requires `browserify`):
-
-    make js/commonmark.js
-
-To run tests for the JavaScript library:
-
-    make testjs
-
-To run benchmarks against some other JavaScript converters:
-
-    npm install showdown marked markdown-it
-    make benchjs
-
-To start an interactive dingus that you can use to try out
-the library:
-
-    make dingus
+For further information, see the
+[README in the js directory](js/README.md).
 
 The spec
 --------

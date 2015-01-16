@@ -27,6 +27,20 @@ a standalone JavaScript file `js/commonmark.js`,
 suitable for linking into a web page, or just fetch
 <http://spec.commonmark.org/js/commonmark.js>.
 
+To run tests for the JavaScript library:
+
+    make testjs
+
+To run benchmarks against some other JavaScript converters:
+
+    npm install showdown marked markdown-it
+    make benchjs
+
+To start an interactive dingus that you can use to try out
+the library:
+
+    make dingus
+
 Usage
 -----
 
@@ -34,7 +48,7 @@ Instead of converting Markdown directly to HTML, as most converters
 do, `commonmark.js` parses Markdown to an AST (abstract syntax tree),
 and then renders this AST as HTML.  This opens up the possibility of
 manipulating the AST between parsing and rendering.  For example, one
-could transform all emphasis into ALL CAPS.
+could transform emphasis into ALL CAPS.
 
 Here's a basic usage example:
 
