@@ -118,7 +118,7 @@ metadata = parseYaml(yaml)
 if specformat == "markdown":
     sys.stdout.write(yaml + '\n\n' + mdtext)
 elif specformat == "html":
-    with open("template.html", "r", encoding="utf-8") as templatefile:
+    with open("tools/template.html", "r", encoding="utf-8") as templatefile:
         template = Template(templatefile.read())
     toclines = []
     for section in sections:
