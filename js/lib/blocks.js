@@ -175,7 +175,7 @@ var parseListMarker = function(ln, offset, indent) {
     var spaces_after_marker;
     var data = { type: null,
                  tight: true,
-                 bullet_char: null,
+                 bulletChar: null,
                  start: null,
                  delimiter: null,
                  padding: null,
@@ -186,7 +186,7 @@ var parseListMarker = function(ln, offset, indent) {
     if ((match = rest.match(reBulletListMarker))) {
         spaces_after_marker = match[1].length;
         data.type = 'Bullet';
-        data.bullet_char = match[0][0];
+        data.bulletChar = match[0][0];
 
     } else if ((match = rest.match(reOrderedListMarker))) {
         spaces_after_marker = match[3].length;
@@ -213,7 +213,7 @@ var parseListMarker = function(ln, offset, indent) {
 var listsMatch = function(list_data, item_data) {
     return (list_data.type === item_data.type &&
             list_data.delimiter === item_data.delimiter &&
-            list_data.bullet_char === item_data.bullet_char);
+            list_data.bulletChar === item_data.bulletChar);
 };
 
 // Finalize and close any unmatched blocks. Returns true.
