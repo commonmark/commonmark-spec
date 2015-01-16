@@ -4,6 +4,7 @@
         "node": true,
     },
     "rules": {
+        "no-underscore-dangle": false,
         "camelcase": false,
         "quotes": false,
         "no-process-exit": false,

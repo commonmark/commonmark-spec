@@ -96,7 +96,7 @@ var reMain = /^[^\n`\[\]\\!<&*_]+/m;
 
 var text = function(s) {
     var node = new Node('Text');
-    node.literal = s;
+    node._literal = s;
     return node;
 };
 
@@ -152,7 +152,7 @@ var parseBackticks = function(block) {
     while (!foundCode && (matched = this.match(reTicks))) {
         if (matched === ticks) {
             node = new Node('Code');
-            node.literal = this.subject.slice(afterOpenTicks,
+            node._literal = this.subject.slice(afterOpenTicks,
                                         this.pos - ticks.length)
                           .trim().replace(reWhitespace, ' ');
             block.appendChild(node);
@@ -198,16 +198,16 @@ var parseAutolink = function(block) {
     if ((m = this.match(reEmailAutolink))) {
         dest = m.slice(1, -1);
         node = new Node('Link');
-        node.destination = normalizeURI('mailto:' + dest);
-        node.title = '';
+        node._destination = normalizeURI('mailto:' + dest);
+        node._title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
         return true;
     } else if ((m = this.match(reAutolink))) {
         dest = m.slice(1, -1);
         node = new Node('Link');
-        node.destination = normalizeURI(dest);
-        node.title = '';
+        node._destination = normalizeURI(dest);
+        node._title = '';
         node.appendChild(text(dest));
         block.appendChild(node);
         return true;
@@ -222,7 +222,7 @@ var parseHtmlTag = function(block) {
     var node;
     if (m) {
         node = new Node('Html');
-        node.literal = m;
+        node._literal = m;
         block.appendChild(node);
         return true;
     } else {
@@ -353,19 +353,19 @@ var processEmphasis = function(block, stack_bottom) {
                 // remove used delimiters from stack elts and inlines
                 opener.numdelims -= use_delims;
                 closer.numdelims -= use_delims;
-                opener_inl.literal =
-                    opener_inl.literal.slice(0,
-                                     opener_inl.literal.length - use_delims);
-                closer_inl.literal =
-                    closer_inl.literal.slice(0,
-                                     closer_inl.literal.length - use_delims);
+                opener_inl._literal =
+                    opener_inl._literal.slice(0,
+                                     opener_inl._literal.length - use_delims);
+                closer_inl._literal =
+                    closer_inl._literal.slice(0,
+                                     closer_inl._literal.length - use_delims);
 
                 // build contents for new emph element
                 var emph = new Node(use_delims === 1 ? 'Emph' : 'Strong');
 
-                tmp = opener_inl.next;
+                tmp = opener_inl._next;
                 while (tmp && tmp !== closer_inl) {
-                    next = tmp.next;
+                    next = tmp._next;
                     tmp.unlink();
                     emph.appendChild(tmp);
                     tmp = next;
@@ -588,13 +588,13 @@ var parseCloseBracket = function(block) {
 
     if (matched) {
         var node = new Node(is_image ? 'Image' : 'Link');
-        node.destination = dest;
-        node.title = title || '';
+        node._destination = dest;
+        node._title = title || '';
 
         var tmp, next;
-        tmp = opener.node.next;
+        tmp = opener.node._next;
         while (tmp) {
-            next = tmp.next;
+            next = tmp._next;
             tmp.unlink();
             node.appendChild(tmp);
             tmp = next;
@@ -657,11 +657,11 @@ var parseString = function(block) {
 var parseNewline = function(block) {
     this.pos += 1; // assume we're at a \n
     // check previous node for trailing spaces
-    var lastc = block.lastChild;
-    if (lastc && lastc.type() === 'Text') {
-        var sps = reFinalSpace.exec(lastc.literal)[0].length;
+    var lastc = block._lastChild;
+    if (lastc && lastc.type === 'Text') {
+        var sps = reFinalSpace.exec(lastc._literal)[0].length;
         if (sps > 0) {
-            lastc.literal = lastc.literal.replace(reFinalSpace, '');
+            lastc._literal = lastc._literal.replace(reFinalSpace, '');
         }
         block.appendChild(new Node(sps >= 2 ? 'Hardbreak' : 'Softbreak'));
     } else {
@@ -733,7 +733,7 @@ var parseReference = function(s, refmap) {
 // On success, add the result to block's children and return true.
 // On failure, return false.
 var parseInline = function(block) {
-    var res;
+    var res = false;
     var c = this.peek();
     if (c === -1) {
         return false;
@@ -774,17 +774,17 @@ var parseInline = function(block) {
     if (!res) {
         this.pos += 1;
         var textnode = new Node('Text');
-        textnode.literal = fromCodePoint(c);
+        textnode._literal = fromCodePoint(c);
         block.appendChild(textnode);
     }
 
     return true;
 };
 
-// Parse string_content in block into inline children,
+// Parse string content in block into inline children,
 // using refmap to resolve references.
 var parseInlines = function(block, refmap) {
-    this.subject = block.string_content.trim();
+    this.subject = block._string_content.trim();
     this.pos = 0;
     this.refmap = refmap || {};
     this.delimiters = null;

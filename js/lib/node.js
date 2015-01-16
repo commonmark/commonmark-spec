@@ -34,20 +34,20 @@ var next = function(){
     var container = isContainer(cur);
 
     if (entering && container) {
-        if (cur.firstChild) {
-            this.current = cur.firstChild;
+        if (cur._firstChild) {
+            this.current = cur._firstChild;
             this.entering = true;
         } else {
             // stay on node but exit
             this.entering = false;
         }
 
-    } else if (cur.next === null) {
-        this.current = cur.parent;
+    } else if (cur._next === null) {
+        this.current = cur._parent;
         this.entering = false;
 
     } else {
-        this.current = cur.next;
+        this.current = cur._next;
         this.entering = true;
     }
 
@@ -64,106 +64,174 @@ var NodeWalker = function(root) {
 
 var Node = function(nodeType, sourcepos) {
     this._type = nodeType;
-    this.parent = null;
-    this.firstChild = null;
-    this.lastChild = null;
-    this.prev = null;
-    this.next = null;
+    this._parent = null;
+    this._firstChild = null;
+    this._lastChild = null;
+    this._prev = null;
+    this._next = null;
     this._sourcepos = sourcepos;
-    this.last_line_blank = false;
-    this.open = true;
-    this.strings = null;
-    this.string_content = null;
-    this.literal = null;
-    this.list_data = null;
-    this.info = null;
-    this.destination = null;
-    this.title = null;
-    this.fence_char = null;
-    this.fence_length = 0;
-    this.fence_offset = null;
-    this.level = null;
+    this._lastLineBlank = false;
+    this._open = true;
+    this._strings = null;
+    this._string_content = null;
+    this._literal = null;
+    this._listData = null;
+    this._info = null;
+    this._destination = null;
+    this._title = null;
+    this._isFenced = false;
+    this._fenceChar = null;
+    this._fenceLength = 0;
+    this._fenceOffset = null;
+    this._level = null;
 };
+
+var proto = Node.prototype;
 
 Node.prototype.isContainer = function() {
     return isContainer(this);
 };
 
-Node.prototype.type = function() {
-    return this._type;
-};
+Object.defineProperty(proto, 'type', {
+    get: function() { return this._type; },
+});
 
-Node.prototype.sourcepos = function() {
-    return this._sourcepos;
-};
+Object.defineProperty(proto, 'firstChild', {
+    get: function() { return this._firstChild; },
+});
+
+Object.defineProperty(proto, 'lastChild', {
+    get: function() { return this._lastChild; },
+});
+
+Object.defineProperty(proto, 'next', {
+    get: function() { return this._next; },
+});
+
+Object.defineProperty(proto, 'prev', {
+    get: function() { return this._prev; },
+});
+
+Object.defineProperty(proto, 'parent', {
+    get: function() { return this._parent; },
+});
+
+Object.defineProperty(proto, 'sourcepos', {
+    get: function() { return this._sourcepos; },
+});
+
+Object.defineProperty(proto, 'literal', {
+    get: function() { return this._literal; },
+    set: function(s) { this._literal = s; }
+});
+
+Object.defineProperty(proto, 'destination', {
+    get: function() { return this._destination; },
+    set: function(s) { this._destination = s; }
+});
+
+Object.defineProperty(proto, 'title', {
+    get: function() { return this._title; },
+    set: function(s) { this._title = s; }
+});
+
+Object.defineProperty(proto, 'info', {
+    get: function() { return this._info; },
+    set: function(s) { this._info = s; }
+});
+
+Object.defineProperty(proto, 'level', {
+    get: function() { return this._level; },
+    set: function(s) { this._level = s; }
+});
+
+Object.defineProperty(proto, 'listType', {
+    get: function() { return this._listData.type; },
+    set: function(t) { this._listData.type = t; }
+});
+
+Object.defineProperty(proto, 'listTight', {
+    get: function() { return this._listData.tight; },
+    set: function(t) { this._listData.tight = t; }
+});
+
+Object.defineProperty(proto, 'listStart', {
+    get: function() { return this._listData.start; },
+    set: function(n) { this._listData.start = n; }
+});
+
+Object.defineProperty(proto, 'listDelimiter', {
+    get: function() { return this._listData.delimiter; },
+    set: function(delim) { this._listData.delimiter = delim; }
+});
 
 Node.prototype.appendChild = function(child) {
     child.unlink();
-    child.parent = this;
-    if (this.lastChild) {
-        this.lastChild.next = child;
-        child.prev = this.lastChild;
-        this.lastChild = child;
+    child._parent = this;
+    if (this._lastChild) {
+        this._lastChild._next = child;
+        child._prev = this._lastChild;
+        this._lastChild = child;
     } else {
-        this.firstChild = child;
-        this.lastChild = child;
+        this._firstChild = child;
+        this._lastChild = child;
     }
 };
 
 Node.prototype.prependChild = function(child) {
     child.unlink();
-    child.parent = this;
-    if (this.firstChild) {
-        this.firstChild.prev = child;
-        child.next = this.firstChild;
-        this.firstChild = child;
+    child._parent = this;
+    if (this._firstChild) {
+        this._firstChild._prev = child;
+        child._next = this._firstChild;
+        this._firstChild = child;
     } else {
-        this.firstChild = child;
-        this.lastChild = child;
+        this._firstChild = child;
+        this._lastChild = child;
     }
 };
 
 Node.prototype.unlink = function() {
-    if (this.prev) {
-        this.prev.next = this.next;
-    } else if (this.parent) {
-        this.parent.firstChild = this.next;
+    if (this._prev) {
+        this._prev._next = this._next;
+    } else if (this._parent) {
+        this._parent._firstChild = this._next;
     }
-    if (this.next) {
-        this.next.prev = this.prev;
-    } else if (this.parent) {
-        this.parent.lastChild = this.prev;
+    if (this._next) {
+        this._next._prev = this._prev;
+    } else if (this._parent) {
+        this._parent._lastChild = this._prev;
     }
-    this.parent = null;
-    this.next = null;
-    this.prev = null;
+    this._parent = null;
+    this._next = null;
+    this._prev = null;
 };
 
 Node.prototype.insertAfter = function(sibling) {
     sibling.unlink();
-    sibling.next = this.next;
-    if (sibling.next) {
-        sibling.next.prev = sibling;
+    sibling._next = this._next;
+    if (sibling._next) {
+        sibling._next._prev = sibling;
     }
-    sibling.prev = this;
-    this.next = sibling;
-    sibling.parent = this.parent;
-    if (!sibling.next) {
-        sibling.parent.lastChild = sibling;
+    sibling._prev = this;
+    this._next = sibling;
+    sibling._parent = this._parent;
+    if (!sibling._next) {
+        sibling._parent._lastChild = sibling;
     }
 };
 
 Node.prototype.insertBefore = function(sibling) {
     sibling.unlink();
-    sibling.prev = this.prev;
-    if (sibling.prev) {
-        sibling.prev.next = sibling;
+    sibling._prev = this._prev;
+    if (sibling._prev) {
+        sibling._prev._next = sibling;
     }
-    sibling.next = this;
-    this.prev = sibling;
-    sibling.parent = this.parent;
-    if (!sibling.prev) {
-        sibling.parent.firstChild = sibling;
+    sibling._next = this;
+    this._prev = sibling;
+    sibling._parent = this._parent;
+    if (!sibling._prev) {
+        sibling._parent._firstChild = sibling;
     }
 };
 

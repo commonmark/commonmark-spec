@@ -72,7 +72,7 @@ var renderNodes = function(block) {
     while ((event = walker.next())) {
         entering = event.entering;
         node = event.node;
-        nodetype = node.type();
+        nodetype = node.type;
 
         container = node.isContainer();
         selfClosing = nodetype === 'HorizontalRule' || nodetype === 'Hardbreak' ||
@@ -86,19 +86,19 @@ var renderNodes = function(block) {
 
             switch (nodetype) {
             case 'List':
-                var data = node.list_data;
-                if (data.type !== null) {
-                    attrs.push(['type', data.type.toLowerCase()]);
+                if (node.listType !== null) {
+                    attrs.push(['type', node.listType.toLowerCase()]);
                 }
-                if (data.start !== null) {
-                    attrs.push(['start', String(data.start)]);
+                if (node.listStart !== null) {
+                    attrs.push(['start', String(node.listStart)]);
                 }
-                if (data.tight !== null) {
-                    attrs.push(['tight', (data.tight ? 'true' : 'false')]);
+                if (node.listTight !== null) {
+                    attrs.push(['tight', (node.listTight ? 'true' : 'false')]);
                 }
-                if (data.delimiter !== null) {
+                var delim = node.listDelimiter;
+                if (delim !== null) {
                     var delimword = '';
-                    if (data.delimiter === '.') {
+                    if (delim === '.') {
                         delimword = 'period';
                     } else {
                         delimword = 'paren';
@@ -123,7 +123,7 @@ var renderNodes = function(block) {
                 break;
             }
             if (options.sourcepos) {
-                var pos = node.sourcepos();
+                var pos = node.sourcepos;
                 if (pos) {
                     attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
                                 String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
@@ -136,8 +136,9 @@ var renderNodes = function(block) {
             if (container) {
                 indentLevel += 1;
             } else if (!container && !selfClosing) {
-                if (node.literal) {
-                    out(unescapedContents ? node.literal : esc(node.literal));
+                var lit = node.literal;
+                if (lit) {
+                    out(unescapedContents ? lit : esc(lit));
                 }
                 out(tag('/' + tagname));
             }

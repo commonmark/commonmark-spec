@@ -60,7 +60,7 @@ var renderNodes = function(block) {
 
         attrs = [];
         if (options.sourcepos) {
-            var pos = node.sourcepos();
+            var pos = node.sourcepos;
             if (pos) {
                 attrs.push(['data-sourcepos', String(pos[0][0]) + ':' +
                             String(pos[0][1]) + '-' + String(pos[1][0]) + ':' +
@@ -68,7 +68,7 @@ var renderNodes = function(block) {
             }
         }
 
-        switch (node.type()) {
+        switch (node.type) {
         case 'Text':
             out(esc(node.literal));
             break;
@@ -134,8 +134,8 @@ var renderNodes = function(block) {
         case 'Paragraph':
             grandparent = node.parent.parent;
             if (grandparent !== null &&
-                grandparent.type() === 'List') {
-                if (grandparent.list_data.tight) {
+                grandparent.type === 'List') {
+                if (grandparent.listTight) {
                     break;
                 }
             }
@@ -170,10 +170,11 @@ var renderNodes = function(block) {
             break;
 
         case 'List':
-            tagname = node.list_data.type === 'Bullet' ? 'ul' : 'ol';
+            tagname = node.listType === 'Bullet' ? 'ul' : 'ol';
             if (entering) {
-                if (node.list_data.start && node.list_data.start > 1) {
-                    attrs.push(['start', node.list_data.start.toString()]);
+                var start = node.listStart;
+                if (start && start > 1) {
+                    attrs.push(['start', start.toString()]);
                 }
                 cr();
                 out(tag(tagname, attrs));
@@ -221,7 +222,7 @@ var renderNodes = function(block) {
             break;
 
         default:
-            throw "Unknown node type " + node.type();
+            throw "Unknown node type " + node.type;
         }
 
     }
