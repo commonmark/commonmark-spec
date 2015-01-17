@@ -297,18 +297,18 @@ var incorporateLine = function(ln) {
         case 'HorizontalRule':
             // a header can never container > 1 line, so fail to match:
             all_matched = false;
-            if (blank) {
-                container._lastLineBlank = true;
-            }
             break;
 
         case 'CodeBlock':
             if (container._isFenced) { // fenced
-                if (container._fenceLength === -1) {
+                match = (indent <= 3 &&
+                         ln.charAt(first_nonspace) === container._fenceChar &&
+                         ln.slice(first_nonspace).match(reClosingCodeFence));
+                if (match && match[0].length >= container._fenceLength) {
+                    // closing fence - we're at end of line, so we can return
                     all_matched = false;
-                    if (blank) {
-                        container._lastLineBlank = true;
-                    }
+                    this.finalize(container, this.lineNumber);
+                    return;
                 } else {
                     // skip optional spaces of fence offset
                     i = container._fenceOffset;
@@ -330,14 +330,12 @@ var incorporateLine = function(ln) {
 
         case 'HtmlBlock':
             if (blank) {
-                container._lastLineBlank = true;
                 all_matched = false;
             }
             break;
 
         case 'Paragraph':
             if (blank) {
-                container._lastLineBlank = true;
                 all_matched = false;
             }
             break;
@@ -500,11 +498,14 @@ var incorporateLine = function(ln) {
         // finalize any blocks not matched
         allClosed = allClosed || this.closeUnmatchedBlocks();
         t = container.type;
+        if (blank && container.lastChild) {
+            container.lastChild._lastLineBlank = true;
+        }
 
         // Block quote lines are never blank as they start with >
         // and we don't count blanks in fenced code for purposes of tight/loose
         // lists or breaking out of lists.  We also don't set _lastLineBlank
-        // on an empty list item.
+        // on an empty list item, or if we just closed a fenced block.
         container._lastLineBlank = blank &&
             !(t === 'BlockQuote' ||
               t === 'Header' ||
@@ -521,24 +522,8 @@ var incorporateLine = function(ln) {
 
         switch (t) {
         case 'HtmlBlock':
-            this.addLine(ln, offset);
-            break;
-
         case 'CodeBlock':
-            if (container._isFenced) { // fenced
-                // check for closing code fence:
-                match = (indent <= 3 &&
-                         ln.charAt(first_nonspace) === container._fenceChar &&
-                         ln.slice(first_nonspace).match(reClosingCodeFence));
-                if (match && match[0].length >= container._fenceLength) {
-                    // don't add closing fence to container; instead, close it:
-                    container._fenceLength = -1; // -1 means we've passed closer
-                } else {
-                    this.addLine(ln, offset);
-                }
-            } else { // indented
-                this.addLine(ln, offset);
-            }
+            this.addLine(ln, offset);
             break;
 
         case 'Header':
