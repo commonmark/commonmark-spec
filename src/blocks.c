@@ -147,14 +147,18 @@ static void remove_trailing_blank_lines(cmark_strbuf *ln)
 // if needed into lists and sublists.
 static bool ends_with_blank_line(cmark_node* node)
 {
-	if (node->last_line_blank) {
-		return true;
+	cmark_node *cur = node;
+	while (cur != NULL) {
+		if (cur->last_line_blank) {
+			return true;
+		}
+		if (cur->type == NODE_LIST || cur->type == NODE_ITEM) {
+			cur = cur->last_child;
+		} else {
+			cur = NULL;
+		}
 	}
-	if ((node->type == NODE_LIST || node->type == NODE_ITEM) && node->last_child) {
-		return ends_with_blank_line(node->last_child);
-	} else {
-		return false;
-	}
+	return false;
 }
 
 // Break out of all containing lists
