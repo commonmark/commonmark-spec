@@ -174,7 +174,7 @@ var parseListMarker = function(ln, offset, indent) {
     var match;
     var spaces_after_marker;
     var data = { type: null,
-                 tight: true,
+                 tight: true,  // lists are tight by default
                  bulletChar: null,
                  start: null,
                  delimiter: null,
@@ -617,8 +617,6 @@ var finalize = function(block, lineNumber) {
         break;
 
     case 'List':
-        block._listData.tight = true; // tight by default
-
         var item = block._firstChild;
         while (item) {
             // check for non-final list item ending with blank line:
