@@ -362,8 +362,8 @@ var incorporateLine = function(ln) {
 
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
-    var t = container.type;
-    while (t !== 'CodeBlock' && t !== 'HtmlBlock') {
+    while (true) {
+        var t = container.type;
 
         match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
@@ -375,6 +375,10 @@ var incorporateLine = function(ln) {
             blank = false;
         }
         indent = first_nonspace - offset;
+
+        if (t === 'CodeBlock' || t === 'HtmlBlock') {
+            break;
+        }
 
         if (indent >= CODE_INDENT) {
             // indented code
@@ -427,7 +431,6 @@ var incorporateLine = function(ln) {
             container._fenceChar = match[0][0];
             container._fenceOffset = indent;
             offset += fenceLength;
-            break;
 
         } else if (matchAt(reHtmlBlockOpen, ln, offset) !== -1) {
             // html block
@@ -484,17 +487,7 @@ var incorporateLine = function(ln) {
     // What remains at the offset is a text line.  Add the text to the
     // appropriate container.
 
-    match = matchAt(reNonSpace, ln, offset);
-    if (match === -1) {
-        first_nonspace = ln.length;
-        blank = true;
-    } else {
-        first_nonspace = match;
-        blank = false;
-    }
-    indent = first_nonspace - offset;
-
-    // First check for a lazy paragraph continuation:
+   // First check for a lazy paragraph continuation:
     if (!allClosed && !blank &&
         this.tip.type === 'Paragraph' &&
         this.tip._strings.length > 0) {
