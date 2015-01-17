@@ -257,10 +257,7 @@ var incorporateLine = function(ln) {
     // Bail out on failure: container will point to the last matching block.
     // Set all_matched to false if not all containers match.
     var lastChild;
-    while ((lastChild = container._lastChild)) {
-        if (!lastChild._open) {
-            break;
-        }
+    while ((lastChild = container._lastChild) && lastChild._open) {
         container = lastChild;
 
         match = matchAt(reNonSpace, ln, offset);
