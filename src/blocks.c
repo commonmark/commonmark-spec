@@ -116,10 +116,10 @@ static inline bool accepts_lines(cmark_node_type block_type)
 	        block_type == NODE_CODE_BLOCK);
 }
 
-static void add_line(cmark_node* cmark_node, cmark_chunk *ch, int offset)
+static void add_line(cmark_node* node, cmark_chunk *ch, int offset)
 {
-	assert(cmark_node->open);
-	cmark_strbuf_put(&cmark_node->string_content, ch->data + offset, ch->len - offset);
+	assert(node->open);
+	cmark_strbuf_put(&node->string_content, ch->data + offset, ch->len - offset);
 }
 
 static void remove_trailing_blank_lines(cmark_strbuf *ln)
@@ -145,13 +145,13 @@ static void remove_trailing_blank_lines(cmark_strbuf *ln)
 
 // Check to see if a cmark_node ends with a blank line, descending
 // if needed into lists and sublists.
-static bool ends_with_blank_line(cmark_node* cmark_node)
+static bool ends_with_blank_line(cmark_node* node)
 {
-	if (cmark_node->last_line_blank) {
+	if (node->last_line_blank) {
 		return true;
 	}
-	if ((cmark_node->type == NODE_LIST || cmark_node->type == NODE_ITEM) && cmark_node->last_child) {
-		return ends_with_blank_line(cmark_node->last_child);
+	if ((node->type == NODE_LIST || node->type == NODE_ITEM) && node->last_child) {
+		return ends_with_blank_line(node->last_child);
 	} else {
 		return false;
 	}
