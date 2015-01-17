@@ -593,14 +593,23 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 					all_matched = false;
 				}
 			} else {
-				// skip optional spaces of fence offset
-				i = container->as.code.fence_offset;
-				while (i > 0 && peek_at(&input, offset) == ' ') {
-					offset++;
-					i--;
+				if (container->as.code.fence_length == -1) {
+					// -1 means we've seen closer
+					all_matched = false;
+					if (blank) {
+						container->last_line_blank =
+							true;
+					}
+				} else {
+					// skip opt. spaces of fence offset
+					i = container->as.code.fence_offset;
+					while (i > 0 &&
+					    peek_at(&input, offset) == ' ') {
+						offset++;
+						i--;
+					}
 				}
 			}
-
 		} else if (container->type == NODE_HEADER) {
 
 			// a header can never contain more than one line
@@ -829,8 +838,10 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			}
 
 			if (matched) {
-				// if closing fence, don't add line to container; instead, close it:
-				container = finalize(parser, container);
+				// if closing fence, set fence length to -1.
+				// it will be closed when the next line is
+				// processed.
+				container->as.code.fence_length = -1;
 			} else {
 				add_line(container, &input, offset);
 			}
