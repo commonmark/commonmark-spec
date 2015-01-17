@@ -19,7 +19,7 @@ var reHtmlBlockOpen = new RegExp('^' + HTMLBLOCKOPEN, 'i');
 
 var reHrule = /^(?:(?:\* *){3,}|(?:_ *){3,}|(?:- *){3,}) *$/;
 
-var reMaybeSpecial = /^[ #`~*+_=<>0-9-]/;
+var reMaybeSpecial = /^[#`~*+_=<>0-9-]/;
 
 var reNonSpace = /[^ \t\n]/;
 
@@ -363,9 +363,7 @@ var incorporateLine = function(ln) {
     // Unless last matched container is a code block, try new container starts,
     // adding children to the last matched container:
     var t = container.type;
-    while (t !== 'CodeBlock' && t !== 'HtmlBlock' &&
-           // this is a little performance optimization:
-           matchAt(reMaybeSpecial, ln, offset) !== -1) {
+    while (t !== 'CodeBlock' && t !== 'HtmlBlock') {
 
         match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
@@ -386,6 +384,11 @@ var incorporateLine = function(ln) {
                     this.closeUnmatchedBlocks();
                 container = this.addChild('CodeBlock', offset);
             }
+            break;
+        }
+
+        // this is a little performance optimization:
+        if (matchAt(reMaybeSpecial, ln, first_nonspace) === -1) {
             break;
         }
 
