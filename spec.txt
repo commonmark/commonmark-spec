@@ -3957,6 +3957,25 @@ A single-paragraph list is tight:
 </ul>
 .
 
+This list is loose, because of the blank line between the
+two block elements in the list item:
+
+.
+1. ```
+   foo
+   ```
+
+   bar
+.
+<ol>
+<li>
+<pre><code>foo
+</code></pre>
+<p>bar</p>
+</li>
+</ol>
+.
+
 Here the outer list is loose, the inner list tight:
 
 .
