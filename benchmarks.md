@@ -41,7 +41,7 @@ setting the `BENCHINP` environment variable.
 
 Implementation  | Ops/sec
 ----------------|---------
-commonmark.js   | 569
-showdown.js     | 168
-marked.js       | 553
-markdown-it     | 736
+commonmark.js   | 586
+showdown.js     | 171
+marked.js       | 564
+markdown-it     | 760
