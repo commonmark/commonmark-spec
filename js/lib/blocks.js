@@ -308,11 +308,18 @@ var incorporateLine = function(ln) {
 
         case 'CodeBlock':
             if (container._isFenced) { // fenced
-                // skip optional spaces of fence offset
-                i = container._fenceOffset;
-                while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
-                    offset++;
-                    i--;
+                if (container._fenceLength === -1) {
+                    all_matched = false;
+                    if (blank) {
+                        container._lastLineBlank = true;
+                    }
+                } else {
+                    // skip optional spaces of fence offset
+                    i = container._fenceOffset;
+                    while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
+                        offset++;
+                        i--;
+                    }
                 }
             } else { // indented
                 if (indent >= CODE_INDENT) {
@@ -533,7 +540,7 @@ var incorporateLine = function(ln) {
                          ln.slice(first_nonspace).match(reClosingCodeFence));
                 if (match && match[0].length >= container._fenceLength) {
                     // don't add closing fence to container; instead, close it:
-                    this.finalize(container, this.lineNumber);
+                    container._fenceLength = -1; // -1 means we've passed closer
                 } else {
                     this.addLine(ln, offset);
                 }
