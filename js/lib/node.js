@@ -93,31 +93,31 @@ Node.prototype.isContainer = function() {
 };
 
 Object.defineProperty(proto, 'type', {
-    get: function() { return this._type; },
+    get: function() { return this._type; }
 });
 
 Object.defineProperty(proto, 'firstChild', {
-    get: function() { return this._firstChild; },
+    get: function() { return this._firstChild; }
 });
 
 Object.defineProperty(proto, 'lastChild', {
-    get: function() { return this._lastChild; },
+    get: function() { return this._lastChild; }
 });
 
 Object.defineProperty(proto, 'next', {
-    get: function() { return this._next; },
+    get: function() { return this._next; }
 });
 
 Object.defineProperty(proto, 'prev', {
-    get: function() { return this._prev; },
+    get: function() { return this._prev; }
 });
 
 Object.defineProperty(proto, 'parent', {
-    get: function() { return this._parent; },
+    get: function() { return this._parent; }
 });
 
 Object.defineProperty(proto, 'sourcepos', {
-    get: function() { return this._sourcepos; },
+    get: function() { return this._sourcepos; }
 });
 
 Object.defineProperty(proto, 'literal', {
