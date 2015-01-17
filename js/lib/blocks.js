@@ -286,12 +286,12 @@ var incorporateLine = function(ln) {
             break;
 
         case 'Item':
-            if (indent >= container._listData.markerOffset +
+            if (blank) {
+                offset = first_nonspace;
+            } else if (indent >= container._listData.markerOffset +
                 container._listData.padding) {
                 offset += container._listData.markerOffset +
                     container._listData.padding;
-            } else if (blank) {
-                offset = first_nonspace;
             } else {
                 all_matched = false;
             }
