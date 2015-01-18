@@ -844,15 +844,11 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			}
 			add_line(container, &input, first_nonspace);
 
-		} else if (container->type != NODE_HRULE &&
-		           container->type != NODE_HEADER) {
-
+		} else {
 			// create paragraph container for line
 			container = add_child(parser, container, NODE_PARAGRAPH, first_nonspace + 1);
 			add_line(container, &input, first_nonspace);
 
-		} else {
-			assert(false);
 		}
 
 		parser->current = container;
