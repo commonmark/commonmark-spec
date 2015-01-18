@@ -39,7 +39,7 @@ var cursor = {
 };
 
 var writer = new commonmark.HtmlRenderer();
-var reader = new commonmark.DocParser();
+var reader = new commonmark.Parser();
 
 var results = {
     passed: 0,

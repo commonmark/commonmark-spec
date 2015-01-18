@@ -7,11 +7,11 @@
 // Basic usage:
 //
 // var commonmark = require('commonmark');
-// var parser = new commonmark.DocParser();
+// var parser = new commonmark.Parser();
 // var renderer = new commonmark.HtmlRenderer();
 // console.log(renderer.render(parser.parse('Hello *world*')));
 
 module.exports.Node = require('./node');
-module.exports.DocParser = require('./blocks');
+module.exports.Parser = require('./blocks');
 module.exports.HtmlRenderer = require('./html');
 module.exports.XmlRenderer = require('./xml');

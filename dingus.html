@@ -11,7 +11,7 @@
 
 var writer = new commonmark.HtmlRenderer();
 var xmlwriter = new commonmark.XmlRenderer({ sourcepos: true });
-var reader = new commonmark.DocParser();
+var reader = new commonmark.Parser();
 
 function getQueryVariable(variable) {
   var query = window.location.search.substring(1);

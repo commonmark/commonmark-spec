@@ -83,7 +83,7 @@ var stripFinalBlankLines = function(lns) {
 
 // DOC PARSER
 
-// These are methods of a DocParser object, defined below.
+// These are methods of a Parser object, defined below.
 
 // Returns true if parent block can contain child block.
 var canContain = function(parent_type, child_type) {
@@ -679,8 +679,8 @@ var parse = function(input) {
 };
 
 
-// The DocParser object.
-function DocParser(options){
+// The Parser object.
+function Parser(options){
     return {
         doc: new Document(),
         tip: this.doc,
@@ -702,4 +702,4 @@ function DocParser(options){
     };
 }
 
-module.exports = DocParser;
+module.exports = Parser;

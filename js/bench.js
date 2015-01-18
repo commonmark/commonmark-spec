@@ -1,7 +1,7 @@
 var Benchmark = require('benchmark').Benchmark;
 var suite = new Benchmark.Suite();
 var fs = require('fs');
-var sm = require('./lib/index.js');
+var commonmark = require('./lib/index.js');
 // npm install showdown
 var Showdown = require('showdown').converter;
 // npm install marked
@@ -15,8 +15,8 @@ var contents = fs.readFileSync(benchfile, 'utf8');
 
 suite.add('commonmark.js markdown->html', function() {
   "use strict";
-  var doc = new sm.DocParser().parse(contents);
-  var renderer = new sm.HtmlRenderer();
+  var doc = new commonmark.Parser().parse(contents);
+  var renderer = new commonmark.HtmlRenderer();
   renderer.render(doc);
 })
 

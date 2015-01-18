@@ -30,7 +30,7 @@ for (i = 2; i < process.argv.length; i++) {
     }
 }
 
-var parser = new commonmark.DocParser(options);
+var parser = new commonmark.Parser(options);
 var renderer;
 
 if (format === 'html') {
