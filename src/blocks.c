@@ -836,14 +836,12 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			// ??? do nothing
 
-		} else if (container->type == NODE_HEADER) {
-			// TODO move to normalization?:
-			chop_trailing_hashtags(&input);
-			add_line(container, &input, first_nonspace);
-			container = finalize(parser, container);
-
 		} else if (accepts_lines(container->type)) {
 
+			if (container->type == NODE_HEADER &&
+			    container->as.header.setext == false) {
+				chop_trailing_hashtags(&input);
+			}
 			add_line(container, &input, first_nonspace);
 
 		} else if (container->type != NODE_HRULE &&
