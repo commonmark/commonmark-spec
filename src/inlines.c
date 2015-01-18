@@ -250,6 +250,7 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 	int32_t after_char = 0;
 	int32_t before_char = 0;
 	int len;
+	bool left_flanking, right_flanking;
 
 	if (subj->pos == 0) {
 		before_char = 10;
@@ -277,19 +278,20 @@ scan_delims(subject* subj, unsigned char c, bool * can_open, bool * can_close)
 	if (len == -1) {
 		after_char = 10;
 	}
-	*can_open = numdelims > 0 && !utf8proc_is_space(after_char) &&
+	left_flanking = numdelims > 0 && !utf8proc_is_space(after_char) &&
 	            !(utf8proc_is_punctuation(after_char) &&
 	              !utf8proc_is_space(before_char) &&
 	              !utf8proc_is_punctuation(before_char));
-	*can_close = numdelims > 0 && !utf8proc_is_space(before_char) &&
+	right_flanking = numdelims > 0 && !utf8proc_is_space(before_char) &&
 	             !(utf8proc_is_punctuation(before_char) &&
 	               !utf8proc_is_space(after_char) &&
 	               !utf8proc_is_punctuation(after_char));
 	if (c == '_') {
-		*can_open = *can_open && !(before_char < 128 &&
-		                           cmark_isalnum((char)before_char));
-		*can_close = *can_close && !(before_char < 128 &&
-		                             cmark_isalnum((char)after_char));
+		*can_open = left_flanking && !right_flanking;
+		*can_close = right_flanking && !left_flanking;
+	} else {
+		*can_open = left_flanking;
+		*can_close = right_flanking;
 	}
 	return numdelims;
 }

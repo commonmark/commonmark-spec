@@ -87,8 +87,6 @@ var reFinalSpace = / *$/;
 
 var reInitialSpace = /^ */;
 
-var reAsciiAlnum = /[a-z0-9]/i;
-
 var reLinkLabel = /^\[(?:[^\\\[\]]|\\[\[\]]){0,1000}\]/;
 
 // Matches a string of non-special characters.
@@ -238,6 +236,7 @@ var scanDelims = function(cc) {
     var numdelims = 0;
     var char_before, char_after, cc_after;
     var startpos = this.pos;
+    var left_flanking, right_flanking, can_open, can_close;
 
     char_before = this.pos === 0 ? '\n' :
         this.subject.charAt(this.pos - 1);
@@ -254,17 +253,22 @@ var scanDelims = function(cc) {
         char_after = fromCodePoint(cc_after);
     }
 
-    var can_open = numdelims > 0 && !(reWhitespaceChar.test(char_after)) &&
+    left_flanking = numdelims > 0 &&
+            !(reWhitespaceChar.test(char_after)) &&
             !(rePunctuation.test(char_after) &&
              !(/\s/.test(char_before)) &&
              !(rePunctuation.test(char_before)));
-    var can_close = numdelims > 0 && !(reWhitespaceChar.test(char_before)) &&
+    right_flanking = numdelims > 0 &&
+            !(reWhitespaceChar.test(char_before)) &&
             !(rePunctuation.test(char_before) &&
               !(reWhitespaceChar.test(char_after)) &&
               !(rePunctuation.test(char_after)));
     if (cc === C_UNDERSCORE) {
-        can_open = can_open && !((reAsciiAlnum).test(char_before));
-        can_close = can_close && !((reAsciiAlnum).test(char_after));
+        can_open = left_flanking && !right_flanking;
+        can_close = right_flanking && !left_flanking;
+    } else {
+        can_open = left_flanking;
+        can_close = right_flanking;
     }
     this.pos = startpos;
     return { numdelims: numdelims,
