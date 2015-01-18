@@ -142,8 +142,8 @@ var breakOutOfLists = function(block) {
 
 // Add a line to the block at the tip.  We assume the tip
 // can accept lines -- that check should be done before calling this.
-var addLine = function(ln) {
-    this.tip._strings.push(ln.slice(this.offset));
+var addLine = function(ln, offset) {
+    this.tip._strings.push(ln.slice(offset));
 };
 
 // Add block of type tag as a child of the tip.  If the tip can't
@@ -236,10 +236,11 @@ var incorporateLine = function(ln) {
     var i;
     var CODE_INDENT = 4;
     var allClosed;
+    var offset;
 
     var container = this.doc;
     this.oldtip = this.tip;
-    this.offset = 0;
+    offset = 0;
     this.lineNumber += 1;
 
     // replace NUL characters for security
@@ -257,7 +258,7 @@ var incorporateLine = function(ln) {
     while ((lastChild = container._lastChild) && lastChild._open) {
         container = lastChild;
 
-        match = matchAt(reNonSpace, ln, this.offset);
+        match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
@@ -265,14 +266,14 @@ var incorporateLine = function(ln) {
             first_nonspace = match;
             blank = false;
         }
-        indent = first_nonspace - this.offset;
+        indent = first_nonspace - offset;
 
         switch (container.type) {
         case 'BlockQuote':
             if (indent <= 3 && ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
-                this.offset = first_nonspace + 1;
-                if (ln.charCodeAt(this.offset) === C_SPACE) {
-                    this.offset++;
+                offset = first_nonspace + 1;
+                if (ln.charCodeAt(offset) === C_SPACE) {
+                    offset++;
                 }
             } else {
                 all_matched = false;
@@ -281,10 +282,10 @@ var incorporateLine = function(ln) {
 
         case 'Item':
             if (blank) {
-                this.offset = first_nonspace;
+                offset = first_nonspace;
             } else if (indent >= container._listData.markerOffset +
                 container._listData.padding) {
-                this.offset += container._listData.markerOffset +
+                offset += container._listData.markerOffset +
                     container._listData.padding;
             } else {
                 all_matched = false;
@@ -310,16 +311,16 @@ var incorporateLine = function(ln) {
                 } else {
                     // skip optional spaces of fence offset
                     i = container._fenceOffset;
-                    while (i > 0 && ln.charCodeAt(this.offset) === C_SPACE) {
-                        this.offset++;
+                    while (i > 0 && ln.charCodeAt(offset) === C_SPACE) {
+                        offset++;
                         i--;
                     }
                 }
             } else { // indented
                 if (indent >= CODE_INDENT) {
-                    this.offset += CODE_INDENT;
+                    offset += CODE_INDENT;
                 } else if (blank) {
-                    this.offset = first_nonspace;
+                    offset = first_nonspace;
                 } else {
                     all_matched = false;
                 }
@@ -360,7 +361,7 @@ var incorporateLine = function(ln) {
     while (true) {
         var t = container.type;
 
-        match = matchAt(reNonSpace, ln, this.offset);
+        match = matchAt(reNonSpace, ln, offset);
         if (match === -1) {
             first_nonspace = ln.length;
             blank = true;
@@ -369,7 +370,7 @@ var incorporateLine = function(ln) {
             first_nonspace = match;
             blank = false;
         }
-        indent = first_nonspace - this.offset;
+        indent = first_nonspace - offset;
 
         if (t === 'CodeBlock' || t === 'HtmlBlock') {
             break;
@@ -378,10 +379,10 @@ var incorporateLine = function(ln) {
         if (indent >= CODE_INDENT) {
             // indented code
             if (this.tip.type !== 'Paragraph' && !blank) {
-                this.offset += CODE_INDENT;
+                offset += CODE_INDENT;
                 allClosed = allClosed ||
                     this.closeUnmatchedBlocks();
-                container = this.addChild('CodeBlock', this.offset);
+                container = this.addChild('CodeBlock', offset);
             }
             break;
         }
@@ -391,32 +392,32 @@ var incorporateLine = function(ln) {
             break;
         }
 
-        this.offset = first_nonspace;
+        offset = first_nonspace;
 
-        var cc = ln.charCodeAt(this.offset);
+        var cc = ln.charCodeAt(offset);
 
         if (cc === C_GREATERTHAN) {
             // blockquote
-            this.offset += 1;
+            offset += 1;
             // optional following space
-            if (ln.charCodeAt(this.offset) === C_SPACE) {
-                this.offset++;
+            if (ln.charCodeAt(offset) === C_SPACE) {
+                offset++;
             }
             allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('BlockQuote', first_nonspace);
 
-        } else if ((match = ln.slice(this.offset).match(reATXHeaderMarker))) {
+        } else if ((match = ln.slice(offset).match(reATXHeaderMarker))) {
             // ATX header
-            this.offset += match[0].length;
+            offset += match[0].length;
             allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('Header', first_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
             container._strings =
-                [ln.slice(this.offset).replace(/^ *#+ *$/, '').replace(/ +#+ *$/, '')];
+                [ln.slice(offset).replace(/^ *#+ *$/, '').replace(/ +#+ *$/, '')];
             break;
 
-        } else if ((match = ln.slice(this.offset).match(reCodeFence))) {
+        } else if ((match = ln.slice(offset).match(reCodeFence))) {
             // fenced code block
             var fenceLength = match[0].length;
             allClosed = allClosed || this.closeUnmatchedBlocks();
@@ -425,18 +426,18 @@ var incorporateLine = function(ln) {
             container._fenceLength = fenceLength;
             container._fenceChar = match[0][0];
             container._fenceOffset = indent;
-            this.offset += fenceLength;
+            offset += fenceLength;
 
-        } else if (matchAt(reHtmlBlockOpen, ln, this.offset) !== -1) {
+        } else if (matchAt(reHtmlBlockOpen, ln, offset) !== -1) {
             // html block
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('HtmlBlock', this.offset);
-            this.offset -= indent; // back up so spaces are part of block
+            container = this.addChild('HtmlBlock', offset);
+            offset -= indent; // back up so spaces are part of block
             break;
 
         } else if (t === 'Paragraph' &&
                    container._strings.length === 1 &&
-                   ((match = ln.slice(this.offset).match(reSetextHeaderLine)))) {
+                   ((match = ln.slice(offset).match(reSetextHeaderLine)))) {
             // setext header line
             allClosed = allClosed || this.closeUnmatchedBlocks();
             var header = new Node('Header', container.sourcepos);
@@ -446,20 +447,20 @@ var incorporateLine = function(ln) {
             container.unlink();
             container = header;
             this.tip = header;
-            this.offset = ln.length;
+            offset = ln.length;
             break;
 
-        } else if (matchAt(reHrule, ln, this.offset) !== -1) {
+        } else if (matchAt(reHrule, ln, offset) !== -1) {
             // hrule
             allClosed = allClosed || this.closeUnmatchedBlocks();
             container = this.addChild('HorizontalRule', first_nonspace);
-            this.offset = ln.length - 1;
+            offset = ln.length - 1;
             break;
 
-        } else if ((data = parseListMarker(ln, this.offset, indent))) {
+        } else if ((data = parseListMarker(ln, offset, indent))) {
             // list item
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            this.offset += data.padding;
+            offset += data.padding;
 
             // add the list if needed
             if (t !== 'List' ||
@@ -489,7 +490,7 @@ var incorporateLine = function(ln) {
         // lazy paragraph continuation
 
         this._lastLineBlank = false;
-        this.addLine(ln);
+        this.addLine(ln, offset);
 
     } else { // not a lazy continuation
 
@@ -521,7 +522,7 @@ var incorporateLine = function(ln) {
         switch (t) {
         case 'HtmlBlock':
         case 'CodeBlock':
-            this.addLine(ln);
+            this.addLine(ln, offset);
             break;
 
         case 'Header':
@@ -530,15 +531,15 @@ var incorporateLine = function(ln) {
             break;
 
         default:
-            this.offset = first_nonspace;
+            offset = first_nonspace;
             if (acceptsLines(t)) {
-                this.addLine(ln);
+                this.addLine(ln, offset);
             } else if (blank) {
                 break;
             } else {
                 // create paragraph container for line
-                container = this.addChild('Paragraph', this.lineNumber, this.offset);
-                this.addLine(ln);
+                container = this.addChild('Paragraph', this.lineNumber, offset);
+                this.addLine(ln, offset);
             }
         }
     }
@@ -685,7 +686,6 @@ function DocParser(options){
         tip: this.doc,
         oldtip: this.doc,
         lineNumber: 0,
-        offset: 0,
         lastMatchedContainer: this.doc,
         refmap: {},
         lastLineLength: 0,
