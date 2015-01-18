@@ -240,6 +240,7 @@ var incorporateLine = function(ln) {
     var container = this.doc;
     this.oldtip = this.tip;
     this.offset = 0;
+    this.lineNumber += 1;
 
     // replace NUL characters for security
     if (ln.indexOf('\u0000') !== -1) {
@@ -664,7 +665,6 @@ var parse = function(input) {
     if (this.options.time) { console.timeEnd("preparing input"); }
     if (this.options.time) { console.time("block parsing"); }
     for (var i = 0; i < len; i++) {
-        this.lineNumber += 1;
         this.incorporateLine(lines[i]);
     }
     while (this.tip) {
