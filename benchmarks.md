@@ -34,8 +34,8 @@ interrupt runs.
 
 ## JavaScript libraries
 
-Here are some focused benchmarks of four JavaScript libraries.
-(using version available on 17 Jan 2015). They test performance
+Here are some focused benchmarks of four JavaScript libraries
+(using versions available on 17 Jan 2015). They test performance
 on different kinds of Markdown texts.  With the exception of
 the first (the `README.md` from this project), the samples are taken
 from the [markdown-it](https://github.com/markdown-it/markdown-it)
