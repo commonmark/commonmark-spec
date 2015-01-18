@@ -142,11 +142,11 @@ var breakOutOfLists = function(block) {
 
 // Add a line to the block at the tip.  We assume the tip
 // can accept lines -- that check should be done before calling this.
-var addLine = function(ln, offset) {
+var addLine = function(ln) {
     if (!(this.tip._open)) {
         throw { msg: "Attempted to add line (" + ln + ") to closed container." };
     }
-    this.tip._strings.push(ln.slice(offset));
+    this.tip._strings.push(ln.slice(this.offset));
 };
 
 // Add block of type tag as a child of the tip.  If the tip can't
@@ -491,7 +491,7 @@ var incorporateLine = function(ln) {
         // lazy paragraph continuation
 
         this._lastLineBlank = false;
-        this.addLine(ln, this.offset);
+        this.addLine(ln);
 
     } else { // not a lazy continuation
 
@@ -523,7 +523,7 @@ var incorporateLine = function(ln) {
         switch (t) {
         case 'HtmlBlock':
         case 'CodeBlock':
-            this.addLine(ln, this.offset);
+            this.addLine(ln);
             break;
 
         case 'Header':
@@ -532,14 +532,15 @@ var incorporateLine = function(ln) {
             break;
 
         default:
+            this.offset = first_nonspace;
             if (acceptsLines(t)) {
-                this.addLine(ln, first_nonspace);
+                this.addLine(ln);
             } else if (blank) {
                 break;
             } else {
                 // create paragraph container for line
-                container = this.addChild('Paragraph', this.lineNumber, first_nonspace);
-                this.addLine(ln, first_nonspace);
+                container = this.addChild('Paragraph', this.lineNumber, this.offset);
+                this.addLine(ln);
             }
         }
     }
