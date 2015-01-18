@@ -592,14 +592,21 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 				} else {
 					all_matched = false;
 				}
-			} else {
-				if (container->as.code.fence_length == -1) {
-					// -1 means we've seen closer
+			} else { // fenced
+				matched = 0;
+				if (indent <= 3 &&
+					(peek_at(&input, first_nonspace) ==
+					 container->as.code.fence_char)) {
+					matched = scan_close_code_fence(&input,
+							first_nonspace);
+				}
+				if (matched >= container->as.code.fence_length) {
+					// closing fence - and since we're at
+					// the end of a line, we can return:
 					all_matched = false;
-					if (blank) {
-						container->last_line_blank =
-							true;
-					}
+					offset += matched;
+					finalize(parser, container);
+					goto finished;
 				} else {
 					// skip opt. spaces of fence offset
 					i = container->as.code.fence_offset;
@@ -614,21 +621,16 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 			// a header can never contain more than one line
 			all_matched = false;
-			if (blank) {
-				container->last_line_blank = true;
-			}
 
 		} else if (container->type == NODE_HTML) {
 
 			if (blank) {
-				container->last_line_blank = true;
 				all_matched = false;
 			}
 
 		} else if (container->type == NODE_PARAGRAPH) {
 
 			if (blank) {
-				container->last_line_blank = true;
 				all_matched = false;
 			}
 
@@ -786,7 +788,11 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 	indent = first_nonspace - offset;
 	blank = peek_at(&input, first_nonspace) == '\n';
 
-	// cmark_node quote lines are never blank as they start with >
+	if (blank && container->last_child) {
+		container->last_child->last_line_blank = true;
+	}
+
+	// block quote lines are never blank as they start with >
 	// and we don't count blanks in fenced code for purposes of tight/loose
 	// lists or breaking out of lists.  we also don't set last_line_blank
 	// on an empty list item.
@@ -821,32 +827,8 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			assert(cur != NULL);
 		}
 
-		if (container->type == NODE_CODE_BLOCK &&
-		    !container->as.code.fenced) {
-
-			add_line(container, &input, offset);
-
-		} else if (container->type == NODE_CODE_BLOCK &&
-		           container->as.code.fenced) {
-			matched = 0;
-
-			if (indent <= 3 &&
-			    peek_at(&input, first_nonspace) == container->as.code.fence_char) {
-				int fence_len = scan_close_code_fence(&input, first_nonspace);
-				if (fence_len > container->as.code.fence_length)
-					matched = 1;
-			}
-
-			if (matched) {
-				// if closing fence, set fence length to -1.
-				// it will be closed when the next line is
-				// processed.
-				container->as.code.fence_length = -1;
-			} else {
-				add_line(container, &input, offset);
-			}
-
-		} else if (container->type == NODE_HTML) {
+		if (container->type == NODE_CODE_BLOCK ||
+		    container->type == NODE_HTML) {
 
 			add_line(container, &input, offset);
 
@@ -855,7 +837,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 			// ??? do nothing
 
 		} else if (container->type == NODE_HEADER) {
-
+			// TODO move to normalization?:
 			chop_trailing_hashtags(&input);
 			add_line(container, &input, first_nonspace);
 			container = finalize(parser, container);
@@ -877,6 +859,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 
 		parser->current = container;
 	}
+finished:
 	parser->last_line_length = parser->curline->size -
 	                           (parser->curline->ptr[parser->curline->size - 1] == '\n' ?
 	                            1 : 0);

@@ -216,7 +216,8 @@ int _scan_close_code_fence(const unsigned char *p)
   const unsigned char *marker = NULL;
   const unsigned char *start = p;
 /*!re2c
-  ([`]{3,} | [~]{3,}) / spacechar* [\n] { return (p - start); }
+  [`]{3,} / [ \t]*[\n] { return (p - start); }
+  [~]{3,} / [ \t]*[\n] { return (p - start); }
   .? { return 0; }
 */
 }
