@@ -143,9 +143,6 @@ var breakOutOfLists = function(block) {
 // Add a line to the block at the tip.  We assume the tip
 // can accept lines -- that check should be done before calling this.
 var addLine = function(ln) {
-    if (!(this.tip._open)) {
-        throw { msg: "Attempted to add line (" + ln + ") to closed container." };
-    }
     this.tip._strings.push(ln.slice(this.offset));
 };
 
