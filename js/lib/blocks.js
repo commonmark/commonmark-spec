@@ -8,6 +8,8 @@ var C_NEWLINE = 10;
 var C_SPACE = 32;
 var C_OPEN_BRACKET = 91;
 
+var CODE_INDENT = 4;
+
 var InlineParser = require('./inlines');
 
 var BLOCKTAGNAME = '(?:article|header|aside|hgroup|iframe|blockquote|hr|body|li|map|button|object|canvas|ol|caption|output|col|p|colgroup|pre|dd|progress|div|section|dl|table|td|dt|tbody|embed|textarea|fieldset|tfoot|figcaption|th|figure|thead|footer|footer|tr|form|ul|h1|h2|h3|h4|h5|h6|video|script|style)';
@@ -223,6 +225,176 @@ var closeUnmatchedBlocks = function() {
     return true;
 };
 
+// 'finalize' is run when the block is closed.
+// 'continue' is run to check whether the block is continuing
+// at a certain line and offset (e.g. whether a block quote
+// contains a `>`.  It returns 0 for matched, 1 for not matched,
+// and 2 for "we've dealt with this line completely, go to next."
+var blocks = {
+    Document: {
+        continue: function(parser, container, ln, first_nonspace) {
+            return 0;
+        },
+        finalize: function(parser, block) {
+            return;
+        }
+    },
+    List: {
+        continue: function(parser, container, ln, first_nonspace) {
+            return 0;
+        },
+        finalize: function(parser, block) {
+            var item = block._firstChild;
+            while (item) {
+                // check for non-final list item ending with blank line:
+                if (endsWithBlankLine(item) && item._next) {
+                    block._listData.tight = false;
+                    break;
+                }
+                // recurse into children of list item, to see if there are
+                // spaces between any of them:
+                var subitem = item._firstChild;
+                while (subitem) {
+                    if (endsWithBlankLine(subitem) &&
+                        (item._next || subitem._next)) {
+                        block._listData.tight = false;
+                        break;
+                    }
+                    subitem = subitem._next;
+                }
+                item = item._next;
+            }
+        }
+    },
+    BlockQuote: {
+        continue: function(parser, container, ln, first_nonspace) {
+            if (first_nonspace - parser.offset <= 3 &&
+                ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
+                parser.offset = first_nonspace + 1;
+                if (ln.charCodeAt(parser.offset) === C_SPACE) {
+                    parser.offset++;
+                }
+            } else {
+                return 1;
+            }
+            return 0;
+        },
+        finalize: function(parser, block) {
+            return;
+        }
+    },
+    Item: {
+        continue: function(parser, container, ln, first_nonspace) {
+            if (first_nonspace === ln.length) { // blank
+                parser.offset = first_nonspace;
+            } else if (first_nonspace - parser.offset >=
+                       container._listData.markerOffset +
+                       container._listData.padding) {
+                parser.offset += container._listData.markerOffset +
+                    container._listData.padding;
+            } else {
+                return 1;
+            }
+            return 0;
+        },
+        finalize: function(parser, block) {
+            return;
+        }
+    },
+    Header: {
+        continue: function(parser, container, ln, first_nonspace) {
+            // a header can never container > 1 line, so fail to match:
+            return 1;
+        },
+        finalize: function(parser, block) {
+            block._string_content = block._strings.join('\n');
+        }
+    },
+    HorizontalRule: {
+        continue: function(parser, container, ln, first_nonspace) {
+            // an hrule can never container > 1 line, so fail to match:
+            return 1;
+        },
+        finalize: function(parser, block) {
+            return;
+        }
+    },
+    CodeBlock: {
+        continue: function(parser, container, ln, first_nonspace) {
+            var indent = first_nonspace - parser.offset;
+            if (container._isFenced) { // fenced
+                var match = (indent <= 3 &&
+                    ln.charAt(first_nonspace) === container._fenceChar &&
+                    ln.slice(first_nonspace).match(reClosingCodeFence));
+                if (match && match[0].length >= container._fenceLength) {
+                    // closing fence - we're at end of line, so we can return
+                    parser.finalize(container, parser.lineNumber);
+                    return 2;
+                } else {
+                    // skip optional spaces of fence offset
+                    var i = container._fenceOffset;
+                    while (i > 0 && ln.charCodeAt(parser.offset) === C_SPACE) {
+                        parser.offset++;
+                        i--;
+                    }
+                }
+            } else { // indented
+                if (indent >= CODE_INDENT) {
+                    parser.offset += CODE_INDENT;
+                } else if (first_nonspace === ln.length) { // blank
+                    parser.offset = first_nonspace;
+                } else {
+                    return 1;
+                }
+            }
+            return 0;
+        },
+        finalize: function(parser, block) {
+            if (block._isFenced) { // fenced
+                // first line becomes info string
+                block.info = unescapeString(block._strings[0].trim());
+                if (block._strings.length === 1) {
+                    block._literal = '';
+                } else {
+                    block._literal = block._strings.slice(1).join('\n') + '\n';
+                }
+            } else { // indented
+                stripFinalBlankLines(block._strings);
+                block._literal = block._strings.join('\n') + '\n';
+            }
+        }
+    },
+    HtmlBlock: {
+        continue: function(parser, container, ln, first_nonspace) {
+            return (first_nonspace === ln.length ? 1 : 0);
+        },
+        finalize: function(parser, block) {
+            block._literal = block._strings.join('\n');
+        }
+    },
+    Paragraph: {
+        continue: function(parser, container, ln, first_nonspace) {
+            return (first_nonspace === ln.length ? 1 : 0);
+        },
+        finalize: function(parser, block) {
+            var pos;
+            block._string_content = block._strings.join('\n');
+
+            // try parsing the beginning as link reference definitions:
+            while (block._string_content.charCodeAt(0) === C_OPEN_BRACKET &&
+                   (pos =
+                    parser.inlineParser.parseReference(block._string_content,
+                                                       parser.refmap))) {
+                block._string_content = block._string_content.slice(pos);
+                if (isBlank(block._string_content)) {
+                    block.unlink();
+                    break;
+                }
+            }
+        }
+    }
+};
+
 // Analyze a line of text and update the document appropriately.
 // We parse markdown text by calling this on each line of input,
 // then finalizing the document.
@@ -234,7 +406,6 @@ var incorporateLine = function(ln) {
     var blank;
     var indent;
     var i;
-    var CODE_INDENT = 4;
     var allClosed;
 
     var container = this.doc;
@@ -260,93 +431,28 @@ var incorporateLine = function(ln) {
         match = matchAt(reNonSpace, ln, this.offset);
         if (match === -1) {
             first_nonspace = ln.length;
-            blank = true;
         } else {
             first_nonspace = match;
-            blank = false;
         }
-        indent = first_nonspace - this.offset;
 
-        switch (container.type) {
-        case 'BlockQuote':
-            if (indent <= 3 && ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
-                this.offset = first_nonspace + 1;
-                if (ln.charCodeAt(this.offset) === C_SPACE) {
-                    this.offset++;
-                }
-            } else {
-                all_matched = false;
-            }
+        switch (this.blocks[container.type].continue(this, container, ln, first_nonspace)) {
+        case 0: // we've matched, keep going
             break;
-
-        case 'Item':
-            if (blank) {
-                this.offset = first_nonspace;
-            } else if (indent >= container._listData.markerOffset +
-                container._listData.padding) {
-                this.offset += container._listData.markerOffset +
-                    container._listData.padding;
-            } else {
-                all_matched = false;
-            }
-            break;
-
-        case 'Header':
-        case 'HorizontalRule':
-            // a header can never container > 1 line, so fail to match:
+        case 1: // we've failed to match a block
             all_matched = false;
             break;
-
-        case 'CodeBlock':
-            if (container._isFenced) { // fenced
-                match = (indent <= 3 &&
-                         ln.charAt(first_nonspace) === container._fenceChar &&
-                         ln.slice(first_nonspace).match(reClosingCodeFence));
-                if (match && match[0].length >= container._fenceLength) {
-                    // closing fence - we're at end of line, so we can return
-                    all_matched = false;
-                    this.finalize(container, this.lineNumber);
-                    this.lastLineLength = ln.length - 1; // -1 for newline
-                    return;
-                } else {
-                    // skip optional spaces of fence offset
-                    i = container._fenceOffset;
-                    while (i > 0 && ln.charCodeAt(this.offset) === C_SPACE) {
-                        this.offset++;
-                        i--;
-                    }
-                }
-            } else { // indented
-                if (indent >= CODE_INDENT) {
-                    this.offset += CODE_INDENT;
-                } else if (blank) {
-                    this.offset = first_nonspace;
-                } else {
-                    all_matched = false;
-                }
-            }
-            break;
-
-        case 'HtmlBlock':
-            if (blank) {
-                all_matched = false;
-            }
-            break;
-
-        case 'Paragraph':
-            if (blank) {
-                all_matched = false;
-            }
-            break;
-
+        case 2: // we've hit end of line for fenced code close and can return
+            return;
         default:
+            throw 'continue returned illegal value, must be 0, 1, or 2';
         }
-
         if (!all_matched) {
             container = container._parent; // back up to last matching block
             break;
         }
     }
+
+    blank = first_nonspace === ln.length;
 
     allClosed = (container === this.oldtip);
     this.lastMatchedContainer = container;
@@ -552,76 +658,11 @@ var incorporateLine = function(ln) {
 // of paragraphs for reference definitions.  Reset the tip to the
 // parent of the closed block.
 var finalize = function(block, lineNumber) {
-    var pos;
-    var above = block._parent;
+    var above = block._parent || this.top;
     block._open = false;
     block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
 
-    switch (block.type) {
-    case 'Paragraph':
-        block._string_content = block._strings.join('\n');
-
-        // try parsing the beginning as link reference definitions:
-        while (block._string_content.charCodeAt(0) === C_OPEN_BRACKET &&
-               (pos = this.inlineParser.parseReference(block._string_content,
-                                                       this.refmap))) {
-            block._string_content = block._string_content.slice(pos);
-            if (isBlank(block._string_content)) {
-                block.unlink();
-                break;
-            }
-        }
-        break;
-
-    case 'Header':
-        block._string_content = block._strings.join('\n');
-        break;
-
-    case 'HtmlBlock':
-        block._literal = block._strings.join('\n');
-        break;
-
-    case 'CodeBlock':
-        if (block._isFenced) { // fenced
-            // first line becomes info string
-            block.info = unescapeString(block._strings[0].trim());
-            if (block._strings.length === 1) {
-                block._literal = '';
-            } else {
-                block._literal = block._strings.slice(1).join('\n') + '\n';
-            }
-        } else { // indented
-            stripFinalBlankLines(block._strings);
-            block._literal = block._strings.join('\n') + '\n';
-        }
-        break;
-
-    case 'List':
-        var item = block._firstChild;
-        while (item) {
-            // check for non-final list item ending with blank line:
-            if (endsWithBlankLine(item) && item._next) {
-                block._listData.tight = false;
-                break;
-            }
-            // recurse into children of list item, to see if there are
-            // spaces between any of them:
-            var subitem = item._firstChild;
-            while (subitem) {
-                if (endsWithBlankLine(subitem) &&
-                    (item._next || subitem._next)) {
-                    block._listData.tight = false;
-                    break;
-                }
-                subitem = subitem._next;
-            }
-            item = item._next;
-        }
-        break;
-
-    default:
-        break;
-    }
+    this.blocks[block.type].finalize(this, block);
 
     this.tip = above;
 };
@@ -679,6 +720,7 @@ var parse = function(input) {
 function Parser(options){
     return {
         doc: new Document(),
+        blocks: blocks,
         tip: this.doc,
         oldtip: this.doc,
         lineNumber: 0,
