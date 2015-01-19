@@ -46,9 +46,9 @@ static int
 S_render_node(cmark_node *node, cmark_event_type ev_type,
               struct render_state *state)
 {
-	cmark_node *tmp;
 	cmark_strbuf *mom = state->mom;
-	int list_number;
+	int list_start;
+	int list_delim;
 	bool entering = (ev_type == CMARK_EVENT_ENTER);
 
 	if (state->plain == node) { // back at original node
@@ -81,34 +81,39 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 	case CMARK_NODE_BLOCK_QUOTE:
 		if (entering) {
 			cr(mom);
-			cmark_strbuf_puts(mom, ".RS");
+			cmark_strbuf_puts(mom, ".BLOCKQUOTE");
 			cr(mom);
 		} else {
 			cr(mom);
-			cmark_strbuf_puts(mom, ".RE");
+			cmark_strbuf_puts(mom, ".BLOCKQUOTE OFF");
 			cr(mom);
 		}
 		break;
 
 	case CMARK_NODE_LIST:
+		cr(mom);
+		if (cmark_node_get_list_type(node) ==
+			    CMARK_BULLET_LIST) {
+			cmark_strbuf_puts(mom, ".LIST BULLET");
+		} else {
+			list_start = cmark_node_get_list_start(node->parent);
+			list_delim = cmark_node_get_list_delim(node->parent);
+			cmark_strbuf_printf(mom, ".LIST DIGIT %s",
+				list_delim == CMARK_PAREN_DELIM ?
+					    ")" : ".");
+			if (list_start != 1) {
+				cr(mom);
+				cmark_strbuf_printf(mom, ".RESET_LIST %d", list_start);
+				cr(mom);
+			}
+		}
+		cr(mom);
 		break;
 
 	case CMARK_NODE_ITEM:
 		if (entering) {
 			cr(mom);
-			cmark_strbuf_puts(mom, ".IP ");
-			if (cmark_node_get_list_type(node->parent) ==
-			    CMARK_BULLET_LIST) {
-				cmark_strbuf_puts(mom, "\\[bu] 2");
-			} else {
-				list_number = cmark_node_get_list_start(node->parent);
-				tmp = node;
-				while (tmp->prev) {
-					tmp = tmp->prev;
-					list_number += 1;
-				}
-				cmark_strbuf_printf(mom, "\"%d.\" 4", list_number);
-			}
+			cmark_strbuf_puts(mom, ".ITEM");
 			cr(mom);
 		} else {
 			cr(mom);
@@ -118,22 +123,22 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 	case CMARK_NODE_HEADER:
 		if (entering) {
 			cr(mom);
-			cmark_strbuf_puts(mom,
-			                  cmark_node_get_header_level(node) == 1 ?
-			                  ".SH" : ".SS");
-			cr(mom);
+			cmark_strbuf_printf(mom,
+					    ".HEADING %d \"",
+					    cmark_node_get_header_level(node));
 		} else {
+			cmark_strbuf_printf(mom, "\"");
 			cr(mom);
 		}
 		break;
 
 	case CMARK_NODE_CODE_BLOCK:
 		cr(mom);
-		cmark_strbuf_puts(mom, ".IP\n.nf\n\\f[C]\n");
+		cmark_strbuf_puts(mom, ".QUOTE\n.CODE\n");
 		escape_mom(mom, node->as.code.literal.data,
 		           node->as.code.literal.len);
 		cr(mom);
-		cmark_strbuf_puts(mom, "\\f[]\n.fi");
+		cmark_strbuf_puts(mom, ".CODE OFF\n.QUOTE OFF");
 		cr(mom);
 		break;
 
@@ -142,7 +147,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 
 	case CMARK_NODE_HRULE:
 		cr(mom);
-		cmark_strbuf_puts(mom, ".PP\n  *  *  *  *  *");
+		cmark_strbuf_puts(mom, ".DRH");
 		cr(mom);
 		break;
 
@@ -155,7 +160,8 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 				// no blank line or .PP
 			} else {
 				cr(mom);
-				cmark_strbuf_puts(mom, ".PP\n");
+				cmark_strbuf_puts(mom, ".PP");
+				cr(mom);
 			}
 		} else {
 			cr(mom);
@@ -168,7 +174,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		break;
 
 	case CMARK_NODE_LINEBREAK:
-		cmark_strbuf_puts(mom, ".PD 0\n.P\n.PD");
+		cmark_strbuf_puts(mom, ".LINEBREAK");
 		cr(mom);
 		break;
 
@@ -177,7 +183,7 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 		break;
 
 	case CMARK_NODE_CODE:
-		cmark_strbuf_puts(mom, "\\f[C]");
+		cmark_strbuf_puts(mom, "\\f[CR]");
 		escape_mom(mom, node->as.literal.data, node->as.literal.len);
 		cmark_strbuf_puts(mom, "\\f[]");
 		break;
