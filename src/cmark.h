@@ -466,6 +466,11 @@ char *cmark_render_html(cmark_node *root, long options);
 CMARK_EXPORT
 char *cmark_render_man(cmark_node *root, long options);
 
+/** Render a 'node' tree in groff mom format, without the header.
+ */
+CMARK_EXPORT
+char *cmark_render_mom(cmark_node *root, long options);
+
 /** Default writer options.
  */
 #define CMARK_OPT_DEFAULT 0

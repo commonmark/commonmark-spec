@@ -29,6 +29,7 @@ set(LIBRARY_SOURCES
   buffer.c
   references.c
   man.c
+  mom.c
   xml.c
   html.c
   html_unescape.gperf

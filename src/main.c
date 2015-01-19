@@ -17,13 +17,14 @@ typedef enum {
 	FORMAT_HTML,
 	FORMAT_XML,
 	FORMAT_MAN,
+	FORMAT_MOM
 } writer_format;
 
 void print_usage()
 {
 	printf("Usage:   cmark [FILE*]\n");
 	printf("Options:\n");
-	printf("  --to, -t FORMAT  Specify output format (html, xml, man)\n");
+	printf("  --to, -t FORMAT  Specify output format (html, xml, man, mom)\n");
 	printf("  --sourcepos      Include source position attribute\n");
 	printf("  --hardbreaks     Treat newlines as hard line breaks\n");
 	printf("  --normalize      Consolidate adjacent text nodes\n");
@@ -44,6 +45,9 @@ static void print_document(cmark_node *document, writer_format writer,
 		break;
 	case FORMAT_MAN:
 		result = cmark_render_man(document, options);
+		break;
+	case FORMAT_MOM:
+		result = cmark_render_mom(document, options);
 		break;
 	default:
 		fprintf(stderr, "Unknown format %d\n", writer);
@@ -94,6 +98,8 @@ int main(int argc, char *argv[])
 					writer = FORMAT_MAN;
 				} else if (strcmp(argv[i], "html") == 0) {
 					writer = FORMAT_HTML;
+				} else if (strcmp(argv[i], "mom") == 0) {
+					writer = FORMAT_MOM;
 				} else if (strcmp(argv[i], "xml") == 0) {
 					writer = FORMAT_XML;
 				} else {
