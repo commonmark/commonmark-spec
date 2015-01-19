@@ -192,10 +192,7 @@ finalize(cmark_parser *parser, cmark_node* b)
 
 	parent = b->parent;
 
-	// don't do anything if the cmark_node is already closed
-	if (!b->open)
-		return parent;
-
+	assert(b->open);  // shouldn't call finalize on closed blocks
 	b->open = false;
 
 	if (parser->curline->size == 0) {
@@ -605,7 +602,7 @@ S_process_line(cmark_parser *parser, const unsigned char *buffer, size_t bytes)
 					// the end of a line, we can return:
 					all_matched = false;
 					offset += matched;
-					finalize(parser, container);
+					parser->current = finalize(parser, container);
 					goto finished;
 				} else {
 					// skip opt. spaces of fence offset
