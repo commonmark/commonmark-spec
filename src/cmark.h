@@ -226,6 +226,17 @@ cmark_iter_reset(cmark_iter *iter, cmark_node *current,
  * ## Accessors
  */
 
+/** Returns the user data of 'node'.
+ */
+CMARK_EXPORT void*
+cmark_node_get_user_data(cmark_node *node);
+
+/** Sets arbitrary user data for 'node'.  Returns 1 on success,
+ * 0 on failure.
+ */
+CMARK_EXPORT int
+cmark_node_set_user_data(cmark_node *node, void *user_data);
+
 /** Returns the type of 'node', or `CMARK_NODE_NONE` on error.
  */
 CMARK_EXPORT cmark_node_type

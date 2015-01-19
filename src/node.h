@@ -49,6 +49,8 @@ struct cmark_node {
 	struct cmark_node *first_child;
 	struct cmark_node *last_child;
 
+	void *user_data;
+
 	int start_line;
 	int start_column;
 	int end_line;
