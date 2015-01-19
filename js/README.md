@@ -55,12 +55,78 @@ Here's a basic usage example:
     var reader = new commonmark.Parser();
     var writer = new commonmark.HtmlRenderer();
     var parsed = reader.parse("Hello *world*"); // parsed is a 'Node' tree
+    // transform parsed if you like...
     var result = writer.render(parsed);  // result is a string
 
 <!-- TODO
 
-- example of tree manipulation
-- options
-- API documentation (each function)
+Public API
+----------
+
+### Parser
+
+constructor takes options param
+explain what can go into options
+
+public
+properties: options
+methods:  parse
+
+?? should we add a filters [] option?
+a filter could be a function that transforms a node,
+and the parser could automatically run a walker with
+each filter
+
+### Node
+
+getters:  type, firstChild, lastChild,,
+  next, prev, parent, sourcepos, isContainer
+getters+setters: literal, destination, title,
+  info, level, listType, listTight, listStart,
+  listDelimiter
+methods: appendChild(child),
+  prependChild(child),
+  unlink(),
+  insertAfter(sibling),
+  insertBefore(sibling),
+  walker()
+
+walker returns NodeWalker object with methods:
+  resumeAt(node, entering)
+  next() - returns an objcet with properties 'entering' and 'node'
+
+examples:
+  capitalize every string
+  changing emphasis to ALL CAPS
+  de-linkifying
+  running all the code samples through a highlighter or other
+  transform (svg?)
+
+?? would it be better to include NodeWalker in the API
+and have people do walker = new NodeWalker(node)?
+probably.
+
+### HtmlRenderer
+
+constructor takes options param
+document relevant options
+
+methods:
+  escapeXml(string, isAttribute)
+  render(node)
+properties:
+  options
+
+
+### XmlRenderer
+
+constructor takes options param
+document relevant options
+
+methods:
+  escapeXml(string, isAttribute)
+  render(node)
+properties:
+  options
 
 -->
