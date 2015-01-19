@@ -70,7 +70,7 @@ var renderNodes = function(block) {
 
         switch (node.type) {
         case 'Text':
-            out(esc(node.literal));
+            out(esc(node.literal, false));
             break;
 
         case 'Softbreak':
@@ -125,7 +125,7 @@ var renderNodes = function(block) {
             break;
 
         case 'Code':
-            out(tag('code') + esc(node.literal) + tag('/code'));
+            out(tag('code') + esc(node.literal, false) + tag('/code'));
             break;
 
         case 'Document':
@@ -204,7 +204,7 @@ var renderNodes = function(block) {
             }
             cr();
             out(tag('pre') + tag('code', attrs));
-            out(esc(node.literal));
+            out(esc(node.literal, false));
             out(tag('/code') + tag('/pre'));
             cr();
             break;
