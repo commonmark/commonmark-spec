@@ -108,6 +108,12 @@ cmark_iter_get_event_type(cmark_iter *iter)
 	return iter->cur.ev_type;
 }
 
+cmark_node*
+cmark_iter_get_root(cmark_iter *iter)
+{
+	return iter->root;
+}
+
 
 void cmark_consolidate_text_nodes(cmark_node *root)
 {

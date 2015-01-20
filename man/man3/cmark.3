@@ -1,4 +1,4 @@
-.TH cmark 3 "January 19, 2015" "LOCAL" "Library Functions Manual"
+.TH cmark 3 "January 20, 2015" "LOCAL" "Library Functions Manual"
 .SH
 NAME
 .PP
@@ -170,6 +170,12 @@ Returns the current node.
 
 .PP
 Returns the current event type.
+
+.PP
+\fIcmark_node*\f[] \fBcmark_iter_get_root\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Returns the root node.
 
 .PP
 \fIvoid\f[] \fBcmark_iter_reset\f[](\fIcmark_iter *iter\f[], \fIcmark_node *current\f[], \fIcmark_event_type event_type\f[])
