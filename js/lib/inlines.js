@@ -43,7 +43,7 @@ var CLOSETAG = "</" + TAGNAME + "\\s*[>]";
 var HTMLCOMMENT = "<!---->|<!--(?:-?[^>-])(?:-?[^-])*-->";
 var PROCESSINGINSTRUCTION = "[<][?].*?[?][>]";
 var DECLARATION = "<![A-Z]+" + "\\s+[^>]*>";
-var CDATA = "<!\\[CDATA\\[[\\s\\S]*?\]\\]>";
+var CDATA = "<!\\[CDATA\\[[\\s\\S]*?\\]\\]>";
 var HTMLTAG = "(?:" + OPENTAG + "|" + CLOSETAG + "|" + HTMLCOMMENT + "|" +
         PROCESSINGINSTRUCTION + "|" + DECLARATION + "|" + CDATA + ")";
 var ENTITY = "&(?:#x[a-f0-9]{1,8}|#[0-9]{1,8}|[a-z][a-z0-9]{1,31});";
