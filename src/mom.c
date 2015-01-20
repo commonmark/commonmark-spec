@@ -14,12 +14,13 @@ static void escape_mom(cmark_strbuf *dest, const unsigned char *source, int leng
 {
 	int i;
 	unsigned char c;
+	bool beginLine = true;
 
 	for (i = 0; i < length; i++) {
 		c = source[i];
-		if (c == '.' && i == 0) {
+		if (c == '.' && beginLine) {
 			cmark_strbuf_puts(dest, "\\&.");
-		} else if (c == '\'' && i == 0) {
+		} else if (c == '\'' && beginLine) {
 			cmark_strbuf_puts(dest, "\\&'");
 		} else if (c == '-') {
 			cmark_strbuf_puts(dest, "\\-");
@@ -28,6 +29,7 @@ static void escape_mom(cmark_strbuf *dest, const unsigned char *source, int leng
 		} else {
 			cmark_strbuf_putc(dest, source[i]);
 		}
+		beginLine = (c == '\n');
 	}
 }
 
@@ -92,20 +94,23 @@ S_render_node(cmark_node *node, cmark_event_type ev_type,
 
 	case CMARK_NODE_LIST:
 		cr(mom);
-		if (cmark_node_get_list_type(node) ==
+		if (entering) {
+			if (cmark_node_get_list_type(node) ==
 			    CMARK_BULLET_LIST) {
-			cmark_strbuf_puts(mom, ".LIST BULLET");
-		} else {
-			list_start = cmark_node_get_list_start(node->parent);
-			list_delim = cmark_node_get_list_delim(node->parent);
-			cmark_strbuf_printf(mom, ".LIST DIGIT %s",
-				list_delim == CMARK_PAREN_DELIM ?
-					    ")" : ".");
-			if (list_start != 1) {
-				cr(mom);
-				cmark_strbuf_printf(mom, ".RESET_LIST %d", list_start);
-				cr(mom);
+				cmark_strbuf_puts(mom, ".LIST BULLET");
+			} else {
+				list_start = cmark_node_get_list_start(node->parent);
+				list_delim = cmark_node_get_list_delim(node->parent);
+				cmark_strbuf_printf(mom, ".LIST DIGIT %s",
+						    list_delim == CMARK_PAREN_DELIM ?
+						    ")" : ".");
+				if (list_start != 1) {
+					cr(mom);
+					cmark_strbuf_printf(mom, ".RESET_LIST %d", list_start);
+				}
 			}
+		} else {
+			cmark_strbuf_puts(mom, ".LIST OFF");
 		}
 		cr(mom);
 		break;
