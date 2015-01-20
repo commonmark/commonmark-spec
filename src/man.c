@@ -14,12 +14,13 @@ static void escape_man(cmark_strbuf *dest, const unsigned char *source, int leng
 {
 	int i;
 	unsigned char c;
+	bool beginLine = true;
 
 	for (i = 0; i < length; i++) {
 		c = source[i];
-		if (c == '.' && i == 0) {
+		if (c == '.' && beginLine) {
 			cmark_strbuf_puts(dest, "\\&.");
-		} else if (c == '\'' && i == 0) {
+		} else if (c == '\'' && beginLine) {
 			cmark_strbuf_puts(dest, "\\&'");
 		} else if (c == '-') {
 			cmark_strbuf_puts(dest, "\\-");
@@ -28,6 +29,7 @@ static void escape_man(cmark_strbuf *dest, const unsigned char *source, int leng
 		} else {
 			cmark_strbuf_putc(dest, source[i]);
 		}
+		beginLine = (c == '\n');
 	}
 }
 
