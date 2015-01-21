@@ -555,7 +555,7 @@ var finalize = function(block, lineNumber) {
     var above = block._parent;
     // don't do anything if the block is already closed
     if (!block._open) {
-        return 0;
+        return;
     }
     block._open = false;
     block.sourcepos[1] = [lineNumber, this.lastLineLength + 1];
