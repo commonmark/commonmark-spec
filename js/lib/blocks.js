@@ -489,7 +489,6 @@ var incorporateLine = function(ln) {
         this.tip._strings.length > 0) {
         // lazy paragraph continuation
 
-        this._lastLineBlank = false;
         this.addLine(ln, offset);
 
     } else { // not a lazy continuation
