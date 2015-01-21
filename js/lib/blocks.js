@@ -232,7 +232,7 @@ var closeUnmatchedBlocks = function() {
 // and 2 for "we've dealt with this line completely, go to next."
 var blocks = {
     Document: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
             return 0;
         },
         finalize: function(parser, block) {
@@ -240,7 +240,7 @@ var blocks = {
         }
     },
     List: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
             return 0;
         },
         finalize: function(parser, block) {
@@ -267,7 +267,8 @@ var blocks = {
         }
     },
     BlockQuote: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
+            var ln = parser.currentLine;
             if (first_nonspace - parser.offset <= 3 &&
                 ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
                 parser.offset = first_nonspace + 1;
@@ -284,8 +285,8 @@ var blocks = {
         }
     },
     Item: {
-        continue: function(parser, container, ln, first_nonspace) {
-            if (first_nonspace === ln.length) { // blank
+        continue: function(parser, container, first_nonspace) {
+            if (first_nonspace === parser.currentLine.length) { // blank
                 parser.offset = first_nonspace;
             } else if (first_nonspace - parser.offset >=
                        container._listData.markerOffset +
@@ -302,7 +303,7 @@ var blocks = {
         }
     },
     Header: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
             // a header can never container > 1 line, so fail to match:
             return 1;
         },
@@ -311,7 +312,7 @@ var blocks = {
         }
     },
     HorizontalRule: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
             // an hrule can never container > 1 line, so fail to match:
             return 1;
         },
@@ -320,7 +321,8 @@ var blocks = {
         }
     },
     CodeBlock: {
-        continue: function(parser, container, ln, first_nonspace) {
+        continue: function(parser, container, first_nonspace) {
+            var ln = parser.currentLine;
             var indent = first_nonspace - parser.offset;
             if (container._isFenced) { // fenced
                 var match = (indent <= 3 &&
@@ -365,16 +367,16 @@ var blocks = {
         }
     },
     HtmlBlock: {
-        continue: function(parser, container, ln, first_nonspace) {
-            return (first_nonspace === ln.length ? 1 : 0);
+        continue: function(parser, container, first_nonspace) {
+            return (first_nonspace === parser.currentLine.length ? 1 : 0);
         },
         finalize: function(parser, block) {
             block._literal = block._strings.join('\n');
         }
     },
     Paragraph: {
-        continue: function(parser, container, ln, first_nonspace) {
-            return (first_nonspace === ln.length ? 1 : 0);
+        continue: function(parser, container, first_nonspace) {
+            return (first_nonspace === parser.currentLine.length ? 1 : 0);
         },
         finalize: function(parser, block) {
             var pos;
@@ -420,6 +422,7 @@ var incorporateLine = function(ln) {
 
     // Convert tabs to spaces:
     ln = detabLine(ln);
+    this.currentLine = ln;
 
     // For each containing block, try to parse the associated line start.
     // Bail out on failure: container will point to the last matching block.
@@ -435,7 +438,7 @@ var incorporateLine = function(ln) {
             first_nonspace = match;
         }
 
-        switch (this.blocks[container.type].continue(this, container, ln, first_nonspace)) {
+        switch (this.blocks[container.type].continue(this, container, first_nonspace)) {
         case 0: // we've matched, keep going
             break;
         case 1: // we've failed to match a block
@@ -723,6 +726,7 @@ function Parser(options){
         blocks: blocks,
         tip: this.doc,
         oldtip: this.doc,
+        currentLine: "",
         lineNumber: 0,
         offset: 0,
         lastMatchedContainer: this.doc,
