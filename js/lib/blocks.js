@@ -232,7 +232,7 @@ var closeUnmatchedBlocks = function() {
 // and 2 for "we've dealt with this line completely, go to next."
 var blocks = {
     Document: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             return 0;
         },
         finalize: function(parser, block) {
@@ -240,7 +240,7 @@ var blocks = {
         }
     },
     List: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             return 0;
         },
         finalize: function(parser, block) {
@@ -267,11 +267,11 @@ var blocks = {
         }
     },
     BlockQuote: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             var ln = parser.currentLine;
-            if (first_nonspace - parser.offset <= 3 &&
-                ln.charCodeAt(first_nonspace) === C_GREATERTHAN) {
-                parser.offset = first_nonspace + 1;
+            if (next_nonspace - parser.offset <= 3 &&
+                ln.charCodeAt(next_nonspace) === C_GREATERTHAN) {
+                parser.offset = next_nonspace + 1;
                 if (ln.charCodeAt(parser.offset) === C_SPACE) {
                     parser.offset++;
                 }
@@ -285,10 +285,10 @@ var blocks = {
         }
     },
     Item: {
-        continue: function(parser, container, first_nonspace) {
-            if (first_nonspace === parser.currentLine.length) { // blank
-                parser.offset = first_nonspace;
-            } else if (first_nonspace - parser.offset >=
+        continue: function(parser, container, next_nonspace) {
+            if (next_nonspace === parser.currentLine.length) { // blank
+                parser.offset = next_nonspace;
+            } else if (next_nonspace - parser.offset >=
                        container._listData.markerOffset +
                        container._listData.padding) {
                 parser.offset += container._listData.markerOffset +
@@ -303,7 +303,7 @@ var blocks = {
         }
     },
     Header: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             // a header can never container > 1 line, so fail to match:
             return 1;
         },
@@ -312,7 +312,7 @@ var blocks = {
         }
     },
     HorizontalRule: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             // an hrule can never container > 1 line, so fail to match:
             return 1;
         },
@@ -321,13 +321,13 @@ var blocks = {
         }
     },
     CodeBlock: {
-        continue: function(parser, container, first_nonspace) {
+        continue: function(parser, container, next_nonspace) {
             var ln = parser.currentLine;
-            var indent = first_nonspace - parser.offset;
+            var indent = next_nonspace - parser.offset;
             if (container._isFenced) { // fenced
                 var match = (indent <= 3 &&
-                    ln.charAt(first_nonspace) === container._fenceChar &&
-                    ln.slice(first_nonspace).match(reClosingCodeFence));
+                    ln.charAt(next_nonspace) === container._fenceChar &&
+                    ln.slice(next_nonspace).match(reClosingCodeFence));
                 if (match && match[0].length >= container._fenceLength) {
                     // closing fence - we're at end of line, so we can return
                     parser.finalize(container, parser.lineNumber);
@@ -343,8 +343,8 @@ var blocks = {
             } else { // indented
                 if (indent >= CODE_INDENT) {
                     parser.offset += CODE_INDENT;
-                } else if (first_nonspace === ln.length) { // blank
-                    parser.offset = first_nonspace;
+                } else if (next_nonspace === ln.length) { // blank
+                    parser.offset = next_nonspace;
                 } else {
                     return 1;
                 }
@@ -367,16 +367,16 @@ var blocks = {
         }
     },
     HtmlBlock: {
-        continue: function(parser, container, first_nonspace) {
-            return (first_nonspace === parser.currentLine.length ? 1 : 0);
+        continue: function(parser, container, next_nonspace) {
+            return (next_nonspace === parser.currentLine.length ? 1 : 0);
         },
         finalize: function(parser, block) {
             block._literal = block._strings.join('\n');
         }
     },
     Paragraph: {
-        continue: function(parser, container, first_nonspace) {
-            return (first_nonspace === parser.currentLine.length ? 1 : 0);
+        continue: function(parser, container, next_nonspace) {
+            return (next_nonspace === parser.currentLine.length ? 1 : 0);
         },
         finalize: function(parser, block) {
             var pos;
@@ -402,7 +402,7 @@ var blocks = {
 // then finalizing the document.
 var incorporateLine = function(ln) {
     var all_matched = true;
-    var first_nonspace;
+    var next_nonspace;
     var match;
     var data;
     var blank;
@@ -433,12 +433,12 @@ var incorporateLine = function(ln) {
 
         match = matchAt(reNonSpace, ln, this.offset);
         if (match === -1) {
-            first_nonspace = ln.length;
+            next_nonspace = ln.length;
         } else {
-            first_nonspace = match;
+            next_nonspace = match;
         }
 
-        switch (this.blocks[container.type].continue(this, container, first_nonspace)) {
+        switch (this.blocks[container.type].continue(this, container, next_nonspace)) {
         case 0: // we've matched, keep going
             break;
         case 1: // we've failed to match a block
@@ -455,7 +455,7 @@ var incorporateLine = function(ln) {
         }
     }
 
-    blank = first_nonspace === ln.length;
+    blank = next_nonspace === ln.length;
 
     allClosed = (container === this.oldtip);
     this.lastMatchedContainer = container;
@@ -472,14 +472,14 @@ var incorporateLine = function(ln) {
 
         match = matchAt(reNonSpace, ln, this.offset);
         if (match === -1) {
-            first_nonspace = ln.length;
+            next_nonspace = ln.length;
             blank = true;
             break;
         } else {
-            first_nonspace = match;
+            next_nonspace = match;
             blank = false;
         }
-        indent = first_nonspace - this.offset;
+        indent = next_nonspace - this.offset;
 
         if (t === 'CodeBlock' || t === 'HtmlBlock') {
             break;
@@ -497,11 +497,11 @@ var incorporateLine = function(ln) {
         }
 
         // this is a little performance optimization:
-        if (matchAt(reMaybeSpecial, ln, first_nonspace) === -1) {
+        if (matchAt(reMaybeSpecial, ln, next_nonspace) === -1) {
             break;
         }
 
-        this.offset = first_nonspace;
+        this.offset = next_nonspace;
 
         var cc = ln.charCodeAt(this.offset);
 
@@ -513,13 +513,13 @@ var incorporateLine = function(ln) {
                 this.offset++;
             }
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('BlockQuote', first_nonspace);
+            container = this.addChild('BlockQuote', next_nonspace);
 
         } else if ((match = ln.slice(this.offset).match(reATXHeaderMarker))) {
             // ATX header
             this.offset += match[0].length;
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('Header', first_nonspace);
+            container = this.addChild('Header', next_nonspace);
             container.level = match[0].trim().length; // number of #s
             // remove trailing ###s:
             container._strings =
@@ -530,7 +530,7 @@ var incorporateLine = function(ln) {
             // fenced code block
             var fenceLength = match[0].length;
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('CodeBlock', first_nonspace);
+            container = this.addChild('CodeBlock', next_nonspace);
             container._isFenced = true;
             container._fenceLength = fenceLength;
             container._fenceChar = match[0][0];
@@ -562,7 +562,7 @@ var incorporateLine = function(ln) {
         } else if (matchAt(reHrule, ln, this.offset) !== -1) {
             // hrule
             allClosed = allClosed || this.closeUnmatchedBlocks();
-            container = this.addChild('HorizontalRule', first_nonspace);
+            container = this.addChild('HorizontalRule', next_nonspace);
             this.offset = ln.length - 1;
             break;
 
@@ -574,12 +574,12 @@ var incorporateLine = function(ln) {
             // add the list if needed
             if (t !== 'List' ||
                 !(listsMatch(container._listData, data))) {
-                container = this.addChild('List', first_nonspace);
+                container = this.addChild('List', next_nonspace);
                 container._listData = data;
             }
 
             // add the list item
-            container = this.addChild('Item', first_nonspace);
+            container = this.addChild('Item', next_nonspace);
             container._listData = data;
 
         } else {
@@ -640,7 +640,7 @@ var incorporateLine = function(ln) {
             break;
 
         default:
-            this.offset = first_nonspace;
+            this.offset = next_nonspace;
             if (acceptsLines(t)) {
                 this.addLine(ln);
             } else if (blank) {
