@@ -496,10 +496,11 @@ var incorporateLine = function(ln) {
 
         // finalize any blocks not matched
         allClosed = allClosed || this.closeUnmatchedBlocks();
-        t = container.type;
         if (blank && container.lastChild) {
             container.lastChild._lastLineBlank = true;
         }
+
+        t = container.type;
 
         // Block quote lines are never blank as they start with >
         // and we don't count blanks in fenced code for purposes of tight/loose
@@ -507,7 +508,6 @@ var incorporateLine = function(ln) {
         // on an empty list item, or if we just closed a fenced block.
         container._lastLineBlank = blank &&
             !(t === 'BlockQuote' ||
-              t === 'Header' ||
               (t === 'CodeBlock' && container._isFenced) ||
               (t === 'Item' &&
                !container._firstChild &&
