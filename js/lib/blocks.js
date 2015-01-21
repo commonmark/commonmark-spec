@@ -552,7 +552,7 @@ var incorporateLine = function(ln) {
 // parent of the closed block.
 var finalize = function(block, lineNumber) {
     var pos;
-    var above = block._parent || this.top;
+    var above = block._parent;
     // don't do anything if the block is already closed
     if (!block._open) {
         return 0;
