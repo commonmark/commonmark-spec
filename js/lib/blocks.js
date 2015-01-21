@@ -538,7 +538,7 @@ var incorporateLine = function(ln) {
                 break;
             } else {
                 // create paragraph container for line
-                container = this.addChild('Paragraph', this.lineNumber, offset);
+                this.addChild('Paragraph', offset);
                 this.addLine(ln, offset);
             }
         }
