@@ -1,4 +1,4 @@
-.TH cmark 3 "January 11, 2015" "LOCAL" "Library Functions Manual"
+.TH cmark 3 "January 20, 2015" "LOCAL" "Library Functions Manual"
 .SH
 NAME
 .PP
@@ -172,6 +172,12 @@ Returns the current node.
 Returns the current event type.
 
 .PP
+\fIcmark_node*\f[] \fBcmark_iter_get_root\f[](\fIcmark_iter *iter\f[])
+
+.PP
+Returns the root node.
+
+.PP
 \fIvoid\f[] \fBcmark_iter_reset\f[](\fIcmark_iter *iter\f[], \fIcmark_node *current\f[], \fIcmark_event_type event_type\f[])
 
 .PP
@@ -181,6 +187,19 @@ descendant of the root node or the root node itself.
 
 .SS
 Accessors
+
+.PP
+\fIvoid*\f[] \fBcmark_node_get_user_data\f[](\fIcmark_node *node\f[])
+
+.PP
+Returns the user data of \f[I]node\f[]\&.
+
+.PP
+\fIint\f[] \fBcmark_node_set_user_data\f[](\fIcmark_node *node\f[], \fIvoid *user_data\f[])
+
+.PP
+Sets arbitrary user data for \f[I]node\f[]\&.  Returns 1 on success,
+0 on failure.
 
 .PP
 \fIcmark_node_type\f[] \fBcmark_node_get_type\f[](\fIcmark_node *node\f[])

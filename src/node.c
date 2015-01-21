@@ -189,6 +189,24 @@ cmark_node_last_child(cmark_node *node)
 	}
 }
 
+void*
+cmark_node_get_user_data(cmark_node *node) {
+	if (node == NULL) {
+		return NULL;
+	} else {
+		return node->user_data;
+	}
+}
+
+int
+cmark_node_set_user_data(cmark_node *node, void *user_data) {
+	if (node == NULL) {
+		return 0;
+	}
+	node->user_data = user_data;
+	return 1;
+}
+
 static char*
 S_strdup(const char *str)
 {

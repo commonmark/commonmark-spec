@@ -213,6 +213,12 @@ CMARK_EXPORT
 cmark_event_type
 cmark_iter_get_event_type(cmark_iter *iter);
 
+/** Returns the root node.
+ */
+CMARK_EXPORT
+cmark_node*
+cmark_iter_get_root(cmark_iter *iter);
+
 /** Resets the iterator so that the current node is 'current' and
  * the event type is 'event_type'.  The new current node must be a
  * descendant of the root node or the root node itself.
@@ -225,6 +231,17 @@ cmark_iter_reset(cmark_iter *iter, cmark_node *current,
 /**
  * ## Accessors
  */
+
+/** Returns the user data of 'node'.
+ */
+CMARK_EXPORT void*
+cmark_node_get_user_data(cmark_node *node);
+
+/** Sets arbitrary user data for 'node'.  Returns 1 on success,
+ * 0 on failure.
+ */
+CMARK_EXPORT int
+cmark_node_set_user_data(cmark_node *node, void *user_data);
 
 /** Returns the type of 'node', or `CMARK_NODE_NONE` on error.
  */
