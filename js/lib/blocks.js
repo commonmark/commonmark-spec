@@ -307,6 +307,7 @@ var incorporateLine = function(ln) {
                     // closing fence - we're at end of line, so we can return
                     all_matched = false;
                     this.finalize(container, this.lineNumber);
+                    this.lastLineLength = ln.length - 1; // -1 for newline
                     return;
                 } else {
                     // skip optional spaces of fence offset
