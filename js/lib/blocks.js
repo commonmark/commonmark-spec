@@ -506,16 +506,17 @@ var incorporateLine = function(ln) {
         // and we don't count blanks in fenced code for purposes of tight/loose
         // lists or breaking out of lists.  We also don't set _lastLineBlank
         // on an empty list item, or if we just closed a fenced block.
-        container._lastLineBlank = blank &&
+        var lastLineBlank = blank &&
             !(t === 'BlockQuote' ||
               (t === 'CodeBlock' && container._isFenced) ||
               (t === 'Item' &&
                !container._firstChild &&
                container.sourcepos[0][0] === this.lineNumber));
 
+        // propagate lastLineBlank up through parents:
         var cont = container;
-        while (cont._parent) {
-            cont._parent._lastLineBlank = false;
+        while (cont) {
+            cont._lastLineBlank = lastLineBlank;
             cont = cont._parent;
         }
 
