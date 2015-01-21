@@ -445,6 +445,7 @@ var incorporateLine = function(ln) {
             all_matched = false;
             break;
         case 2: // we've hit end of line for fenced code close and can return
+            this.lastLineLength = ln.length - 1; // -1 for newline
             return;
         default:
             throw 'continue returned illegal value, must be 0, 1, or 2';
