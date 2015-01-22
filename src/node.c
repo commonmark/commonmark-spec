@@ -122,8 +122,12 @@ void S_free_nodes(cmark_node *e)
 			break;
 		case NODE_LINK:
 		case NODE_IMAGE:
-			free(e->as.link.url);
-			free(e->as.link.title);
+			if (e->as.link.url) {
+				free(e->as.link.url);
+			}
+			if (e->as.link.title) {
+				free(e->as.link.title);
+			}
 			break;
 		default:
 			break;
