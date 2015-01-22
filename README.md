@@ -60,9 +60,7 @@ Or, to create Xcode project files on OSX:
     mkdir build
     cd build
     cmake -G Xcode ..
-    make
-    make test
-    make install
+    open cmark.xcodeproj
 
 The GNU Makefile also provides a few other targets for developers.
 To run a benchmark:
