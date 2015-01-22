@@ -246,6 +246,5 @@ char *cmark_render_man(cmark_node *root, long options)
 	result = (char *)cmark_strbuf_detach(&man);
 
 	cmark_iter_free(iter);
-	cmark_strbuf_free(&man);
 	return result;
 }

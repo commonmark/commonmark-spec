@@ -319,6 +319,5 @@ char *cmark_render_html(cmark_node *root, long options)
 	result = (char *)cmark_strbuf_detach(&html);
 
 	cmark_iter_free(iter);
-	cmark_strbuf_free(&html);
 	return result;
 }

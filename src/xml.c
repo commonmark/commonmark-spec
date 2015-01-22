@@ -170,6 +170,5 @@ char *cmark_render_xml(cmark_node *root, long options)
 	result = (char *)cmark_strbuf_detach(&xml);
 
 	cmark_iter_free(iter);
-	cmark_strbuf_free(&xml);
 	return result;
 }
