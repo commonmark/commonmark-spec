@@ -2,7 +2,8 @@
 #define CMARK_H
 
 #include <stdio.h>
-#include "cmark_export.h"
+#include <cmark_export.h>
+#include <cmark_version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,10 +18,6 @@ extern "C" {
  *
  * ## Simple Interface
  */
-
-/** Current version of library.
- */
-#define CMARK_VERSION "0.1"
 
 /** Convert 'text' (assumed to be a UTF-8 encoded string with length
  * 'len' from CommonMark Markdown to HTML, returning a null-terminated,
@@ -498,6 +495,28 @@ char *cmark_render_man(cmark_node *root, long options);
 /** Normalize tree by consolidating adjacent text nodes.
  */
 #define CMARK_OPT_NORMALIZE 4
+
+/**
+ * ## Version information
+ */
+
+/** The library version as integer for runtime checks. Also available as
+ * macro CMARK_VERSION for compile time checks.
+ *
+ * * Bits 16-23 contain the major version.
+ * * Bits 8-15 contain the minor version.
+ * * Bits 0-7 contain the patchlevel.
+ *
+ * In hexadecimal format, the number 0x010203 represents version 1.2.3.
+ */
+CMARK_EXPORT
+extern const int cmark_version;
+
+/** The library version string for runtime checks. Also available as
+ * macro CMARK_VERSION_STRING for compile time checks.
+ */
+CMARK_EXPORT
+extern const char cmark_version_string[];
 
 /** # AUTHORS
  *

@@ -47,6 +47,9 @@ set(PROGRAM_SOURCES
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmark_version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_version.h)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcmark.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc
@@ -73,8 +76,11 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif ()
 
 add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
-set_target_properties(${LIBRARY}
-  PROPERTIES OUTPUT_NAME "cmark")
+# Include minor version in soname as long as major version is 0.
+set_target_properties(${LIBRARY} PROPERTIES
+  OUTPUT_NAME "cmark"
+  SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+  VERSION ${PROJECT_VERSION})
 
 set_property(TARGET ${LIBRARY}
   APPEND PROPERTY MACOSX_RPATH true)
@@ -92,7 +98,10 @@ install(TARGETS ${PROGRAM} ${LIBRARY}
   LIBRARY DESTINATION lib
   )
 
-install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+install(FILES
+  cmark.h
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_version.h
   DESTINATION include
   )
 
