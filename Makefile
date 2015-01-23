@@ -129,6 +129,10 @@ distclean: clean
 js/dist/commonmark.js: js/lib/index.js ${JSMODULES}
 	browserify --standalone commonmark $< -o $@
 
+# 'npm install -g uglify-js' for the uglifyjs tool:
+js/dist/commonmark.min.js: js/dist/commonmark.js
+	uglifyjs $< --compress warnings --preamble "/* commonmark $(VERSION) https://github.com/jgm/CommonMark @license BSD3 */" > $@
+
 testjs: $(SPEC)
 	node js/test.js
 
