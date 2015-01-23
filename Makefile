@@ -118,7 +118,7 @@ operf: $(PROG)
 	operf $(PROG) <$(BENCHINP) >/dev/null
 
 distclean: clean
-	-rm -f js/commonmark.js
+	-rm -f js/dist/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
@@ -126,7 +126,7 @@ distclean: clean
 
 ### JavaScript ###
 
-js/commonmark.js: js/lib/index.js ${JSMODULES}
+js/dist/commonmark.js: js/lib/index.js ${JSMODULES}
 	browserify --standalone commonmark $< -o $@
 
 testjs: $(SPEC)
@@ -144,7 +144,7 @@ benchjs:
 npm:
 	cd js; npm publish
 
-dingus: js/commonmark.js
+dingus: js/dist/commonmark.js
 	echo "Starting dingus server at http://localhost:9000/dingus.html" && python -m SimpleHTTPServer 9000
 
 ### Spec ###
@@ -163,8 +163,8 @@ spec.pdf: spec.md tools/template.tex tools/specfilter.hs
 
 ### Website ###
 
-update-site: spec js/commonmark.js
+update-site: spec js/dist/commonmark.js
 	make -C $(SITE) update
 
-upload-site: spec js/commonmark.js
+upload-site: spec js/dist/commonmark.js
 	make -C $(SITE) upload

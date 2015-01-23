@@ -23,7 +23,7 @@ This package includes the commonmark library and a
 command-line executable, `commonmark`.
 
 For client-side use, you can do `make browserify` to produce
-a standalone JavaScript file `js/commonmark.js`,
+a standalone JavaScript file `js/dist/commonmark.js`,
 suitable for linking into a web page, or just fetch
 <http://spec.commonmark.org/js/commonmark.js>.
 
