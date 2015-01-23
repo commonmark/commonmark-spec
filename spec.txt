@@ -5675,6 +5675,14 @@ bar)
 bar)</p>
 .
 
+.
+[link](<foo
+bar>)
+.
+<p>[link](<foo
+bar>)</p>
+.
+
 One level of balanced parentheses is allowed without escaping:
 
 .
