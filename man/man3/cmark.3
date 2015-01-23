@@ -527,14 +527,14 @@ Version information
 .nf
 \fC
 .RS 0n
-#define CMARK_VERSION 0x000100
+extern const int cmark_version;
 .RE
 \f[]
 .fi
 
 .PP
-Macro containing the library version as integer for compile time
-checks.
+The library version as integer for runtime checks. Also available as
+macro CMARK_VERSION for compile time checks.
 .IP \[bu] 2
 Bits 16\-23 contain the major version.
 .IP \[bu] 2
@@ -548,37 +548,14 @@ In hexadecimal format, the number 0x010203 represents version 1.2.3.
 .nf
 \fC
 .RS 0n
-#define CMARK_VERSION_STRING "0.1.0"
-.RE
-\f[]
-.fi
-
-.PP
-Macro containing the library version string for compile time checks.
-
-.PP
-.nf
-\fC
-.RS 0n
-extern const int cmark_version;
-.RE
-\f[]
-.fi
-
-.PP
-The library version as integer for runtime checks.
-
-.PP
-.nf
-\fC
-.RS 0n
 extern const char cmark_version_string[];
 .RE
 \f[]
 .fi
 
 .PP
-The library version string for runtime checks.
+The library version string for runtime checks. Also available as
+macro CMARK_VERSION_STRING for compile time checks.
 
 .SH
 AUTHORS

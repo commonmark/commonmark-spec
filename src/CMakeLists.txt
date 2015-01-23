@@ -47,6 +47,9 @@ set(PROGRAM_SOURCES
 
 include_directories(. ${CMAKE_CURRENT_BINARY_DIR})
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmark_version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_version.h)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/libcmark.pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libcmark.pc
@@ -92,7 +95,10 @@ install(TARGETS ${PROGRAM} ${LIBRARY}
   LIBRARY DESTINATION lib
   )
 
-install(FILES cmark.h ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+install(FILES
+  cmark.h
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_export.h
+  ${CMAKE_CURRENT_BINARY_DIR}/cmark_version.h
   DESTINATION include
   )
 

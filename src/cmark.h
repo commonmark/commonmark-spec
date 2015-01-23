@@ -2,7 +2,8 @@
 #define CMARK_H
 
 #include <stdio.h>
-#include "cmark_export.h"
+#include <cmark_export.h>
+#include <cmark_version.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -499,8 +500,8 @@ char *cmark_render_man(cmark_node *root, long options);
  * ## Version information
  */
 
-/** Macro containing the library version as integer for compile time
- * checks.
+/** The library version as integer for runtime checks. Also available as
+ * macro CMARK_VERSION for compile time checks.
  *
  * * Bits 16-23 contain the major version.
  * * Bits 8-15 contain the minor version.
@@ -508,18 +509,11 @@ char *cmark_render_man(cmark_node *root, long options);
  *
  * In hexadecimal format, the number 0x010203 represents version 1.2.3.
  */
-#define CMARK_VERSION 0x000100
-
-/** Macro containing the library version string for compile time checks.
- */
-#define CMARK_VERSION_STRING "0.1.0"
-
-/** The library version as integer for runtime checks.
- */
 CMARK_EXPORT
 extern const int cmark_version;
 
-/** The library version string for runtime checks.
+/** The library version string for runtime checks. Also available as
+ * macro CMARK_VERSION_STRING for compile time checks.
  */
 CMARK_EXPORT
 extern const char cmark_version_string[];
