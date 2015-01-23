@@ -407,7 +407,6 @@ var incorporateLine = function(ln) {
     var data;
     var blank;
     var indent;
-    var i;
     var allClosed;
 
     var container = this.doc;
