@@ -76,8 +76,11 @@ elseif(CMAKE_COMPILER_IS_GNUCC OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 endif ()
 
 add_library(${LIBRARY} SHARED ${LIBRARY_SOURCES})
-set_target_properties(${LIBRARY}
-  PROPERTIES OUTPUT_NAME "cmark")
+# Include minor version in soname as long as major version is 0.
+set_target_properties(${LIBRARY} PROPERTIES
+  OUTPUT_NAME "cmark"
+  SOVERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+  VERSION ${PROJECT_VERSION})
 
 set_property(TARGET ${LIBRARY}
   APPEND PROPERTY MACOSX_RPATH true)
