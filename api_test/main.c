@@ -53,6 +53,14 @@ static void
 test_continuation_byte(test_batch_runner *runner, const char *utf8);
 
 static void
+version(test_batch_runner *runner)
+{
+	INT_EQ(runner, cmark_version, CMARK_VERSION, "cmark_version");
+	STR_EQ(runner, cmark_version_string, CMARK_VERSION_STRING,
+	       "cmark_version_string");
+}
+
+static void
 constructor(test_batch_runner *runner)
 {
 	for (int i = 0; i < num_node_types; ++i) {
@@ -666,6 +674,7 @@ int main() {
 	int retval;
 	test_batch_runner *runner = test_batch_runner_new();
 
+	version(runner);
 	constructor(runner);
 	accessors(runner);
 	node_check(runner);

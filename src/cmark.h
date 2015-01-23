@@ -18,10 +18,6 @@ extern "C" {
  * ## Simple Interface
  */
 
-/** Current version of library.
- */
-#define CMARK_VERSION "0.1"
-
 /** Convert 'text' (assumed to be a UTF-8 encoded string with length
  * 'len' from CommonMark Markdown to HTML, returning a null-terminated,
  * UTF-8-encoded string.
@@ -498,6 +494,35 @@ char *cmark_render_man(cmark_node *root, long options);
 /** Normalize tree by consolidating adjacent text nodes.
  */
 #define CMARK_OPT_NORMALIZE 4
+
+/**
+ * ## Version information
+ */
+
+/** Macro containing the library version as integer for compile time
+ * checks.
+ *
+ * * Bits 16-23 contain the major version.
+ * * Bits 8-15 contain the minor version.
+ * * Bits 0-7 contain the patchlevel.
+ *
+ * In hexadecimal format, the number 0x010203 represents version 1.2.3.
+ */
+#define CMARK_VERSION 0x000100
+
+/** Macro containing the library version string for compile time checks.
+ */
+#define CMARK_VERSION_STRING "0.1.0"
+
+/** The library version as integer for runtime checks.
+ */
+CMARK_EXPORT
+extern const int cmark_version;
+
+/** The library version string for runtime checks.
+ */
+CMARK_EXPORT
+extern const char cmark_version_string[];
 
 /** # AUTHORS
  *

@@ -1,4 +1,4 @@
-.TH cmark 3 "January 20, 2015" "LOCAL" "Library Functions Manual"
+.TH cmark 3 "January 23, 2015" "LOCAL" "Library Functions Manual"
 .SH
 NAME
 .PP
@@ -8,18 +8,6 @@ NAME
 DESCRIPTION
 .SS
 Simple Interface
-
-.PP
-.nf
-\fC
-.RS 0n
-#define CMARK_VERSION "0.1"
-.RE
-\f[]
-.fi
-
-.PP
-Current version of library.
 
 .PP
 \fIchar *\f[] \fBcmark_markdown_to_html\f[](\fIconst char *text\f[], \fIint len\f[])
@@ -531,6 +519,66 @@ Render \f[C]softbreak\f[] elements as hard line breaks.
 
 .PP
 Normalize tree by consolidating adjacent text nodes.
+
+.SS
+Version information
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_VERSION 0x000100
+.RE
+\f[]
+.fi
+
+.PP
+Macro containing the library version as integer for compile time
+checks.
+.IP \[bu] 2
+Bits 16\-23 contain the major version.
+.IP \[bu] 2
+Bits 8\-15 contain the minor version.
+.IP \[bu] 2
+Bits 0\-7 contain the patchlevel.
+.PP
+In hexadecimal format, the number 0x010203 represents version 1.2.3.
+
+.PP
+.nf
+\fC
+.RS 0n
+#define CMARK_VERSION_STRING "0.1.0"
+.RE
+\f[]
+.fi
+
+.PP
+Macro containing the library version string for compile time checks.
+
+.PP
+.nf
+\fC
+.RS 0n
+extern const int cmark_version;
+.RE
+\f[]
+.fi
+
+.PP
+The library version as integer for runtime checks.
+
+.PP
+.nf
+\fC
+.RS 0n
+extern const char cmark_version_string[];
+.RE
+\f[]
+.fi
+
+.PP
+The library version string for runtime checks.
 
 .SH
 AUTHORS
