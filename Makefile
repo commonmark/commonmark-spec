@@ -131,7 +131,7 @@ js/dist/commonmark.js: js/lib/index.js ${JSMODULES}
 
 # 'npm install -g uglify-js' for the uglifyjs tool:
 js/dist/commonmark.min.js: js/dist/commonmark.js
-	uglifyjs $< --compress warnings --preamble "/* commonmark $(VERSION) https://github.com/jgm/CommonMark @license BSD3 */" > $@
+	uglifyjs $< --compress keep_fargs=true,pure_getters=true --preamble "/* commonmark $(VERSION) https://github.com/jgm/CommonMark @license BSD3 */" > $@
 
 testjs: $(SPEC)
 	node js/test.js
