@@ -1,5 +1,5 @@
-SRCDIR?=src
-DATADIR?=data
+SRCDIR=src
+DATADIR=data
 BUILDDIR?=build
 GENERATOR?=Unix Makefiles
 MINGW_BUILDDIR?=build-mingw
@@ -13,27 +13,31 @@ BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
 ALLTESTS=alltests.md
 NUMRUNS?=10
-PROG?=$(BUILDDIR)/src/cmark
+PROG=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
 RELEASE?=CommonMark-$(VERSION)
+INSTALL_PREFIX?=/usr/local
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
+.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
 
-all: $(PROG) man/man3/cmark.3
+all: cmake_build man/man3/cmark.3
+
+$(PROG): cmake_build
+
+cmake_build: $(BUILDDIR)
+	@make -j2 -C $(BUILDDIR)
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
-$(PROG): $(BUILDDIR)
-	@make -j2 -C $(BUILDDIR)
-
-check:
+$(BUILDDIR):
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
-
-$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
-	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cmake .. \
+		-G "$(GENERATOR)" \
+		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
+		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 
 install: $(BUILDDIR)
 	make -C $(BUILDDIR) install
@@ -76,7 +80,7 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -b -i --no-generation-date -o $@ $<
 
-test: $(SPEC) $(BUILDDIR)
+test: $(SPEC) cmake_build
 	make -C $(BUILDDIR) test || (cat $(BUILDDIR)/Testing/Temporary/LastTest.log && exit 1)
 
 $(ALLTESTS): spec.txt
