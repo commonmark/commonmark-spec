@@ -18,6 +18,7 @@ BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
 RELEASE?=CommonMark-$(VERSION)
+INSTALL_PREFIX?=/usr/local
 
 .PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
 
@@ -33,7 +34,10 @@ $(BUILDDIR): $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
-	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cmake .. \
+		-G "$(GENERATOR)" \
+		-DCMAKE_BUILD_TYPE=$(BUILD_TYPE) \
+		-DCMAKE_INSTALL_PREFIX=$(INSTALL_PREFIX)
 
 install: $(BUILDDIR)
 	make -C $(BUILDDIR) install
