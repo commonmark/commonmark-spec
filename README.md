@@ -20,8 +20,8 @@ languages: see the `wrappers/` subdirectory for some simple examples.
 
 The JavaScript implementation provides both an NPM package and a
 single JavaScript file, with no dependencies, that can be linked into
-an HTML page. For further information, see the
-[README in the js directory](js/README.md).
+an HTML page. For further information, see its repository:
+<https://github.com/jgm/commonmark.js>.
 
 **A note on security:**
 Neither implementation attempts to sanitize link attributes or
@@ -101,18 +101,9 @@ The binaries will be in `build-mingw/windows/bin`.
 Installing (JavaScript)
 -----------------------
 
-The JavaScript library can be installed through `npm`:
-
-    npm install commonmark
-
-This includes a command-line converter called `commonmark`.
-
-If you want to use it in a client application, you can fetch
-a pre-built copy of `commonmark.js` from
-<http://spec.commonmark.org/js/commonmark.js>.
-
-For further information, see the
-[README in the js directory](js/README.md).
+The JavaScript implementation has been split into its own
+repository: <https://github.com/jgm/commonmark.js>.
+Please look there for instructions for installation and use.
 
 The spec
 --------
