@@ -30,7 +30,7 @@ cmake_build: $(BUILDDIR)
 	@make -j2 -C $(BUILDDIR)
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
-$(BUILDDIR): $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
+$(BUILDDIR):
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
