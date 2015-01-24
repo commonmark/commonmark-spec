@@ -20,7 +20,7 @@ VERSION?=$(SPECVERSION)
 RELEASE?=CommonMark-$(VERSION)
 INSTALL_PREFIX?=/usr/local
 
-.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload test update-site upload-site debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
+.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload test update-site upload-site debug mingw archive bench astyle
 
 all: cmake_build man/man3/cmark.3
 
