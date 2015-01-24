@@ -19,18 +19,18 @@ JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
 RELEASE?=CommonMark-$(VERSION)
 
-.PHONY: all spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site check npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
+.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
 
-all: $(PROG) man/man3/cmark.3
+all: cmake_build man/man3/cmark.3
 	@echo "Binaries can be found in $(BUILDDIR)/src"
 
-$(PROG): $(BUILDDIR)
+$(PROG): cmake_build
+
+cmake_build: $(BUILDDIR)
 	@make -j2 -C $(BUILDDIR)
 
-check:
+$(BUILDDIR): $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	@cmake --version > /dev/null || (echo "You need cmake to build this program: http://www.cmake.org/download/" && exit 1)
-
-$(BUILDDIR): check $(SRCDIR)/html_unescape.h $(SRCDIR)/case_fold_switch.inc
 	mkdir -p $(BUILDDIR); \
 	cd $(BUILDDIR); \
 	cmake .. -G "$(GENERATOR)" -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
