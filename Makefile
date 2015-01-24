@@ -16,12 +16,11 @@ NUMRUNS?=10
 CMARK=$(BUILDDIR)/src/cmark
 PROG?=$(CMARK)
 BENCHINP?=README.md
-JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
 RELEASE?=CommonMark-$(VERSION)
 INSTALL_PREFIX?=/usr/local
 
-.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload jshint test testjs benchjs update-site upload-site npm debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
+.PHONY: all cmake_build spec leakcheck clean fuzztest dingus upload test update-site upload-site debug mingw archive tarball ziparchive testtarball testziparchive testlib bench astyle
 
 all: cmake_build man/man3/cmark.3
 
@@ -123,38 +122,10 @@ operf: $(CMARK)
 	operf $< < $(BENCHINP) > /dev/null
 
 distclean: clean
-	-rm -f js/dist/commonmark.js
 	-rm -rf *.dSYM
 	-rm -f README.html
 	-rm -f spec.md fuzz.txt spec.html
 	-rm -rf $(BENCHFILE) $(ALLTESTS) progit
-
-### JavaScript ###
-
-js/dist/commonmark.js: js/lib/index.js ${JSMODULES}
-	browserify --standalone commonmark $< -o $@
-
-# 'npm install -g uglify-js' for the uglifyjs tool:
-js/dist/commonmark.min.js: js/dist/commonmark.js
-	uglifyjs $< --compress keep_fargs=true,pure_getters=true --preamble "/* commonmark $(VERSION) https://github.com/jgm/CommonMark @license BSD3 */" > $@
-
-testjs: $(SPEC)
-	node js/test.js
-
-jshint:
-	jshint ${JSMODULES}
-
-lint:
-	eslint -c js/eslint.json ${JSMODULES} js/bin/commonmark js/test.js js/bench.js
-
-benchjs:
-	sudo renice 99 $$$$; node js/bench.js ${BENCHINP}
-
-npm:
-	cd js; npm publish
-
-dingus: js/dist/commonmark.js
-	echo "Starting dingus server at http://localhost:9000/dingus.html" && python -m SimpleHTTPServer 9000
 
 ### Spec ###
 
@@ -172,8 +143,8 @@ spec.pdf: spec.md tools/template.tex tools/specfilter.hs
 
 ### Website ###
 
-update-site: spec js/dist/commonmark.js
+update-site: spec
 	make -C $(SITE) update
 
-upload-site: spec js/dist/commonmark.js
+upload-site: spec
 	make -C $(SITE) upload
