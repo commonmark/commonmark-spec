@@ -1,5 +1,5 @@
-SRCDIR?=src
-DATADIR?=data
+SRCDIR=src
+DATADIR=data
 BUILDDIR?=build
 GENERATOR?=Unix Makefiles
 MINGW_BUILDDIR?=build-mingw
@@ -13,7 +13,7 @@ BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
 ALLTESTS=alltests.md
 NUMRUNS?=10
-PROG?=$(BUILDDIR)/src/cmark
+PROG=$(BUILDDIR)/src/cmark
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
