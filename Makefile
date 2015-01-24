@@ -13,7 +13,8 @@ BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
 ALLTESTS=alltests.md
 NUMRUNS?=10
-PROG=$(BUILDDIR)/src/cmark
+CMARK=$(BUILDDIR)/src/cmark
+PROG?=$(CMARK)
 BENCHINP?=README.md
 JSMODULES=$(wildcard js/lib/*.js)
 VERSION?=$(SPECVERSION)
@@ -24,7 +25,7 @@ INSTALL_PREFIX?=/usr/local
 
 all: cmake_build man/man3/cmark.3
 
-$(PROG): cmake_build
+$(CMARK): cmake_build
 
 cmake_build: $(BUILDDIR)
 	@make -j2 -C $(BUILDDIR)
@@ -54,7 +55,7 @@ mingw:
 	cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchain-mingw32.cmake -DCMAKE_INSTALL_PREFIX=$(MINGW_INSTALLDIR) ;\
 	make && make install
 
-man/man3/cmark.3: src/cmark.h | $(PROG)
+man/man3/cmark.3: src/cmark.h | $(CMARK)
 	python3 man/make_man_page.py $< > $@ \
 
 archive:
@@ -118,8 +119,8 @@ astyle:
 	astyle --style=linux -t -p -r  'src/*.c' --exclude=scanners.c
 	astyle --style=linux -t -p -r  'src/*.h' --exclude=html_unescape.h
 
-operf: $(PROG)
-	operf $(PROG) <$(BENCHINP) >/dev/null
+operf: $(CMARK)
+	operf $< < $(BENCHINP) > /dev/null
 
 distclean: clean
 	-rm -f js/dist/commonmark.js
@@ -160,7 +161,7 @@ dingus: js/dist/commonmark.js
 spec.md: $(SPEC)
 	python3 tools/makespec.py markdown > $@
 
-spec.html: spec.txt tools/template.html ${PROG}
+spec.html: spec.txt tools/template.html ${CMARK}
 	python3 tools/makespec.py html > $@
 
 spec.pdf: spec.md tools/template.tex tools/specfilter.hs
