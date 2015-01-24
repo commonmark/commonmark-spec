@@ -80,7 +80,7 @@ $(SRCDIR)/case_fold_switch.inc: $(DATADIR)/CaseFolding-3.2.0.txt
 $(SRCDIR)/scanners.c: $(SRCDIR)/scanners.re
 	re2c --case-insensitive -b -i --no-generation-date -o $@ $<
 
-test: $(SPEC) $(BUILDDIR)
+test: $(SPEC) cmake_build
 	make -C $(BUILDDIR) test || (cat $(BUILDDIR)/Testing/Temporary/LastTest.log && exit 1)
 
 $(ALLTESTS): spec.txt
