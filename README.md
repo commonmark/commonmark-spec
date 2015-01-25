@@ -13,7 +13,8 @@ The implementations
 The C implementation provides both a shared library (`libcmark`) and a
 standalone program `cmark` that converts CommonMark to HTML.  It is
 written in standard C99 and has no library dependencies.  The parser is
-very fast (see [benchmarks](benchmarks.md)).
+very fast (see [benchmarks](benchmarks.md)).  For documentation, see
+the man pages in the `man` directory.
 
 It is easy to use `libcmark` in python, lua, ruby, and other dynamic
 languages: see the `wrappers/` subdirectory for some simple examples.
