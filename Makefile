@@ -7,7 +7,6 @@ MINGW_INSTALLDIR?=windows
 SPEC=spec.txt
 SITE=_site
 SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
-PKGDIR?=cmark-$(SPECVERSION)
 FUZZCHARS?=2000000  # for fuzztest
 BENCHDIR=bench
 BENCHFILE=$(BENCHDIR)/benchinput.md
@@ -62,7 +61,7 @@ archive:
 	git archive --prefix=$(RELEASE)/ -o $(RELEASE).zip HEAD
 
 clean:
-	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR) $(PKGDIR)
+	rm -rf $(BUILDDIR) $(MINGW_BUILDDIR) $(MINGW_INSTALLDIR)
 
 # We include html_unescape.h in the repository, so this shouldn't
 # normally need to be generated.
