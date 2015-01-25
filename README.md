@@ -7,110 +7,19 @@ implementations in C and JavaScript.
 
 [Try it now!](http://spec.commonmark.org/dingus.html)
 
-The implementations
--------------------
+For more details, see <http://commonmark.org>.
 
-The C implementation provides both a shared library (`libcmark`) and a
-standalone program `cmark` that converts CommonMark to HTML.  It is
-written in standard C99 and has no library dependencies.  The parser is
-very fast (see [benchmarks](benchmarks.md)).  For documentation, see
-the man pages in the `man` directory.
+This repository contains the spec itself, along with tools for
+running tests against the spec, and for creating HTML and PDF versions
+of the spec.
 
-It is easy to use `libcmark` in python, lua, ruby, and other dynamic
-languages: see the `wrappers/` subdirectory for some simple examples.
+The reference implementations live in separate repositories:
 
-The JavaScript implementation provides both an NPM package and a
-single JavaScript file, with no dependencies, that can be linked into
-an HTML page. For further information, see its repository:
-<https://github.com/jgm/commonmark.js>.
+- <https://github.com/jgm/cmark> (C)
+- <https://github.com/jgm/commonmark.js> (JavaScript)
 
-**A note on security:**
-Neither implementation attempts to sanitize link attributes or
-raw HTML.  If you use these libraries in applications that accept
-untrusted user input, you must run the output through an HTML
-sanitizer to protect against
-[XSS attacks](http://en.wikipedia.org/wiki/Cross-site_scripting).
-
-Installing (C)
---------------
-
-Building the C program (`cmark`) and shared library (`libcmark`)
-requires [cmake].  If you modify `scanners.re`, then you will also
-need [re2c], which is used to generate `scanners.c` from
-`scanners.re`.  We have included a pre-generated `scanners.c` in
-the repository to reduce build dependencies.
-
-If you have GNU make, you can simply `make`, `make test`, and `make
-install`.  This calls [cmake] to create a `Makefile` in the `build`
-directory, then uses that `Makefile` to create the executable and
-library.  The binaries can be found in `build/src`.  The default
-installation prefix is `/usr/local`.  To change the installation
-prefix, pass the `INSTALL_PREFIX` variable if you run `make` for the
-first time: `make INSTALL_PREFIX=path`.
-
-For a more portable method, you can use [cmake] manually. [cmake] knows
-how to create build environments for many build systems.  For example,
-on FreeBSD:
-
-    mkdir build
-    cd build
-    cmake ..  # optionally: -DCMAKE_INSTALL_PREFIX=path
-    make      # executable will be created as build/src/cmark
-    make test
-    make install
-
-Or, to create Xcode project files on OSX:
-
-    mkdir build
-    cd build
-    cmake -G Xcode ..
-    open cmark.xcodeproj
-
-The GNU Makefile also provides a few other targets for developers.
-To run a benchmark:
-
-    make bench
-
-To run a "fuzz test" against ten long randomly generated inputs:
-
-    make fuzztest
-
-To run a test for memory leaks using `valgrind`:
-
-    make leakcheck
-
-To reformat source code using `astyle`:
-
-    make astyle
-
-To make a release tarball and zip archive:
-
-    make archive
-
-
-Compiling for Windows
----------------------
-
-To compile with MSVC and NMAKE:
-
-    nmake
-
-You can cross-compile a Windows binary and dll on linux if you have the
-`mingw32` compiler:
-
-    make mingw
-
-The binaries will be in `build-mingw/windows/bin`.
-
-Installing (JavaScript)
------------------------
-
-The JavaScript implementation has been split into its own
-repository: <https://github.com/jgm/commonmark.js>.
-Please look there for instructions for installation and use.
-
-The spec
---------
+Running tests against the spec
+------------------------------
 
 [The spec] contains over 500 embedded examples which serve as conformance
 tests. To run the tests using an executable `$PROG`:
@@ -125,6 +34,9 @@ actually running the tests, you can do:
 and you'll get all the tests in JSON format.
 
 [The spec]:  http://spec.commonmark.org/0.13/
+
+The spec
+--------
 
 The source of [the spec] is `spec.txt`.  This is basically a Markdown
 file, with code examples written in a shorthand form:
@@ -262,17 +174,6 @@ The spec was written by John MacFarlane, drawing on
 - extensive discussions with David Greenspan, Jeff Atwood, Vicent
   Marti, Neil Williams, and Benjamin Dumke-von der Ehe.
 
-John MacFarlane was also responsible for the original versions of the
-C and JavaScript implementations.  The block parsing algorithm was
-worked out together with David Greenspan.  Vicent Marti
-optimized the C implementation for performance, increasing its speed
-tenfold.  Kārlis Gaņģis helped work out a better parsing algorithm
-for links and emphasis, eliminating several worst-case performance
-issues.  Nick Wellnhofer contributed many improvements, including
-most of the C library's API and its test harness.  Vitaly Puzrin
-has offered much good advice about the JavaScript implementation.
-
-[cmake]: http://www.cmake.org/download/
-[pandoc]: http://johnmacfarlane.net/pandoc/
-[re2c]: http://re2c.org
-
+Since the first announcement, many people have contributed ideas.
+Kārlis Gaņģis was especially helpful in refining the rules for
+emphasis, strong emphasis, links, and images.
