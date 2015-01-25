@@ -1,3 +1,18 @@
+[0.17]
+
+  * Improved rule limiting intraword `_` for emphasis and strong emphasis.
+    To prevent intra-word emphasis, we used to check to see if
+    the delimiter was followed/preceded by an ASCII alphanumeric.
+    We now do something more elegant:  whereas an opening `*` must
+    be left-flanking, an opening `_` must be left-flanking *and
+    not right-flanking*.  And so on for the other cases.
+    All the original tests passed except some tests with Russian
+    text with internal `_`, which formerly created emphasis but no
+    longer do with the new rule.  These tests have been adjusted.
+    A few new test cases have been added to illustrate the rule.
+  * Added example with link break inside pointy braces (no link) (#295).
+  * Added spec example: loose list with blank line after fenced code (#285).
+
 [0.16]
 
   * Rewrote beginning of Entities section, clarifying that only
