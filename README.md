@@ -7,6 +7,8 @@ implementations in C and JavaScript.
 
 [Try it now!](http://spec.commonmark.org/dingus.html)
 
+[the spec]:  http://spec.commonmark.org/
+
 For more details, see <http://commonmark.org>.
 
 This repository contains the spec itself, along with tools for
@@ -33,7 +35,6 @@ actually running the tests, you can do:
 
 and you'll get all the tests in JSON format.
 
-[The spec]:  http://spec.commonmark.org/0.13/
 
 The spec
 --------
