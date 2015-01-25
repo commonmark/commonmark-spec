@@ -18,10 +18,3 @@ spec.pdf: spec.md tools/template.tex tools/specfilter.hs
 	   --number-sections -V documentclass=report -V tocdepth=2 \
 	   -V classoption=twosides
 
-### Website ###
-
-update-site: spec
-	make -C $(SITE) update
-
-upload-site: spec
-	make -C $(SITE) upload
