@@ -6666,6 +6666,14 @@ Spaces are not allowed in autolinks:
 <p>&lt;http://foo.bar/baz bim&gt;</p>
 .
 
+Backslash-escapes do not work inside autolinks:
+
+.
+<http://example.com/\[\>
+.
+<p><a href="http://example.com/%5C%5B%5C">http://example.com/\[\</a></p>
+.
+
 An [email autolink](@email-autolink)
 consists of `<`, followed by an [email address],
 followed by `>`.  The link's label is the email address,
@@ -6691,6 +6699,14 @@ Examples of email autolinks:
 <foo+special@Bar.baz-bar0.com>
 .
 <p><a href="mailto:foo+special@Bar.baz-bar0.com">foo+special@Bar.baz-bar0.com</a></p>
+.
+
+Backslash-escapes do not work inside email autolinks:
+
+.
+<foo\+@bar.example.com>
+.
+<p>&lt;foo+@bar.example.com&gt;</p>
 .
 
 These are not autolinks:
