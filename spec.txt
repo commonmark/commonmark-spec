@@ -4759,6 +4759,18 @@ whitespace:
 <p>*foo bar *</p>
 .
 
+A newline also counts as whitespace:
+
+.
+*foo bar
+*
+.
+<p>*foo bar</p>
+<ul>
+<li></li>
+</ul>
+.
+
 This is not emphasis, because the second `*` is
 preceded by punctuation and followed by an alphanumeric
 (hence it is not part of a [right-flanking delimiter run]:
@@ -4885,6 +4897,15 @@ followed by whitespace:
 __ foo bar__
 .
 <p>__ foo bar__</p>
+.
+
+A newline counts as whitespace:
+.
+__
+foo bar__
+.
+<p>__
+foo bar__</p>
 .
 
 This is not strong emphasis, because the opening `__` is preceded
