@@ -2998,8 +2998,42 @@ the above case:
 </ul>
 .
 
-3. **Empty list item.**  A [list marker] followed by a
-line containing only [whitespace] is a list item with no contents.
+3.  **Item starting with a blank line.**  If a sequence of lines *Ls*
+    starting with a single [blank line] constitute a (possibly empty)
+    sequence of blocks *Bs*, not separated from each other by more than
+    one blank line, and *M* is a list marker *M* of width *W*,
+    then the result of prepending *M* to the first line of *Ls*, and
+    indenting subsequent lines of *Ls* by *W + 1* spaces, is a list
+    item with *Bs* as its contents.
+    If a line is empty, then it need not be indented.  The type of the
+    list item (bullet or ordered) is determined by the type of its list
+    marker.  If the list item is ordered, then it is also assigned a
+    start number, based on the ordered list marker.
+
+Here are some list items that start with a blank line but are not empty:
+
+.
+-
+  foo
+-
+  ```
+  bar
+  ```
+-
+      baz
+.
+<ul>
+<li>foo</li>
+<li>
+<pre><code>bar
+</code></pre>
+</li>
+<li>
+<pre><code>baz
+</code></pre>
+</li>
+</ul>
+.
 
 Here is an empty bullet list item:
 
@@ -3052,6 +3086,7 @@ A list may start or end with an empty list item:
 <li></li>
 </ul>
 .
+
 
 4.  **Indentation.**  If a sequence of lines *Ls* constitutes a list item
     according to rule #1, #2, or #3, then the result of indenting each line
