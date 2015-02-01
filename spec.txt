@@ -1872,6 +1872,20 @@ line2
 ">foo</a></p>
 .
 
+However, it may not contain a [blank line]:
+
+.
+[foo]: /url 'title
+
+with blank line'
+
+[foo]
+.
+<p>[foo]: /url 'title</p>
+<p>with blank line'</p>
+<p>[foo]</p>
+.
+
 The title may be omitted:
 
 .
@@ -5669,6 +5683,9 @@ A [link title](@link-title)  consists of either
 
 - a sequence of zero or more characters between matching parentheses
   (`(...)`), including a `)` character only if it is backslash-escaped.
+
+Although [link title]s may span multiple lines, they may not contain
+a [blank line].
 
 An [inline link](@inline-link) consists of a [link text] followed immediately
 by a left parenthesis `(`, optional [whitespace], an optional
