@@ -2705,6 +2705,18 @@ far enough past the blockquote marker:
 </blockquote>
 .
 
+Note that at least one space is needed between the list marker and
+any following content, so these are not list items:
+
+.
+-one
+
+2.two
+.
+<p>-one</p>
+<p>2.two</p>
+.
+
 A list item may not contain blocks that are separated by more than
 one blank line.  Thus, two blank lines will end a list, unless the
 two blanks are contained in a [fenced code block].
