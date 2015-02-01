@@ -6253,6 +6253,14 @@ Thus, `[foo]` is equivalent to `[foo][]`.
 <p>[<a href="/url" title="title"><em>foo</em> bar</a>]</p>
 .
 
+.
+[[bar [foo]
+
+[foo]: /url
+.
+<p>[[bar <a href="/url">foo</a></p>
+.
+
 The link labels are case-insensitive:
 
 .
