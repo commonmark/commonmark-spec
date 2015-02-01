@@ -1943,6 +1943,17 @@ It contributes nothing to the document.
 .
 .
 
+Here is another one:
+
+.
+[
+foo
+]: /url
+bar
+.
+<p>bar</p>
+.
+
 This is not a link reference definition, because there are
 [non-space character]s after the title:
 
