@@ -1854,6 +1854,24 @@ them.
 <p><a href="my%20url" title="title">Foo bar</a></p>
 .
 
+The title may extend over multiple lines:
+
+.
+[foo]: /url '
+title
+line1
+line2
+'
+
+[foo]
+.
+<p><a href="/url" title="
+title
+line1
+line2
+">foo</a></p>
+.
+
 The title may be omitted:
 
 .
