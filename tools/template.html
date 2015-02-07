@@ -77,7 +77,7 @@ $$(document).ready(function() {
         encodeURIComponent(t.replace(/→/g,"\t")));
     });
   });
-  $$("code.language-markdown").dblclick(function(e) { window.open('/dingus.html?text=' +
+  $$("code.language-markdown").dblclick(function(e) { window.open('/dingus/?text=' +
       encodeURIComponent($$(this).find('code').text()));
   });
 });
