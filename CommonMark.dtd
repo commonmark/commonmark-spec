@@ -67,6 +67,11 @@
           url CDATA #REQUIRED
           title CDATA #IMPLIED>
 
-<!-- all elements can have a sourcepos attribute -->
-
+<!-- All elements can have a sourcepos attribute.
+     The format is SL:SC-EL:EC
+     where SL = number of starting line (first line = 1)
+           EL = number of ending line
+           SC = number of starting column (first column = 1)
+           EC = number of ending column
+-->
 <!ATTLIST ANY sourcepos CDATA #IMPLIED>
