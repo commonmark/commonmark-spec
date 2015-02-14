@@ -225,8 +225,8 @@ A line containing no characters, or a line containing only spaces
 The following definitions of character classes will be used in this spec:
 
 A [whitespace character](@whitespace-character) is a space
-(`U+0020`), tab (`U+0009`), carriage return (`U+000D`), or
-newline (`U+000A`).
+(`U+0020`), tab (`U+0009`), newline (`U+000A`), line tabulation (`U+000B`),
+form feed (`U+000C`), or carriage return (`U+000D`).
 
 [Whitespace](@whitespace) is a sequence of one or more [whitespace
 character]s.
