@@ -126,7 +126,7 @@ elif specformat == "html":
         toclines.append(indent + '* [' + section['number'] + ' ' +
                         section['contents'] + '](#' + section['ident'] + ')')
     toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
-    prog = "cmark"
+    prog = "cmark --smart"
     [retcode, result, err] = pipe_through_prog(prog, toc + mdtext)
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
