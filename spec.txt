@@ -4581,12 +4581,14 @@ characters that is not preceded or followed by a `_` character.
 A [left-flanking delimiter run](@left-flanking-delimiter-run) is
 a [delimiter run] that is (a) not followed by [unicode whitespace],
 and (b) either not followed by a [punctuation character], or
-preceded by [unicode whitespace] or a [punctuation character].
+preceded by [unicode whitespace] or a [punctuation character] or
+the beginning of a line.
 
 A [right-flanking delimiter run](@right-flanking-delimiter-run) is
 a [delimiter run] that is (a) not preceded by [unicode whitespace],
 and (b) either not preceded by a [punctuation character], or
-followed by [unicode whitespace] or a [punctuation character].
+followed by [unicode whitespace] or a [punctuation character] or
+the end of a line.
 
 Here are some examples of delimiter runs.
 
