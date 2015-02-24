@@ -5656,15 +5656,15 @@ _a `_`_
 .
 
 .
-**a<http://foo.bar?q=**>
+**a<http://foo.bar/?q=**>
 .
-<p>**a<a href="http://foo.bar?q=**">http://foo.bar?q=**</a></p>
+<p>**a<a href="http://foo.bar/?q=**">http://foo.bar/?q=**</a></p>
 .
 
 .
-__a<http://foo.bar?q=__>
+__a<http://foo.bar/?q=__>
 .
-<p>__a<a href="http://foo.bar?q=__">http://foo.bar?q=__</a></p>
+<p>__a<a href="http://foo.bar/?q=__">http://foo.bar/?q=__</a></p>
 .
 
 
@@ -6027,9 +6027,9 @@ and autolinks over link grouping:
 .
 
 .
-[foo<http://example.com?search=](uri)>
+[foo<http://example.com/?search=](uri)>
 .
-<p>[foo<a href="http://example.com?search=%5D(uri)">http://example.com?search=](uri)</a></p>
+<p>[foo<a href="http://example.com/?search=%5D(uri)">http://example.com/?search=](uri)</a></p>
 .
 
 There are three kinds of [reference link](@reference-link)s:
@@ -6167,11 +6167,11 @@ and autolinks over link grouping:
 .
 
 .
-[foo<http://example.com?search=][ref]>
+[foo<http://example.com/?search=][ref]>
 
 [ref]: /uri
 .
-<p>[foo<a href="http://example.com?search=%5D%5Bref%5D">http://example.com?search=][ref]</a></p>
+<p>[foo<a href="http://example.com/?search=%5D%5Bref%5D">http://example.com/?search=][ref]</a></p>
 .
 
 Matching is case-insensitive:
@@ -6722,9 +6722,9 @@ Here are some valid autolinks:
 .
 
 .
-<http://foo.bar.baz?q=hello&id=22&boolean>
+<http://foo.bar.baz/test?q=hello&id=22&boolean>
 .
-<p><a href="http://foo.bar.baz?q=hello&amp;id=22&amp;boolean">http://foo.bar.baz?q=hello&amp;id=22&amp;boolean</a></p>
+<p><a href="http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>
 .
 
 .
