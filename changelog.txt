@@ -1,3 +1,33 @@
+[0.18]
+
+  * Added a shortcut link test with mismatched brackets (#282).
+  * Added cases with newline whitespace around emphasis open delimiter
+    (#282).
+  * Added list item examples with no space after marker (#282).
+  * Added additional test showing backslash escapes don't work in
+    autolinks (#282).
+  * Added test for multiline title in reference definition (#282).
+  * Added a reference link definition test case (#282).
+  * Clarified that link titles can't contain blank lines (#271).
+  * Revised Rule 3 for list items (#275).  Previously this just applied to
+    empty list items.  It has been rewritten to apply to any list item
+    starting with a blank line, including items like:
+
+        -
+          ```
+          code
+          ```
+
+  * Added U+000B and U+000C as whitespace characters (#300).
+  * Added comment on sourcepos attribute format in DTD (#298).
+  * Use `--smart` option in producing HTML version of spec.
+  * Clarified that delimiter runs at beginning/end of line behave as
+    if preceded/followed by whitespace (#302).
+  * Ensure that URLs in examples have slash after domain.
+    This helps with #9, making these tests less sensitive to
+    the normalizer used.
+  * Fixed typo (Robin Stocker).
+
 [0.17]
 
   * Improved rule limiting intraword `_` for emphasis and strong emphasis.
