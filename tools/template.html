@@ -73,7 +73,7 @@ $$(document).ready(function() {
   $$("div.example").each(function(e) {
     var t = $$(this).find('code.language-markdown').text();
     $$(this).find('a.dingus').click(function(f) {
-      window.open('/dingus.html?text=' +
+      window.open('/dingus/?text=' +
         encodeURIComponent(t.replace(/→/g,"\t")));
     });
   });
