@@ -192,8 +192,8 @@ an implementation without writing an abstract syntax tree renderer.
 
 This document is generated from a text file, `spec.txt`, written
 in Markdown with a small extension for the side-by-side tests.
-The script `spec2md.pl` can be used to turn `spec.txt` into pandoc
-Markdown, which can then be converted into other formats.
+The script `tools/makespec.py` can be used to convert `spec.txt` into
+HTML or CommonMark (which can then be converted into other formats).
 
 In the examples, the `→` character is used to represent tabs.
 
