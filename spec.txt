@@ -4276,7 +4276,7 @@ corresponding codepoints.
 [Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
 entities need to be recognised and tranformed into their corresponding
-UTF8 codepoints. Invalid Unicode codepoints will be written as the
+unicode codepoints. Invalid unicode codepoints will be written as the
 "unknown codepoint" character (`0xFFFD`)
 
 .
@@ -4287,7 +4287,8 @@ UTF8 codepoints. Invalid Unicode codepoints will be written as the
 
 [Hexadecimal entities](@hexadecimal-entities)
 consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
-+ `;`. They will also be parsed and turned into their corresponding UTF8 values in the AST.
++ `;`. They will also be parsed and turned into the corresponding
+unicode codepoints in the AST.
 
 .
 &#X22; &#XD06; &#xcab;
@@ -5839,8 +5840,8 @@ in Markdown:
 
 URL-escaping should be left alone inside the destination, as all
 URL-escaped characters are also valid URL characters. HTML entities in
-the destination will be parsed into their UTF-8 codepoints, as usual, and
-optionally URL-escaped when written as HTML.
+the destination will be parsed into the corresponding unicode
+codepoints, as usual, and optionally URL-escaped when written as HTML.
 
 .
 [link](foo%20b&auml;)
