@@ -2587,7 +2587,7 @@ The following rules define [list items]:
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
     blocks *Bs* starting with a [non-space character] and not separated
     from each other by more than one blank line, and *M* is a list
-    marker *M* of width *W* followed by 0 < *N* < 5 spaces, then the result
+    marker of width *W* followed by 0 < *N* < 5 spaces, then the result
     of prepending *M* and the following spaces to the first line of
     *Ls*, and indenting subsequent lines of *Ls* by *W + N* spaces, is a
     list item with *Bs* as its contents.  The type of the list item
@@ -2852,7 +2852,7 @@ A list item may contain any kind of block:
 2.  **Item starting with indented code.**  If a sequence of lines *Ls*
     constitute a sequence of blocks *Bs* starting with an indented code
     block and not separated from each other by more than one blank line,
-    and *M* is a list marker *M* of width *W* followed by
+    and *M* is a list marker of width *W* followed by
     one space, then the result of prepending *M* and the following
     space to the first line of *Ls*, and indenting subsequent lines of
     *Ls* by *W + 1* spaces, is a list item with *Bs* as its contents.
@@ -3001,7 +3001,7 @@ the above case:
 3.  **Item starting with a blank line.**  If a sequence of lines *Ls*
     starting with a single [blank line] constitute a (possibly empty)
     sequence of blocks *Bs*, not separated from each other by more than
-    one blank line, and *M* is a list marker *M* of width *W*,
+    one blank line, and *M* is a list marker of width *W*,
     then the result of prepending *M* to the first line of *Ls*, and
     indenting subsequent lines of *Ls* by *W + 1* spaces, is a list
     item with *Bs* as its contents.
