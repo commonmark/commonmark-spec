@@ -4636,7 +4636,7 @@ are a bit more complex than the ones given here.)
 The following rules define emphasis and strong emphasis:
 
 1.  A single `*` character [can open emphasis](@can-open-emphasis)
-    iff it is part of a [left-flanking delimiter run].
+    iff (if and only if) it is part of a [left-flanking delimiter run].
 
 2.  A single `_` character [can open emphasis] iff
     it is part of a [left-flanking delimiter run]
