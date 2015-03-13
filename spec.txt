@@ -4611,14 +4611,14 @@ Here are some examples of delimiter runs.
      _"abc"
     ```
 
-  - Both right and right-flanking:
+  - Both left and right-flanking:
 
     ```
     abc***def
     "abc"_"def"
     ```
 
-  - Neither right nor right-flanking:
+  - Neither left nor right-flanking:
 
     ```
     abc *** def
