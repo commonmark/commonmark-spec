@@ -20,8 +20,8 @@ The reference implementations live in separate repositories:
 - <https://github.com/jgm/cmark> (C)
 - <https://github.com/jgm/commonmark.js> (JavaScript)
 
-There is a list of third-party implementations and bindings
-in a dozen languages
+There is a list of third-party libraries
+in a dozen different languages
 [here](https://github.com/jgm/CommonMark/wiki/List-of-CommonMark-Implementations).
 
 Running tests against the spec
