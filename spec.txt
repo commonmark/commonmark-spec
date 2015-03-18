@@ -2726,7 +2726,7 @@ this example:
 
 Here `two` occurs in the same column as the list marker `1.`,
 but is actually contained in the list item, because there is
-sufficent indentation after the last containing blockquote marker.
+sufficient indentation after the last containing blockquote marker.
 
 The converse is also possible.  In the following example, the word `two`
 occurs far to the right of the initial text of the list item, `one`, but
@@ -4275,7 +4275,7 @@ corresponding codepoints.
 
 [Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
-entities need to be recognised and tranformed into their corresponding
+entities need to be recognised and transformed into their corresponding
 unicode codepoints. Invalid unicode codepoints will be written as the
 "unknown codepoint" character (`0xFFFD`)
 
@@ -5707,7 +5707,7 @@ A [link destination](@link-destination) consists of either
   ASCII space or control characters, and includes parentheses
   only if (a) they are backslash-escaped or (b) they are part of
   a balanced pair of unescaped parentheses that is not itself
-  inside a balanced pair of unescaped paretheses.
+  inside a balanced pair of unescaped parentheses.
 
 A [link title](@link-title)  consists of either
 
