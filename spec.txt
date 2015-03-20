@@ -1811,7 +1811,7 @@ title], which if it is present must be separated
 from the [link destination] by [whitespace].
 No further [non-space character]s may occur on the line.
 
-A [link reference-definition]
+A [link reference definition]
 does not correspond to a structural element of a document.  Instead, it
 defines a label which can be used in [reference link]s
 and reference-style [images] elsewhere in the document.  [Link
