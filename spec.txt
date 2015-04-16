@@ -4605,8 +4605,8 @@ Here are some examples of delimiter runs.
   - right-flanking but not left-flanking:
 
     ```
-    abc***
-      abc_
+     abc***
+     abc_
     "abc"**
     "abc"_
     ```
@@ -4614,7 +4614,7 @@ Here are some examples of delimiter runs.
   - Both left and right-flanking:
 
     ```
-    abc***def
+     abc***def
     "abc"_"def"
     ```
 
