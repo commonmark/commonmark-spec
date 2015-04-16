@@ -4608,7 +4608,7 @@ Here are some examples of delimiter runs.
     abc***
       abc_
     "abc"**
-     _"abc"
+    "abc"_
     ```
 
   - Both left and right-flanking:
