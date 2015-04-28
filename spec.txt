@@ -4834,21 +4834,12 @@ aa_"bb"_cc
 <p>aa_&quot;bb&quot;_cc</p>
 .
 
-Here there is no emphasis, because the delimiter runs are
-both left- and right-flanking:
-
-.
-"aa"_"bb"_"cc"
-.
-<p>&quot;aa&quot;_&quot;bb&quot;_&quot;cc&quot;</p>
-.
-
 This is emphasis, even though the opening delimiter is
 both left- and right-flanking, because it is preceded by
 punctuation:
 
 .
-foo-_(bar)
+foo-_(bar)_
 .
 <p>foo-<em>(bar)</em></p>
 .
