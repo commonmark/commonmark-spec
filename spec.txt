@@ -724,13 +724,14 @@ ATX headers can be empty:
 ## Setext headers
 
 A [setext header](@setext-header)
-consists of a line of text, containing at least one
-[non-space character],
+consists of a line of text, containing at least one [non-space character],
 with no more than 3 spaces indentation, followed by a [setext header
 underline].  The line of text must be
 one that, were it not followed by the setext header underline,
-would be interpreted as part of a paragraph:  it cannot be a code
-block, header, blockquote, horizontal rule, or list.
+would be interpreted as part of a paragraph:  it cannot be
+interpretable as a [code fence], [ATX header][ATX headers],
+[block quote][block quotes], [horizontal rule][horizontal rules],
+[list item][list items], or [HTML block][HTML blocks].
 
 A [setext header underline](@setext-header-underline) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
