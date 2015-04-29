@@ -1,3 +1,29 @@
+[0.19]
+
+  * Fixed rules for `_`-based emphasis and strong emphasis (#317).
+    Previously `_(bar)_.` was not parsed as containing emphasis
+    because the closing delimiter is both left- and right- flanking.
+    This fix allows such delimiters, provided they're followed
+    by punctuation (i.e., they have punctuation on both sides).
+    Similarly, mutatis mutandis, for opening delimiters and for `__`.
+  * Clarified definitions of left-flanking and right-flanking (#310).
+    The spec now says explicitly that the beginning and end of line count
+    as whitespace for purposes of this definition.
+  * Clarified that a code fence followed by header line isn't a header (#306).
+  * Fixed alignment in flankingness examples (cosmetic).
+  * Fixed last "right flanking but not left flanking" example (#316).
+  * Fixed a broken link (Konstantin Zudov).
+  * Added link to list of implementations on wiki.
+  * Fixed mistake in examples of left/right flanking delimiters
+    (Konstantin Zudov).
+  * Spell out `iff` (if and only if) the first time it is used (#309).
+  * Fixed typos (isoroku, #309).
+  * Clarified wording for soft line break: newline can't be preceded
+    by two spaces or a backslash.
+  * Replaced some references to UTF-8 that should be to unicode.
+  * Fixed dingus link in tools/template.html.
+  * Replaced obsolete reference to `spec2md.pl` in spec (#304).
+
 [0.18]
 
   * Added a shortcut link test with mismatched brackets (#282).
