@@ -5063,9 +5063,9 @@ both left- and right-flanking, because it is preceded by
 punctuation:
 
 .
-foo-_(bar)_
+foo-__(bar)__
 .
-<p>foo-<em>(bar)</em></p>
+<p>foo-<strong>(bar)</strong></p>
 .
 
 
@@ -5177,9 +5177,9 @@ both left- and right-flanking, because it is followed by
 punctuation:
 
 .
-_(bar)_.
+__(bar)__.
 .
-<p><em>(bar)</em>.</p>
+<p><strong>(bar)</strong>.</p>
 .
 
 Rule 9:
