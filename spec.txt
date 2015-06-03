@@ -569,8 +569,11 @@ prevent things like the following from being parsed as headers:
 
 .
 #5 bolt
+
+#foobar
 .
 <p>#5 bolt</p>
+<p>#foobar</p>
 .
 
 This is not a header, because the first `#` is escaped:
