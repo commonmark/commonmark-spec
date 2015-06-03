@@ -3835,9 +3835,11 @@ item:
  - b
   - c
    - d
-  - e
- - f
-- g
+    - e
+   - f
+  - g
+ - h
+- i
 .
 <ul>
 <li>a</li>
@@ -3847,6 +3849,8 @@ item:
 <li>e</li>
 <li>f</li>
 <li>g</li>
+<li>h</li>
+<li>i</li>
 </ul>
 .
 
