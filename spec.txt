@@ -215,9 +215,6 @@ followed by a [line ending] or by the end of file.
 A [line ending](@line-ending) is a newline (`U+000A`), carriage return
 (`U+000D`), or carriage return + newline.
 
-For security reasons, a conforming parser must strip or replace the
-Unicode character `U+0000`.
-
 A line containing no characters, or a line containing only spaces
 (`U+0020`) or tabs (`U+0009`), is called a [blank line](@blank-line).
 
@@ -268,6 +265,11 @@ Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
 ὐ   a
 </code></pre>
 .
+
+## Insecure characters
+
+For security reasons, the Unicode character `U+0000` must be replaced
+with the replacement character (`U+FFFD`).
 
 # Blocks and inlines
 
