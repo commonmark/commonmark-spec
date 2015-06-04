@@ -6095,6 +6095,7 @@ that [matches] a [link reference definition] elsewhere in the document.
 
 A [link label](@link-label)  begins with a left bracket (`[`) and ends
 with the first right bracket (`]`) that is not backslash-escaped.
+Between these brackets there must be at least one non-[whitespace character].
 Unescaped square bracket characters are not allowed in
 [link label]s.  A link label can have at most 999
 characters inside the square brackets.
@@ -6339,6 +6340,30 @@ backslash-escaped:
 [ref\[]: /uri
 .
 <p><a href="/uri">foo</a></p>
+.
+
+A [link label] must contain at least one non-[whitespace character]:
+
+.
+[]
+
+[]: /uri
+.
+<p>[]</p>
+<p>[]: /uri</p>
+.
+
+.
+[
+ ]
+
+[
+ ]: /uri
+.
+<p>[
+ ]</p>
+<p>[
+ ]: /uri</p>
 .
 
 A [collapsed reference link](@collapsed-reference-link)
