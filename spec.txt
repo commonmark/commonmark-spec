@@ -4285,13 +4285,14 @@ corresponding codepoints.
 [Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
 entities need to be recognised and transformed into their corresponding
-unicode codepoints. Invalid unicode codepoints will be written as the
-"unknown codepoint" character (`0xFFFD`)
+unicode codepoints. Invalid unicode codepoints will be replaced by
+the "unknown codepoint" character (`U+FFFD`).  For security reasons,
+the codepoint `U+0000` will also be replaced by `U+FFFD`.
 
 .
-&#35; &#1234; &#992; &#98765432;
+&#35; &#1234; &#992; &#98765432; &#0;
 .
-<p># Ӓ Ϡ �</p>
+<p># Ӓ Ϡ � �</p>
 .
 
 [Hexadecimal entities](@hexadecimal-entities)
