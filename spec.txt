@@ -6361,9 +6361,9 @@ A [link label] must contain at least one non-[whitespace character]:
  ]: /uri
 .
 <p>[
- ]</p>
+]</p>
 <p>[
- ]: /uri</p>
+]: /uri</p>
 .
 
 A [collapsed reference link](@collapsed-reference-link)
