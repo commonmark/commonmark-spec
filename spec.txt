@@ -235,7 +235,10 @@ carriage return (`U+000D`), newline (`U+000A`), or form feed
 [Unicode whitespace](@unicode-whitespace) is a sequence of one
 or more [unicode whitespace character]s.
 
-A [non-space character](@non-space-character) is anything but `U+0020`.
+A [space](@space) is `U+0020`.
+
+A [non-space character](@non-space-character) is any character
+that is not a [whitespace character].
 
 An [ASCII punctuation character](@ascii-punctuation-character)
 is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
@@ -248,7 +251,8 @@ the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tab expansion
 
-Tabs in lines are expanded to spaces, with a tab stop of 4 characters:
+Tabs in lines are expanded to [spaces][space], with a tab stop of
+4 characters:
 
 .
 →foo→baz→→bim
@@ -277,8 +281,8 @@ We can think of a document as a sequence of
 [blocks](@block)---structural elements like paragraphs, block
 quotations, lists, headers, rules, and code blocks.  Some blocks (like
 block quotes and list items) contain other blocks; others (like
-headers and paragraphs) contain [inline](@inline) content---words,
-spaces, links, emphasized text, images, and inline code.
+headers and paragraphs) contain [inline](@inline) content---text,
+links, emphasized text, images, code, and so on.
 
 ## Precedence
 
@@ -529,12 +533,12 @@ consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
 of `#` characters cannot be followed directly by a
-[non-space character].
-The optional closing sequence of `#`s must be preceded by a space and may be
-followed by spaces only.  The opening `#` character may be indented 0-3
-spaces.  The raw contents of the header are stripped of leading and
-trailing spaces before being parsed as inline content.  The header level
-is equal to the number of `#` characters in the opening sequence.
+[non-space character]. The optional closing sequence of `#`s must be
+preceded by a [space] and may be followed by spaces only.  The opening
+`#` character may be indented 0-3 spaces.  The raw contents of the
+header are stripped of leading and trailing spaces before being parsed
+as inline content.  The header level is equal to the number of `#`
+characters in the opening sequence.
 
 Simple headers:
 
@@ -562,11 +566,13 @@ More than six `#` characters is not a header:
 <p>####### foo</p>
 .
 
-A space is required between the `#` characters and the header's
-contents.  Note that many implementations currently do not require
-the space.  However, the space was required by the [original ATX
-implementation](http://www.aaronsw.com/2002/atx/atx.py), and it helps
-prevent things like the following from being parsed as headers:
+At least one space is required between the `#` characters and the
+header's contents, unless the header is empty.  Note that many
+implementations currently do not require the space.  However, the
+space was required by the
+[original ATX implementation](http://www.aaronsw.com/2002/atx/atx.py),
+and it helps prevent things like the following from being parsed as
+headers:
 
 .
 #5 bolt
