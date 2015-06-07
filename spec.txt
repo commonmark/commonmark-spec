@@ -274,11 +274,11 @@ with the replacement character (`U+FFFD`).
 # Blocks and inlines
 
 We can think of a document as a sequence of
-[blocks](@block)---structural
-elements like paragraphs, block quotations,
-lists, headers, rules, and code blocks.  Blocks can contain other
-blocks, or they can contain [inline](@inline) content:
-words, spaces, links, emphasized text, images, and inline code.
+[blocks](@block)---structural elements like paragraphs, block
+quotations, lists, headers, rules, and code blocks.  Some blocks (like
+block quotes and list items) contain other blocks; others (like
+headers and paragraphs) contain [inline](@inline) content---words,
+spaces, links, emphasized text, images, and inline code.
 
 ## Precedence
 
