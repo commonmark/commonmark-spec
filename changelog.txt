@@ -8,6 +8,10 @@
     platform-dependent (#326).  We now count `\r`, `\n`,
     or `\r\n` as a line ending regardless of the platform.
     (The line ending styles can even be mixed in a single document.)
+  * Define "space."
+  * Revise "non-space character". Previously a non-space character
+    was defined as anything but a space (U+0020).  Now it is anything
+    that is not a whitespace character (as defined in the spec).
   * Added a test case with `#` directly followed by a letter
     (not an ATX header).
   * Added two test cases illustrating that a list at the
