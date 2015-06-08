@@ -249,10 +249,10 @@ A [punctuation character](@punctuation-character) is an [ASCII
 punctuation character] or anything in
 the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
-## Tab expansion
+## Preprocessing
 
-Tabs in lines are expanded to [spaces][space], with a tab stop of
-4 characters:
+Tabs in lines are immediately expanded to [spaces][space], with a tab
+stop of 4 characters:
 
 .
 →foo→baz→→bim
