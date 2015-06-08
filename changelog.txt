@@ -14,6 +14,8 @@
     that is not a whitespace character (as defined in the spec).
   * Clarified that tab expansion is a preprocessing step (#330).
   * Clarified lazy block quote examples (#328).
+  * Clarified precedence of indentation that meets conditions for
+    both list item continuation blocks and indented code.
   * Added a test case with `#` directly followed by a letter
     (not an ATX header).
   * Added two test cases illustrating that a list at the

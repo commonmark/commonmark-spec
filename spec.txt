@@ -1034,7 +1034,41 @@ paragraph.)
 </code></pre>
 .
 
-The contents are literal text, and do not get parsed as Markdown:
+If there is any ambiguity between an interpretation of indentation
+as a code block and as indicating that material belongs to a [list
+item][list items], the list item interpretation takes precedence:
+
+.
+  - foo
+
+    bar
+.
+<ul>
+<li>
+<p>foo</p>
+<p>bar</p>
+</li>
+</ul>
+.
+
+.
+1.  foo
+
+    - bar
+.
+<ol>
+<li>
+<p>foo</p>
+<ul>
+<li>bar</li>
+</ul>
+</li>
+</ol>
+.
+
+
+The contents of a code block are literal text, and do not get parsed
+as Markdown:
 
 .
     <a/>
