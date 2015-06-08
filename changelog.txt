@@ -2,17 +2,18 @@
 
   * Require at least one nonspace character in a link label (#322).
   * Require replacement (rather than omission) of U+0000 (#327).
-  * Clarify that entities resolving to U+0000 are to be
+  * Clarified that entities resolving to U+0000 are to be
     replaced by U+FFFD (#323).
   * Removed statement that what counts as a line ending is
     platform-dependent (#326).  We now count `\r`, `\n`,
     or `\r\n` as a line ending regardless of the platform.
     (The line ending styles can even be mixed in a single document.)
-  * Define "space."
-  * Revise "non-space character". Previously a non-space character
+  * Defined "space."
+  * Revised "non-space character". Previously a non-space character
     was defined as anything but a space (U+0020).  Now it is anything
     that is not a whitespace character (as defined in the spec).
-  * Clarify that tab expansion is a preprocessing step (#330).
+  * Clarified that tab expansion is a preprocessing step (#330).
+  * Clarified lazy block quote examples (#328).
   * Added a test case with `#` directly followed by a letter
     (not an ATX header).
   * Added two test cases illustrating that a list at the

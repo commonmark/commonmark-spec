@@ -2335,9 +2335,16 @@ foo</p>
 </blockquote>
 .
 
-Laziness only applies to lines that are continuations of
-paragraphs. Lines containing characters or indentation that indicate
-block structure cannot be lazy.
+Laziness only applies to lines that would have been continuations of
+paragraphs had they been prepended with `>`.  For example, the
+`>` cannot be omitted in the second line of
+
+``` markdown
+> foo
+> ---
+```
+
+without changing the meaning:
 
 .
 > foo
@@ -2348,6 +2355,15 @@ block structure cannot be lazy.
 </blockquote>
 <hr />
 .
+
+Similarly, if we omit the `>` in the second line of
+
+``` markdown
+> - foo
+> - bar
+```
+
+then the block quote ends after the first line:
 
 .
 > - foo
@@ -2362,6 +2378,9 @@ block structure cannot be lazy.
 <li>bar</li>
 </ul>
 .
+
+For the same reason, we can't omit the `>` in front of
+subsequent lines of an indented or fenced code block:
 
 .
 >     foo
