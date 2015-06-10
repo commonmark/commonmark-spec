@@ -5728,6 +5728,11 @@ Rule 15:
 <p><em><em>foo</em>bar</em>*</p>
 .
 
+.
+*foo __bar *baz bim__ bam*
+.
+<p><em>foo <strong>bar *baz bim</strong> bam</em></p>
+.
 
 Rule 16:
 
