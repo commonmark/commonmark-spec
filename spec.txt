@@ -5818,7 +5818,9 @@ A [link text](@link-text) consists of a sequence of zero or more
 inline elements enclosed by square brackets (`[` and `]`).  The
 following rules apply:
 
-- Links may not contain other links, at any level of nesting.
+- Links may not contain other links, at any level of nesting. If
+  multiple otherwise valid link definitions appear nested inside each
+  other, the inner-most definition is used.
 
 - Brackets are allowed in the [link text] only if (a) they
   are backslash-escaped or (b) they appear as a matched pair of brackets,
