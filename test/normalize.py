@@ -21,7 +21,8 @@ class MyHTMLParser(HTMLParser):
         after_block_tag = after_tag and self.is_block_tag(self.last_tag)
         if after_tag and self.last_tag == "br":
             data = data.lstrip('\n')
-        data = whitespace_re.sub(' ', data)
+        if not self.in_pre:
+            data = whitespace_re.sub(' ', data)
         if after_block_tag and not self.in_pre:
             if self.last == "starttag":
                 data = data.lstrip()
