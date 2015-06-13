@@ -1953,6 +1953,17 @@ The link destination may not be omitted:
 <p>[foo]</p>
 .
 
+Both title and destination can contain backslash escapes
+and literal backslashes:
+
+.
+[foo]: /url\bar\*baz "foo\"bar\baz"
+
+[foo]
+.
+<p><a href="/url%5Cbar*baz" title="foo&quot;bar\baz">foo</a></p>
+.
+
 A link can come before its corresponding definition:
 
 .
@@ -5976,6 +5987,15 @@ in Markdown:
 [link](foo\)\:)
 .
 <p><a href="foo):">link</a></p>
+.
+
+Note that a backslash before a non-escapable character is
+just a backslash:
+
+.
+[link](foo\bar)
+.
+<p><a href="foo%5Cbar">link</a></p>
 .
 
 URL-escaping should be left alone inside the destination, as all
