@@ -4356,9 +4356,13 @@ is used as an authoritative source of the valid entity names and their
 corresponding codepoints.
 
 .
-&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral;
+&nbsp; &amp; &copy; &AElig; &Dcaron;
+&frac34; &HilbertSpace; &DifferentialD;
+&ClockwiseContourIntegral; &ngE;
 .
-<p>  &amp; © Æ Ď ¾ ℋ ⅆ ∲</p>
+<p>  &amp; © Æ Ď
+¾ ℋ ⅆ
+∲ ≧̸</p>
 .
 
 [Decimal entities](@decimal-entities)
