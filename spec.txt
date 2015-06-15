@@ -2033,6 +2033,15 @@ This is not a link reference definition, because there are
 <p>[foo]: /url &quot;title&quot; ok</p>
 .
 
+This is a link reference definition, but it has no title:
+
+.
+[foo]: /url
+"title" ok
+.
+<p>&quot;title&quot; ok</p>
+.
+
 This is not a link reference definition, because it is indented
 four spaces:
 
