@@ -249,15 +249,24 @@ A [punctuation character](@punctuation-character) is an [ASCII
 punctuation character] or anything in
 the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
-## Preprocessing
+## Tabs
 
-Tabs in lines are immediately expanded to [spaces][space], with a tab
-stop of 4 characters:
+Tabs in lines are not expanded to [spaces][space].  However,
+in contexts where indentation is significant for the
+document's structure, tabs behave as if they were replaced
+by spaces with a tab stop of 4 characters.
 
 .
 →foo→baz→→bim
 .
-<pre><code>foo baz     bim
+<pre><code>foo→baz→→bim
+</code></pre>
+.
+
+.
+  →foo→baz→→bim
+.
+<pre><code>foo→baz→→bim
 </code></pre>
 .
 
@@ -265,10 +274,32 @@ stop of 4 characters:
     a→a
     ὐ→a
 .
-<pre><code>a   a
-ὐ   a
+<pre><code>a→a
+ὐ→a
 </code></pre>
 .
+
+.
+  - foo
+
+→bar
+.
+<ul>
+<li>
+<p>foo</p>
+<p>bar</p>
+</li>
+</ul>
+.
+
+.
+>→foo→bar
+.
+<blockquote>
+<p>foo→bar</p>
+</blockquote>
+.
+
 
 ## Insecure characters
 
@@ -4251,7 +4282,7 @@ backslashes:
 .
 \→\A\a\ \3\φ\«
 .
-<p>\   \A\a\ \3\φ\«</p>
+<p>\→\A\a\ \3\φ\«</p>
 .
 
 Escaped characters are treated as regular characters and do
