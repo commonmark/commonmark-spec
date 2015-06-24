@@ -237,7 +237,7 @@ or more [unicode whitespace character]s.
 
 A [space](@space) is `U+0020`.
 
-A [non-space character](@non-space-character) is any character
+A [non-whitespace character](@non-space-character) is any character
 that is not a [whitespace character].
 
 An [ASCII punctuation character](@ascii-punctuation-character)
@@ -474,7 +474,7 @@ a------
 <p>---a---</p>
 .
 
-It is required that all of the [non-space character]s be the same.
+It is required that all of the [non-whitespace character]s be the same.
 So, this is not a horizontal rule:
 
 .
@@ -564,7 +564,7 @@ consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of `#` characters.  The opening sequence
 of `#` characters cannot be followed directly by a
-[non-space character]. The optional closing sequence of `#`s must be
+[non-whitespace character]. The optional closing sequence of `#`s must be
 preceded by a [space] and may be followed by spaces only.  The opening
 `#` character may be indented 0-3 spaces.  The raw contents of the
 header are stripped of leading and trailing spaces before being parsed
@@ -696,7 +696,7 @@ Spaces are allowed after the closing sequence:
 .
 
 A sequence of `#` characters with a
-[non-space character] following it
+[non-whitespace character] following it
 is not a closing sequence, but counts as part of the contents of the
 header:
 
@@ -765,7 +765,7 @@ ATX headers can be empty:
 ## Setext headers
 
 A [setext header](@setext-header)
-consists of a line of text, containing at least one [non-space character],
+consists of a line of text, containing at least one [non-whitespace character],
 with no more than 3 spaces indentation, followed by a [setext header
 underline].  The line of text must be
 one that, were it not followed by the setext header underline,
@@ -1885,7 +1885,7 @@ optional [whitespace] (including up to one
 [line ending]), and an optional [link
 title], which if it is present must be separated
 from the [link destination] by [whitespace].
-No further [non-space character]s may occur on the line.
+No further [non-whitespace character]s may occur on the line.
 
 A [link reference definition]
 does not correspond to a structural element of a document.  Instead, it
@@ -2056,7 +2056,7 @@ bar
 .
 
 This is not a link reference definition, because there are
-[non-space character]s after the title:
+[non-whitespace character]s after the title:
 
 .
 [foo]: /url "title" ok
@@ -2323,7 +2323,7 @@ The following rules define [block quotes]:
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quotes) with contents *Bs*, then the result of deleting
     the initial [block quote marker] from one or
-    more lines in which the next [non-space character] after the [block
+    more lines in which the next [non-whitespace character] after the [block
     quote marker] is [paragraph continuation
     text] is a block quote with *Bs* as its content.
     [Paragraph continuation text](@paragraph-continuation-text) is text
@@ -2700,7 +2700,7 @@ is a sequence of one of more digits (`0-9`), followed by either a
 The following rules define [list items]:
 
 1.  **Basic case.**  If a sequence of lines *Ls* constitute a sequence of
-    blocks *Bs* starting with a [non-space character] and not separated
+    blocks *Bs* starting with a [non-whitespace character] and not separated
     from each other by more than one blank line, and *M* is a list
     marker of width *W* followed by 0 < *N* < 5 spaces, then the result
     of prepending *M* and the following spaces to the first line of
@@ -2758,7 +2758,7 @@ The most important thing to notice is that the position of
 the text after the list marker determines how much indentation
 is needed in subsequent blocks in the list item.  If the list
 marker takes up two spaces, and there are three spaces between
-the list marker and the next [non-space character], then blocks
+the list marker and the next [non-whitespace character], then blocks
 must be indented five spaces in order to fall under the list
 item.
 
@@ -2816,7 +2816,7 @@ put under the list item:
 
 It is tempting to think of this in terms of columns:  the continuation
 blocks must be indented at least to the column of the first
-[non-space character] after the list marker. However, that is not quite right.
+[non-whitespace character] after the list marker. However, that is not quite right.
 The spaces after the list marker determine how much relative indentation
 is needed.  Which column this indentation reaches will depend on
 how the list item is embedded in other constructions, as shown by
@@ -3069,7 +3069,7 @@ inside the code block:
 
 Note that rules #1 and #2 only apply to two cases:  (a) cases
 in which the lines to be included in a list item begin with a
-[non-space character], and (b) cases in which
+[non-whitespace character], and (b) cases in which
 they begin with an indented code
 block.  In a case like the following, where the first block begins with
 a three-space indent, the rules do not allow us to form a list item by
@@ -3301,7 +3301,7 @@ Four spaces indent gives a code block:
 5.  **Laziness.**  If a string of lines *Ls* constitute a [list
     item](#list-items) with contents *Bs*, then the result of deleting
     some or all of the indentation from one or more lines in which the
-    next [non-space character] after the indentation is
+    next [non-whitespace character] after the indentation is
     [paragraph continuation text] is a
     list item with the same contents and attributes.  The unindented
     lines are called
@@ -6245,7 +6245,7 @@ that [matches] a [link reference definition] elsewhere in the document.
 
 A [link label](@link-label)  begins with a left bracket (`[`) and ends
 with the first right bracket (`]`) that is not backslash-escaped.
-Between these brackets there must be at least one non-[whitespace character].
+Between these brackets there must be at least one [non-whitespace character].
 Unescaped square bracket characters are not allowed in
 [link label]s.  A link label can have at most 999
 characters inside the square brackets.
@@ -6492,7 +6492,7 @@ backslash-escaped:
 <p><a href="/uri">foo</a></p>
 .
 
-A [link label] must contain at least one non-[whitespace character]:
+A [link label] must contain at least one [non-whitespace character]:
 
 .
 []
