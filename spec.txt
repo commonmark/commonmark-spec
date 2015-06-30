@@ -6031,21 +6031,18 @@ in Markdown:
 <p><a href="foo):">link</a></p>
 .
 
-A link can start with a fragment identifier:
+A link can contain fragment identifiers and queries:
 
 .
 [link](#fragment)
+
+[link](http://example.com#fragment)
+
+[link](http://example.com?foo=bar&baz#fragment)
 .
 <p><a href="#fragment">link</a></p>
-.
-
-
-A link can start also contain a a fragment identifier:
-
-.
-[link](http://example.com#fragment)
-.
 <p><a href="http://example.com#fragment">link</a></p>
+<p><a href="http://example.com?foo=bar&baz#fragment">link</a></p>
 .
 
 Note that a backslash before a non-escapable character is
