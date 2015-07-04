@@ -6,8 +6,8 @@ from difflib import unified_diff
 import argparse
 import re
 import json
-from normalize import normalize_html
 from cmark import CMark
+from normalize import normalize_html
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run cmark tests.')
@@ -96,7 +96,7 @@ def get_tests(specfile):
                     end_line = line_number
                     tests.append({
                         "markdown":''.join(markdown_lines).replace('→',"\t"),
-                        "html":''.join(html_lines),
+                        "html":''.join(html_lines).replace('→',"\t"),
                         "example": example_number,
                         "start_line": start_line,
                         "end_line": end_line,
