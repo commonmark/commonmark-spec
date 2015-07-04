@@ -52,7 +52,7 @@ def do_test(test, normalize, result_counts):
             result_counts['pass'] += 1
         else:
             print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
-            sys.stdout.write(test['markdown'])
+            sys.stdout.buffer.write(test['markdown'].encode('utf-8'))
             if unicode_error:
                 print("Unicode error: " + str(unicode_error))
                 print("Expected: " + repr(expected_html))
@@ -62,7 +62,7 @@ def do_test(test, normalize, result_counts):
                 actual_html_lines = actual_html.splitlines(True)
                 for diffline in unified_diff(expected_html_lines, actual_html_lines,
                                 "expected HTML", "actual HTML"):
-                    sys.stdout.write(diffline)
+                    sys.stdout.buffer.write(diffline.encode('utf-8'))
             sys.stdout.write('\n')
             result_counts['fail'] += 1
     else:
