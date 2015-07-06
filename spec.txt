@@ -7121,7 +7121,7 @@ consists of `"`, zero or more
 characters not including `"`, and a final `"`.
 
 An [open tag](@open-tag) consists of a `<` character, a [tag name],
-zero or more [attributes], optional [whitespace], an optional `/`
+zero or more [attributes](@attribute], optional [whitespace], an optional `/`
 character, and a `>` character.
 
 A [closing tag](@closing-tag) consists of the string `</`, a
