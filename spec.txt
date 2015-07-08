@@ -242,8 +242,10 @@ that is not a [whitespace character].
 
 An [ASCII punctuation character](@ascii-punctuation-character)
 is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
-`*`, `+`, `,`, `-`, `.`, `/`, `:`, `;`, `<`, `=`, `>`, `?`, `@`,
-`[`, `\`, `]`, `^`, `_`, `` ` ``, `{`, `|`, `}`, or `~`.
+`*`, `+`, `,`, `-`, `.`, `/` (U+0021–2F), 
+`:`, `;`, `<`, `=`, `>`, `?`, `@` (U+003A–0040),
+`[`, `\`, `]`, `^`, `_`, `` ` `` (U+005B–0060), 
+`{`, `|`, `}`, or `~` (U+007B–007E).
 
 A [punctuation character](@punctuation-character) is an [ASCII
 punctuation character] or anything in
@@ -252,7 +254,8 @@ the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 ## Preprocessing
 
 Tabs in lines are immediately expanded to [spaces][space], with a tab
-stop of 4 characters:
+width of 4 characters:
+<!-- A tab _stop_ of 4 characters would imply that there was a jump position every 4th character from the left, adjoining spaces could be collapsed. This is not hte case. -->
 
 .
 →foo→baz→→bim
@@ -324,7 +327,7 @@ Markdown document.
 ## Horizontal rules
 
 A line consisting of 0-3 spaces of indentation, followed by a sequence
-of three or more matching `-`, `_`, or `*` characters, each followed
+of 3 or more matching `-`, `_`, or `*` characters, each followed
 optionally by any number of spaces, forms a
 [horizontal rule](@horizontal-rule).
 
@@ -364,7 +367,7 @@ __
 __</p>
 .
 
-One to three spaces indent are allowed:
+Indentation of 1–3 spaces are allowed:
 
 .
  ***
@@ -376,7 +379,7 @@ One to three spaces indent are allowed:
 <hr />
 .
 
-Four spaces is too many:
+4 spaces is too many:
 
 .
     ***
@@ -393,7 +396,7 @@ Foo
 ***</p>
 .
 
-More than three characters may be used:
+More than 3 characters may be used:
 
 .
 _____________________________________
@@ -441,6 +444,22 @@ a------
 <p>_ _ _ _ a</p>
 <p>a------</p>
 <p>---a---</p>
+.
+
+2 spaces at the end do not establish a continuation on the next line of code:
+
+.
+---  
+---
+
+---  
+a
+.
+<hr />
+<hr />
+
+<hr />
+<p>a</p>
 .
 
 It is required that all of the [non-space character]s be the same.
@@ -731,10 +750,37 @@ ATX headers can be empty:
 <h3></h3>
 .
 
+### Header identifiers
+
+Headers may be used to generate a table of contents. 
+Authors and readers commonly want to target links at headers. 
+Therefore, an implementation may choose to 
+add unique anchors to all headers 
+which are automatically generated from their textual content 
+and, if necessary to disambiguate, upper-level headers. 
+If that does not result in unique identifiers, 
+a counter may be added.
+
+.
+# Foo
+## Bar
+## Baz
+# Quuz
+## Baz
+# Foo
+.
+<h1 id="foo">Foo</h1>
+<h2 id="bar">Bar</h2>
+<h2 id="baz">Baz</h2>
+<h1 id="quuz">Quuz</h1>
+<h2 id="baz_(quuz)">Baz</h2>
+<h1 id="foo-1">Foo</h1>
+.
+
 ## Setext headers
 
 A [setext header](@setext-header)
-consists of a line of text, containing at least one [non-space character],
+consists of a line of text, containing at least 1 [non-space character],
 with no more than 3 spaces indentation, followed by a [setext header
 underline].  The line of text must be
 one that, were it not followed by the setext header underline,
@@ -747,7 +793,7 @@ A [setext header underline](@setext-header-underline) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
 spaces indentation and any number of trailing spaces.  If a line
 containing a single `-` can be interpreted as an
-empty [list items], it should be interpreted this way
+empty [list item][list items], it should be interpreted this way
 and not as a [setext header underline].
 
 The header is a level 1 header if `=` characters are used in the
@@ -786,7 +832,7 @@ Foo
 <h1>Foo</h1>
 .
 
-The header content can be indented up to three spaces, and need
+The header content can be indented up to 3 spaces, and need
 not line up with the underlining:
 
 .
@@ -804,7 +850,7 @@ not line up with the underlining:
 <h1>Foo</h1>
 .
 
-Four spaces indent is too much:
+4 spaces indent is too much:
 
 .
     Foo
@@ -821,7 +867,7 @@ Foo
 <hr />
 .
 
-The setext header underline can be indented up to three spaces, and
+The setext header underline can be indented up to 3 spaces, and
 may have trailing spaces:
 
 .
@@ -831,7 +877,7 @@ Foo
 <h2>Foo</h2>
 .
 
-Four spaces is too much:
+4 spaces is too much:
 
 .
 Foo
@@ -1083,7 +1129,7 @@ as Markdown:
 </code></pre>
 .
 
-Here we have three chunks separated by blank lines:
+Here we have 3 chunks separated by blank lines:
 
 .
     chunk1
@@ -1104,7 +1150,7 @@ chunk3
 </code></pre>
 .
 
-Any initial spaces beyond four will be included in the content, even
+Any initial spaces beyond 4 will be included in the content, even
 in interior blank lines:
 
 .
@@ -1130,7 +1176,7 @@ Foo
 bar</p>
 .
 
-However, any non-blank line with fewer than four leading spaces ends
+However, any non-blank line with fewer than 4 leading spaces ends
 the code block immediately.  So a paragraph may occur immediately
 after indented code:
 
@@ -1201,10 +1247,10 @@ Trailing spaces are included in the code block's content:
 ## Fenced code blocks
 
 A [code fence](@code-fence) is a sequence
-of at least three consecutive backtick characters (`` ` ``) or
+of at least 3 consecutive backtick characters (`` ` ``) or
 tildes (`~`).  (Tildes and backticks cannot be mixed.)
 A [fenced code block](@fenced-code-block)
-begins with a code fence, indented no more than three spaces.
+begins with a code fence, indented no more than 3 spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
@@ -1223,7 +1269,7 @@ each line of the content (if present).  (If a content line is not
 indented, it is preserved unchanged.  If it is indented less than N
 spaces, all of the indentation is removed.)
 
-The closing code fence may be indented up to three spaces, and may be
+The closing code fence may be indented up to 3 spaces, and may be
 followed only by spaces, which are ignored.  If the end of the
 containing block (or document) is reached and no closing code fence
 has been found, the code block contains all of the lines after the
@@ -1241,6 +1287,9 @@ as inlines.  The first word of the [info string] is typically used to
 specify the language of the code sample, and rendered in the `class`
 attribute of the `code` tag.  However, this spec does not mandate any
 particular treatment of the [info string].
+That means, extensions may use the info, for instance, 
+to highlight the syntax with different colors 
+or to parse and evaluate the code, e.g. to create a diagram.
 
 Here is a simple example with backticks:
 
