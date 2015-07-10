@@ -1904,14 +1904,14 @@ A pre tag (type 1):
 import Text.HTML.TagSoup
 
 main :: IO ()
-main = print $ parseTags "<a href=\"foo\">bar</a>"
+main = print $ parseTags tags
 </code></pre>
 .
 <pre language="haskell"><code>
 import Text.HTML.TagSoup
 
 main :: IO ()
-main = print $ parseTags "<a href=\"foo\">bar</a>"
+main = print $ parseTags tags
 </code></pre>
 .
 
