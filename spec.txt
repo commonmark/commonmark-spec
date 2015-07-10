@@ -210,7 +210,8 @@ of characters rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
 A [line](@line) is a sequence of zero or more [character]s
-followed by a [line ending] or by the end of file.
+following a [line ending] (or the beginning of the file) and
+followed by a [line ending] (or the end of the file).
 
 A [line ending](@line-ending) is a newline (`U+000A`), carriage return
 (`U+000D`), or carriage return + newline.
