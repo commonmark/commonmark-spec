@@ -210,8 +210,7 @@ of characters rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
 A [line](@line) is a sequence of zero or more [character]s
-following a [line ending] (or the beginning of the file) and
-followed by a [line ending] (or the end of the file).
+followed by a [line ending] or by the end of file.
 
 A [line ending](@line-ending) is a newline (`U+000A`), carriage return
 (`U+000D`), or carriage return + newline.
@@ -229,7 +228,9 @@ form feed (`U+000C`), or carriage return (`U+000D`).
 character]s.
 
 A [unicode whitespace character](@unicode-whitespace-character) is
-any [whitespace character] or code point in the unicode `Zs` class.
+any code point in the unicode `Zs` class, or a tab (`U+0009`),
+carriage return (`U+000D`), newline (`U+000A`), or form feed
+(`U+000C`).
 
 [Unicode whitespace](@unicode-whitespace) is a sequence of one
 or more [unicode whitespace character]s.
@@ -1592,27 +1593,65 @@ Closing code fences cannot have [info string]s:
 
 ## HTML blocks
 
-An [HTML block tag](@html-block-tag) is
-an [open tag] or [closing tag] whose tag
-name is one of the following (case-insensitive):
-`article`, `header`, `aside`, `hgroup`, `blockquote`, `hr`, `iframe`,
-`body`, `li`, `map`, `button`, `object`, `canvas`, `ol`, `caption`,
-`output`, `col`, `p`, `colgroup`, `pre`, `dd`, `progress`, `div`,
-`section`, `dl`, `table`, `td`, `dt`, `tbody`, `embed`, `textarea`,
-`fieldset`, `tfoot`, `figcaption`, `th`, `figure`, `thead`, `footer`,
-`tr`, `form`, `ul`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `video`,
-`script`, `style`.
+An [HTML block](@html-block) is a group of lines that is treated
+as raw HTML (and will not be escaped in HTML output).
 
-An [HTML block](@html-block) begins with an
-[HTML block tag], [HTML comment], [processing instruction],
-[declaration], or [CDATA section].
-It ends when a [blank line] or the end of the
-input is encountered.  The initial line may be indented up to three
-spaces, and subsequent lines may have any indentation.  The contents
-of the HTML block are interpreted as raw HTML, and will not be escaped
-in HTML output.
+There are seven kinds of [HTML block], which can be defined
+by their start and end conditions.  The block begins with a line that
+meets a [start condition](@start-condition) (after up to three spaces
+optional indentation).  It ends with the first subsequent line that
+meets a matching [end condition](@end-condition), or the last line of
+the document, if no line is encountered that meets the
+[end condition].  If the first line meets both the [start condition]
+and the [end condition], the block will contain just that line.
 
-Some simple examples:
+1.  **Start condition:**  line begins with the string `<script`,
+`<pre`, or `<style` (case-insensitive), followed by whitespace,
+the string `>`, or the end of the line.\
+**End condition:**  line contains an end tag
+`</script>`, `</pre>`, or `</style>` (case-insensitive; it
+need not match the start tag).
+
+2.  **Start condition:** line begins with the string `<!--`.\
+**End condition:**  line contains the string `-->`.
+
+3.  **Start condition:** line begins with the string `<?`.\
+**End condition:** line contains the string `?>`.
+
+4.  **Start condition:** line begins with the string `<!`
+followed by an uppercase ASCII letter.\
+**End condition:** line contains the character `>`.
+
+5.  **Start condition:**  line begins with the string
+`<![CDATA[`.\
+**End condition:** line contains the string `]]>`.
+
+6.  **Start condition:** line begins the string `<` or `</`
+followed by one of the strings (case-insensitive) `address`,
+`article`, `aside`, `base`, `basefont`, `blockquote`, `body`,
+`caption`, `center`, `col`, `colgroup`, `dd`, `details`, `dialog`,
+`dir`, `div`, `dl`, `dt`, `fieldset`, `figcaption`, `figure`,
+`footer`, `form`, `frame`, `frameset`, `h1`, `head`, `header`, `hr`,
+`html`, `legend`, `li`, `link`, `main`, `menu`, `menuitem`, `meta`,
+`nav`, `noframes`, `ol`, `optgroup`, `option`, `p`, `param`, `pre`,
+`section`, `source`, `title`, `summary`, `table`, `tbody`, `td`,
+`tfoot`, `th`, `thead`, `title`, `tr`, `track`, `ul`, followed
+by [whitespace], the end of the line, the string `>`, or
+the string `/>`.\
+**End condition:** line is followed by a [blank line].
+
+7.  **Start condition:**  line begins with an [open tag]
+(with any [tag name]) followed only by [whitespace] or the end
+of the line.\
+**End condition:** line is followed by a [blank line].
+
+All types of [HTML blocks] except type 7 may interrupt
+a paragraph.  Blocks of type 7 may not interrupt a paragraph.
+(This restricted is intended to prevent unwanted interpretation
+of long tags inside a wrapped paragraph as starting HTML blocks.)
+
+Some simple examples follow.  Here are some basic HTML blocks
+of type 6:
 
 .
 <table>
@@ -1645,6 +1684,16 @@ okay.
          <foo><a>
 .
 
+A block can also start with a closing tag:
+
+.
+</div>
+*foo*
+.
+</div>
+*foo*
+.
+
 Here we have two HTML blocks with a Markdown paragraph between them:
 
 .
@@ -1659,7 +1708,94 @@ Here we have two HTML blocks with a Markdown paragraph between them:
 </DIV>
 .
 
-In the following example, what looks like a Markdown code block
+The tag on the first line can be partial, as long
+as it is split where there would be whitespace:
+
+.
+<div id="foo"
+  class="bar">
+</div>
+.
+<div id="foo"
+  class="bar">
+</div>
+.
+
+.
+<div id="foo" class="bar
+  baz">
+</div>
+.
+<div id="foo" class="bar
+  baz">
+</div>
+.
+
+An open tag need not be closed:
+.
+<div>
+*foo*
+
+*bar*
+.
+<div>
+*foo*
+<p><em>bar</em></p>
+.
+
+
+A partial tag need not even be completed (garbage
+in, garbage out):
+
+.
+<div id="foo"
+*hi*
+.
+<div id="foo"
+*hi*
+.
+
+.
+<div class
+foo
+.
+<div class
+foo
+.
+
+The initial tag doesn't even need to be a valid
+tag, as long as it starts like one:
+
+.
+<div *???-&&&-<---
+*foo*
+.
+<div *???-&&&-<---
+*foo*
+.
+
+In type 6 blocks, the initial tag need not be on a line by
+itself:
+
+.
+<div><a href="bar">*foo*</a></div>
+.
+<div><a href="bar">*foo*</a></div>
+.
+
+.
+<table><tr><td>
+foo
+</td></tr></table>
+.
+<table><tr><td>
+foo
+</td></tr></table>
+.
+
+Everything until the next blank line or end of document
+gets included in the HTML block.  So, in the following
+example, what looks like a Markdown code block
 is actually part of the HTML block, which continues until a blank
 line or the end of the document is reached:
 
@@ -1675,43 +1811,241 @@ int x = 33;
 ```
 .
 
-A comment:
+To start an [HTML block] with a tag that is *not* in the
+list of block-level tags in (6), you must put the tag by
+itself on the first line (and it must be complete):
+
+.
+<a href="foo">
+*bar*
+</a>
+.
+<a href="foo">
+*bar*
+</a>
+.
+
+In type 7 blocks, the [tag name] can be anything:
+
+.
+<Warning>
+*bar*
+</Warning>
+.
+<Warning>
+*bar*
+</Warning>
+.
+
+.
+<i class="foo">
+*bar*
+</i>
+.
+<i class="foo">
+*bar*
+</i>
+.
+
+These rules are designed to allow us to work with tags that
+can function as either block-level or inline-level tags.
+The `<del>` tag is a nice example.  We can surround content with
+`<del>` tags in three different ways.  In this case, we get a raw
+HTML block, because the `<del>` tag is on a line by itself:
+
+.
+<del>
+*foo*
+</del>
+.
+<del>
+*foo*
+</del>
+.
+
+In this case, we get a raw HTML block that just includes
+the `<del>` tag (because it ends with the following blank
+line).  So the contents get interpreted as CommonMark:
+
+.
+<del>
+
+*foo*
+
+</del>
+.
+<del>
+<p><em>foo</em></p>
+</del>
+.
+
+Finally, in this case, the `<del>` tags are interpreted
+as [raw HTML] *inside* the CommonMark paragraph.  (Because
+the tag is not on a line by itself, we get inline HTML
+rather than an [HTML block].)
+
+.
+<del>*foo*</del>
+.
+<p><del><em>foo</em></del></p>
+.
+
+HTML tags designed to contain literal content
+(`script`, `style`, `pre`), comments, processing instructions,
+and declarations are treated somewhat differently.
+Instead of ending at the first blank line, these blocks
+end at the first line containing a corresponding end tag.
+As a result, these blocks can contain blank lines:
+
+A pre tag (type 1):
+
+.
+<pre language="haskell"><code>
+import Text.HTML.TagSoup
+
+main :: IO ()
+main = print $ parseTags "<a href=\"foo\">bar</a>"
+</code></pre>
+.
+<pre language="haskell"><code>
+import Text.HTML.TagSoup
+
+main :: IO ()
+main = print $ parseTags "<a href=\"foo\">bar</a>"
+</code></pre>
+.
+
+A script tag (type 1):
+
+.
+<script type="text/javascript">
+// JavaScript example
+
+document.getElementById("demo").innerHTML = "Hello JavaScript!";
+</script>
+.
+<script type="text/javascript">
+// JavaScript example
+
+document.getElementById("demo").innerHTML = "Hello JavaScript!";
+</script>
+.
+
+A style tag (type 1):
+
+.
+<style
+  type="text/css">
+h1 {color:red;}
+
+p {color:blue;}
+</style>
+.
+<style
+  type="text/css">
+h1 {color:red;}
+
+p {color:blue;}
+</style>
+.
+
+If there is no matching end tag, the block will end at the
+end of the document:
+
+.
+<style
+  type="text/css">
+
+foo
+.
+<style
+  type="text/css">
+
+foo
+.
+
+The end tag can occur on the same line as the start tag:
+
+.
+<style>p{color:red;}</style>
+*foo*
+.
+<style>p{color:red;}</style>
+<p><em>foo</em></p>
+.
+
+.
+<!-- foo -->*bar*
+*baz*
+.
+<!-- foo -->*bar*
+<p><em>baz</em></p>
+.
+
+Note that anything on the last line after the
+end tag will be included in the [HTML block]:
+
+.
+<script>
+foo
+</script>1. *bar*
+.
+<script>
+foo
+</script>1. *bar*
+.
+
+A comment (type 2):
 
 .
 <!-- Foo
+
 bar
    baz -->
 .
 <!-- Foo
+
 bar
    baz -->
 .
 
-A processing instruction:
+
+A processing instruction (type 3):
 
 .
 <?php
+
   echo '>';
+
 ?>
 .
 <?php
+
   echo '>';
+
 ?>
 .
 
-CDATA:
+A declaration (type 4):
+
+.
+<!DOCTYPE html>
+.
+<!DOCTYPE html>
+.
+
+CDATA (type 5):
 
 .
 <![CDATA[
 function matchwo(a,b)
 {
-if (a < b && a < 0) then
-  {
-  return 1;
-  }
-else
-  {
-  return 0;
+  if (a < b && a < 0) then {
+    return 1;
+
+  } else {
+
+    return 0;
   }
 }
 ]]>
@@ -1719,13 +2053,12 @@ else
 <![CDATA[
 function matchwo(a,b)
 {
-if (a < b && a < 0) then
-  {
-  return 1;
-  }
-else
-  {
-  return 0;
+  if (a < b && a < 0) then {
+    return 1;
+
+  } else {
+
+    return 0;
   }
 }
 ]]>
@@ -1743,8 +2076,18 @@ The opening tag can be indented 1-3 spaces, but not 4:
 </code></pre>
 .
 
-An HTML block can interrupt a paragraph, and need not be preceded
-by a blank line.
+.
+  <div>
+
+    <div>
+.
+  <div>
+<pre><code>&lt;div&gt;
+</code></pre>
+.
+
+An HTML block of types 1--6 can interrupt a paragraph, and need not be
+preceded by a blank line.
 
 .
 Foo
@@ -1758,8 +2101,8 @@ bar
 </div>
 .
 
-However, a following blank line is always needed, except at the end of
-a document:
+However, a following blank line is needed, except at the end of
+a document, and except for blocks of types 1--5, above:
 
 .
 <div>
@@ -1773,14 +2116,16 @@ bar
 *foo*
 .
 
-An incomplete HTML block tag may also start an HTML block:
+HTML blocks of type 7 cannot interrupt a paragraph:
 
 .
-<div class
-foo
+Foo
+<a href="bar">
+baz
 .
-<div class
-foo
+<p>Foo
+<a href="bar">
+baz</p>
 .
 
 This rule differs from John Gruber's original Markdown syntax
@@ -1799,8 +2144,8 @@ here:
 - It requires a matching end tag, which it also does not allow to
   be indented.
 
-Indeed, most Markdown implementations, including some of Gruber's
-own perl implementations, do not impose these restrictions.
+Most Markdown implementations (including some of Gruber's own) do not
+respect all of these restrictions.
 
 There is one respect, however, in which Gruber's rule is more liberal
 than the one given here, since it allows blank lines to occur inside
@@ -1810,6 +2155,8 @@ expensive and can require backtracking from the end of the document
 if no matching end tag is found. Second, it provides a very simple
 and flexible way of including Markdown content inside HTML tags:
 simply separate the Markdown from the HTML using blank lines:
+
+Compare:
 
 .
 <div>
@@ -1822,8 +2169,6 @@ simply separate the Markdown from the HTML using blank lines:
 <p><em>Emphasized</em> text.</p>
 </div>
 .
-
-Compare:
 
 .
 <div>
@@ -1868,11 +2213,37 @@ Hi
 </table>
 .
 
-Moreover, blank lines are usually not necessary and can be
-deleted.  The exception is inside `<pre>` tags; here, one can
-replace the blank lines with `&#10;` entities.
+There are problems, however, if the inner tags are indented
+*and* separated by spaces, as then they will be interpreted as
+an indented code block:
 
-So there is no important loss of expressive power with the new rule.
+.
+<table>
+
+  <tr>
+
+    <td>
+      Hi
+    </td>
+
+  </tr>
+
+</table>
+.
+<table>
+  <tr>
+<pre><code>&lt;td&gt;
+  Hi
+&lt;/td&gt;
+</code></pre>
+  </tr>
+</table>
+.
+
+Fortunately, blank lines are usually not necessary and can be
+deleted.  The exception is inside `<pre>` tags, but as described
+above, raw HTML blocks starting with `<pre>` *can* contain blank
+lines.
 
 ## Link reference definitions
 
@@ -4359,7 +4730,7 @@ raw HTML:
 .
 <a href="/bar\/)">
 .
-<p><a href="/bar\/)"></p>
+<a href="/bar\/)">
 .
 
 But they work in all other contexts, including URLs and link titles,
@@ -4399,8 +4770,8 @@ than HTML need not be HTML-entity aware.  HTML renderers may either escape
 unicode characters as entities or leave them as they are.  (However,
 `"`, `&`, `<`, and `>` must always be rendered as entities.)
 
-[Named entities](@name-entities) consist of `&` + any
-of the valid HTML5 entity names + `;`. The
+[Named entities](@name-entities) consist of `&`
++ any of the valid HTML5 entity names + `;`. The
 [following document](https://html.spec.whatwg.org/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
 corresponding codepoints.
@@ -4429,8 +4800,8 @@ the codepoint `U+0000` will also be replaced by `U+FFFD`.
 .
 
 [Hexadecimal entities](@hexadecimal-entities)
-consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal
-digits + `;`. They will also be parsed and turned into the corresponding
+consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
++ `;`. They will also be parsed and turned into the corresponding
 unicode codepoints in the AST.
 
 .
@@ -4473,7 +4844,7 @@ code blocks, including raw HTML, URLs, [link title]s, and
 .
 <a href="&ouml;&ouml;.html">
 .
-<p><a href="&ouml;&ouml;.html"></p>
+<a href="&ouml;&ouml;.html">
 .
 
 .
@@ -6041,7 +6412,7 @@ A link can contain fragment identifiers and queries:
 .
 <p><a href="#fragment">link</a></p>
 <p><a href="http://example.com#fragment">link</a></p>
-<p><a href="http://example.com?foo=bar&baz#fragment">link</a></p>
+<p><a href="http://example.com?foo=bar&amp;baz#fragment">link</a></p>
 .
 
 Note that a backslash before a non-escapable character is
@@ -7233,8 +7604,8 @@ Closing tags:
 </a>
 </foo >
 .
-<p></a>
-</foo ></p>
+</a>
+</foo >
 .
 
 Illegal attributes in closing tag:
@@ -7301,7 +7672,7 @@ Entities are preserved in HTML attributes:
 .
 <a href="&ouml;">
 .
-<p><a href="&ouml;"></p>
+<a href="&ouml;">
 .
 
 Backslash escapes do not work in HTML attributes:
@@ -7309,7 +7680,7 @@ Backslash escapes do not work in HTML attributes:
 .
 <a href="\*">
 .
-<p><a href="\*"></p>
+<a href="\*">
 .
 
 .
