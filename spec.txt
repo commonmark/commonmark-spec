@@ -229,9 +229,7 @@ form feed (`U+000C`), or carriage return (`U+000D`).
 character]s.
 
 A [unicode whitespace character](@unicode-whitespace-character) is
-any code point in the unicode `Zs` class, or a tab (`U+0009`),
-carriage return (`U+000D`), newline (`U+000A`), or form feed
-(`U+000C`).
+any [whitespace character] or code point in the unicode `Zs` class.
 
 [Unicode whitespace](@unicode-whitespace) is a sequence of one
 or more [unicode whitespace character]s.
