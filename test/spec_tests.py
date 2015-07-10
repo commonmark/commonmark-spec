@@ -71,7 +71,7 @@ def do_test(test, normalize, result_counts):
     else:
         print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
         out("program returned error code %d\n" % retcode)
-        out(err + '\n')
+        sys.stdout.buffer.write(err)
         result_counts['error'] += 1
 
 def get_tests(specfile):
