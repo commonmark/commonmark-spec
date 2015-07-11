@@ -7498,7 +7498,8 @@ so custom tags (and even, say, DocBook tags) may be used.
 Here is the grammar for tags:
 
 A [tag name](@tag-name) consists of an ASCII letter
-followed by zero or more ASCII letters or digits.
+followed by zero or more ASCII letters, digits, or
+hyphens (`-`).
 
 An [attribute](@attribute) consists of [whitespace],
 an [attribute name], and an optional
@@ -7594,6 +7595,21 @@ _boolean zoop:33=zoop:33 />
 .
 <p><a foo="bar" bam = 'baz <em>"</em>'
 _boolean zoop:33=zoop:33 /></p>
+.
+
+Custom tag names can be used:
+
+.
+<responsive-image src="foo.jpg" />
+
+<My-Tag>
+foo
+</My-Tag>
+.
+<responsive-image src="foo.jpg" />
+<My-Tag>
+foo
+</My-Tag>
 .
 
 Illegal tag names, not parsed as HTML:
