@@ -1985,7 +1985,8 @@ foo
 
 bar
 .
-<blockquote><div>
+<blockquote>
+<div>
 foo
 </blockquote>
 <p>bar</p>
