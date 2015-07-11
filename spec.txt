@@ -1348,7 +1348,8 @@ aaa
 </code></pre>
 .
 
-Unclosed code blocks are closed by the end of the document:
+Unclosed code blocks are closed by the end of the document
+(or the enclosing [block quote] or [list item]):
 
 .
 ```
@@ -1366,6 +1367,19 @@ aaa
 ```
 aaa
 </code></pre>
+.
+
+.
+> ```
+> aaa
+
+bbb
+.
+<blockquote>
+<pre><code>aaa
+</code></pre>
+</blockquote>
+<p>bbb</p>
 .
 
 A code block can have all empty lines as its content:
@@ -1950,7 +1964,8 @@ p {color:blue;}
 .
 
 If there is no matching end tag, the block will end at the
-end of the document:
+end of the document (or the enclosing [block quote] or
+[list item]):
 
 .
 <style
@@ -1962,6 +1977,30 @@ foo
   type="text/css">
 
 foo
+.
+
+.
+> <div>
+> foo
+
+bar
+.
+<blockquote><div>
+foo
+</blockquote>
+<p>bar</p>
+.
+
+.
+- <div>
+- foo
+.
+<ul>
+<li>
+<div>
+</li>
+<li>foo</li>
+</ul>
 .
 
 The end tag can occur on the same line as the start tag:
