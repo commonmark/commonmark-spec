@@ -3104,8 +3104,10 @@ A [bullet list marker](@bullet-list-marker)
 is a `-`, `+`, or `*` character.
 
 An [ordered list marker](@ordered-list-marker)
-is a sequence of one of more digits (`0-9`), followed by either a
-`.` character or a `)` character.
+is a sequence of 1--9 arabic digits (`0-9`), followed by either a
+`.` character or a `)` character.  (The reason for the length
+limit is that with 10 digits we start seeing integer overflows
+in some browsers.)
 
 The following rules define [list items]:
 
@@ -3373,6 +3375,49 @@ A list item may contain any kind of block:
 </li>
 </ol>
 .
+
+Note that ordered list start numbers must be nine digits or less:
+
+.
+123456789. ok
+.
+<ol start="123456789">
+<li>ok</li>
+</ol>
+.
+
+.
+1234567890. not ok
+.
+<p>1234567890. not ok</p>
+.
+
+A start number may begin with 0s:
+
+.
+0. ok
+.
+<ol start="0">
+<li>ok</li>
+</ol>
+.
+
+.
+003. ok
+.
+<ol start="3">
+<li>ok</li>
+</ol>
+.
+
+A start number may not be negative:
+
+.
+-1. not ok
+.
+<p>-1. not ok</p>
+.
+
 
 2.  **Item starting with indented code.**  If a sequence of lines *Ls*
     constitute a sequence of blocks *Bs* starting with an indented code
