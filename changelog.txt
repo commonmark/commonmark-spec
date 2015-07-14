@@ -1,3 +1,55 @@
+[0.21]
+
+  * Changed handling of tabs.  Instead of having a preprocessing step
+    where tabs are converted to spaces, we now handle tabs directly in
+    the parser. This allows tabs to be retained in code blocks and code
+    spans. This change adds some general language to the effect that,
+    for purposes of determining block structure, tabs are to be treated
+    just like equivalent spaces.
+  * Completely rewrote spec for HTML blocks.  The new spec provides
+    better handling of tags like `<del>`, which can be either block
+    or inline level content, better handling of custom tags, and
+    better handling of verbatim contexts like `<pre>`, comments,
+    and `<script>`.
+  * Added 9-digit limit on ordered list start number.
+    Some browsers use signed 32-bit integers for indexing
+    the items of an ordered list, and this can lead to odd
+    or undefined behavior if 10-digit start numbers are allowed.
+  * Allow (non-initial) hyphens in tag names (#239). Custom
+    tags in HTML5 must contain hyphens.
+  * Clarified that HTML block is closed at end of containing
+    block, not just end of the document (as with fenced code blocks.)
+  * Specify nested link definition behavior in prose (Benjamin
+    Dumke-von der Ehe).
+  * Added test for edge case in link reference parsing
+    (Benjamin Dumke-von der Ehe, see jgm/commonmark.js#49).
+  * Added link tests with fragment identifiers and queries (David
+    Green, #342).
+  * Added test cases with a literal backslash in a link destination
+    (see jgm/commonmark.js#45).
+  * Added test for entity `&ngE;` which resolves to two code points.
+    Put entity tests on several lines for readability (see
+    jgm/commonmark.js#47).
+  * Fixed broken "pre" literal HTML example. Contents
+    weren't escaped properly.
+  * Simplified defn of "unicode whitespace character,"
+    rectifying omission of line tabulation, U+000B (#343).
+  * Removed ambiguity in definition of "line" (#346).
+  * Rewrapped two prose lines so `+` does not begin a line (#347).
+  * Added another test with overlapping emphasis markers.
+  * Fixed link to 'attributes'.
+  * Revised appendix, "A parsing strategy," and
+    added a description of emphasis/link parsing algorithm.
+  * `spec_tests.py` - set options for conversions, set library
+    paths in a more cross-platform way.
+  * `spec_tests.py`: force utf-8 on test failure output and
+    `--dump-tests` (#344, #345).
+  * `spec_tests.py`: Properly handle visible tab `→` in expected output.
+  * `normalize.py`:  Don't collapse whitespace inside pre tag.
+  * Added `spec.html` to `.gitignore` (#339).
+  * Add `-dev` suffix to spec version after release (eksperimental).
+  * Rename "non-space" to "non-whitespace" (Konstantin Zudov, #337).
+
 [0.20]
 
   * Require at least one nonspace character in a link label (#322).
