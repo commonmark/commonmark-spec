@@ -204,9 +204,13 @@ In the examples, the `→` character is used to represent tabs.
 Any sequence of [character]s is a valid CommonMark
 document.
 
-A [character](@character) is a Unicode code point.
+A [character](@character) is a Unicode code point.  Although some
+code points (for example, combining accents) do not correspond to
+characters in an intuitive sense, all code points count as characters
+for purposes of this spec.
+
 This spec does not specify an encoding; it thinks of lines as composed
-of characters rather than bytes.  A conforming parser may be limited
+of [character]s rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
 A [line](@line) is a sequence of zero or more [character]s
