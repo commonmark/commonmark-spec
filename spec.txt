@@ -4859,7 +4859,7 @@ Unicode characters as entities or leave them as they are.  (However,
 + any of the valid HTML5 entity names + `;`. The
 [following document](https://html.spec.whatwg.org/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
-corresponding codepoints.
+corresponding code points.
 
 .
 &nbsp; &amp; &copy; &AElig; &Dcaron;
@@ -4874,9 +4874,9 @@ corresponding codepoints.
 [Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
 entities need to be recognised and transformed into their corresponding
-Unicode codepoints. Invalid Unicode codepoints will be replaced by
-the "unknown codepoint" character (`U+FFFD`).  For security reasons,
-the codepoint `U+0000` will also be replaced by `U+FFFD`.
+Unicode code points. Invalid Unicode code points will be replaced by
+the "unknown code point" character (`U+FFFD`).  For security reasons,
+the code point `U+0000` will also be replaced by `U+FFFD`.
 
 .
 &#35; &#1234; &#992; &#98765432; &#0;
@@ -4887,7 +4887,7 @@ the codepoint `U+0000` will also be replaced by `U+FFFD`.
 [Hexadecimal entities](@hexadecimal-entities)
 consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
 + `;`. They will also be parsed and turned into the corresponding
-Unicode codepoints in the AST.
+Unicode code points in the AST.
 
 .
 &#X22; &#XD06; &#xcab;
@@ -6512,7 +6512,7 @@ just a backslash:
 URL-escaping should be left alone inside the destination, as all
 URL-escaped characters are also valid URL characters. HTML entities in
 the destination will be parsed into the corresponding Unicode
-codepoints, as usual, and optionally URL-escaped when written as HTML.
+code points, as usual, and optionally URL-escaped when written as HTML.
 
 .
 [link](foo%20b&auml;)
