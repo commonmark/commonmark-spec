@@ -204,7 +204,7 @@ In the examples, the `→` character is used to represent tabs.
 Any sequence of [character]s is a valid CommonMark
 document.
 
-A [character](@character) is a unicode code point.
+A [character](@character) is a Unicode code point.
 This spec does not specify an encoding; it thinks of lines as composed
 of characters rather than bytes.  A conforming parser may be limited
 to a certain encoding.
@@ -227,13 +227,13 @@ form feed (`U+000C`), or carriage return (`U+000D`).
 [Whitespace](@whitespace) is a sequence of one or more [whitespace
 character]s.
 
-A [unicode whitespace character](@unicode-whitespace-character) is
-any code point in the unicode `Zs` class, or a tab (`U+0009`),
+A [Unicode whitespace character](@unicode-whitespace-character) is
+any code point in the Unicode `Zs` class, or a tab (`U+0009`),
 carriage return (`U+000D`), newline (`U+000A`), or form feed
 (`U+000C`).
 
 [Unicode whitespace](@unicode-whitespace) is a sequence of one
-or more [unicode whitespace character]s.
+or more [Unicode whitespace character]s.
 
 A [space](@space) is `U+0020`.
 
@@ -247,7 +247,7 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 
 A [punctuation character](@punctuation-character) is an [ASCII
 punctuation character] or anything in
-the unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
+the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tabs
 
@@ -4849,10 +4849,10 @@ foo
 
 With the goal of making this standard as HTML-agnostic as possible, all
 valid HTML entities (except in code blocks and code spans)
-are recognized as such and converted into unicode characters before
+are recognized as such and converted into Unicode characters before
 they are stored in the AST. This means that renderers to formats other
 than HTML need not be HTML-entity aware.  HTML renderers may either escape
-unicode characters as entities or leave them as they are.  (However,
+Unicode characters as entities or leave them as they are.  (However,
 `"`, `&`, `<`, and `>` must always be rendered as entities.)
 
 [Named entities](@name-entities) consist of `&`
@@ -4874,7 +4874,7 @@ corresponding codepoints.
 [Decimal entities](@decimal-entities)
 consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
 entities need to be recognised and transformed into their corresponding
-unicode codepoints. Invalid unicode codepoints will be replaced by
+Unicode codepoints. Invalid Unicode codepoints will be replaced by
 the "unknown codepoint" character (`U+FFFD`).  For security reasons,
 the codepoint `U+0000` will also be replaced by `U+FFFD`.
 
@@ -4887,7 +4887,7 @@ the codepoint `U+0000` will also be replaced by `U+FFFD`.
 [Hexadecimal entities](@hexadecimal-entities)
 consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
 + `;`. They will also be parsed and turned into the corresponding
-unicode codepoints in the AST.
+Unicode codepoints in the AST.
 
 .
 &#X22; &#XD06; &#xcab;
@@ -5179,18 +5179,18 @@ followed by a `*` character, or a sequence of one or more `_`
 characters that is not preceded or followed by a `_` character.
 
 A [left-flanking delimiter run](@left-flanking-delimiter-run) is
-a [delimiter run] that is (a) not followed by [unicode whitespace],
+a [delimiter run] that is (a) not followed by [Unicode whitespace],
 and (b) either not followed by a [punctuation character], or
-preceded by [unicode whitespace] or a [punctuation character].
+preceded by [Unicode whitespace] or a [punctuation character].
 For purposes of this definition, the beginning and the end of
-the line count as unicode whitespace.
+the line count as Unicode whitespace.
 
 A [right-flanking delimiter run](@right-flanking-delimiter-run) is
-a [delimiter run] that is (a) not preceded by [unicode whitespace],
+a [delimiter run] that is (a) not preceded by [Unicode whitespace],
 and (b) either not preceded by a [punctuation character], or
-followed by [unicode whitespace] or a [punctuation character].
+followed by [Unicode whitespace] or a [punctuation character].
 For purposes of this definition, the beginning and the end of
-the line count as unicode whitespace.
+the line count as Unicode whitespace.
 
 Here are some examples of delimiter runs.
 
@@ -6511,7 +6511,7 @@ just a backslash:
 
 URL-escaping should be left alone inside the destination, as all
 URL-escaped characters are also valid URL characters. HTML entities in
-the destination will be parsed into the corresponding unicode
+the destination will be parsed into the corresponding Unicode
 codepoints, as usual, and optionally URL-escaped when written as HTML.
 
 .
@@ -6721,7 +6721,7 @@ characters inside the square brackets.
 
 One label [matches](@matches)
 another just in case their normalized forms are equal.  To normalize a
-label, perform the *unicode case fold* and collapse consecutive internal
+label, perform the *Unicode case fold* and collapse consecutive internal
 [whitespace] to a single space.  If there are multiple
 matching reference link definitions, the one that comes first in the
 document is used.  (It is desirable in such cases to emit a warning.)
