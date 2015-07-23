@@ -103,7 +103,7 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
                                          ident=ident,
                                          number=number))
                     refs.append("[{0}]: #{1}".format(section, ident))
-                    ln = re.sub(r'# +', '# <a id="{0}"></a> '.format(ident),
+                    ln = re.sub(r'# +', '# <a id="{0}"></a>'.format(ident),
                                 ln, count=1)
                 else:
                     ln = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor, ln)
