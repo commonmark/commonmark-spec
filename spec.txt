@@ -1658,9 +1658,9 @@ by [whitespace], the end of the line, the string `>`, or
 the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
-7.  **Start condition:**  line begins with an [open tag]
-(with any [tag name]) followed only by [whitespace] or the end
-of the line.\
+7.  **Start condition:**  line begins with a complete [open tag]
+or [closing tag] (with any [tag name]) followed only by [whitespace]
+or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 All types of [HTML blocks] except type 7 may interrupt
@@ -1863,6 +1863,22 @@ In type 7 blocks, the [tag name] can be anything:
 <i class="foo">
 *bar*
 </i>
+.
+
+.
+<mytag>
+*bar*
+
+*bar*
+
+</mytag>
+*bar*
+.
+<mytag>
+*bar*
+<p><em>bar</em></p>
+</mytag>
+*bar*
 .
 
 These rules are designed to allow us to work with tags that
