@@ -1866,18 +1866,10 @@ In type 7 blocks, the [tag name] can be anything:
 .
 
 .
-<mytag>
-*bar*
-
-*bar*
-
-</mytag>
+</ins>
 *bar*
 .
-<mytag>
-*bar*
-<p><em>bar</em></p>
-</mytag>
+</ins>
 *bar*
 .
 
