@@ -2835,8 +2835,8 @@ foo</p>
 .
 
 Laziness only applies to lines that would have been continuations of
-paragraphs had they been prepended with `>`.  For example, the
-`>` cannot be omitted in the second line of
+paragraphs had they been prepended with [block quote marker]s.
+For example, the `> ` cannot be omitted in the second line of
 
 ``` markdown
 > foo
@@ -2855,7 +2855,7 @@ without changing the meaning:
 <hr />
 .
 
-Similarly, if we omit the `>` in the second line of
+Similarly, if we omit the `> ` in the second line of
 
 ``` markdown
 > - foo
@@ -2878,7 +2878,7 @@ then the block quote ends after the first line:
 </ul>
 .
 
-For the same reason, we can't omit the `>` in front of
+For the same reason, we can't omit the `> ` in front of
 subsequent lines of an indented or fenced code block:
 
 .
@@ -2904,6 +2904,30 @@ foo
 <p>foo</p>
 <pre><code></code></pre>
 .
+
+Note that in the following case, we have a paragraph
+continuation line:
+
+.
+> foo
+    - bar
+.
+<blockquote>
+<p>foo
+- bar</p>
+</blockquote>
+.
+
+To see why, note that in
+
+```markdown
+> foo
+>     - bar
+```
+
+the `- bar` is indented too far to start a list, and can't
+be an indented code block because indented code blocks cannot
+interrupt paragraphs, so it is a [paragraph continuation line].
 
 A block quote can be empty:
 
