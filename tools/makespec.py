@@ -167,7 +167,7 @@ elif specformat == "html":
 
     else:
         err("Error converting markdown version of spec:\n")
-        err(err_out)
+        sys.stderr.buffer.write(err_out)
         exit(1)
 
 exit(0)
