@@ -15,6 +15,7 @@ spec.html: spec.txt tools/template.html
 spec.pdf: spec.md tools/template.tex tools/specfilter.hs
 	pandoc -s $< --template tools/template.tex \
 	   --filter tools/specfilter.hs -o $@ --latex-engine=xelatex --toc \
-	   --number-sections -V documentclass=report -V tocdepth=2 \
+	   --number-sections --toc-depth=2 --no-highlight \
+	   -V documentclass=report \
 	   -V classoption=twosides
 

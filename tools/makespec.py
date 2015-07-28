@@ -68,7 +68,10 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
             if stage == 0:
                 example += 1
                 mdlines.append("\n<div class=\"example\" id=\"example-{0}\" data-section=\"{1}\">\n".format(example, section))
-                mdlines.append("<div class=\"examplenum\"><a href=\"#example-{0}\">Example {0}</a>&nbsp;&nbsp;<a class=\"dingus\" title=\"open in interactive dingus\">(interact)</a></div>\n\n".format(example))
+                mdlines.append("<div class=\"examplenum\"><a href=\"#example-{0}\">Example {0}</a>".format(example))
+                if specformat == "html":
+                    mdlines.append("&nbsp;&nbsp;<a class=\"dingus\" title=\"open in interactive dingus\">(interact)</a>")
+                mdlines.append("</div>\n\n")
                 mdlines.append("````````````````````````````````````````````````````````` markdown\n")
                 stage = 1
             elif stage == 1:
@@ -105,7 +108,7 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
                             lastnum[level - 1] = lastnum[level - 1] + 1
                         number = '.'.join([str(x) for x in lastnum])
                     ident = toIdentifier(section)
-                    ln = re.sub(r' ', ' ' + number + ' ', ln, count=1)
+                    ln = re.sub(r' ', ' <span class="number">' + number + '</span> ', ln, count=1)
                     sections.append(dict(level=level,
                                          contents=section,
                                          ident=ident,

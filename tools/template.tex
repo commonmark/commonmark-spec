@@ -44,6 +44,8 @@ $endif$
 % use microtype if available
 \IfFileExists{microtype.sty}{\usepackage{microtype}}{}
 \usepackage[margin=1in]{geometry}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 $if(natbib)$
 \usepackage{natbib}
 \bibliographystyle{$if(biblio-style)$$biblio-style$$else$plainnat$endif$}
@@ -61,40 +63,10 @@ $if(lhs)$
 \lstnewenvironment{code}{\lstset{language=Haskell,basicstyle=\small\ttfamily}}{}
 $endif$
 \usepackage{fancyvrb}
+$if(highlighting-macros)$
+$highlighting-macros$
+$endif$
 \usepackage{color,framed}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},fontsize=\small}
-% Add ',fontsize=\small' for more characters per line
-\definecolor{shadecolor}{gray}{1}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\NormalTok}[1]{{#1}}
-\let\KeywordTok\NormalTok
-\let\DataTypeTok\NormalTok
-\let\DecValTok\NormalTok
-\let\BaseNTok\NormalTok
-\let\FloatTok\NormalTok
-\let\CharTok\NormalTok
-\let\StringTok\NormalTok
-\let\CommentTok\NormalTok
-\let\OtherTok\NormalTok
-\let\AlertTok\NormalTok
-\let\FunctionTok\NormalTok
-\let\RegionMarkerTok\NormalTok
-\let\ErrorTok\NormalTok
-%\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
-%\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
-%\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-%\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-%\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
-%\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-%\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
-%\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
-%\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
-%\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
-%\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
-%\newcommand{\RegionMarkerTok}[1]{{#1}}
-%\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
 $if(verbatim-in-note)$
 \usepackage{fancyvrb}
 $endif$
@@ -158,8 +130,13 @@ $if(lang)$
 \fi
 $endif$
 
-\usepackage{titlesec}
-\titleformat{\chapter}[hang]{\Huge\bfseries}{\thechapter\ }{0pt}{\Huge\bfseries}
+\usepackage[small]{titlesec}
+\titleformat{\chapter}
+  {\Large\bfseries} % format
+  {\Large\thechapter}     % label
+  {0pt}             % sep
+  {\Large}           % before-code
+
 
 \usepackage{fancyhdr}
 \pagestyle{fancy}

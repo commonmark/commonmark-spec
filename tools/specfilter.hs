@@ -15,12 +15,12 @@ exampleDivs (Div (ident, ["example"], kvs)
             ]) = Div (ident, ["example"], kvs)
             [ rawtex "\\begin{minipage}[t]{\\textwidth}\n{\\scriptsize "
             , d
-            , rawtex "\\vspace{-1em}}"
-            , rawtex "\\begin{minipage}[t]{0.49\\textwidth}\n\\definecolor{shadecolor}{gray}{0.85}\n"
+            , rawtex "}\\vspace{-0.4em}\n"
+            , rawtex "\\begin{minipage}[t]{0.49\\textwidth}\n\\definecolor{shadecolor}{gray}{0.85}\n\\begin{snugshade}\\small\n"
             , addBreaks c1
-            , rawtex "\\end{minipage}\n\\hfill\n\\begin{minipage}[t]{0.49\\textwidth}\n\\definecolor{shadecolor}{gray}{0.95}\n"
+            , rawtex "\\end{snugshade}\n\\end{minipage}\n\\hfill\n\\begin{minipage}[t]{0.49\\textwidth}\n\\definecolor{shadecolor}{gray}{0.95}\n\\begin{snugshade}\\small\n"
             , addBreaks c2
-            , rawtex "\\end{minipage}\n\\end{minipage}"
+            , rawtex "\\end{snugshade}\n\\end{minipage}\n\\end{minipage}"
             ]
   where rawtex = RawBlock (Format "latex")
         addBreaks (CodeBlock attrs code) = CodeBlock attrs $ addBreaks' code
@@ -33,4 +33,5 @@ exampleDivs x = x
 anchors :: Inline -> [Inline]
 anchors (Link text ('@':lab,_)) =
   [RawInline (Format "latex") ("\\hyperdef{}{" ++ lab ++ "}{\\label{" ++ lab ++ "}}"), Strong text]
+anchors (Span ("",["number"],[]) xs) = [] -- remove sect numbers
 anchors x = [x]
