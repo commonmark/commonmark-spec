@@ -53,9 +53,9 @@ file, with code examples written in a shorthand form:
     .
 
 To build an HTML version of the spec, do `make spec.html`.  To build a
-PDF version, do `make spec.pdf`.  (Creating a PDF requires [pandoc]
-and a LaTeX installation.  Creating the HTML version requires only
-`libcmark` and `python3`.)
+PDF version, do `make spec.pdf`.  (Creating the HTML version requires
+that [cmark](https://github.com/jgm/cmark) and `python3` be installed
+and in your path.  Creating a PDF also requires [pandoc] and LaTeX.)
 
 The spec is written from the point of view of the human writer, not
 the computer reader.  It is not an algorithm---an English translation of
