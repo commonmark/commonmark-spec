@@ -1,16 +1,24 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import re
 import sys
 from subprocess import *
 from string import Template
 
+def out(str):
+    sys.stdout.buffer.write(str.encode('utf-8'))
+
+def err(str):
+    sys.stderr.buffer.write(str.encode('utf-8'))
+
 if len(sys.argv) == 2:
     specformat = sys.argv[1]
     if not (specformat in ["html", "markdown"]):
-        sys.stderr.write("Format must be html or markdown\n")
+        err("Format must be html or markdown\n")
         exit(1)
 else:
-    sys.stderr.write("Usage:  makespec.py [html|markdown]\n")
+    err("Usage:  makespec.py [html|markdown]\n")
     exit(1)
 
 def toIdentifier(s):
@@ -116,7 +124,7 @@ yaml = ''.join(yamllines)
 metadata = parseYaml(yaml)
 
 if specformat == "markdown":
-    sys.stdout.write(yaml + '\n\n' + mdtext)
+    out(yaml + '\n\n' + mdtext)
 elif specformat == "html":
     with open("tools/template.html", "r", encoding="utf-8") as templatefile:
         template = Template(templatefile.read())
@@ -134,32 +142,29 @@ elif specformat == "html":
                         "<h\\1 id=\"\\2\">", result)
         # put plural s inside links for better visuals:
         result = re.sub(r'<\/a>s', "s</a>", result)
-        sys.stdout.write(template.substitute(metadata, body=result))
+        out(template.substitute(metadata, body=result))
 
         # check for errors:
         idents = []
         for ident in re.findall(r'id="([^"]*)"', result):
             if ident in idents:
-                sys.stderr.write("WARNING: duplicate identifier '" + ident +
-                                 "'\n")
+                err("WARNING: duplicate identifier '" + ident + "'\n")
             else:
                 idents.append(ident)
         for href in re.findall(r'href="#([^"]*)"', result):
             if not (href in idents):
-                sys.stderr.write("WARNING: internal link with no anchor '" +
-                                 href + "'\n")
+                err("WARNING: internal link with no anchor '" + href + "'\n")
         reftexts = []
         for ref in refs:
             ref = re.sub('].*',']',ref).upper()
             if ref in reftexts:
-                sys.stderr.write("WARNING: duplicate reference link '" +
-                                 ref + "'\n")
+                err("WARNING: duplicate reference link '" + ref + "'\n")
             else:
                 reftexts.append(ref)
 
     else:
-        sys.stderr.write("Error converting markdown version of spec:\n")
-        sys.stderr.write(err)
+        err("Error converting markdown version of spec:\n")
+        (err)
         exit(1)
 
 exit(0)
