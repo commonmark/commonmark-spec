@@ -3641,6 +3641,21 @@ Here are some list items that start with a blank line but are not empty:
 </ul>
 .
 
+A list item can begin with at most one blank line.
+In the following example, `foo` is not part of the list
+item:
+
+.
+-
+
+  foo
+.
+<ul>
+<li></li>
+</ul>
+<p>foo</p>
+.
+
 Here is an empty bullet list item:
 
 .
