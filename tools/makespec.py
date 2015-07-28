@@ -38,8 +38,8 @@ def parseYaml(yaml):
 
 def pipe_through_prog(prog, text):
     p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    [result, err] = p1.communicate(input=text.encode('utf-8'))
-    return [p1.returncode, result.decode('utf-8'), err]
+    [result, err_out] = p1.communicate(input=text.encode('utf-8'))
+    return [p1.returncode, result.decode('utf-8'), err_out]
 
 def replaceAnchor(match):
     refs.append("[{0}]: #{1}".format(match.group(1), match.group(2)))
@@ -138,7 +138,7 @@ elif specformat == "html":
                         section['contents'] + '](#' + section['ident'] + ')')
     toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
     prog = "cmark --smart"
-    [retcode, result, err] = pipe_through_prog(prog, toc + mdtext)
+    [retcode, result, err_out] = pipe_through_prog(prog, toc + mdtext)
     if retcode == 0:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
         result = re.sub(r'<h([1-6])><a id="([^\"]*)"><\/a> ',
@@ -167,7 +167,7 @@ elif specformat == "html":
 
     else:
         err("Error converting markdown version of spec:\n")
-        err(err)
+        err(err_out)
         exit(1)
 
 exit(0)
