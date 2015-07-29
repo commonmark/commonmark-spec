@@ -37,9 +37,8 @@ def parseYaml(yaml):
     return metadata
 
 def pipe_through_prog(prog, text):
-    p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    [result, err_out] = p1.communicate(input=text.encode('utf-8'))
-    return [p1.returncode, result.decode('utf-8'), err_out]
+    result = check_output(prog.split(), input=text.encode('utf-8'))
+    return result.decode('utf-8')
 
 def replaceAnchor(match):
     refs.append("[{0}]: #{1}".format(match.group(1), match.group(2)))
@@ -138,8 +137,11 @@ elif specformat == "html":
                         section['contents'] + '](#' + section['ident'] + ')')
     toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
     prog = "cmark --smart"
-    [retcode, result, err_out] = pipe_through_prog(prog, toc + mdtext)
-    if retcode == 0:
+    result = pipe_through_prog(prog, toc + mdtext)
+    if result == '':
+        err("Error converting markdown version of spec to HTML.\n")
+        exit(1)
+    else:
         result = re.sub(r'␣', '<span class="space"> </span>', result)
         result = re.sub(r'<h([1-6])><a id="([^\"]*)"><\/a> ',
                         "<h\\1 id=\"\\2\">", result)
@@ -165,9 +167,5 @@ elif specformat == "html":
             else:
                 reftexts.append(ref)
 
-    else:
-        err("Error converting markdown version of spec:\n")
-        sys.stderr.buffer.write(err_out)
-        exit(1)
 
 exit(0)
