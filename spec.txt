@@ -241,7 +241,7 @@ or more [Unicode whitespace character]s.
 
 A [space](@space) is `U+0020`.
 
-A [non-whitespace character](@non-space-character) is any character
+A [non-whitespace character](@non-whitespace-character) is any character
 that is not a [whitespace character].
 
 An [ASCII punctuation character](@ascii-punctuation-character)
