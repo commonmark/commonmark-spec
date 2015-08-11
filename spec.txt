@@ -575,8 +575,8 @@ If you want a horizontal rule in a list item, use a different bullet:
 An [ATX header](@atx-header)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
-closing sequence of any number of `#` characters.  The opening sequence
-of `#` characters cannot be followed directly by a
+closing sequence of any number of unescaped `#` characters.
+The opening sequence of `#` characters cannot be followed directly by a
 [non-whitespace character]. The optional closing sequence of `#`s must be
 preceded by a [space] and may be followed by spaces only.  The opening
 `#` character may be indented 0-3 spaces.  The raw contents of the
@@ -708,8 +708,7 @@ Spaces are allowed after the closing sequence:
 <h3>foo</h3>
 .
 
-A sequence of `#` characters with a
-[non-whitespace character] following it
+A sequence of `#` characters with anything but [space]s following it
 is not a closing sequence, but counts as part of the contents of the
 header:
 
