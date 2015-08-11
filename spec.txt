@@ -304,6 +304,15 @@ by spaces with a tab stop of 4 characters.
 </blockquote>
 .
 
+.
+    foo
+→bar
+.
+<pre><code>foo
+bar
+</code></pre>
+.
+
 
 ## Insecure characters
 
