@@ -1676,7 +1676,7 @@ or the end of the line.\
 
 All types of [HTML blocks] except type 7 may interrupt
 a paragraph.  Blocks of type 7 may not interrupt a paragraph.
-(This restricted is intended to prevent unwanted interpretation
+(This restriction is intended to prevent unwanted interpretation
 of long tags inside a wrapped paragraph as starting HTML blocks.)
 
 Some simple examples follow.  Here are some basic HTML blocks
