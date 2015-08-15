@@ -4946,10 +4946,10 @@ the code point `U+0000` will also be replaced by `U+FFFD`.
 <p># Ӓ Ϡ � �</p>
 .
 
-[Hexadecimal entities](@hexadecimal-entities)
-consist of `&#` + either `X` or `x` + a string of 1-8 hexadecimal digits
-+ `;`. They will also be parsed and turned into the corresponding
-Unicode code points in the AST.
+[Hexadecimal entities](@hexadecimal-entities) consist of `&#` + either
+`X` or `x` + a string of 1-8 hexadecimal digits + `;`. They will also
+be parsed and turned into the corresponding Unicode code points in the
+AST.
 
 .
 &#X22; &#XD06; &#xcab;
