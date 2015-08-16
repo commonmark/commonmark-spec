@@ -4917,8 +4917,8 @@ than HTML need not be HTML-entity aware.  HTML renderers may either escape
 Unicode characters as entities or leave them as they are.  (However,
 `"`, `&`, `<`, and `>` must always be rendered as entities.)
 
-[Named entities](@name-entities) consist of `&`
-+ any of the valid HTML5 entity names + `;`. The
+[Named entities](@name-entities) consist of `&` + any of the valid
+HTML5 entity names + `;`. The
 [following document](https://html.spec.whatwg.org/multipage/entities.json)
 is used as an authoritative source of the valid entity names and their
 corresponding code points.
