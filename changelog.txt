@@ -1,3 +1,43 @@
+[0.22 PROVISIONAL]
+
+  * Don't list `title` twice as HTML block tag (Robin Stocker).
+  * More direct example of type 7 HTML block starting with closing tag.
+  * Clarified rule 7 for HTML blocks.  `pre`, `script`, and `style`
+    are excluded because they're covered by other rules.
+  * Clarified that type 7 HTML blocks can start with a closing tag (#349).
+  * Removed `pre` tag from rule 6 of HTML blocks (#355).
+    It is already covered by rule 1, so this removes an ambiguity.
+  * Added `iframe` to list of tags that always start HTML blocks (#352).
+  * Added example of list item starting with two blanks (#332).
+  * Added test case clarifying laziness in block quotes (see
+    jgm/commonmark.js#60).
+  * Add an example with mixed indentation code block in "Tabs" section
+    (Robin Stocker).  This makes sure that implementations skip columns instead
+    of offsets for continued indented code blocks.
+  * Clarified that in ATX headers, the closing `#`s must be unescaped,
+    and removed misleading reference to "non-whitespace character" in
+    an example (#356).
+  * Changed anchor for "non-whitespace character" to reflect new name.
+  * Removed ambiguities concerning lines and line endings (#357, Lasse
+    R.H. Nielsen).  The previous spec allowed, technically, that a line
+    ending in `\r\n` might be considered to have two line endings,
+    or that the `\r` might be considered part of the line and the
+    `\n` the line ending. These fixes rule out those interpretations.
+  * Clarify that a character is any code point.
+  * Space in "code point".
+  * Capitalize "Unicode".
+  * Reflow paragraph to avoid unwanted list item (#360, #361).
+  * Avoid extra space before section number in `spec.md`.
+  * `makespec.py`: Use `check_output` for simpler `pipe_through_prog`.
+  * In README, clarified build requirements for `spec.html`, `spec.pdf`.
+  * Fixed some encoding issues in `makespec.py` (#353).
+  * Fixed various problems with `spec.pdf` generation (#353).
+  * Added version to coverpage in PDF version of spec.
+
+[0.21.1]
+
+  * Added date.
+
 [0.21]
 
   * Changed handling of tabs.  Instead of having a preprocessing step
