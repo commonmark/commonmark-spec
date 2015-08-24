@@ -1,4 +1,4 @@
-[0.22 PROVISIONAL]
+[0.22]
 
   * Don't list `title` twice as HTML block tag (Robin Stocker).
   * More direct example of type 7 HTML block starting with closing tag.
