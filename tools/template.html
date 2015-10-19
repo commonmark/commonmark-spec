@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <title>${title}</title>
 <style type="text/css">
-  body { font-family: Helvetica, arial, freesans, clean, sans-serif;
+body { font-family: Helvetica, arial, freesans, clean, sans-serif;
     line-height: 1.4;
     max-width: 48em;
     margin: auto;
     color: #333333;
     background-color: #fff;
     font-size: 13pt;
-  }
+}
 div#TOC ul { list-style: none; }
 h1 { font-size: 140%; font-weight: bold; border-top: 1px solid gray; padding-top: 0.5em; }
 h2 { font-size: 120%; font-weight: bold; }
@@ -65,6 +65,17 @@ a.footnoteRef > sup:after {
 a.footnoteRef > sup {
   vertical-align: baseline;
   font-size: 100%;
+}
+@media print {
+  @page {
+    size: auto;
+    margin: 1.2in 1.2in 1.2in 1.2in;
+  }
+  body {
+      margin: 0px;
+      line-height: 1.2;
+      font-size: 10pt;
+    }
 }
 </style>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
