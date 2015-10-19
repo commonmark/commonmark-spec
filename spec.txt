@@ -1363,7 +1363,7 @@ aaa
 .
 
 Unclosed code blocks are closed by the end of the document
-(or the enclosing [block quote] or [list item]):
+(or the enclosing [block quote][block quotes] or [list item][list items]):
 
 .
 ```
@@ -1987,8 +1987,8 @@ p {color:blue;}
 .
 
 If there is no matching end tag, the block will end at the
-end of the document (or the enclosing [block quote] or
-[list item]):
+end of the document (or the enclosing [block quote][block quotes]
+or [list item][list items]):
 
 .
 <style
