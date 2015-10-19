@@ -70,16 +70,17 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
                 mdlines.append("<div class=\"examplenum\"><a href=\"#example-{0}\">Example {0}</a>".format(example))
                 if specformat == "html":
                     mdlines.append("&nbsp;&nbsp;<a class=\"dingus\" title=\"open in interactive dingus\">(interact)</a>")
-                mdlines.append("</div>\n\n")
+                mdlines.append("</div>\n<div class=\"column\">\n\n")
                 mdlines.append("````````````````````````````````````````````````````````` markdown\n")
                 stage = 1
             elif stage == 1:
                 mdlines.append("`````````````````````````````````````````````````````````\n\n")
+                mdlines.append("\n</div>\n\n<div class=\"column\">\n\n")
                 mdlines.append("````````````````````````````````````````````````````````` html\n")
                 stage = 2
             elif stage == 2:
                 mdlines.append("`````````````````````````````````````````````````````````\n\n")
-                mdlines.append("</div>\n")
+                mdlines.append("</div>\n</div>\n")
                 stage = 0
             else:
                 sys.stderr.out("Encountered unknown stage {0}\n".format(stage))

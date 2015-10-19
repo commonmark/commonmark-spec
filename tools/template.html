@@ -39,9 +39,14 @@ pre {
 }
 code { font-family: monospace; background-color: #D3E1E4; }
 pre > code { background-color: transparent; }
-div.example > pre { float:left; width: 48%; }
-div.example > pre:nth-child(2) { clear:left; background-color: #D3E1E4; }
-div.example > pre:nth-child(3) { clear:right; background-color: #C9CaCE; }
+.example { font-size: 0; /* hack to get width:50% to work on inline-block */
+           padding-bottom: 6pt; }
+.column pre  { font-size: 11pt; padding-left: 6pt; padding-right: 6pt;
+               padding-top: 2pt; padding-bottom: 2pt; }
+div.examplenum { font-size: 11pt; text-align: left; }
+div.column { display: inline-block; width: 50%; vertical-align: top; }
+div.example > div:nth-child(2) { clear:left; background-color: #D3E1E4; }
+div.example > div:nth-child(3) { clear:right; background-color: #C9CaCE; }
 #watermark {
  position:fixed;
  bottom:0px;
@@ -54,7 +59,6 @@ div.example > pre:nth-child(3) { clear:right; background-color: #C9CaCE; }
  color: white;
 }
 #watermark a { color: white; }
-div.examplenum { font-size: 82%; text-align: left; }
 a.dingus { color: red; cursor: pointer; }
 a.footnoteRef > sup:before {
   content: "[";
@@ -76,6 +80,9 @@ a.footnoteRef > sup {
       line-height: 1.2;
       font-size: 10pt;
     }
+ .column pre  { font-size: 9pt; }
+ div.examplenum { font-size: 9pt; }
+ a.dingus { display: none; }
 }
 </style>
 <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
