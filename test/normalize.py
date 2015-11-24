@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from html.parser import HTMLParser, HTMLParseError
+from html.parser import HTMLParser
 from html.entities import name2codepoint
 import sys
 import re
@@ -175,6 +175,6 @@ def normalize_html(html):
                 parser.feed(chunk.group(0))
         parser.close()
         return parser.output
-    except HTMLParseError as e:
+    except Exception as e:
         sys.stderr.write("Normalization error: " + e.msg + "\n")
         return html  # on error, return unnormalized HTML
