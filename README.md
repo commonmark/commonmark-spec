@@ -75,7 +75,7 @@ possible, as their authors intended.  And we have tried to make the rules
 for different elements work together harmoniously.  In places where
 different decisions could have been made (for example, the rules
 governing list indentation), we have explained the rationale for
-my choices.  In a few cases, we have departed slightly from the canonical
+our choices.  In a few cases, we have departed slightly from the canonical
 syntax description, in ways that we think further the goals of Markdown
 as stated in that description.
 
