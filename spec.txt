@@ -3423,6 +3423,27 @@ A list item may contain any kind of block:
 </ol>
 .
 
+A list item that contains a code block will preserve empty lines
+within the code block verbatim. Whereas, some current Markdown
+implementations add an extra blank line in the contained code block.
+
+.
+- Foo
+
+      bar
+
+      baz
+.
+<ul>
+<li><p>Foo</p>
+
+<pre><code>bar
+
+baz
+</code></pre></li>
+</ul>
+.
+
 Note that ordered list start numbers must be nine digits or less:
 
 .
