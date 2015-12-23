@@ -36,11 +36,11 @@ questions it does not answer:
     users in real documents. (See [this comment by John
     Gruber](http://article.gmane.org/gmane.text.markdown.general/1997).)
 
-2.  Is a blank line needed before a block quote or header?
+2.  Is a blank line needed before a block quote or heading?
     Most implementations do not require the blank line.  However,
     this can lead to unexpected results in hard-wrapped text, and
     also to ambiguities in parsing (note that some implementations
-    put the header inside the blockquote, while others do not).
+    put the heading inside the blockquote, while others do not).
     (John Gruber has also spoken [in favor of requiring the blank
     lines](http://article.gmane.org/gmane.text.markdown.general/2146).)
 
@@ -128,8 +128,8 @@ questions it does not answer:
       - and it can screw things up`
     ```
 
-11. Can list items include section headers?  (`Markdown.pl` does not
-    allow this, but does allow blockquotes to include headers.)
+11. Can list items include section headings?  (`Markdown.pl` does not
+    allow this, but does allow blockquotes to include headings.)
 
     ``` markdown
     - # Heading
@@ -325,9 +325,9 @@ with the replacement character (`U+FFFD`).
 
 We can think of a document as a sequence of
 [blocks](@block)---structural elements like paragraphs, block
-quotations, lists, headers, rules, and code blocks.  Some blocks (like
+quotations, lists, headings, rules, and code blocks.  Some blocks (like
 block quotes and list items) contain other blocks; others (like
-headers and paragraphs) contain [inline](@inline) content---text,
+headings and paragraphs) contain [inline](@inline) content---text,
 links, emphasized text, images, code, and so on.
 
 ## Precedence
@@ -348,7 +348,7 @@ two items, not a list with one item containing a code span:
 
 This means that parsing can proceed in two steps:  first, the block
 structure of the document can be discerned; second, text lines inside
-paragraphs, headers, and other block constructs can be parsed for inline
+paragraphs, headings, and other block constructs can be parsed for inline
 structure.  The second step requires information about link reference
 definitions that will be available only at the end of the first
 step.  Note that the first step requires processing lines in sequence,
@@ -528,9 +528,9 @@ bar
 
 If a line of dashes that meets the above conditions for being a
 horizontal rule could also be interpreted as the underline of a [setext
-header], the interpretation as a
-[setext header] takes precedence. Thus, for example,
-this is a setext header, not a paragraph followed by a horizontal rule:
+heading], the interpretation as a
+[setext heading] takes precedence. Thus, for example,
+this is a setext heading, not a paragraph followed by a horizontal rule:
 
 .
 Foo
@@ -572,9 +572,9 @@ If you want a horizontal rule in a list item, use a different bullet:
 </ul>
 .
 
-## ATX headers
+## ATX headings
 
-An [ATX header](@atx-header)
+An [ATX heading](@atx-heading)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of unescaped `#` characters.
@@ -582,11 +582,11 @@ The opening sequence of `#` characters cannot be followed directly by a
 [non-whitespace character]. The optional closing sequence of `#`s must be
 preceded by a [space] and may be followed by spaces only.  The opening
 `#` character may be indented 0-3 spaces.  The raw contents of the
-header are stripped of leading and trailing spaces before being parsed
-as inline content.  The header level is equal to the number of `#`
+heading are stripped of leading and trailing spaces before being parsed
+as inline content.  The heading level is equal to the number of `#`
 characters in the opening sequence.
 
-Simple headers:
+Simple headings:
 
 .
 # foo
@@ -604,7 +604,7 @@ Simple headers:
 <h6>foo</h6>
 .
 
-More than six `#` characters is not a header:
+More than six `#` characters is not a heading:
 
 .
 ####### foo
@@ -613,12 +613,12 @@ More than six `#` characters is not a header:
 .
 
 At least one space is required between the `#` characters and the
-header's contents, unless the header is empty.  Note that many
+heading's contents, unless the heading is empty.  Note that many
 implementations currently do not require the space.  However, the
 space was required by the
 [original ATX implementation](http://www.aaronsw.com/2002/atx/atx.py),
 and it helps prevent things like the following from being parsed as
-headers:
+headings:
 
 .
 #5 bolt
@@ -629,7 +629,7 @@ headers:
 <p>#foobar</p>
 .
 
-This is not a header, because the first `#` is escaped:
+This is not a heading, because the first `#` is escaped:
 
 .
 \## foo
@@ -712,7 +712,7 @@ Spaces are allowed after the closing sequence:
 
 A sequence of `#` characters with anything but [space]s following it
 is not a closing sequence, but counts as part of the contents of the
-header:
+heading:
 
 .
 ### foo ### b
@@ -741,7 +741,7 @@ of the closing sequence:
 <h1>foo #</h1>
 .
 
-ATX headers need not be separated from surrounding content by blank
+ATX headings need not be separated from surrounding content by blank
 lines, and they can interrupt paragraphs:
 
 .
@@ -764,7 +764,7 @@ Bar foo
 <p>Bar foo</p>
 .
 
-ATX headers can be empty:
+ATX headings can be empty:
 
 .
 ## 
@@ -776,33 +776,33 @@ ATX headers can be empty:
 <h3></h3>
 .
 
-## Setext headers
+## Setext headings
 
-A [setext header](@setext-header)
+A [setext heading](@setext-heading)
 consists of a line of text, containing at least one [non-whitespace character],
-with no more than 3 spaces indentation, followed by a [setext header
+with no more than 3 spaces indentation, followed by a [setext heading
 underline].  The line of text must be
-one that, were it not followed by the setext header underline,
+one that, were it not followed by the setext heading underline,
 would be interpreted as part of a paragraph:  it cannot be
-interpretable as a [code fence], [ATX header][ATX headers],
+interpretable as a [code fence], [ATX heading][ATX headings],
 [block quote][block quotes], [horizontal rule][horizontal rules],
 [list item][list items], or [HTML block][HTML blocks].
 
-A [setext header underline](@setext-header-underline) is a sequence of
+A [setext heading underline](@setext-heading-underline) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
 spaces indentation and any number of trailing spaces.  If a line
 containing a single `-` can be interpreted as an
 empty [list items], it should be interpreted this way
-and not as a [setext header underline].
+and not as a [setext heading underline].
 
-The header is a level 1 header if `=` characters are used in the
-[setext header underline], and a level 2
-header if `-` characters are used.  The contents of the header are the
+The heading is a level 1 heading if `=` characters are used in the
+[setext heading underline], and a level 2
+heading if `-` characters are used.  The contents of the heading are the
 result of parsing the first line as Markdown inline content.
 
-In general, a setext header need not be preceded or followed by a
+In general, a setext heading need not be preceded or followed by a
 blank line.  However, it cannot interrupt a paragraph, so when a
-setext header comes after a paragraph, a blank line is needed between
+setext heading comes after a paragraph, a blank line is needed between
 them.
 
 Simple examples:
@@ -831,7 +831,7 @@ Foo
 <h1>Foo</h1>
 .
 
-The header content can be indented up to three spaces, and need
+The heading content can be indented up to three spaces, and need
 not line up with the underlining:
 
 .
@@ -866,7 +866,7 @@ Foo
 <hr />
 .
 
-The setext header underline can be indented up to three spaces, and
+The setext heading underline can be indented up to three spaces, and
 may have trailing spaces:
 
 .
@@ -886,7 +886,7 @@ Foo
 ---</p>
 .
 
-The setext header underline cannot contain internal spaces:
+The setext heading underline cannot contain internal spaces:
 
 .
 Foo
@@ -920,7 +920,7 @@ Foo\
 .
 
 Since indicators of block structure take precedence over
-indicators of inline structure, the following are setext headers:
+indicators of inline structure, the following are setext headings:
 
 .
 `Foo
@@ -937,7 +937,7 @@ of dashes"/>
 <p>of dashes&quot;/&gt;</p>
 .
 
-The setext header underline cannot be a [lazy continuation
+The setext heading underline cannot be a [lazy continuation
 line] in a list item or block quote:
 
 .
@@ -960,7 +960,7 @@ line] in a list item or block quote:
 <hr />
 .
 
-A setext header cannot interrupt a paragraph:
+A setext heading cannot interrupt a paragraph:
 
 .
 Foo
@@ -995,7 +995,7 @@ Baz
 <p>Baz</p>
 .
 
-Setext headers cannot be empty:
+Setext headings cannot be empty:
 
 .
 
@@ -1004,7 +1004,7 @@ Setext headers cannot be empty:
 <p>====</p>
 .
 
-Setext header text lines must not be interpretable as block
+Setext heading text lines must not be interpretable as block
 constructs other than paragraphs.  So, the line of dashes
 in these examples gets interpreted as a horizontal rule:
 
@@ -1045,7 +1045,7 @@ in these examples gets interpreted as a horizontal rule:
 <hr />
 .
 
-If you want a header with `> foo` as its literal text, you can
+If you want a heading with `> foo` as its literal text, you can
 use backslash escapes:
 
 .
@@ -1192,17 +1192,17 @@ And indented code can occur immediately before and after other kinds of
 blocks:
 
 .
-# Header
+# Heading
     foo
-Header
+Heading
 ------
     foo
 ----
 .
-<h1>Header</h1>
+<h1>Heading</h1>
 <pre><code>foo
 </code></pre>
-<h2>Header</h2>
+<h2>Heading</h2>
 <pre><code>foo
 </code></pre>
 <hr />
@@ -2547,7 +2547,7 @@ Foo
 <p>[bar]</p>
 .
 
-However, it can directly follow other block elements, such as headers
+However, it can directly follow other block elements, such as headings
 and horizontal rules, and it need not be followed by a blank line.
 
 .
@@ -4036,7 +4036,7 @@ A list may be the first block in a list item:
 </ol>
 .
 
-A list item can contain a header:
+A list item can contain a heading:
 
 .
 - # Foo
@@ -4854,7 +4854,7 @@ not have their usual Markdown meanings:
 \`not code`
 1\. not a list
 \* not a list
-\# not a header
+\# not a heading
 \[foo]: /url "not a reference"
 .
 <p>*not emphasized*
@@ -4863,7 +4863,7 @@ not have their usual Markdown meanings:
 `not code`
 1. not a list
 * not a list
-# not a header
+# not a heading
 [foo]: /url &quot;not a reference&quot;</p>
 .
 
@@ -8104,7 +8104,7 @@ list items, and so on---is constructed.  Text is assigned to these
 blocks but not parsed. Link reference definitions are parsed and a
 map of links is constructed.
 
-2. In the second phase, the raw text contents of paragraphs and headers
+2. In the second phase, the raw text contents of paragraphs and headings
 are parsed into sequences of Markdown inline elements (strings,
 code spans, links, emphasis, and so on), using the map of link
 references constructed in phase 1.
@@ -8167,10 +8167,10 @@ matched block.
 3.  Finally, we look at the remainder of the line (after block
 markers like `>`, list markers, and indentation have been consumed).
 This is text that can be incorporated into the last open
-block (a paragraph, code block, header, or raw HTML).
+block (a paragraph, code block, heading, or raw HTML).
 
-Setext headers are formed when we detect that the second line of
-a paragraph is a setext header line.
+Setext headings are formed when we detect that the second line of
+a paragraph is a setext heading line.
 
 Reference link definitions are detected when a paragraph is closed;
 the accumulated text lines are parsed to see if they begin with
@@ -8279,7 +8279,7 @@ We thus obtain the final tree:
 Once all of the input has been parsed, all open blocks are closed.
 
 We then "walk the tree," visiting every node, and parse raw
-string contents of paragraphs and headers as inlines.  At this
+string contents of paragraphs and headings as inlines.  At this
 point we have seen all the link reference definitions, so we can
 resolve reference links as we go.
 
