@@ -133,8 +133,9 @@ elif specformat == "html":
         template = Template(templatefile.read())
     toclines = []
     for section in sections:
-        indent = '    ' * (section['level'] - 1)
-        toclines.append(indent + '* [' + section['number'] + ' ' +
+        if section['level'] <= 2:
+            indent = '    ' * (section['level'] - 1)
+            toclines.append(indent + '* [' + section['number'] + ' ' +
                         section['contents'] + '](#' + section['ident'] + ')')
     toc = '<div id="TOC">\n\n' + '\n'.join(toclines) + '\n\n</div>\n\n'
     prog = "cmark --smart"
