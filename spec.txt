@@ -85,8 +85,8 @@ questions it does not answer:
     10. item 2a
     ```
 
-6.  Is this one list with a horizontal rule in its second item,
-    or two lists separated by a horizontal rule?
+6.  Is this one list with a thematic break in its second item,
+    or two lists separated by a thematic break?
 
     ``` markdown
     * a
@@ -367,12 +367,12 @@ which cannot.
 This section describes the different kinds of leaf block that make up a
 Markdown document.
 
-## Horizontal rules
+## Thematic breaks
 
 A line consisting of 0-3 spaces of indentation, followed by a sequence
 of three or more matching `-`, `_`, or `*` characters, each followed
 optionally by any number of spaces, forms a
-[horizontal rule](@horizontal-rule).
+[thematic break](@thematic-break).
 
 .
 ***
@@ -490,7 +490,7 @@ a------
 .
 
 It is required that all of the [non-whitespace character]s be the same.
-So, this is not a horizontal rule:
+So, this is not a thematic break:
 
 .
  *-*
@@ -498,7 +498,7 @@ So, this is not a horizontal rule:
 <p><em>-</em></p>
 .
 
-Horizontal rules do not need blank lines before or after:
+Thematic breaks do not need blank lines before or after:
 
 .
 - foo
@@ -514,7 +514,7 @@ Horizontal rules do not need blank lines before or after:
 </ul>
 .
 
-Horizontal rules can interrupt a paragraph:
+Thematic breaks can interrupt a paragraph:
 
 .
 Foo
@@ -527,10 +527,10 @@ bar
 .
 
 If a line of dashes that meets the above conditions for being a
-horizontal rule could also be interpreted as the underline of a [setext
+thematic break could also be interpreted as the underline of a [setext
 heading], the interpretation as a
 [setext heading] takes precedence. Thus, for example,
-this is a setext heading, not a paragraph followed by a horizontal rule:
+this is a setext heading, not a paragraph followed by a thematic break:
 
 .
 Foo
@@ -541,8 +541,8 @@ bar
 <p>bar</p>
 .
 
-When both a horizontal rule and a list item are possible
-interpretations of a line, the horizontal rule takes precedence:
+When both a thematic break and a list item are possible
+interpretations of a line, the thematic break takes precedence:
 
 .
 * Foo
@@ -558,7 +558,7 @@ interpretations of a line, the horizontal rule takes precedence:
 </ul>
 .
 
-If you want a horizontal rule in a list item, use a different bullet:
+If you want a thematic break in a list item, use a different bullet:
 
 .
 - Foo
@@ -785,7 +785,7 @@ underline].  The line of text must be
 one that, were it not followed by the setext heading underline,
 would be interpreted as part of a paragraph:  it cannot be
 interpretable as a [code fence], [ATX heading][ATX headings],
-[block quote][block quotes], [horizontal rule][horizontal rules],
+[block quote][block quotes], [thematic break][thematic breaks],
 [list item][list items], or [HTML block][HTML blocks].
 
 A [setext heading underline](@setext-heading-underline) is a sequence of
@@ -1006,7 +1006,7 @@ Setext headings cannot be empty:
 
 Setext heading text lines must not be interpretable as block
 constructs other than paragraphs.  So, the line of dashes
-in these examples gets interpreted as a horizontal rule:
+in these examples gets interpreted as a thematic break:
 
 .
 ---
@@ -2548,7 +2548,7 @@ Foo
 .
 
 However, it can directly follow other block elements, such as headings
-and horizontal rules, and it need not be followed by a blank line.
+and thematic breaks, and it need not be followed by a blank line.
 
 .
 # [Foo]

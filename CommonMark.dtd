@@ -1,7 +1,7 @@
 <!-- DTD for CommonMark xml export format -->
 
 <!ENTITY % block
-         'block_quote|list|code_block|html|paragraph|heading|hrule'>
+         'block_quote|list|code_block|html|paragraph|heading|thematic_break'>
 <!ENTITY % inline
          'text|softbreak|linebreak|code|inline_html|emph|strong|link|image'>
 
@@ -35,7 +35,7 @@
 <!ATTLIST heading
           level (1|2|3|4|5|6) #REQUIRED>
 
-<!ELEMENT hrule EMPTY>
+<!ELEMENT thematic_break  EMPTY>
 
 <!-- inline elements -->
 
