@@ -39,7 +39,7 @@
 
 <!ELEMENT thematic_break  EMPTY>
 
-<!ELEMENT custom_block (%block;)*>
+<!ELEMENT custom_block (%inline;|%block;)*>
 <!ATTLIST custom_block
           on_enter CDATA #IMPLIED
           on_exit CDATA #IMPLIED>
