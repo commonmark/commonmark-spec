@@ -6,6 +6,8 @@
          'text|softbreak|linebreak|code|inline_html|emph|strong|link|image|custom_inline'>
 
 <!ELEMENT document (%block;)*>
+<!ATTLIST document
+    xmlns CDATA #FIXED "http://commonmark.org/xml/1.0">
 
 <!-- block elements -->
 
@@ -40,7 +42,7 @@
 <!ELEMENT custom_block (%block;)*>
 <!ATTLIST custom_block
           on_enter CDATA #IMPLIED
-          on_exit CDATA> #IMPLIED>
+          on_exit CDATA #IMPLIED>
 
 <!-- inline elements -->
 
@@ -75,7 +77,7 @@
 <!ELEMENT custom_inline (%inline;)*>
 <!ATTLIST custom_inline
           on_enter CDATA #IMPLIED
-          on_exit CDATA> #IMPLIED>
+          on_exit CDATA #IMPLIED>
 
 
 <!-- All elements can have a sourcepos attribute.
