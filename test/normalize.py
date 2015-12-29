@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from html.parser import HTMLParser
+import urllib
 
 try:
     from html.parser import HTMLParseError
@@ -61,7 +62,10 @@ class MyHTMLParser(HTMLParser):
             attrs.sort()
             for (k,v) in attrs:
                 self.output += " " + k
-                if v != None:
+                if v in ['href','src']:
+                    self.output += ("=" + '"' +
+                            urllib.quote(urllib.unquote(v), safe='/') + '"')
+                elif v != None:
                     self.output += ("=" + '"' + cgi.escape(v,quote=True) + '"')
         self.output += ">"
         self.last_tag = tag
