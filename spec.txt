@@ -634,7 +634,7 @@ A tab will not work:
 .
 #→foo
 .
-<p># foo</p>
+<p>#→foo</p>
 .
 
 This is not a heading, because the first `#` is escaped:
@@ -6838,7 +6838,7 @@ There are three kinds of [reference link](@reference-link)s:
 and [shortcut](#shortcut-reference-link).
 
 A [full reference link](@full-reference-link)
-consists of a [link text], optional [whitespace], and a [link label]
+consists of a [link text] immediately followed by a [link label]
 that [matches] a [link reference definition] elsewhere in the document.
 
 A [link label](@link-label)  begins with a left bracket (`[`) and ends
@@ -7008,14 +7008,15 @@ purposes of determining matching:
 <p><a href="/url">Baz</a></p>
 .
 
-There can be [whitespace] between the [link text] and the [link label]:
+No [whitespace] is allowed between the [link text] and the
+[link label]:
 
 .
 [foo] [bar]
 
 [bar]: /url "title"
 .
-<p><a href="/url" title="title">foo</a></p>
+<p>[foo] <a href="/url" title="title">bar</a></p>
 .
 
 .
@@ -7024,8 +7025,36 @@ There can be [whitespace] between the [link text] and the [link label]:
 
 [bar]: /url "title"
 .
-<p><a href="/url" title="title">foo</a></p>
+<p>[foo]
+<a href="/url" title="title">bar</a></p>
 .
+
+This is a departure from John Gruber's original Markdown syntax
+description, which explicitly allows whitespace between the link
+text and the link label.  It brings reference links in line with
+[inline link]s, which (according to both original Markdown and
+this spec) cannot have whitespace after the link text.  More
+importantly, it prevents inadvertent capture of consecutive
+[shortcut reference link]s. If whitespace is allowed between the
+link text and the link label, then in the following we will have
+a single reference link, not two shortcut reference links, as
+intended:
+
+``` markdown
+[foo]
+[bar]
+
+[foo]: /url1
+[bar]: /url2
+```
+
+(Note that [shortcut reference link]s were introduced by Gruber
+himself in a beta version of `Markdown.pl`, but never included
+in the official syntax description.  Without shortcut reference
+links, it is harmless to allow space between the link text and
+link label; but once shortcut references are introduced, it is
+too dangerous to allow this, as it frequently leads to
+unintended results.)
 
 When there are multiple matching [link reference definition]s,
 the first is used:
@@ -7127,7 +7156,7 @@ A [link label] must contain at least one [non-whitespace character]:
 A [collapsed reference link](@collapsed-reference-link)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
-document, optional [whitespace], and the string `[]`.
+document, followed by the string `[]`.
 The contents of the first link label are parsed as inlines,
 which are used as the link's text.  The link's URI and title are
 provided by the matching reference link definition.  Thus,
@@ -7160,8 +7189,8 @@ The link labels are case-insensitive:
 .
 
 
-As with full reference links, [whitespace] is allowed
-between the two sets of brackets:
+As with full reference links, [whitespace] is not
+allowed between the two sets of brackets:
 
 .
 [foo] 
@@ -7169,7 +7198,8 @@ between the two sets of brackets:
 
 [foo]: /url "title"
 .
-<p><a href="/url" title="title">foo</a></p>
+<p><a href="/url" title="title">foo</a>
+[]</p>
 .
 
 A [shortcut reference link](@shortcut-reference-link)
@@ -7390,7 +7420,7 @@ My ![foo bar](/path/to/train.jpg  "title"   )
 Reference-style:
 
 .
-![foo] [bar]
+![foo][bar]
 
 [bar]: /url
 .
@@ -7398,7 +7428,7 @@ Reference-style:
 .
 
 .
-![foo] [bar]
+![foo][bar]
 
 [BAR]: /url
 .
@@ -7433,7 +7463,7 @@ The labels are case-insensitive:
 <p><img src="/url" alt="Foo" title="title" /></p>
 .
 
-As with full reference links, [whitespace] is allowed
+As with reference links, [whitespace] is not allowed
 between the two sets of brackets:
 
 .
@@ -7442,7 +7472,8 @@ between the two sets of brackets:
 
 [foo]: /url "title"
 .
-<p><img src="/url" alt="foo" title="title" /></p>
+<p><img src="/url" alt="foo" title="title" />
+[]</p>
 .
 
 Shortcut:
