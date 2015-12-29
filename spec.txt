@@ -7090,6 +7090,16 @@ backslash-escaped:
 <p><a href="/uri">foo</a></p>
 .
 
+Note that in this example `]` is not backslash-escaped:
+
+.
+[bar\\]: /uri
+
+[bar\\]
+.
+<p><a href="/uri">bar\</a></p>
+.
+
 A [link label] must contain at least one [non-whitespace character]:
 
 .
