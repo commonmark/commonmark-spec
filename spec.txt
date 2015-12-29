@@ -6616,11 +6616,11 @@ A link can contain fragment identifiers and queries:
 
 [link](http://example.com#fragment)
 
-[link](http://example.com?foo=bar&baz#fragment)
+[link](http://example.com?foo=3#frag)
 .
 <p><a href="#fragment">link</a></p>
 <p><a href="http://example.com#fragment">link</a></p>
-<p><a href="http://example.com?foo=bar&amp;baz#fragment">link</a></p>
+<p><a href="http://example.com?foo=3#frag">link</a></p>
 .
 
 Note that a backslash before a non-escapable character is
