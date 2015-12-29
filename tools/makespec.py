@@ -121,7 +121,7 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
             mdlines.append(ln)
 
 mdtext = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor,
-  ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n')
+  ''.join(mdlines)) + '\n\n' + '\n'.join(refs) + '\n'
 yaml = ''.join(yamllines)
 metadata = parseYaml(yaml)
 
