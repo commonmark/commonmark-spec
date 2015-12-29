@@ -7749,16 +7749,9 @@ _boolean zoop:33=zoop:33 /></p>
 Custom tag names can be used:
 
 .
-<responsive-image src="foo.jpg" />
-
-<My-Tag>
-foo
-</My-Tag>
+Foo <responsive-image src="foo.jpg" />
 .
-<responsive-image src="foo.jpg" />
-<My-Tag>
-foo
-</My-Tag>
+<p>Foo <responsive-image src="foo.jpg" /></p>
 .
 
 Illegal tag names, not parsed as HTML:
@@ -7806,11 +7799,9 @@ Missing [whitespace]:
 Closing tags:
 
 .
-</a>
-</foo >
+</a></foo >
 .
-</a>
-</foo >
+<p></a></foo ></p>
 .
 
 Illegal attributes in closing tag:
@@ -7875,17 +7866,17 @@ foo <![CDATA[>&<]]>
 Entities are preserved in HTML attributes:
 
 .
-<a href="&ouml;">
+foo <a href="&ouml;">
 .
-<a href="&ouml;">
+<p>foo <a href="&ouml;"></p>
 .
 
 Backslash escapes do not work in HTML attributes:
 
 .
-<a href="\*">
+foo <a href="\*">
 .
-<a href="\*">
+<p>foo <a href="\*"></p>
 .
 
 .
