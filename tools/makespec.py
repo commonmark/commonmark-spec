@@ -116,13 +116,12 @@ with open('spec.txt', 'r', encoding='utf-8') as spec:
                     refs.append("[{0}]: #{1}".format(section, ident))
                     ln = re.sub(r'# +', '# <a id="{0}"></a>'.format(ident),
                                 ln, count=1)
-                else:
-                    ln = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor, ln)
             else:
                 ln = re.sub(r' ', '␣', ln)
             mdlines.append(ln)
 
-mdtext = ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n'
+mdtext = re.sub(r'\[([^]]*)\]\(@([^)]*)\)', replaceAnchor,
+  ''.join(mdlines) + '\n\n' + '\n'.join(refs) + '\n')
 yaml = ''.join(yamllines)
 metadata = parseYaml(yaml)
 
