@@ -1,3 +1,57 @@
+[0.23]
+
+  * Don't allow space between link text and link label in a
+    reference link.  This fixes the problem of inadvertent capture:
+
+        [foo] [bar]
+
+        [foo]: /u1
+        [bar]: /u2
+  * Rename "horizontal rule" -> "thematic break".  This matches the HTML5
+    meaning for the hr element, and recognizes that the element may be
+    rendered in various ways (not always as a horizontal rule).
+    See http://talk.commonmark.org/t/horizontal-rule-or-thematic-break/912/3
+  * Rename "header" -> "heading".  This avoids a confusion that might arise
+    now that HTML5 has a "header" element, distinct from the "headings"
+    h1, h2, ...  Our headings correspond to HTML5 headings, not HTML5 headers.
+    The terminology of 'headings' is more natural, too.
+  * ATX headers: clarify that a space (or EOL) is needed; other whitespace
+    won't do (#373).  Added a test case.
+  * Rewrote "Entities" section with more correct terminology (#375).
+    Entity references and numeric character references.
+  * Clarified that spec does not dictate URL encoding/normalization policy.
+  * New test case: list item code block with empty line (Craig M.
+    Brandenburg).
+  * Added example with escaped backslash at end of link label (#325).
+  * Shortened an example so it doesn't wrap (#371).
+  * Fixed duplicate id "attribute".
+  * Fix four link targets (Lucas Werkmeister).
+  * Fix typo for link to "attributes" (Robin Stocker).
+  * Fix "delimiter" spellings and links (Sam Rawlins).
+  * Consistent usage of "we" instead of "I" (renzo).
+  * CommonMark.dtd - Rename `html` -> `html_block`,
+    `inline_html` -> `html_inline` for consistency.  (Otherwise it is too
+    hard to remember whether `html` is block or inline, a source of
+    some bugs.)
+  * CommonMark.dtd - added `xmlns` attribute to document.
+  * CommonMark.dtd - added `custom_block`, `custom_inline`.
+  * CommonMark.dtd - renamed `hrule` to `thematic_break`.
+  * Fixed some HTML inline tests, which were actually HTML blocks, given
+    the changes to block parsing rules since these examples were written
+    (#382).
+  * Normalize URLs when comparing test output.  This way we don't fail
+    tests for legitimate variations in URL escaping/normalization policies
+    (#334).
+  * `normalize.py`: don't use `HTMLParseError`, which has been removed
+    as of python 3.5 (#380).
+  * Minor spacing adjustments in test output, to match cmark's output,
+    since we test cmark without normalization.
+  * `makespec.py`:  remove need for link anchors to be on one line.
+  * `makespec.py`:  Only do two levels in the TOC.
+  * Use `display:inline-block` rather than floats for side-by-side.
+    This works when printed too.
+  * Added better print CSS.
+
 [0.22]
 
   * Don't list `title` twice as HTML block tag (Robin Stocker).
