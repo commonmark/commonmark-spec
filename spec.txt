@@ -4949,21 +4949,23 @@ foo
 .
 
 
-## Entities
+## Entity and numeric character references
 
-With the goal of making this standard as HTML-agnostic as possible, all
-valid HTML entities (except in code blocks and code spans)
-are recognized as such and converted into Unicode characters before
-they are stored in the AST. This means that renderers to formats other
-than HTML need not be HTML-entity aware.  HTML renderers may either escape
-Unicode characters as entities or leave them as they are.  (However,
-`"`, `&`, `<`, and `>` must always be rendered as entities.)
+All valid HTML entity references and numeric character
+references, except those occuring in code blocks, code spans,
+and raw HTML, are recognized as such and treated as equivalent to the
+corresponding Unicode characters.  Conforming CommonMark parsers
+need not store information about whether a particular character
+was represented in the source using a Unicode character or
+an entity reference.  HTML renderers may either escape Unicode
+characters as entities or leave them as they are (however, `"`,
+`&`, `<`, and `>` must always be rendered as entities).
 
-[Named entities](@name-entities) consist of `&` + any of the valid
+[Entity references](@entity-references) consist of `&` + any of the valid
 HTML5 entity names + `;`. The
 [following document](https://html.spec.whatwg.org/multipage/entities.json)
-is used as an authoritative source of the valid entity names and their
-corresponding code points.
+is used as an authoritative source of the valid entity
+references and their corresponding code points.
 
 .
 &nbsp; &amp; &copy; &AElig; &Dcaron;
@@ -4975,10 +4977,11 @@ corresponding code points.
 ∲ ≧̸</p>
 .
 
-[Decimal entities](@decimal-entities)
-consist of `&#` + a string of 1--8 arabic digits + `;`. Again, these
-entities need to be recognised and transformed into their corresponding
-Unicode code points. Invalid Unicode code points will be replaced by
+[Decimal numeric character
+references](@decimal-numeric-character-references)
+consist of `&#` + a string of 1--8 arabic digits + `;`. A
+numeric character reference is parsed as the corresponding
+Unicode character. Invalid Unicode code points will be replaced by
 the "unknown code point" character (`U+FFFD`).  For security reasons,
 the code point `U+0000` will also be replaced by `U+FFFD`.
 
@@ -4988,10 +4991,11 @@ the code point `U+0000` will also be replaced by `U+FFFD`.
 <p># Ӓ Ϡ � �</p>
 .
 
-[Hexadecimal entities](@hexadecimal-entities) consist of `&#` + either
-`X` or `x` + a string of 1-8 hexadecimal digits + `;`. They will also
-be parsed and turned into the corresponding Unicode code points in the
-AST.
+[Hexadecimal numeric character
+references](@hexadecimal-numeric-character-references) consist of `&#` +
+either `X` or `x` + a string of 1-8 hexadecimal digits + `;`.
+They too are parsed as the corresponding Unicode character (this
+time specified with a hexadecimal numeral instead of decimal).
 
 .
 &#X22; &#XD06; &#xcab;
@@ -5002,14 +5006,16 @@ AST.
 Here are some nonentities:
 
 .
-&nbsp &x; &#; &#x; &ThisIsWayTooLongToBeAnEntityIsntIt; &hi?;
+&nbsp &x; &#; &#x;
+&ThisIsWayTooLongToBeAnEntityIsntIt; &hi?;
 .
-<p>&amp;nbsp &amp;x; &amp;#; &amp;#x; &amp;ThisIsWayTooLongToBeAnEntityIsntIt; &amp;hi?;</p>
+<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;
+&amp;ThisIsWayTooLongToBeAnEntityIsntIt; &amp;hi?;</p>
 .
 
-Although HTML5 does accept some entities without a trailing semicolon
-(such as `&copy`), these are not recognized as entities here, because it
-makes the grammar too ambiguous:
+Although HTML5 does accept some entity references
+without a trailing semicolon (such as `&copy`), these are not
+recognized here, because it makes the grammar too ambiguous:
 
 .
 &copy
@@ -5018,7 +5024,7 @@ makes the grammar too ambiguous:
 .
 
 Strings that are not on the list of HTML5 named entities are not
-recognized as entities either:
+recognized as entity references either:
 
 .
 &MadeUpEntity;
@@ -5026,9 +5032,9 @@ recognized as entities either:
 <p>&amp;MadeUpEntity;</p>
 .
 
-Entities are recognized in any context besides code spans or
-code blocks, including raw HTML, URLs, [link title]s, and
-[fenced code block] [info string]s:
+Entity and numeric character references are recognized in any
+context besides code spans or code blocks, including raw HTML,
+URLs, [link title]s, and [fenced code block][] [info string]s:
 
 .
 <a href="&ouml;&ouml;.html">
@@ -5059,7 +5065,8 @@ foo
 </code></pre>
 .
 
-Entities are treated as literal text in code spans and code blocks:
+Entity and numeric character references are treated as literal
+text in code spans and code blocks, and in raw HTML:
 
 .
 `f&ouml;&ouml;`
@@ -5072,6 +5079,12 @@ Entities are treated as literal text in code spans and code blocks:
 .
 <pre><code>f&amp;ouml;f&amp;ouml;
 </code></pre>
+.
+
+.
+<a href="f&ouml;f&ouml;"/>
+.
+<a href="f&ouml;f&ouml;"/>
 .
 
 ## Code spans
@@ -6614,8 +6627,8 @@ just a backslash:
 .
 
 URL-escaping should be left alone inside the destination, as all
-URL-escaped characters are also valid URL characters. HTML entities in
-the destination will be parsed into the corresponding Unicode
+URL-escaped characters are also valid URL characters. Character
+references in the destination will be parsed into the corresponding Unicode
 code points, as usual, and optionally URL-escaped when written as HTML.
 
 .
@@ -6646,7 +6659,8 @@ Titles may be in single quotes, double quotes, or parentheses:
 <a href="/url" title="title">link</a></p>
 .
 
-Backslash escapes and entities may be used in titles:
+Backslash escapes and entity and numeric character references
+may be used in titles:
 
 .
 [link](/url "title \"&quot;")
@@ -6674,15 +6688,16 @@ But it is easy to work around this by using a different quote type:
 title, and its test suite included a test demonstrating this.
 But it is hard to see a good rationale for the extra complexity this
 brings, since there are already many ways---backslash escaping,
-entities, or using a different quote type for the enclosing title---to
-write titles containing double quotes.  `Markdown.pl`'s handling of
-titles has a number of other strange features.  For example, it allows
-single-quoted titles in inline links, but not reference links.  And, in
-reference links but not inline links, it allows a title to begin with
-`"` and end with `)`.  `Markdown.pl` 1.0.1 even allows titles with no closing
-quotation mark, though 1.0.2b8 does not.  It seems preferable to adopt
-a simple, rational rule that works the same way in inline links and
-link reference definitions.)
+entity and numeric character references, or using a different
+quote type for the enclosing title---to write titles containing
+double quotes.  `Markdown.pl`'s handling of titles has a number
+of other strange features.  For example, it allows single-quoted
+titles in inline links, but not reference links.  And, in
+reference links but not inline links, it allows a title to begin
+with `"` and end with `)`.  `Markdown.pl` 1.0.1 even allows
+titles with no closing quotation mark, though 1.0.2b8 does not.
+It seems preferable to adopt a simple, rational rule that works
+the same way in inline links and link reference definitions.)
 
 [Whitespace] is allowed around the destination and title:
 
@@ -7863,7 +7878,8 @@ foo <![CDATA[>&<]]>
 <p>foo <![CDATA[>&<]]></p>
 .
 
-Entities are preserved in HTML attributes:
+Entity and numeric character references are preserved in HTML
+attributes:
 
 .
 foo <a href="&ouml;">
