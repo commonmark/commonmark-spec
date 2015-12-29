@@ -4957,14 +4957,12 @@ and raw HTML, are recognized as such and treated as equivalent to the
 corresponding Unicode characters.  Conforming CommonMark parsers
 need not store information about whether a particular character
 was represented in the source using a Unicode character or
-an entity reference.  HTML renderers may either escape Unicode
-characters as entities or leave them as they are (however, `"`,
-`&`, `<`, and `>` must always be rendered as entities).
+an entity reference.
 
 [Entity references](@entity-references) consist of `&` + any of the valid
 HTML5 entity names + `;`. The
-[following document](https://html.spec.whatwg.org/multipage/entities.json)
-is used as an authoritative source of the valid entity
+document <https://html.spec.whatwg.org/multipage/entities.json>
+is used as an authoritative source for the valid entity
 references and their corresponding code points.
 
 .
@@ -5033,7 +5031,7 @@ recognized as entity references either:
 .
 
 Entity and numeric character references are recognized in any
-context besides code spans or code blocks, including raw HTML,
+context besides code spans or code blocks or raw HTML, including
 URLs, [link title]s, and [fenced code block][] [info string]s:
 
 .
