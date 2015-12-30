@@ -5013,10 +5013,10 @@ Here are some nonentities:
 
 .
 &nbsp &x; &#; &#x;
-&ThisIsWayTooLongToBeAnEntityIsntIt; &hi?;
+&ThisIsNotDefined; &hi?;
 .
 <p>&amp;nbsp &amp;x; &amp;#; &amp;#x;
-&amp;ThisIsWayTooLongToBeAnEntityIsntIt; &amp;hi?;</p>
+&amp;ThisIsNotDefined; &amp;hi?;</p>
 .
 
 Although HTML5 does accept some entity references
