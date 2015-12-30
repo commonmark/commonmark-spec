@@ -4960,8 +4960,8 @@ foo
 ## Entity and numeric character references
 
 All valid HTML entity references and numeric character
-references, except those occuring in code blocks, code spans,
-and raw HTML, are recognized as such and treated as equivalent to the
+references, except those occuring in code blocks and code spans,
+are recognized as such and treated as equivalent to the
 corresponding Unicode characters.  Conforming CommonMark parsers
 need not store information about whether a particular character
 was represented in the source using a Unicode character or
@@ -5039,7 +5039,7 @@ recognized as entity references either:
 .
 
 Entity and numeric character references are recognized in any
-context besides code spans or code blocks or raw HTML, including
+context besides code spans or code blocks, including
 URLs, [link title]s, and [fenced code block][] [info string]s:
 
 .
@@ -5072,7 +5072,7 @@ foo
 .
 
 Entity and numeric character references are treated as literal
-text in code spans and code blocks, and in raw HTML:
+text in code spans and code blocks:
 
 .
 `f&ouml;&ouml;`
@@ -5085,12 +5085,6 @@ text in code spans and code blocks, and in raw HTML:
 .
 <pre><code>f&amp;ouml;f&amp;ouml;
 </code></pre>
-.
-
-.
-<a href="f&ouml;f&ouml;"/>
-.
-<a href="f&ouml;f&ouml;"/>
 .
 
 ## Code spans
