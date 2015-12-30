@@ -319,7 +319,7 @@ bar
 ## Insecure characters
 
 For security reasons, the Unicode character `U+0000` must be replaced
-with the replacement character (`U+FFFD`).
+with the REPLACEMENT CHARACTER (`U+FFFD`).
 
 # Blocks and inlines
 
@@ -4988,7 +4988,7 @@ references](@decimal-numeric-character-references)
 consist of `&#` + a string of 1--8 arabic digits + `;`. A
 numeric character reference is parsed as the corresponding
 Unicode character. Invalid Unicode code points will be replaced by
-the "unknown code point" character (`U+FFFD`).  For security reasons,
+the REPLACEMENT CHARACTER (`U+FFFD`).  For security reasons,
 the code point `U+0000` will also be replaced by `U+FFFD`.
 
 .
