@@ -39,7 +39,7 @@
 <!ATTLIST html_block
           xml:space CDATA #FIXED "preserve">
 
-<!ELEMENT custom_block (%inline;|%block;)*>
+<!ELEMENT custom_block (%inline;|%block;|item)*>
 <!ATTLIST custom_block
           on_enter CDATA #IMPLIED
           on_exit CDATA #IMPLIED>
