@@ -7545,34 +7545,13 @@ An [absolute URI](@absolute-uri),
 for these purposes, consists of a [scheme] followed by a colon (`:`)
 followed by zero or more characters other than ASCII
 [whitespace] and control characters, `<`, and `>`.  If
-the URI includes these characters, you must use percent-encoding
+the URI includes these characters, they must be percent-encoded
 (e.g. `%20` for a space).
 
-The following [schemes](@scheme)
-are recognized (case-insensitive):
-`coap`, `doi`, `javascript`, `aaa`, `aaas`, `about`, `acap`, `cap`,
-`cid`, `crid`, `data`, `dav`, `dict`, `dns`, `file`, `ftp`, `geo`, `go`,
-`gopher`, `h323`, `http`, `https`, `iax`, `icap`, `im`, `imap`, `info`,
-`ipp`, `iris`, `iris.beep`, `iris.xpc`, `iris.xpcs`, `iris.lwz`, `ldap`,
-`mailto`, `mid`, `msrp`, `msrps`, `mtqp`, `mupdate`, `news`, `nfs`,
-`ni`, `nih`, `nntp`, `opaquelocktoken`, `pop`, `pres`, `rtsp`,
-`service`, `session`, `shttp`, `sieve`, `sip`, `sips`, `sms`, `snmp`,`
-soap.beep`, `soap.beeps`, `tag`, `tel`, `telnet`, `tftp`, `thismessage`,
-`tn3270`, `tip`, `tv`, `urn`, `vemmi`, `ws`, `wss`, `xcon`,
-`xcon-userid`, `xmlrpc.beep`, `xmlrpc.beeps`, `xmpp`, `z39.50r`,
-`z39.50s`, `adiumxtra`, `afp`, `afs`, `aim`, `apt`,` attachment`, `aw`,
-`beshare`, `bitcoin`, `bolo`, `callto`, `chrome`,` chrome-extension`,
-`com-eventbrite-attendee`, `content`, `cvs`,` dlna-playsingle`,
-`dlna-playcontainer`, `dtn`, `dvb`, `ed2k`, `facetime`, `feed`,
-`finger`, `fish`, `gg`, `git`, `gizmoproject`, `gtalk`, `hcp`, `icon`,
-`ipn`, `irc`, `irc6`, `ircs`, `itms`, `jar`, `jms`, `keyparc`, `lastfm`,
-`ldaps`, `magnet`, `maps`, `market`,` message`, `mms`, `ms-help`,
-`msnim`, `mumble`, `mvn`, `notes`, `oid`, `palm`, `paparazzi`,
-`platform`, `proxy`, `psyc`, `query`, `res`, `resource`, `rmi`, `rsync`,
-`rtmp`, `secondlife`, `sftp`, `sgn`, `skype`, `smb`, `soldat`,
-`spotify`, `ssh`, `steam`, `svn`, `teamspeak`, `things`, `udp`,
-`unreal`, `ut2004`, `ventrilo`, `view-source`, `webcal`, `wtai`,
-`wyciwyg`, `xfire`, `xri`, `ymsgr`.
+For purposes of this spec, a [scheme](@scheme) is any sequence
+of 2--32 characters beginning with an ASCII letter and followed
+by any combination of ASCII letters, digits, or the symbols plus
+("+"), period ("."), or hyphen ("-").
 
 Here are some valid autolinks:
 
@@ -7601,6 +7580,27 @@ Uppercase is also fine:
 .
 <p><a href="MAILTO:FOO@BAR.BAZ">MAILTO:FOO@BAR.BAZ</a></p>
 .
+
+Note that many strings that count as [absolute URI]s for
+purposes of this spec are not valid URIs, because their
+schemes are not registered or because of other problems
+with their syntax:
+
+.
+<a+b+c:d>
+
+<made-up-scheme://foo,bar>
+
+<http://../>
+
+<localhost:5001/foo>
+.
+<p><a href="a+b+c:d">a+b+c:d</a></p>
+<p><a href="made-up-scheme://foo,bar">made-up-scheme://foo,bar</a></p>
+<p><a href="http://../">http://../</a></p>
+<p><a href="localhost:5001/foo">localhost:5001/foo</a></p>
+.
+
 
 Spaces are not allowed in autolinks:
 
@@ -7662,12 +7662,6 @@ These are not autolinks:
 .
 
 .
-<heck://bing.bong>
-.
-<p>&lt;heck://bing.bong&gt;</p>
-.
-
-.
 < http://foo.bar >
 .
 <p>&lt; http://foo.bar &gt;</p>
@@ -7677,12 +7671,6 @@ These are not autolinks:
 <foo.bar.baz>
 .
 <p>&lt;foo.bar.baz&gt;</p>
-.
-
-.
-<localhost:5001/foo>
-.
-<p>&lt;localhost:5001/foo&gt;</p>
 .
 
 .
