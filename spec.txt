@@ -7588,19 +7588,27 @@ with their syntax:
 
 .
 <a+b+c:d>
-
-<made-up-scheme://foo,bar>
-
-<http://../>
-
-<localhost:5001/foo>
 .
 <p><a href="a+b+c:d">a+b+c:d</a></p>
-<p><a href="made-up-scheme://foo,bar">made-up-scheme://foo,bar</a></p>
-<p><a href="http://../">http://../</a></p>
-<p><a href="localhost:5001/foo">localhost:5001/foo</a></p>
 .
 
+.
+<made-up-scheme://foo,bar>
+.
+<p><a href="made-up-scheme://foo,bar">made-up-scheme://foo,bar</a></p>
+.
+
+.
+<http://../>
+.
+<p><a href="http://../">http://../</a></p>
+.
+
+.
+<localhost:5001/foo>
+.
+<p><a href="localhost:5001/foo">localhost:5001/foo</a></p>
+.
 
 Spaces are not allowed in autolinks:
 
@@ -7665,6 +7673,12 @@ These are not autolinks:
 < http://foo.bar >
 .
 <p>&lt; http://foo.bar &gt;</p>
+.
+
+.
+<m:abc>
+.
+<p>&lt;m:abc&gt;</p>
 .
 
 .
