@@ -2363,7 +2363,7 @@ them.
 
 .
 [Foo bar]:
-<my url>
+<my%20url>
 'title'
 
 [Foo bar]
@@ -6465,8 +6465,8 @@ following rules apply:
 A [link destination](@link-destination) consists of either
 
 - a sequence of zero or more characters between an opening `<` and a
-  closing `>` that contains no line breaks or unescaped `<` or `>`
-  characters, or
+  closing `>` that contains no spaces, line breaks, or unescaped
+  `<` or `>` characters, or
 
 - a nonempty sequence of characters that does not include
   ASCII space or control characters, and includes parentheses
@@ -6532,8 +6532,8 @@ Both the title and the destination may be omitted:
 <p><a href="">link</a></p>
 .
 
-If the destination contains spaces, it must be enclosed in pointy
-braces:
+The destination cannot contain spaces or line breaks,
+even if enclosed in pointy brackets:
 
 .
 [link](/my uri)
@@ -6544,10 +6544,8 @@ braces:
 .
 [link](</my uri>)
 .
-<p><a href="/my%20uri">link</a></p>
+<p>[link](&lt;/my uri&gt;)</p>
 .
-
-The destination cannot contain line breaks, even with pointy braces:
 
 .
 [link](foo
