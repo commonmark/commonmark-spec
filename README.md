@@ -46,16 +46,17 @@ The spec
 The source of [the spec] is `spec.txt`.  This is basically a Markdown
 file, with code examples written in a shorthand form:
 
-    .
+    ```````````````````````````````` example
     Markdown source
     .
     expected HTML output
-    .
+    ````````````````````````````````
 
 To build an HTML version of the spec, do `make spec.html`.  To build a
-PDF version, do `make spec.pdf`.  (Creating the HTML version requires
-that [cmark](https://github.com/jgm/cmark) and `python3` be installed
-and in your path.  Creating a PDF also requires [pandoc] and LaTeX.)
+PDF version, do `make spec.pdf`.  For both versions, you must
+have the lua rock `lcmark` installed:  after installing lua and
+lua rocks, `luarocks install lcmark`.  For the PDF you must also
+have xelatex installed.
 
 The spec is written from the point of view of the human writer, not
 the computer reader.  It is not an algorithm---an English translation of
