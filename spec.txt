@@ -1105,44 +1105,63 @@ increases the expressive power of CommonMark, by allowing
 multiline headings.  Authors who want interpretation 1 can
 put a blank line after the first paragraph:
 
-``` markdown
+.
 Foo
 
 bar
 ---
 baz
-```
+.
+<p>Foo</p>
+<h2>bar</h2>
+<p>baz</p>
+.
 
 Authors who want interpretation 2 can put blank lines around
 the thematic break,
 
-``` markdown
+.
 Foo
 bar
 
 ---
 
 baz
-```
+.
+<p>Foo
+bar</p>
+<hr />
+<p>baz</p>
+.
 
 or use a thematic break that cannot count as a [setext heading
 line], such as
 
-``` markdown
+.
 Foo
 bar
 * * *
 baz
-```
+.
+<p>Foo
+bar</p>
+<hr />
+<p>baz</p>
+.
 
 Authors who want interpretation 3 can use backslash escapes:
 
-``` markdown
+.
 Foo
 bar
 \---
 baz
-```
+.
+<p>Foo
+bar
+---
+baz</p>
+.
 
 ## Indented code blocks
 
