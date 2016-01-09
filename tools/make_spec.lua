@@ -79,11 +79,17 @@ local make_html_inline = function(tagname, attrs)
   return make_html_element(false, tagname, attrs)
 end
 
+local make_text = function(s)
+  local text = cmark.node_new(cmark.NODE_TEXT)
+  cmark.node_set_literal(text, s)
+  return text
+end
 
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
   local toc = {}
   local number = {0}
+  local example = 0
   for cur, entering, node_type in cmark.walk(doc) do
     if not entering and
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
@@ -124,6 +130,7 @@ local create_anchors = function(doc, meta, to)
       cmark.node_unlink(cur)
     elseif entering and node_type == cmark.NODE_CODE_BLOCK and
           cmark.node_get_fence_info(cur) == 'example' then
+     example = example + 1
       -- split into two code blocks
      local code = cmark.node_get_literal(cur)
      local sepstart, sepend = code:find("[\n\r]+%.[\n\r]+")
@@ -141,9 +148,16 @@ local create_anchors = function(doc, meta, to)
      local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
      local interact_link = make_html_inline('a', {{'class', 'dingus'},
                  {'title', 'open in interactive dingus'}})
-     local interact_text = cmark.node_new(cmark.NODE_TEXT)
-     cmark.node_set_literal(interact_text, "(interact)")
-     local example_div = make_html_block('div', {{'class', 'example'}})
+     cmark.node_append_child(interact_link, make_text("(interact)"))
+     local examplenum_link = cmark.node_new(cmark.NODE_LINK)
+     cmark.node_set_url(examplenum_link, '#example-' .. tostring(example))
+     cmark.node_append_child(examplenum_link,
+                             make_text("Example " .. tostring(example)))
+     cmark.node_append_child(examplenum_div, examplenum_link)
+     cmark.node_append_child(examplenum_div, make_text("  "))
+     cmark.node_append_child(examplenum_div, interact_link)
+     local example_div = make_html_block('div', {{'class', 'example'},
+                              {'id','example-' .. tostring(example)}})
      cmark.node_append_child(example_div, examplenum_div)
      cmark.node_append_child(example_div, leftcol_div)
      cmark.node_append_child(example_div, rightcol_div)
