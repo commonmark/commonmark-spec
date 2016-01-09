@@ -40,6 +40,23 @@ local extract_references = function(doc)
   return refs
 end
 
+local make_toc = function(toc)
+  -- we create a commonmark string, then parse it
+  local toclines = {}
+  for _,entry in ipairs(toc) do
+    if entry.level <= 2 then
+      local indent = string.rep('    ', entry.level - 1)
+      toclines[#toclines + 1] = indent .. '* [<span class="number">' ..
+         entry.number .. '</span> ' ..
+         entry.label ..  '](#' .. entry.ident .. ')'
+    end
+    -- TODO handle {-}
+  end
+  -- now parse our cm list and return the resulting list node:
+  local doc = cmark.parse_string(table.concat(toclines, '\n'), cmark.OPT_SMART)
+  return cmark.node_first_child(doc)
+end
+
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
   local toc = {}
@@ -70,7 +87,7 @@ local create_anchors = function(doc, meta, to)
           end
           number[level] = number[level] + 1
         end
-        table.insert(toc, { label = label, ident = ident, level = level })
+        table.insert(toc, { label = label, ident = ident, level = level, number = render_number(number) })
         cmark.node_set_on_enter(anchor, '<h' ..
            tostring(level) .. ' id="' .. ident ..  '">' ..
            '<span class="number">' .. render_number(number) .. '</span> ')
@@ -84,8 +101,7 @@ local create_anchors = function(doc, meta, to)
       cmark.node_unlink(cur)
     end
   end
-  local tocnode = cmark.node_new(cmark.NODE_CUSTOM_BLOCK)
-  cmark.node_set_on_enter(tocnode, require'inspect'.inspect(toc))
+  local tocnode = make_toc(toc)
   cmark.node_prepend_child(doc, tocnode)
 end
 
