@@ -8853,12 +8853,12 @@ Multiple     spaces
 
 <!-- END TESTS -->
 
-# Appendix: A parsing strategy {-}
+# Appendix: A parsing strategy
 
 In this appendix we describe some features of the parsing strategy
 used in the CommonMark reference implementations.
 
-## Overview {-}
+## Overview
 
 Parsing has two phases:
 
@@ -8896,7 +8896,7 @@ marked by arrows:
              "aliquando id"
 ```
 
-## Phase 1: block structure {-}
+## Phase 1: block structure
 
 Each line that is processed has an effect on this tree.  The line is
 analyzed and, depending on its contents, the document may be altered
@@ -9038,7 +9038,7 @@ We thus obtain the final tree:
              "aliquando id"
 ```
 
-## Phase 2: inline structure {-}
+## Phase 2: inline structure
 
 Once all of the input has been parsed, all open blocks are closed.
 
@@ -9069,7 +9069,7 @@ Notice how the [line ending] in the first paragraph has
 been parsed as a `softbreak`, and the asterisks in the first list item
 have become an `emph`.
 
-### An algorithm for parsing nested emphasis and links {-}
+### An algorithm for parsing nested emphasis and links
 
 By far the trickiest part of inline parsing is handling emphasis,
 strong emphasis, links, and images.  This is done using the following
@@ -9099,7 +9099,7 @@ procedure (see below).
 When we hit the end of the input, we call the *process emphasis*
 procedure (see below), with `stack_bottom` = NULL.
 
-#### *look for link or image* {-}
+#### *look for link or image*
 
 Starting at the top of the delimiter stack, we look backwards
 through the stack for an opening `[` or `![` delimiter.
@@ -9130,7 +9130,7 @@ through the stack for an opening `[` or `![` delimiter.
       `[` delimiters before the opening delimiter to *inactive*.  (This
       will prevent us from getting links within links.)
 
-#### *process emphasis* {-}
+#### *process emphasis*
 
 Parameter `stack_bottom` sets a lower bound to how far we
 descend in the [delimiter stack].  If it is NULL, we can

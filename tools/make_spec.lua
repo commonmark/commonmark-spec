@@ -50,7 +50,6 @@ local make_toc = function(toc)
          entry.number .. '</span> ' ..
          entry.label ..  '](#' .. entry.ident .. ')'
     end
-    -- TODO handle {-}
   end
   -- now parse our cm list and return the resulting list node:
   local doc = cmark.parse_string(table.concat(toclines, '\n'), cmark.OPT_SMART)
@@ -107,14 +106,16 @@ local create_anchors = function(doc, meta, to)
       else -- NODE_HEADING
         local level = cmark.node_get_heading_level(cur)
         local last_level = #toc == 0 and 1 or toc[#toc].level
-        if level > last_level then -- subhead
-          number[level] = 1
-        else
-          while last_level > level do
-            number[last_level] = nil
-            last_level = last_level - 1
+        if #number > 0 then
+          if level > last_level then -- subhead
+            number[level] = 1
+          else
+            while last_level > level do
+              number[last_level] = nil
+              last_level = last_level - 1
+            end
+            number[level] = number[level] + 1
           end
-          number[level] = number[level] + 1
         end
         table.insert(toc, { label = label, ident = ident, level = level, number = render_number(number) })
         cmark.node_set_on_enter(anchor, '<h' ..
@@ -164,6 +165,9 @@ local create_anchors = function(doc, meta, to)
      cmark.node_insert_before(cur, example_div)
      cmark.node_unlink(cur)
      cmark.node_free(cur)
+    elseif node_type == cmark.HTML_BLOCK and
+            cmark.get_literal(node) == '<!-- END TESTS -->' then
+     number = {} -- stop numbering when you get to appendices
     end
   end
   local tocnode = make_toc(toc)
