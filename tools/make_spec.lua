@@ -56,7 +56,7 @@ local create_anchors = function(doc, meta, to)
       local ident = to_identifier(label)
       if node_type == cmark.NODE_LINK then
         cmark.node_set_on_enter(anchor, '<a id="' .. ident .. '"' ..
-               ' class="definition">')
+               ' href="#' .. ident .. '" class="definition">')
         cmark.node_set_on_exit(anchor, "</a>")
       else -- NODE_HEADING
         local level = cmark.node_get_heading_level(cur)
