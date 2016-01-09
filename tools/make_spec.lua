@@ -13,6 +13,14 @@ local to_identifier = function(s)
   return trim(s):lower():gsub('[^%w]+', ' '):gsub('[%s]+', '-')
 end
 
+local render_number = function(tbl)
+  local res = ''
+  for _,x in ipairs(tbl) do
+    res = res .. tostring(x) .. '.'
+  end
+  return res
+end
+
 local extract_references = function(doc)
   local cur, entering, node_type
   local refs = {}
@@ -33,6 +41,8 @@ end
 
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
+  local toc = {}
+  local number = {0}
   for cur, entering, node_type in cmark.walk(doc) do
     if not entering and
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
@@ -47,10 +57,22 @@ local create_anchors = function(doc, meta, to)
         cmark.node_set_on_enter(anchor, '<a id="' .. ident .. '"' ..
                ' class="definition">')
         cmark.node_set_on_exit(anchor, "</a>")
-      else
+      else -- NODE_HEADING
         local level = cmark.node_get_heading_level(cur)
+        local last_level = #toc == 0 and 1 or toc[#toc].level
+        if level > last_level then -- subhead
+          number[level] = 1
+        else
+          while last_level > level do
+            number[last_level] = nil
+            last_level = last_level - 1
+          end
+          number[level] = number[level] + 1
+        end
+        table.insert(toc, { label = label, ident = indent, level = level })
         cmark.node_set_on_enter(anchor, '<h' ..
-           tostring(level) .. ' id="' .. ident ..  '">')
+           tostring(level) .. ' id="' .. ident ..  '">' ..
+           '<span class="number">' .. render_number(number) .. '</span> ')
         cmark.node_set_on_exit(anchor, '</h' .. tostring(level) .. '>')
       end
       while children do
