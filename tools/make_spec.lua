@@ -5,29 +5,38 @@ local trim = function(s)
   return s:gsub("^%s+",""):gsub("%s+$","")
 end
 
+local warn = function(s)
+  io.stderr:write('WARNING: ' .. s .. '\n')
+end
+
+local to_identifier = function(s)
+  return trim(s):lower():gsub('[^%w]+', ' '):gsub('[%s]+', '-')
+end
+
 local extract_references = function(doc)
   local cur, entering, node_type
   local refs = {}
   for cur, entering, node_type in cmark.walk(doc) do
-    if not entering and node_type == cmark.NODE_LINK then
-      local url = cmark.node_get_url(cur)
-      if url:match("^@") then
-        local ident = url:sub(2)
-        local children = cmark.node_first_child(cur)
-        refs[#refs + 1] = '[' ..
-          trim(cmark.render_commonmark(children, OPT_DEFAULT, 0)) ..
-          ']: #' .. ident
+    if not entering and node_type == cmark.NODE_LINK
+        and cmark.node_get_url(cur) == '@' then
+      local children = cmark.node_first_child(cur)
+      local label = trim(cmark.render_commonmark(children, OPT_DEFAULT, 0))
+      local ident = to_identifier(label)
+      if refs[label] then
+        warn("duplicate reference " .. label)
       end
+      refs[label] = ident
     end
   end
-  return table.concat(refs, '\n')
+  return refs
 end
 
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
   for cur, entering, node_type in cmark.walk(doc) do
-    if not entering and node_type == cmark.NODE_LINK
-    and cmark.node_get_url(cur):match("^@") then
+    if not entering and
+        ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
+          node_type == cmark.NODE_HEADING) then
       local anchor = cmark.node_new(NODE_CUSTOM_INLINE)
       cmark.node_set_on_enter(anchor, "{{")
       cmark.node_set_on_exit(anchor, "}}")
@@ -36,8 +45,12 @@ local create_anchors = function(doc, meta, to)
         node_append_child(anchor, children)
         children = cmark.node_next(children)
       end
-      cmark.node_insert_before(cur, anchor)
-      cmark.node_unlink(cur)
+      if node_type == cmark.NODE_LINK then
+        cmark.node_insert_before(cur, anchor)
+        cmark.node_unlink(cur)
+      else
+        cmark.node_append_child(cur, anchor)
+      end
     end
   end
 end
@@ -46,14 +59,23 @@ local make_examples = function(doc, meta, to)
 
 end
 
+local to_ref = function(ref)
+  return '[' .. ref.label .. ']: #' .. ref.indent .. '\n'
+end
+
 format = 'html'
 
 io.input("spec.txt")
 local inp = io.read("*a")
 local doc1 = cmark.parse_string(inp, cmark.OPT_DEFAULT)
 local refs = extract_references(doc1)
+local refblock = '\n'
+for lab,ident in pairs(refs) do
+  refblock = refblock .. '[' .. lab .. ']: #' .. ident .. '\n'
+  -- refblock = refblock .. '[' .. lab .. 's]: #' .. ident .. '\n'
+end
 -- append references and parse again
-local html, meta, msg  = lcmark.convert(inp .. refs, format,
+local html, meta, msg  = lcmark.convert(inp .. refblock, format,
                              { smart = true,
                                yaml_metadata = true,
                                filters = { create_anchors,

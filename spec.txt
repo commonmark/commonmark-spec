@@ -204,7 +204,7 @@ In the examples, the `→` character is used to represent tabs.
 Any sequence of [character]s is a valid CommonMark
 document.
 
-A [character](@character) is a Unicode code point.  Although some
+A [character](@) is a Unicode code point.  Although some
 code points (for example, combining accents) do not correspond to
 characters in an intuitive sense, all code points count as characters
 for purposes of this spec.
@@ -213,45 +213,45 @@ This spec does not specify an encoding; it thinks of lines as composed
 of [character]s rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
-A [line](@line) is a sequence of zero or more [character]s
+A [line](@) is a sequence of zero or more [character]s
 other than newline (`U+000A`) or carriage return (`U+000D`),
 followed by a [line ending] or by the end of file.
 
-A [line ending](@line-ending) is a newline (`U+000A`), a carriage return
+A [line ending](@) is a newline (`U+000A`), a carriage return
 (`U+000D`) not followed by a newline, or a carriage return and a
 following newline.
 
 A line containing no characters, or a line containing only spaces
-(`U+0020`) or tabs (`U+0009`), is called a [blank line](@blank-line).
+(`U+0020`) or tabs (`U+0009`), is called a [blank line](@).
 
 The following definitions of character classes will be used in this spec:
 
-A [whitespace character](@whitespace-character) is a space
+A [whitespace character](@) is a space
 (`U+0020`), tab (`U+0009`), newline (`U+000A`), line tabulation (`U+000B`),
 form feed (`U+000C`), or carriage return (`U+000D`).
 
-[Whitespace](@whitespace) is a sequence of one or more [whitespace
+[Whitespace](@) is a sequence of one or more [whitespace
 character]s.
 
-A [Unicode whitespace character](@unicode-whitespace-character) is
+A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` class, or a tab (`U+0009`),
 carriage return (`U+000D`), newline (`U+000A`), or form feed
 (`U+000C`).
 
-[Unicode whitespace](@unicode-whitespace) is a sequence of one
+[Unicode whitespace](@) is a sequence of one
 or more [Unicode whitespace character]s.
 
-A [space](@space) is `U+0020`.
+A [space](@) is `U+0020`.
 
-A [non-whitespace character](@non-whitespace-character) is any character
+A [non-whitespace character](@) is any character
 that is not a [whitespace character].
 
-An [ASCII punctuation character](@ascii-punctuation-character)
+An [ASCII punctuation character](@)
 is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `*`, `+`, `,`, `-`, `.`, `/`, `:`, `;`, `<`, `=`, `>`, `?`, `@`,
 `[`, `\`, `]`, `^`, `_`, `` ` ``, `{`, `|`, `}`, or `~`.
 
-A [punctuation character](@punctuation-character) is an [ASCII
+A [punctuation character](@) is an [ASCII
 punctuation character] or anything in
 the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
@@ -330,10 +330,10 @@ with the REPLACEMENT CHARACTER (`U+FFFD`).
 # Blocks and inlines
 
 We can think of a document as a sequence of
-[blocks](@block)---structural elements like paragraphs, block
+[blocks](@)---structural elements like paragraphs, block
 quotations, lists, headings, rules, and code blocks.  Some blocks (like
 block quotes and list items) contain other blocks; others (like
-headings and paragraphs) contain [inline](@inline) content---text,
+headings and paragraphs) contain [inline](@) content---text,
 links, emphasized text, images, code, and so on.
 
 ## Precedence
@@ -365,8 +365,8 @@ one block element does not affect the inline parsing of any other.
 ## Container blocks and leaf blocks
 
 We can divide blocks into two types:
-[container block](@container-block)s,
-which can contain other blocks, and [leaf block](@leaf-block)s,
+[container block](@)s,
+which can contain other blocks, and [leaf block](@)s,
 which cannot.
 
 # Leaf blocks
@@ -379,7 +379,7 @@ Markdown document.
 A line consisting of 0-3 spaces of indentation, followed by a sequence
 of three or more matching `-`, `_`, or `*` characters, each followed
 optionally by any number of spaces, forms a
-[thematic break](@thematic-break).
+[thematic break](@).
 
 ```````````````````````````````` example
 ***
@@ -600,7 +600,7 @@ If you want a thematic break in a list item, use a different bullet:
 
 ## ATX headings
 
-An [ATX heading](@atx-heading)
+An [ATX heading](@)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of unescaped `#` characters.
@@ -831,7 +831,7 @@ ATX headings can be empty:
 
 ## Setext headings
 
-A [setext heading](@setext-heading) consists of one or more
+A [setext heading](@) consists of one or more
 lines of text, each containing at least one [non-whitespace
 character], with no more than 3 spaces indentation, followed by
 a [setext heading underline].  The lines of text must be such
@@ -841,7 +841,7 @@ interpretable as a [code fence], [ATX heading][ATX headings],
 [block quote][block quotes], [thematic break][thematic breaks],
 [list item][list items], or [HTML block][HTML blocks].
 
-A [setext heading underline](@setext-heading-underline) is a sequence of
+A [setext heading underline](@) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
 spaces indentation and any number of trailing spaces.  If a line
 containing a single `-` can be interpreted as an
@@ -1236,9 +1236,9 @@ baz</p>
 
 ## Indented code blocks
 
-An [indented code block](@indented-code-block) is composed of one or more
+An [indented code block](@) is composed of one or more
 [indented chunk]s separated by blank lines.
-An [indented chunk](@indented-chunk) is a sequence of non-blank lines,
+An [indented chunk](@) is a sequence of non-blank lines,
 each indented four or more spaces. The contents of the code block are
 the literal contents of the lines, including trailing
 [line ending]s, minus four spaces of indentation.
@@ -1436,15 +1436,15 @@ Trailing spaces are included in the code block's content:
 
 ## Fenced code blocks
 
-A [code fence](@code-fence) is a sequence
+A [code fence](@) is a sequence
 of at least three consecutive backtick characters (`` ` ``) or
 tildes (`~`).  (Tildes and backticks cannot be mixed.)
-A [fenced code block](@fenced-code-block)
+A [fenced code block](@)
 begins with a code fence, indented no more than three spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
-spaces and called the [info string](@info-string).
+spaces and called the [info string](@).
 The [info string] may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
@@ -1839,14 +1839,14 @@ Closing code fences cannot have [info string]s:
 
 ## HTML blocks
 
-An [HTML block](@html-block) is a group of lines that is treated
+An [HTML block](@) is a group of lines that is treated
 as raw HTML (and will not be escaped in HTML output).
 
 There are seven kinds of [HTML block], which can be defined
 by their start and end conditions.  The block begins with a line that
-meets a [start condition](@start-condition) (after up to three spaces
+meets a [start condition](@) (after up to three spaces
 optional indentation).  It ends with the first subsequent line that
-meets a matching [end condition](@end-condition), or the last line of
+meets a matching [end condition](@), or the last line of
 the document, if no line is encountered that meets the
 [end condition].  If the first line meets both the [start condition]
 and the [end condition], the block will contain just that line.
@@ -2570,7 +2570,7 @@ lines.
 
 ## Link reference definitions
 
-A [link reference definition](@link-reference-definition)
+A [link reference definition](@)
 consists of a [link label], indented up to three spaces, followed
 by a colon (`:`), optional [whitespace] (including up to one
 [line ending]), a [link destination],
@@ -2881,7 +2881,7 @@ are defined:
 ## Paragraphs
 
 A sequence of non-blank lines that cannot be interpreted as other
-kinds of blocks forms a [paragraph](@paragraph).
+kinds of blocks forms a [paragraph](@).
 The contents of the paragraph are the result of parsing the
 paragraph's raw content as inlines.  The paragraph's raw content
 is formed by concatenating the lines and removing initial and final
@@ -3034,7 +3034,7 @@ these constructions.  (A recipe is provided below in the section entitled
 
 ## Block quotes
 
-A [block quote marker](@block-quote-marker)
+A [block quote marker](@)
 consists of 0-3 spaces of initial indent, plus (a) the character `>` together
 with a following space, or (b) a single character `>` not followed by a space.
 
@@ -3051,7 +3051,7 @@ The following rules define [block quotes]:
     more lines in which the next [non-whitespace character] after the [block
     quote marker] is [paragraph continuation
     text] is a block quote with *Bs* as its content.
-    [Paragraph continuation text](@paragraph-continuation-text) is text
+    [Paragraph continuation text](@) is text
     that will be parsed as part of the content of a paragraph, but does
     not occur at the beginning of the paragraph.
 
@@ -3461,13 +3461,13 @@ the `>`:
 
 ## List items
 
-A [list marker](@list-marker) is a
+A [list marker](@) is a
 [bullet list marker] or an [ordered list marker].
 
-A [bullet list marker](@bullet-list-marker)
+A [bullet list marker](@)
 is a `-`, `+`, or `*` character.
 
-An [ordered list marker](@ordered-list-marker)
+An [ordered list marker](@)
 is a sequence of 1--9 arabic digits (`0-9`), followed by either a
 `.` character or a `)` character.  (The reason for the length
 limit is that with 10 digits we start seeing integer overflows
@@ -4217,7 +4217,7 @@ Four spaces indent gives a code block:
     [paragraph continuation text] is a
     list item with the same contents and attributes.  The unindented
     lines are called
-    [lazy continuation line](@lazy-continuation-line)s.
+    [lazy continuation line](@)s.
 
 Here is an example with [lazy continuation line]s:
 
@@ -4606,33 +4606,33 @@ takes four spaces (a common case), but diverge in other cases.
 
 ## Lists
 
-A [list](@list) is a sequence of one or more
+A [list](@) is a sequence of one or more
 list items [of the same type].  The list items
 may be separated by single [blank lines], but two
 blank lines end all containing lists.
 
-Two list items are [of the same type](@of-the-same-type)
+Two list items are [of the same type](@)
 if they begin with a [list marker] of the same type.
 Two list markers are of the
 same type if (a) they are bullet list markers using the same character
 (`-`, `+`, or `*`) or (b) they are ordered list numbers with the same
 delimiter (either `.` or `)`).
 
-A list is an [ordered list](@ordered-list)
+A list is an [ordered list](@)
 if its constituent list items begin with
 [ordered list marker]s, and a
-[bullet list](@bullet-list) if its constituent list
+[bullet list](@) if its constituent list
 items begin with [bullet list marker]s.
 
-The [start number](@start-number)
+The [start number](@)
 of an [ordered list] is determined by the list number of
 its initial list item.  The numbers of subsequent list items are
 disregarded.
 
-A list is [loose](@loose) if any of its constituent
+A list is [loose](@) if any of its constituent
 list items are separated by blank lines, or if any of its constituent
 list items directly contain two block-level elements with a blank line
-between them.  Otherwise a list is [tight](@tight).
+between them.  Otherwise a list is [tight](@).
 (The difference in HTML output is that paragraphs in a loose list are
 wrapped in `<p>` tags, while paragraphs in a tight list are not.)
 
@@ -4714,7 +4714,7 @@ blank lines:
 
 Second, we are attracted to a
 
-> [principle of uniformity](@principle-of-uniformity):
+> [principle of uniformity](@):
 > if a chunk of text has a certain
 > meaning, it will continue to have the same meaning when put into a
 > container block (such as a list item or blockquote).
@@ -5361,7 +5361,7 @@ need not store information about whether a particular character
 was represented in the source using a Unicode character or
 an entity reference.
 
-[Entity references](@entity-references) consist of `&` + any of the valid
+[Entity references](@) consist of `&` + any of the valid
 HTML5 entity names + `;`. The
 document <https://html.spec.whatwg.org/multipage/entities.json>
 is used as an authoritative source for the valid entity
@@ -5379,7 +5379,7 @@ references and their corresponding code points.
 
 
 [Decimal numeric character
-references](@decimal-numeric-character-references)
+references](@)
 consist of `&#` + a string of 1--8 arabic digits + `;`. A
 numeric character reference is parsed as the corresponding
 Unicode character. Invalid Unicode code points will be replaced by
@@ -5394,7 +5394,7 @@ the code point `U+0000` will also be replaced by `U+FFFD`.
 
 
 [Hexadecimal numeric character
-references](@hexadecimal-numeric-character-references) consist of `&#` +
+references](@) consist of `&#` +
 either `X` or `x` + a string of 1-8 hexadecimal digits + `;`.
 They too are parsed as the corresponding Unicode character (this
 time specified with a hexadecimal numeral instead of decimal).
@@ -5495,11 +5495,11 @@ text in code spans and code blocks:
 
 ## Code spans
 
-A [backtick string](@backtick-string)
+A [backtick string](@)
 is a string of one or more backtick characters (`` ` ``) that is neither
 preceded nor followed by a backtick.
 
-A [code span](@code-span) begins with a backtick string and ends with
+A [code span](@) begins with a backtick string and ends with
 a backtick string of equal length.  The contents of the code span are
 the characters between the two backtick strings, with leading and
 trailing spaces and [line ending]s removed, and
@@ -5711,19 +5711,19 @@ no emphasis: foo_bar_baz
 The rules given below capture all of these patterns, while allowing
 for efficient parsing strategies that do not backtrack.
 
-First, some definitions.  A [delimiter run](@delimiter-run) is either
+First, some definitions.  A [delimiter run](@) is either
 a sequence of one or more `*` characters that is not preceded or
 followed by a `*` character, or a sequence of one or more `_`
 characters that is not preceded or followed by a `_` character.
 
-A [left-flanking delimiter run](@left-flanking-delimiter-run) is
+A [left-flanking delimiter run](@) is
 a [delimiter run] that is (a) not followed by [Unicode whitespace],
 and (b) either not followed by a [punctuation character], or
 preceded by [Unicode whitespace] or a [punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
-A [right-flanking delimiter run](@right-flanking-delimiter-run) is
+A [right-flanking delimiter run](@) is
 a [delimiter run] that is (a) not preceded by [Unicode whitespace],
 and (b) either not preceded by a [punctuation character], or
 followed by [Unicode whitespace] or a [punctuation character].
@@ -5774,7 +5774,7 @@ are a bit more complex than the ones given here.)
 
 The following rules define emphasis and strong emphasis:
 
-1.  A single `*` character [can open emphasis](@can-open-emphasis)
+1.  A single `*` character [can open emphasis](@)
     iff (if and only if) it is part of a [left-flanking delimiter run].
 
 2.  A single `_` character [can open emphasis] iff
@@ -5783,7 +5783,7 @@ The following rules define emphasis and strong emphasis:
     or (b) part of a [right-flanking delimiter run]
     preceded by punctuation.
 
-3.  A single `*` character [can close emphasis](@can-close-emphasis)
+3.  A single `*` character [can close emphasis](@)
     iff it is part of a [right-flanking delimiter run].
 
 4.  A single `_` character [can close emphasis] iff
@@ -5792,7 +5792,7 @@ The following rules define emphasis and strong emphasis:
     or (b) part of a [left-flanking delimiter run]
     followed by punctuation.
 
-5.  A double `**` [can open strong emphasis](@can-open-strong-emphasis)
+5.  A double `**` [can open strong emphasis](@)
     iff it is part of a [left-flanking delimiter run].
 
 6.  A double `__` [can open strong emphasis] iff
@@ -5801,7 +5801,7 @@ The following rules define emphasis and strong emphasis:
     or (b) part of a [right-flanking delimiter run]
     preceded by punctuation.
 
-7.  A double `**` [can close strong emphasis](@can-close-strong-emphasis)
+7.  A double `**` [can close strong emphasis](@)
     iff it is part of a [right-flanking delimiter run].
 
 8.  A double `__` [can close strong emphasis]
@@ -6991,7 +6991,7 @@ destination and title are given immediately after the link text.  In
 [reference link]s the destination and title are defined elsewhere in
 the document.
 
-A [link text](@link-text) consists of a sequence of zero or more
+A [link text](@) consists of a sequence of zero or more
 inline elements enclosed by square brackets (`[` and `]`).  The
 following rules apply:
 
@@ -7012,7 +7012,7 @@ following rules apply:
 - The brackets in link text bind more tightly than markers for
   [emphasis and strong emphasis]. Thus, for example, `*[foo*](url)` is a link.
 
-A [link destination](@link-destination) consists of either
+A [link destination](@) consists of either
 
 - a sequence of zero or more characters between an opening `<` and a
   closing `>` that contains no spaces, line breaks, or unescaped
@@ -7024,7 +7024,7 @@ A [link destination](@link-destination) consists of either
   a balanced pair of unescaped parentheses that is not itself
   inside a balanced pair of unescaped parentheses.
 
-A [link title](@link-title)  consists of either
+A [link title](@)  consists of either
 
 - a sequence of zero or more characters between straight double-quote
   characters (`"`), including a `"` character only if it is
@@ -7040,7 +7040,7 @@ A [link title](@link-title)  consists of either
 Although [link title]s may span multiple lines, they may not contain
 a [blank line].
 
-An [inline link](@inline-link) consists of a [link text] followed immediately
+An [inline link](@) consists of a [link text] followed immediately
 by a left parenthesis `(`, optional [whitespace], an optional
 [link destination], an optional [link title] separated from the link
 destination by [whitespace], optional [whitespace], and a right
@@ -7413,22 +7413,22 @@ and autolinks over link grouping:
 ````````````````````````````````
 
 
-There are three kinds of [reference link](@reference-link)s:
+There are three kinds of [reference link](@)s:
 [full](#full-reference-link), [collapsed](#collapsed-reference-link),
 and [shortcut](#shortcut-reference-link).
 
-A [full reference link](@full-reference-link)
+A [full reference link](@)
 consists of a [link text] immediately followed by a [link label]
 that [matches] a [link reference definition] elsewhere in the document.
 
-A [link label](@link-label)  begins with a left bracket (`[`) and ends
+A [link label](@)  begins with a left bracket (`[`) and ends
 with the first right bracket (`]`) that is not backslash-escaped.
 Between these brackets there must be at least one [non-whitespace character].
 Unescaped square bracket characters are not allowed in
 [link label]s.  A link label can have at most 999
 characters inside the square brackets.
 
-One label [matches](@matches)
+One label [matches](@)
 another just in case their normalized forms are equal.  To normalize a
 label, perform the *Unicode case fold* and collapse consecutive internal
 [whitespace] to a single space.  If there are multiple
@@ -7759,7 +7759,7 @@ A [link label] must contain at least one [non-whitespace character]:
 ````````````````````````````````
 
 
-A [collapsed reference link](@collapsed-reference-link)
+A [collapsed reference link](@)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document, followed by the string `[]`.
@@ -7812,7 +7812,7 @@ allowed between the two sets of brackets:
 ````````````````````````````````
 
 
-A [shortcut reference link](@shortcut-reference-link)
+A [shortcut reference link](@)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document and is not followed by `[]` or a link label.
@@ -7958,7 +7958,7 @@ is followed by a link label (even though `[bar]` is not defined):
 
 Syntax for images is like the syntax for links, with one
 difference. Instead of [link text], we have an
-[image description](@image-description).  The rules for this are the
+[image description](@).  The rules for this are the
 same as for [link text], except that (a) an
 image description starts with `![` rather than `[`, and
 (b) an image description may contain links.
@@ -8183,22 +8183,22 @@ If you want a link after a literal `!`, backslash-escape the
 
 ## Autolinks
 
-[Autolink](@autolink)s are absolute URIs and email addresses inside
+[Autolink](@)s are absolute URIs and email addresses inside
 `<` and `>`. They are parsed as links, with the URL or email address
 as the link label.
 
-A [URI autolink](@uri-autolink) consists of `<`, followed by an
+A [URI autolink](@) consists of `<`, followed by an
 [absolute URI] not containing `<`, followed by `>`.  It is parsed as
 a link to the URI, with the URI as the link's label.
 
-An [absolute URI](@absolute-uri),
+An [absolute URI](@),
 for these purposes, consists of a [scheme] followed by a colon (`:`)
 followed by zero or more characters other than ASCII
 [whitespace] and control characters, `<`, and `>`.  If
 the URI includes these characters, they must be percent-encoded
 (e.g. `%20` for a space).
 
-For purposes of this spec, a [scheme](@scheme) is any sequence
+For purposes of this spec, a [scheme](@) is any sequence
 of 2--32 characters beginning with an ASCII letter and followed
 by any combination of ASCII letters, digits, or the symbols plus
 ("+"), period ("."), or hyphen ("-").
@@ -8286,12 +8286,12 @@ Backslash-escapes do not work inside autolinks:
 ````````````````````````````````
 
 
-An [email autolink](@email-autolink)
+An [email autolink](@)
 consists of `<`, followed by an [email address],
 followed by `>`.  The link's label is the email address,
 and the URL is `mailto:` followed by the email address.
 
-An [email address](@email-address),
+An [email address](@),
 for these purposes, is anything that matches
 the [non-normative regex from the HTML5
 spec](https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)):
@@ -8377,67 +8377,67 @@ so custom tags (and even, say, DocBook tags) may be used.
 
 Here is the grammar for tags:
 
-A [tag name](@tag-name) consists of an ASCII letter
+A [tag name](@) consists of an ASCII letter
 followed by zero or more ASCII letters, digits, or
 hyphens (`-`).
 
-An [attribute](@attribute) consists of [whitespace],
+An [attribute](@) consists of [whitespace],
 an [attribute name], and an optional
 [attribute value specification].
 
-An [attribute name](@attribute-name)
+An [attribute name](@)
 consists of an ASCII letter, `_`, or `:`, followed by zero or more ASCII
 letters, digits, `_`, `.`, `:`, or `-`.  (Note:  This is the XML
 specification restricted to ASCII.  HTML5 is laxer.)
 
-An [attribute value specification](@attribute-value-specification)
+An [attribute value specification](@)
 consists of optional [whitespace],
 a `=` character, optional [whitespace], and an [attribute
 value].
 
-An [attribute value](@attribute-value)
+An [attribute value](@)
 consists of an [unquoted attribute value],
 a [single-quoted attribute value], or a [double-quoted attribute value].
 
-An [unquoted attribute value](@unquoted-attribute-value)
+An [unquoted attribute value](@)
 is a nonempty string of characters not
 including spaces, `"`, `'`, `=`, `<`, `>`, or `` ` ``.
 
-A [single-quoted attribute value](@single-quoted-attribute-value)
+A [single-quoted attribute value](@)
 consists of `'`, zero or more
 characters not including `'`, and a final `'`.
 
-A [double-quoted attribute value](@double-quoted-attribute-value)
+A [double-quoted attribute value](@)
 consists of `"`, zero or more
 characters not including `"`, and a final `"`.
 
-An [open tag](@open-tag) consists of a `<` character, a [tag name],
+An [open tag](@) consists of a `<` character, a [tag name],
 zero or more [attribute]s, optional [whitespace], an optional `/`
 character, and a `>` character.
 
-A [closing tag](@closing-tag) consists of the string `</`, a
+A [closing tag](@) consists of the string `</`, a
 [tag name], optional [whitespace], and the character `>`.
 
-An [HTML comment](@html-comment) consists of `<!--` + *text* + `-->`,
+An [HTML comment](@) consists of `<!--` + *text* + `-->`,
 where *text* does not start with `>` or `->`, does not end with `-`,
 and does not contain `--`.  (See the
 [HTML5 spec](http://www.w3.org/TR/html5/syntax.html#comments).)
 
-A [processing instruction](@processing-instruction)
+A [processing instruction](@)
 consists of the string `<?`, a string
 of characters not including the string `?>`, and the string
 `?>`.
 
-A [declaration](@declaration) consists of the
+A [declaration](@) consists of the
 string `<!`, a name consisting of one or more uppercase ASCII letters,
 [whitespace], a string of characters not including the
 character `>`, and the character `>`.
 
-A [CDATA section](@cdata-section) consists of
+A [CDATA section](@) consists of
 the string `<![CDATA[`, a string of characters not including the string
 `]]>`, and the string `]]>`.
 
-An [HTML tag](@html-tag) consists of an [open tag], a [closing tag],
+An [HTML tag](@) consists of an [open tag], a [closing tag],
 an [HTML comment], a [processing instruction], a [declaration],
 or a [CDATA section].
 
@@ -8642,7 +8642,7 @@ foo <a href="\*">
 
 A line break (not in a code span or HTML tag) that is preceded
 by two or more spaces and does not occur at the end of a block
-is parsed as a [hard line break](@hard-line-break) (rendered
+is parsed as a [hard line break](@) (rendered
 in HTML as a `<br />` tag):
 
 ```````````````````````````````` example
@@ -9081,7 +9081,7 @@ When we're parsing inlines and we hit either
 - a `[` or `![`
 
 we insert a text node with these symbols as its literal content, and we
-add a pointer to this text node to the [delimiter stack](@delimiter-stack).
+add a pointer to this text node to the [delimiter stack](@).
 
 The [delimiter stack] is a doubly linked list.  Each
 element contains a pointer to a text node, plus information about
