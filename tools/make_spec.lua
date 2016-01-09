@@ -25,8 +25,9 @@ local extract_references = function(doc)
   local cur, entering, node_type
   local refs = {}
   for cur, entering, node_type in cmark.walk(doc) do
-    if not entering and node_type == cmark.NODE_LINK
-        and cmark.node_get_url(cur) == '@' then
+    if not entering and
+        ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
+          node_type == cmark.NODE_HEADING) then
       local children = cmark.node_first_child(cur)
       local label = trim(cmark.render_commonmark(children, OPT_DEFAULT, 0))
       local ident = to_identifier(label)
