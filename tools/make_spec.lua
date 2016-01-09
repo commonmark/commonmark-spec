@@ -37,20 +37,28 @@ local create_anchors = function(doc, meta, to)
     if not entering and
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
           node_type == cmark.NODE_HEADING) then
-      local anchor = cmark.node_new(NODE_CUSTOM_INLINE)
-      cmark.node_set_on_enter(anchor, "{{")
-      cmark.node_set_on_exit(anchor, "}}")
+      local anchor = cmark.node_new(
+        node_type == cmark.NODE_LINK and cmark.NODE_CUSTOM_INLINE or
+        cmark.NODE_CUSTOM_BLOCK)
       local children = cmark.node_first_child(cur)
+      local label = trim(cmark.render_commonmark(children, OPT_DEFAULT, 0))
+      local ident = to_identifier(label)
+      if node_type == cmark.NODE_LINK then
+        cmark.node_set_on_enter(anchor, '<a id="' .. ident .. '"' ..
+               ' class="definition">')
+        cmark.node_set_on_exit(anchor, "</a>")
+      else
+        local level = cmark.node_get_heading_level(cur)
+        cmark.node_set_on_enter(anchor, '<h' ..
+           tostring(level) .. ' id="' .. ident ..  '">')
+        cmark.node_set_on_exit(anchor, '</h' .. tostring(level) .. '>')
+      end
       while children do
         node_append_child(anchor, children)
         children = cmark.node_next(children)
       end
-      if node_type == cmark.NODE_LINK then
-        cmark.node_insert_before(cur, anchor)
-        cmark.node_unlink(cur)
-      else
-        cmark.node_append_child(cur, anchor)
-      end
+      cmark.node_insert_before(cur, anchor)
+      cmark.node_unlink(cur)
     end
   end
 end
