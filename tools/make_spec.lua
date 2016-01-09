@@ -57,6 +57,19 @@ local make_toc = function(toc)
   return cmark.node_first_child(doc)
 end
 
+local make_html_block = function(tagname, attrs)
+  local div = cmark.node_new(cmark.NODE_CUSTOM_BLOCK)
+  local attribs = {}
+  for _,attr in ipairs(attrs) do
+    attribs[#attribs + 1] = ' ' .. attr[1] .. '="' .. attr[2] .. '"'
+  end
+  local opentag = '<' .. tagname .. table.concat(attribs, '') .. '>'
+  local closetag = '</' .. tagname .. '>'
+  cmark.node_set_on_enter(div, opentag)
+  cmark.node_set_on_exit(div, closetag)
+  return div
+end
+
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
   local toc = {}
@@ -99,14 +112,34 @@ local create_anchors = function(doc, meta, to)
       end
       cmark.node_insert_before(cur, anchor)
       cmark.node_unlink(cur)
+    elseif entering and node_type == cmark.NODE_CODE_BLOCK and
+          cmark.node_get_fence_info(cur) == 'example' then
+      -- split into two code blocks
+     local code = cmark.node_get_literal(cur)
+     local sepstart, sepend = code:find("[\n\r]+%.[\n\r]+")
+     if not sepstart then
+       warn("Could not find separator in:\n" .. contents)
+     end
+     local markdown_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
+     local html_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
+     cmark.node_set_literal(markdown_code, code:sub(1, sepstart))
+     cmark.node_set_literal(html_code, code:sub(sepend + 1))
+     local leftcol_div = make_html_block('div', {{'class','column'}})
+     local rightcol_div = make_html_block('div', {{'class', 'column'}})
+     cmark.node_append_child(leftcol_div, markdown_code)
+     cmark.node_append_child(rightcol_div, html_code)
+     local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
+     local example_div = make_html_block('div', {{'class', 'example'}})
+     cmark.node_append_child(example_div, examplenum_div)
+     cmark.node_append_child(example_div, leftcol_div)
+     cmark.node_append_child(example_div, rightcol_div)
+     cmark.node_insert_before(cur, example_div)
+     cmark.node_unlink(cur)
+     cmark.node_free(cur)
     end
   end
   local tocnode = make_toc(toc)
   cmark.node_prepend_child(doc, tocnode)
-end
-
-local make_examples = function(doc, meta, to)
-
 end
 
 local to_ref = function(ref)
@@ -128,9 +161,7 @@ end
 local html, meta, msg  = lcmark.convert(inp .. refblock, format,
                              { smart = true,
                                yaml_metadata = true,
-                               filters = { create_anchors,
-                                           make_examples
-                                         }
+                               filters = { create_anchors }
                              })
 
 if html then
