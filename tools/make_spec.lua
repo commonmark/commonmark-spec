@@ -70,7 +70,7 @@ local create_anchors = function(doc, meta, to)
           end
           number[level] = number[level] + 1
         end
-        table.insert(toc, { label = label, ident = indent, level = level })
+        table.insert(toc, { label = label, ident = ident, level = level })
         cmark.node_set_on_enter(anchor, '<h' ..
            tostring(level) .. ' id="' .. ident ..  '">' ..
            '<span class="number">' .. render_number(number) .. '</span> ')
@@ -84,6 +84,9 @@ local create_anchors = function(doc, meta, to)
       cmark.node_unlink(cur)
     end
   end
+  local tocnode = cmark.node_new(cmark.NODE_CUSTOM_BLOCK)
+  cmark.node_set_on_enter(tocnode, require'inspect'.inspect(toc))
+  cmark.node_prepend_child(doc, tocnode)
 end
 
 local make_examples = function(doc, meta, to)
