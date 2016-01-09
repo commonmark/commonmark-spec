@@ -57,8 +57,9 @@ local make_toc = function(toc)
   return cmark.node_first_child(doc)
 end
 
-local make_html_block = function(tagname, attrs)
-  local div = cmark.node_new(cmark.NODE_CUSTOM_BLOCK)
+local make_html_element = function(block, tagname, attrs)
+  local div = cmark.node_new(block and cmark.NODE_CUSTOM_BLOCK or
+                                cmark.NODE_CUSTOM_INLINE)
   local attribs = {}
   for _,attr in ipairs(attrs) do
     attribs[#attribs + 1] = ' ' .. attr[1] .. '="' .. attr[2] .. '"'
@@ -69,6 +70,15 @@ local make_html_block = function(tagname, attrs)
   cmark.node_set_on_exit(div, closetag)
   return div
 end
+
+local make_html_block = function(tagname, attrs)
+  return make_html_element(true, tagname, attrs)
+end
+
+local make_html_inline = function(tagname, attrs)
+  return make_html_element(false, tagname, attrs)
+end
+
 
 local create_anchors = function(doc, meta, to)
   local cur, entering, node_type
@@ -129,6 +139,10 @@ local create_anchors = function(doc, meta, to)
      cmark.node_append_child(leftcol_div, markdown_code)
      cmark.node_append_child(rightcol_div, html_code)
      local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
+     local interact_link = make_html_inline('a', {{'class', 'dingus'},
+                 {'title', 'open in interactive dingus'}})
+     local interact_text = cmark.node_new(cmark.NODE_TEXT)
+     cmark.node_set_literal(interact_text, "(interact)")
      local example_div = make_html_block('div', {{'class', 'example'}})
      cmark.node_append_child(example_div, examplenum_div)
      cmark.node_append_child(example_div, leftcol_div)
