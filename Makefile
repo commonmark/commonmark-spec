@@ -6,11 +6,11 @@ SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
 
 spec: spec.html # spec.pdf
 
-spec.md: $(SPEC)
-	python3 tools/makespec.py markdown > $@
+spec.md: $(SPEC) tools/template.commonmark
+	lua tools/make_spec.lua commonmark < $< > $@
 
 spec.html: spec.txt tools/template.html
-	python3 tools/makespec.py html > $@
+	lua tools/make_spec.lua html < $< > $@
 
 spec.pdf: spec.md tools/template.tex tools/specfilter.hs
 	pandoc -s $< --template tools/template.tex \
