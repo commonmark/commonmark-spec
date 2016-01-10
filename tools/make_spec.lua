@@ -43,6 +43,14 @@ local extract_references = function(doc)
       end
     end
   end
+  -- check for duplicate IDs
+  local idents = {}
+  for _,id in ipairs(refs) do
+    if idents[id] then
+      warn("duplicate identifier " .. id)
+    end
+    idents[#idents + 1] = id
+  end
   return refs
 end
 
