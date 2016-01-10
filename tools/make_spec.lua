@@ -1,6 +1,8 @@
 local lcmark = require('lcmark')
 local cmark = require('cmark')
 
+local format = arg[1] or 'html'
+
 local trim = function(s)
   return s:gsub("^%s+",""):gsub("%s+$","")
 end
@@ -195,8 +197,6 @@ end
 local to_ref = function(ref)
   return '[' .. ref.label .. ']: #' .. ref.indent .. '\n'
 end
-
-format = 'html'
 
 local inp = io.read("*a")
 local doc1 = cmark.parse_string(inp, cmark.OPT_DEFAULT)
