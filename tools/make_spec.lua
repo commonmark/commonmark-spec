@@ -215,7 +215,7 @@ local html, meta, msg  = lcmark.convert(inp .. refblock, format,
                              })
 
 if html then
-  local f = io.open("tools/template.html", 'r')
+  local f = io.open("tools/template." .. format, 'r')
   if not f then
     io.write("Could not find template!")
     os.exit(1)
