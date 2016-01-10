@@ -142,9 +142,12 @@ local create_anchors = function(doc, meta, to)
       end
       local markdown_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
       local html_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
-      cmark.node_set_literal(markdown_code, code:sub(1, sepstart))
-      local ok = cmark.node_set_fence_info(markdown_code, 'markdown')
-      cmark.node_set_literal(html_code, code:sub(sepend + 1))
+      -- note:  we replace the ␣ with a special span after rendering
+      local markdown_code_string = code:sub(1, sepstart):gsub(' ', '␣')
+      local html_code_string = code:sub(sepend + 1):gsub(' ', '␣')
+      cmark.node_set_literal(markdown_code, markdown_code_string)
+      cmark.node_set_fence_info(markdown_code, 'markdown')
+      cmark.node_set_literal(html_code, html_code_string)
       cmark.node_set_fence_info(html_code, 'html')
       local leftcol_div = make_html_block('div', {{'class','column'}})
       local rightcol_div = make_html_block('div', {{'class', 'column'}})
@@ -214,7 +217,7 @@ if html then
     os.exit(1)
   end
   local template = f:read("*a")
-  meta.body = html
+  meta.body = html:gsub('␣', '<span class="space"> </span>')
   local rendered, msg = lcmark.render_template(template, meta)
   if not rendered then
     io.write(msg)
