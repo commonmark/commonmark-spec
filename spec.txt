@@ -201,7 +201,7 @@ In the examples, the `→` character is used to represent tabs.
 
 ## Characters and lines
 
-Any sequence of [character]s is a valid CommonMark
+Any sequence of [characters] is a valid CommonMark
 document.
 
 A [character](@) is a Unicode code point.  Although some
@@ -210,10 +210,10 @@ characters in an intuitive sense, all code points count as characters
 for purposes of this spec.
 
 This spec does not specify an encoding; it thinks of lines as composed
-of [character]s rather than bytes.  A conforming parser may be limited
+of [characters] rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
-A [line](@) is a sequence of zero or more [character]s
+A [line](@) is a sequence of zero or more [characters]
 other than newline (`U+000A`) or carriage return (`U+000D`),
 followed by a [line ending] or by the end of file.
 
@@ -231,7 +231,7 @@ A [whitespace character](@) is a space
 form feed (`U+000C`), or carriage return (`U+000D`).
 
 [Whitespace](@) is a sequence of one or more [whitespace
-character]s.
+characters].
 
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` class, or a tab (`U+0009`),
@@ -239,7 +239,7 @@ carriage return (`U+000D`), newline (`U+000A`), or form feed
 (`U+000C`).
 
 [Unicode whitespace](@) is a sequence of one
-or more [Unicode whitespace character]s.
+or more [Unicode whitespace characters].
 
 A [space](@) is `U+0020`.
 
@@ -257,7 +257,7 @@ the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tabs
 
-Tabs in lines are not expanded to [spaces][space].  However,
+Tabs in lines are not expanded to [spaces].  However,
 in contexts where indentation is significant for the
 document's structure, tabs behave as if they were replaced
 by spaces with a tab stop of 4 characters.
@@ -509,7 +509,7 @@ a------
 ````````````````````````````````
 
 
-It is required that all of the [non-whitespace character]s be the same.
+It is required that all of the [non-whitespace characters] be the same.
 So, this is not a thematic break:
 
 ```````````````````````````````` example
@@ -757,7 +757,7 @@ Spaces are allowed after the closing sequence:
 ````````````````````````````````
 
 
-A sequence of `#` characters with anything but [space]s following it
+A sequence of `#` characters with anything but [spaces] following it
 is not a closing sequence, but counts as part of the contents of the
 heading:
 
@@ -1237,11 +1237,11 @@ baz</p>
 ## Indented code blocks
 
 An [indented code block](@) is composed of one or more
-[indented chunk]s separated by blank lines.
+[indented chunks] separated by blank lines.
 An [indented chunk](@) is a sequence of non-blank lines,
 each indented four or more spaces. The contents of the code block are
 the literal contents of the lines, including trailing
-[line ending]s, minus four spaces of indentation.
+[line endings], minus four spaces of indentation.
 An indented code block has no [info string].
 
 An indented code block cannot interrupt a paragraph, so there must be
@@ -1813,7 +1813,7 @@ end
 ````````````````````````````````
 
 
-[Info string]s for backtick code blocks cannot contain backticks:
+[Info strings] for backtick code blocks cannot contain backticks:
 
 ```````````````````````````````` example
 ``` aa ```
@@ -1824,7 +1824,7 @@ foo</p>
 ````````````````````````````````
 
 
-Closing code fences cannot have [info string]s:
+Closing code fences cannot have [info strings]:
 
 ```````````````````````````````` example
 ```
@@ -2578,11 +2578,11 @@ optional [whitespace] (including up to one
 [line ending]), and an optional [link
 title], which if it is present must be separated
 from the [link destination] by [whitespace].
-No further [non-whitespace character]s may occur on the line.
+No further [non-whitespace characters] may occur on the line.
 
 A [link reference definition]
 does not correspond to a structural element of a document.  Instead, it
-defines a label which can be used in [reference link]s
+defines a label which can be used in [reference links]
 and reference-style [images] elsewhere in the document.  [Link
 reference definitions] can come either before or after the links that use
 them.
@@ -2764,7 +2764,7 @@ bar
 
 
 This is not a link reference definition, because there are
-[non-whitespace character]s after the title:
+[non-whitespace characters] after the title:
 
 ```````````````````````````````` example
 [foo]: /url "title" ok
@@ -2842,7 +2842,7 @@ and thematic breaks, and it need not be followed by a blank line.
 ````````````````````````````````
 
 
-Several [link reference definition]s
+Several [link reference definitions]
 can occur one after another, without intervening blank lines.
 
 ```````````````````````````````` example
@@ -2861,7 +2861,7 @@ can occur one after another, without intervening blank lines.
 ````````````````````````````````
 
 
-[Link reference definition]s can occur
+[Link reference definitions] can occur
 inside block containers, like lists and block quotations.  They
 affect the entire document, not just the container in which they
 are defined:
@@ -2990,7 +2990,7 @@ bbb</p>
 
 ## Blank lines
 
-[Blank line]s between block-level elements are ignored,
+[Blank lines] between block-level elements are ignored,
 except for the role they play in determining whether a [list]
 is [tight] or [loose].
 
@@ -3152,7 +3152,7 @@ foo</p>
 
 
 Laziness only applies to lines that would have been continuations of
-paragraphs had they been prepended with [block quote marker]s.
+paragraphs had they been prepended with [block quote markers].
 For example, the `> ` cannot be omitted in the second line of
 
 ``` markdown
@@ -4219,7 +4219,7 @@ Four spaces indent gives a code block:
     lines are called
     [lazy continuation line](@)s.
 
-Here is an example with [lazy continuation line]s:
+Here is an example with [lazy continuation lines]:
 
 ```````````````````````````````` example
   1.  A paragraph
@@ -4620,9 +4620,9 @@ delimiter (either `.` or `)`).
 
 A list is an [ordered list](@)
 if its constituent list items begin with
-[ordered list marker]s, and a
+[ordered list markers], and a
 [bullet list](@) if its constituent list
-items begin with [bullet list marker]s.
+items begin with [bullet list markers].
 
 The [start number](@)
 of an [ordered list] is determined by the list number of
@@ -5322,7 +5322,7 @@ raw HTML:
 
 
 But they work in all other contexts, including URLs and link titles,
-link references, and [info string]s in [fenced code block]s:
+link references, and [info strings] in [fenced code blocks]:
 
 ```````````````````````````````` example
 [foo](/bar\* "ti\*tle")
@@ -5440,7 +5440,7 @@ recognized as entity references either:
 
 Entity and numeric character references are recognized in any
 context besides code spans or code blocks, including
-URLs, [link title]s, and [fenced code block][] [info string]s:
+URLs, [link titles], and [fenced code block][] [info strings]:
 
 ```````````````````````````````` example
 <a href="&ouml;&ouml;.html">
@@ -5502,7 +5502,7 @@ preceded nor followed by a backtick.
 A [code span](@) begins with a backtick string and ends with
 a backtick string of equal length.  The contents of the code span are
 the characters between the two backtick strings, with leading and
-trailing spaces and [line ending]s removed, and
+trailing spaces and [line endings] removed, and
 [whitespace] collapsed to single spaces.
 
 This is a simple code span:
@@ -5534,7 +5534,7 @@ spaces:
 ````````````````````````````````
 
 
-[Line ending]s are treated like spaces:
+[Line endings] are treated like spaces:
 
 ```````````````````````````````` example
 ``
@@ -5545,7 +5545,7 @@ foo
 ````````````````````````````````
 
 
-Interior spaces and [line ending]s are collapsed into
+Interior spaces and [line endings] are collapsed into
 single spaces, just as they would be by a browser:
 
 ```````````````````````````````` example
@@ -5561,7 +5561,7 @@ anyway?  A:  Because we might be targeting a non-HTML format, and we
 shouldn't rely on HTML-specific rendering assumptions.
 
 (Existing implementations differ in their treatment of internal
-spaces and [line ending]s.  Some, including `Markdown.pl` and
+spaces and [line endings].  Some, including `Markdown.pl` and
 `showdown`, convert an internal [line ending] into a
 `<br />` tag.  But this makes things difficult for those who like to
 hard-wrap their paragraphs, since a line break in the midst of a code
@@ -6986,9 +6986,9 @@ __a<http://foo.bar/?q=__>
 
 A link contains [link text] (the visible text), a [link destination]
 (the URI that is the link destination), and optionally a [link title].
-There are two basic kinds of links in Markdown.  In [inline link]s the
+There are two basic kinds of links in Markdown.  In [inline links] the
 destination and title are given immediately after the link text.  In
-[reference link]s the destination and title are defined elsewhere in
+[reference links] the destination and title are defined elsewhere in
 the document.
 
 A [link text](@) consists of a sequence of zero or more
@@ -7004,7 +7004,7 @@ following rules apply:
   with an open bracket `[`, a sequence of zero or more inlines, and
   a close bracket `]`.
 
-- Backtick [code span]s, [autolink]s, and raw [HTML tag]s bind more tightly
+- Backtick [code spans], [autolinks], and raw [HTML tags] bind more tightly
   than the brackets in link text.  Thus, for example,
   `` [foo`]` `` could not be a link text, since the second `]`
   is part of a code span.
@@ -7037,7 +7037,7 @@ A [link title](@)  consists of either
 - a sequence of zero or more characters between matching parentheses
   (`(...)`), including a `)` character only if it is backslash-escaped.
 
-Although [link title]s may span multiple lines, they may not contain
+Although [link titles] may span multiple lines, they may not contain
 a [blank line].
 
 An [inline link](@) consists of a [link text] followed immediately
@@ -7425,7 +7425,7 @@ A [link label](@)  begins with a left bracket (`[`) and ends
 with the first right bracket (`]`) that is not backslash-escaped.
 Between these brackets there must be at least one [non-whitespace character].
 Unescaped square bracket characters are not allowed in
-[link label]s.  A link label can have at most 999
+[link labels].  A link label can have at most 999
 characters inside the square brackets.
 
 One label [matches](@)
@@ -7451,7 +7451,7 @@ Here is a simple example:
 
 
 The rules for the [link text] are the same as with
-[inline link]s.  Thus:
+[inline links].  Thus:
 
 The link text may contain balanced brackets, but not unbalanced ones,
 unless they are escaped:
@@ -7514,7 +7514,7 @@ However, links may not contain other links, at any level of nesting.
 ````````````````````````````````
 
 
-(In the examples above, we have two [shortcut reference link]s
+(In the examples above, we have two [shortcut reference links]
 instead of one [full reference link].)
 
 The following cases illustrate the precedence of link text grouping over
@@ -7629,10 +7629,10 @@ No [whitespace] is allowed between the [link text] and the
 This is a departure from John Gruber's original Markdown syntax
 description, which explicitly allows whitespace between the link
 text and the link label.  It brings reference links in line with
-[inline link]s, which (according to both original Markdown and
+[inline links], which (according to both original Markdown and
 this spec) cannot have whitespace after the link text.  More
 importantly, it prevents inadvertent capture of consecutive
-[shortcut reference link]s. If whitespace is allowed between the
+[shortcut reference links]. If whitespace is allowed between the
 link text and the link label, then in the following we will have
 a single reference link, not two shortcut reference links, as
 intended:
@@ -7645,7 +7645,7 @@ intended:
 [bar]: /url2
 ```
 
-(Note that [shortcut reference link]s were introduced by Gruber
+(Note that [shortcut reference links] were introduced by Gruber
 himself in a beta version of `Markdown.pl`, but never included
 in the official syntax description.  Without shortcut reference
 links, it is harmless to allow space between the link text and
@@ -7653,7 +7653,7 @@ link label; but once shortcut references are introduced, it is
 too dangerous to allow this, as it frequently leads to
 unintended results.)
 
-When there are multiple matching [link reference definition]s,
+When there are multiple matching [link reference definitions],
 the first is used:
 
 ```````````````````````````````` example
@@ -7680,7 +7680,7 @@ labels define equivalent inline content:
 ````````````````````````````````
 
 
-[Link label]s cannot contain brackets, unless they are
+[Link labels] cannot contain brackets, unless they are
 backslash-escaped:
 
 ```````````````````````````````` example
@@ -8235,7 +8235,7 @@ Uppercase is also fine:
 ````````````````````````````````
 
 
-Note that many strings that count as [absolute URI]s for
+Note that many strings that count as [absolute URIs] for
 purposes of this spec are not valid URIs, because their
 schemes are not registered or because of other problems
 with their syntax:
@@ -8412,7 +8412,7 @@ consists of `"`, zero or more
 characters not including `"`, and a final `"`.
 
 An [open tag](@) consists of a `<` character, a [tag name],
-zero or more [attribute]s, optional [whitespace], an optional `/`
+zero or more [attributes], optional [whitespace], an optional `/`
 character, and a `>` character.
 
 A [closing tag](@) consists of the string `</`, a

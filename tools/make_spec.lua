@@ -35,6 +35,10 @@ local extract_references = function(doc)
         warn("duplicate reference " .. label)
       end
       refs[label] = ident
+      if not refs[label .. 's'] then
+        -- plural too
+        refs[label .. 's'] = ident
+      end
     end
   end
   return refs
