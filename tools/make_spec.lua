@@ -14,11 +14,11 @@ local to_identifier = function(s)
 end
 
 local render_number = function(tbl)
-  local res = ''
-  for _,x in ipairs(tbl) do
-    res = res .. tostring(x) .. '.'
+  local buf = {}
+  for i,x in ipairs(tbl) do
+    buf[i] = tostring(x)
   end
-  return res
+  return table.concat(buf, '.')
 end
 
 local extract_references = function(doc)
@@ -46,8 +46,9 @@ local make_toc = function(toc)
   for _,entry in ipairs(toc) do
     if entry.level <= 2 then
       local indent = string.rep('    ', entry.level - 1)
-      toclines[#toclines + 1] = indent .. '* [<span class="number">' ..
-         entry.number .. '</span> ' ..
+      toclines[#toclines + 1] = indent .. '* [' ..
+        (entry.number == '' and ''
+          or '<span class="number">' .. entry.number .. '</span> ') ..
          entry.label ..  '](#' .. entry.ident .. ')'
     end
   end
@@ -118,9 +119,10 @@ local create_anchors = function(doc, meta, to)
           end
         end
         table.insert(toc, { label = label, ident = ident, level = level, number = render_number(number) })
+        local num = render_number(number)
         cmark.node_set_on_enter(anchor, '<h' ..
            tostring(level) .. ' id="' .. ident ..  '">' ..
-           '<span class="number">' .. render_number(number) .. '</span> ')
+           (num == '' and '' or '<span class="number">' .. num .. '</span> '))
         cmark.node_set_on_exit(anchor, '</h' .. tostring(level) .. '>')
       end
       while children do
@@ -131,47 +133,55 @@ local create_anchors = function(doc, meta, to)
       cmark.node_unlink(cur)
     elseif entering and node_type == cmark.NODE_CODE_BLOCK and
           cmark.node_get_fence_info(cur) == 'example' then
-     example = example + 1
-      -- split into two code blocks
-     local code = cmark.node_get_literal(cur)
-     local sepstart, sepend = code:find("[\n\r]+%.[\n\r]+")
-     if not sepstart then
-       warn("Could not find separator in:\n" .. contents)
-     end
-     local markdown_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
-     local html_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
-     cmark.node_set_literal(markdown_code, code:sub(1, sepstart))
-     cmark.node_set_literal(html_code, code:sub(sepend + 1))
-     local leftcol_div = make_html_block('div', {{'class','column'}})
-     local rightcol_div = make_html_block('div', {{'class', 'column'}})
-     cmark.node_append_child(leftcol_div, markdown_code)
-     cmark.node_append_child(rightcol_div, html_code)
-     local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
-     local interact_link = make_html_inline('a', {{'class', 'dingus'},
-                 {'title', 'open in interactive dingus'}})
-     cmark.node_append_child(interact_link, make_text("(interact)"))
-     local examplenum_link = cmark.node_new(cmark.NODE_LINK)
-     cmark.node_set_url(examplenum_link, '#example-' .. tostring(example))
-     cmark.node_append_child(examplenum_link,
-                             make_text("Example " .. tostring(example)))
-     cmark.node_append_child(examplenum_div, examplenum_link)
-     cmark.node_append_child(examplenum_div, make_text("  "))
-     cmark.node_append_child(examplenum_div, interact_link)
-     local example_div = make_html_block('div', {{'class', 'example'},
-                              {'id','example-' .. tostring(example)}})
-     cmark.node_append_child(example_div, examplenum_div)
-     cmark.node_append_child(example_div, leftcol_div)
-     cmark.node_append_child(example_div, rightcol_div)
-     cmark.node_insert_before(cur, example_div)
-     cmark.node_unlink(cur)
-     cmark.node_free(cur)
-    elseif node_type == cmark.HTML_BLOCK and
-            cmark.get_literal(node) == '<!-- END TESTS -->' then
-     number = {} -- stop numbering when you get to appendices
+      example = example + 1
+       -- split into two code blocks
+      local code = cmark.node_get_literal(cur)
+      local sepstart, sepend = code:find("[\n\r]+%.[\n\r]+")
+      if not sepstart then
+        warn("Could not find separator in:\n" .. contents)
+      end
+      local markdown_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
+      local html_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
+      cmark.node_set_literal(markdown_code, code:sub(1, sepstart))
+      cmark.node_set_literal(html_code, code:sub(sepend + 1))
+      local leftcol_div = make_html_block('div', {{'class','column'}})
+      local rightcol_div = make_html_block('div', {{'class', 'column'}})
+      cmark.node_append_child(leftcol_div, markdown_code)
+      cmark.node_append_child(rightcol_div, html_code)
+      local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
+      local interact_link = make_html_inline('a', {{'class', 'dingus'},
+                  {'title', 'open in interactive dingus'}})
+      cmark.node_append_child(interact_link, make_text("(interact)"))
+      local examplenum_link = cmark.node_new(cmark.NODE_LINK)
+      cmark.node_set_url(examplenum_link, '#example-' .. tostring(example))
+      cmark.node_append_child(examplenum_link,
+                              make_text("Example " .. tostring(example)))
+      cmark.node_append_child(examplenum_div, examplenum_link)
+      cmark.node_append_child(examplenum_div, make_text("  "))
+      cmark.node_append_child(examplenum_div, interact_link)
+      local example_div = make_html_block('div', {{'class', 'example'},
+                               {'id','example-' .. tostring(example)}})
+      cmark.node_append_child(example_div, examplenum_div)
+      cmark.node_append_child(example_div, leftcol_div)
+      cmark.node_append_child(example_div, rightcol_div)
+      cmark.node_insert_before(cur, example_div)
+      cmark.node_unlink(cur)
+      cmark.node_free(cur)
+    elseif node_type == cmark.NODE_HTML_BLOCK and
+            cmark.node_get_literal(cur) == '<!-- END TESTS -->\n' then
+      -- change numbering
+      number = {}
+      local appendices = make_html_block('div', {{'class','appendices'}})
+      cmark.node_insert_after(cur, appendices)
+      -- put the remaining sections in an appendix
+      local tmp = cmark.node_next(appendices)
+      while tmp do
+        cmark.node_append_child(appendices, tmp)
+        tmp = cmark.node_next(tmp)
+      end
     end
   end
-  local tocnode = make_toc(toc)
-  cmark.node_prepend_child(doc, tocnode)
+  meta.toc = make_toc(toc)
 end
 
 local to_ref = function(ref)
@@ -193,6 +203,7 @@ end
 local html, meta, msg  = lcmark.convert(inp .. refblock, format,
                              { smart = true,
                                yaml_metadata = true,
+                               safe = false,
                                filters = { create_anchors }
                              })
 
