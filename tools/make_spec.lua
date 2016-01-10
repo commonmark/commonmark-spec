@@ -48,7 +48,7 @@ local make_toc = function(toc)
       local indent = string.rep('    ', entry.level - 1)
       toclines[#toclines + 1] = indent .. '* [' ..
         (entry.number == '' and ''
-          or '<span class="number">' .. entry.number .. '</span> ') ..
+          or '<span class="number">' .. entry.number .. '</span>') ..
          entry.label ..  '](#' .. entry.ident .. ')'
     end
   end
@@ -122,7 +122,7 @@ local create_anchors = function(doc, meta, to)
         local num = render_number(number)
         cmark.node_set_on_enter(anchor, '<h' ..
            tostring(level) .. ' id="' .. ident ..  '">' ..
-           (num == '' and '' or '<span class="number">' .. num .. '</span> '))
+           (num == '' and '' or '<span class="number">' .. num .. '</span>'))
         cmark.node_set_on_exit(anchor, '</h' .. tostring(level) .. '>')
       end
       while children do
@@ -143,7 +143,9 @@ local create_anchors = function(doc, meta, to)
       local markdown_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
       local html_code = cmark.node_new(cmark.NODE_CODE_BLOCK)
       cmark.node_set_literal(markdown_code, code:sub(1, sepstart))
+      local ok = cmark.node_set_fence_info(markdown_code, 'markdown')
       cmark.node_set_literal(html_code, code:sub(sepend + 1))
+      cmark.node_set_fence_info(html_code, 'html')
       local leftcol_div = make_html_block('div', {{'class','column'}})
       local rightcol_div = make_html_block('div', {{'class', 'column'}})
       cmark.node_append_child(leftcol_div, markdown_code)
@@ -157,7 +159,6 @@ local create_anchors = function(doc, meta, to)
       cmark.node_append_child(examplenum_link,
                               make_text("Example " .. tostring(example)))
       cmark.node_append_child(examplenum_div, examplenum_link)
-      cmark.node_append_child(examplenum_div, make_text("  "))
       cmark.node_append_child(examplenum_div, interact_link)
       local example_div = make_html_block('div', {{'class', 'example'},
                                {'id','example-' .. tostring(example)}})
@@ -190,7 +191,6 @@ end
 
 format = 'html'
 
-io.input("spec.txt")
 local inp = io.read("*a")
 local doc1 = cmark.parse_string(inp, cmark.OPT_DEFAULT)
 local refs = extract_references(doc1)
