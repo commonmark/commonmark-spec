@@ -176,7 +176,9 @@ local create_anchors = function(doc, meta, to)
       cmark.node_append_child(examplenum_link,
                               make_text("Example " .. tostring(example)))
       cmark.node_append_child(examplenum_div, examplenum_link)
-      cmark.node_append_child(examplenum_div, interact_link)
+      if format == 'html' then
+        cmark.node_append_child(examplenum_div, interact_link)
+      end
       local example_div = make_html_block('div', {{'class', 'example'},
                                {'id','example-' .. tostring(example)}})
       cmark.node_append_child(example_div, examplenum_div)
@@ -215,21 +217,25 @@ for lab,ident in pairs(refs) do
   -- refblock = refblock .. '[' .. lab .. 's]: #' .. ident .. '\n'
 end
 -- append references and parse again
-local html, meta, msg  = lcmark.convert(inp .. refblock, format,
+local contents, meta, msg  = lcmark.convert(inp .. refblock, format,
                              { smart = true,
                                yaml_metadata = true,
                                safe = false,
                                filters = { create_anchors }
                              })
 
-if html then
+if contents then
   local f = io.open("tools/template." .. format, 'r')
   if not f then
     io.write("Could not find template!")
     os.exit(1)
   end
   local template = f:read("*a")
-  meta.body = html:gsub('␣', '<span class="space"> </span>')
+
+  if format == 'html' then
+    contents = contents:gsub('␣', '<span class="space"> </span>')
+  end
+  meta.body = contents
   local rendered, msg = lcmark.render_template(template, meta)
   if not rendered then
     io.write(msg)

@@ -33,7 +33,7 @@ exampleDivs (Div (ident, ["example"], kvs)
 exampleDivs x = x
 
 anchors :: Inline -> [Inline]
-anchors (Link text ('@':lab,_)) =
+anchors (Link attr text ('@':lab,_)) =
   [RawInline (Format "latex") ("\\hyperdef{}{" ++ lab ++ "}{\\label{" ++ lab ++ "}}"), Strong text]
 anchors (Span ("",["number"],[]) xs) = [] -- remove sect numbers
 anchors x = [x]
