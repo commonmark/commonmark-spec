@@ -7120,6 +7120,13 @@ bar>)
 bar>)</p>
 ````````````````````````````````
 
+Parentheses inside the link destination may be escaped:
+
+```````````````````````````````` example
+[link](\(foo\))
+.
+<p><a href="(foo)">link</a></p>
+````````````````````````````````
 
 One level of balanced parentheses is allowed without escaping:
 
@@ -7128,7 +7135,6 @@ One level of balanced parentheses is allowed without escaping:
 .
 <p><a href="(foo)and(bar)">link</a></p>
 ````````````````````````````````
-
 
 However, if you have parentheses within parentheses, you need to escape
 or use the `<...>` form:
