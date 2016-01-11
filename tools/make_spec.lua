@@ -227,7 +227,7 @@ local contents, meta, msg  = lcmark.convert(inp .. refblock, format,
 if contents then
   local f = io.open("tools/template." .. format, 'r')
   if not f then
-    io.write("Could not find template!")
+    io.stderr:write("Could not find template!")
     os.exit(1)
   end
   local template = f:read("*a")
@@ -238,13 +238,13 @@ if contents then
   meta.body = contents
   local rendered, msg = lcmark.render_template(template, meta)
   if not rendered then
-    io.write(msg)
+    io.stderr:write(msg)
     os.exit(1)
   end
   io.write(rendered)
   os.exit(0)
 else
-  io.write(msg)
+  io.stderr:write(msg)
   os.exit(1)
 end
 
