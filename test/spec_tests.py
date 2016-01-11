@@ -90,29 +90,33 @@ def get_tests(specfile):
     with open(specfile, 'r', encoding='utf-8') as specf:
         for line in specf:
             line_number = line_number + 1
-            if state == 0 and re.match(header_re, line):
-                headertext = header_re.sub('', line).strip()
-            if line.strip() == ".":
-                state = (state + 1) % 3
-                if state == 0:
-                    example_number = example_number + 1
-                    end_line = line_number
-                    tests.append({
-                        "markdown":''.join(markdown_lines).replace('→',"\t"),
-                        "html":''.join(html_lines).replace('→',"\t"),
-                        "example": example_number,
-                        "start_line": start_line,
-                        "end_line": end_line,
-                        "section": headertext})
-                    start_line = 0
-                    markdown_lines = []
-                    html_lines = []
+            l = line.strip()
+            if l == "`" * 32 + " example":
+                state = 1
+            elif l == "`" * 32:
+                state = 0
+                example_number = example_number + 1
+                end_line = line_number
+                tests.append({
+                    "markdown":''.join(markdown_lines).replace('→',"\t"),
+                    "html":''.join(html_lines).replace('→',"\t"),
+                    "example": example_number,
+                    "start_line": start_line,
+                    "end_line": end_line,
+                    "section": headertext})
+                start_line = 0
+                markdown_lines = []
+                html_lines = []
+            elif l == ".":
+                state = 2
             elif state == 1:
                 if start_line == 0:
                     start_line = line_number - 1
                 markdown_lines.append(line)
             elif state == 2:
                 html_lines.append(line)
+            elif state == 0 and re.match(header_re, line):
+                headertext = header_re.sub('', line).strip()
     return tests
 
 if __name__ == "__main__":
