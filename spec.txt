@@ -2,7 +2,7 @@
 title: CommonMark Spec
 author: John MacFarlane
 version: 0.24
-date: '2015-01-12'
+date: '2016-01-12'
 license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 ...
 
