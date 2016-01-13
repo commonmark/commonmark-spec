@@ -1,3 +1,58 @@
+[0.24]
+
+  * New format for spec tests, new lua formatter for specs.
+    The format for the spec examples has changed from
+
+        .
+        markdown
+        .
+        html
+        .
+
+    to
+
+        ```````````````````````````````` example
+        markdown
+        .
+        html
+        ````````````````````````````````
+
+    One advantage of this is that `spec.txt` becomes a valid
+    CommonMark file.
+  * Change `tests/spec_test.py` to use the new format.
+  * Replace `tools/makespec.py` with a lua script, `tools/make_spec.lua`,
+    which uses the `lcmark` rock (and indirectly libcmark).  It can
+    generate HTML, LaTeX, and CommonMark versions of the spec.  Pandoc
+    is no longer needed for the latex/PDF version.  And, since the new
+    program uses the cmark API and operates directly on the parse tree,
+    we get much more reliable translations than we got with the old
+    Python script (#387).
+  * Remove whitelist of valid schemes.  Now a scheme is any sequence
+    of 2-32 characters, beginning with an ASCII letter, and containing
+    only ASCII letters, digits, and the symbols `-`, `+`, `.`.
+    Discussion at <http://talk.commonmark.org/t/555>.
+  * Added an example: URI schemes must be more than one character.
+  * Disallow spaces in link destinations, even inside pointy braces.
+    Discussion at <http://talk.commonmark.org/t/779> and
+    <http://talk.commonmark.org/t/1287/12>.
+  * Modify setext heading spec to allow multiline headings.
+    Text like
+
+        Foo
+        bar
+        ---
+        baz
+
+    is now interpreted as heading + paragraph, rather than
+    paragraph + thematic break + paragraph.
+  * Call U+FFFD the REPLACEMENT CHARACTER, not the "unknown code
+    point character."
+  * Change misleading undefined entity name example.
+  * Remove misleading claim about entity references in raw HTML
+    (a regression in 0.23).  Entity references are not treated
+    as literal text in raw HTML; they are just passed through.
+  * CommonMark.dtd: allow `item` in `custom_block`.
+
 [0.23]
 
   * Don't allow space between link text and link label in a
