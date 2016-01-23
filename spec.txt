@@ -1204,7 +1204,7 @@ bar</p>
 
 
 or use a thematic break that cannot count as a [setext heading
-line], such as
+underline], such as
 
 ```````````````````````````````` example
 Foo
@@ -8940,7 +8940,7 @@ This is text that can be incorporated into the last open
 block (a paragraph, code block, heading, or raw HTML).
 
 Setext headings are formed when we see a line of a paragraph
-that is a setext heading line.
+that is a [setext heading underline].
 
 Reference link definitions are detected when a paragraph is closed;
 the accumulated text lines are parsed to see if they begin with
