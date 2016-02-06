@@ -316,11 +316,23 @@ by spaces with a tab stop of 4 characters.
 ````````````````````````````````
 
 ```````````````````````````````` example
->→foo→bar
+>→→foo
 .
 <blockquote>
-<p>foo→bar</p>
+<pre><code>  foo
+</code></pre>
 </blockquote>
+````````````````````````````````
+
+```````````````````````````````` example
+-→→foo
+.
+<ul>
+<li>
+<pre><code>  foo
+</code></pre>
+</li>
+</ul>
 ````````````````````````````````
 
 
