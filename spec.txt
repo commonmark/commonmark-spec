@@ -319,7 +319,7 @@ by spaces with a tab stop of 4 characters.
 >→foo→bar
 .
 <blockquote>
-<p>  foo→bar</p>
+<p>foo→bar</p>
 </blockquote>
 ````````````````````````````````
 
