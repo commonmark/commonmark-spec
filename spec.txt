@@ -320,6 +320,24 @@ bar
 </code></pre>
 ````````````````````````````````
 
+```````````````````````````````` example
+ - foo
+   - bar
+→ - baz
+.
+<ul>
+<li>foo
+<ul>
+<li>bar
+<ul>
+<li>baz</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+````````````````````````````````
+
 
 
 ## Insecure characters
