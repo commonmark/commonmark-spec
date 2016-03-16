@@ -152,7 +152,7 @@ the canonical syntax description:
 -   The start number of an ordered list is significant.
 
 -   Fenced code blocks are supported, delimited by either
-    backticks (```` ``` ```` or tildes (` ~~~ `).
+    backticks (```` ``` ````) or tildes (` ~~~ `).
 
 Contributing
 ------------
