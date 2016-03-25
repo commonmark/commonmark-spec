@@ -1,3 +1,13 @@
+[0.25]
+
+  * Added several more tab-handling cases (see jgm/cmark#101).
+  * Fixed spec test for tabs.  In the blockquote with a tab following
+    the `>`, only one space should be consumed, yielding two spaces
+    at the beginning of the content.
+  * Update license year range to 2016 (Prayag Verma).
+  * Fixed typo: setext heading line -> setext heading underline (#389).
+  * Fixed date 2015->2016 (#388)
+
 [0.24]
 
   * New format for spec tests, new lua formatter for specs.
