@@ -4080,6 +4080,18 @@ Here are some list items that start with a blank line but are not empty:
 </ul>
 ````````````````````````````````
 
+When the list item starts with a blank line, the number of spaces
+following the list marker doesn't change the required indentation:
+
+```````````````````````````````` example
+-   
+  foo
+.
+<ul>
+<li>foo</li>
+</ul>
+````````````````````````````````
+
 
 A list item can begin with at most one blank line.
 In the following example, `foo` is not part of the list
