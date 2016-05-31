@@ -24,7 +24,7 @@ And Markdown started to be used beyond the web, to author books,
 articles, slide shows, letters, and lecture notes.
 
 What distinguishes Markdown from many other lightweight markup
-syntaxes, which are often easier to write, is its readibility.
+syntaxes, which are often easier to write, is its readability.
 As Gruber writes:
 
 > The overriding design goal for Markdown's formatting syntax is
