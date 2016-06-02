@@ -140,7 +140,4 @@ if __name__ == "__main__":
         for test in tests:
             do_test(test, args.normalize, result_counts)
         out("{pass} passed, {fail} failed, {error} errored, {skip} skipped\n".format(**result_counts))
-        if result_counts['fail'] == 0 and result_counts['error'] == 0:
-            exit(0)
-        else:
-            exit(1)
+        exit(result_counts['fail'] + result_counts['error'])
