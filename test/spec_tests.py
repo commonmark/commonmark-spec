@@ -87,7 +87,7 @@ def get_tests(specfile):
 
     header_re = re.compile('#+ ')
 
-    with open(specfile, 'r', encoding='utf-8') as specf:
+    with open(specfile, 'r', encoding='utf-8', newline='\n') as specf:
         for line in specf:
             line_number = line_number + 1
             l = line.strip()
