@@ -209,7 +209,7 @@ local create_anchors = function(doc, meta, to)
         local examplenum_div = make_html_block('div', {{'class', 'examplenum'}})
         local interact_link = make_html_inline('a', {{'class', 'dingus'},
                     {'title', 'open in interactive dingus'}})
-        cmark.node_append_child(interact_link, make_text("(interact)"))
+        cmark.node_append_child(interact_link, make_text("Try It"))
         local examplenum_link = cmark.node_new(cmark.NODE_LINK)
         cmark.node_set_url(examplenum_link, '#example-' .. tostring(example))
         cmark.node_append_child(examplenum_link,
