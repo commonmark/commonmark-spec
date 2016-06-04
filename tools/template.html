@@ -44,7 +44,7 @@ pre > code { background-color: transparent; }
            padding-bottom: 6pt; }
 .column pre  { font-size: 11pt; padding-left: 6pt; padding-right: 6pt;
                padding-top: 2pt; padding-bottom: 2pt; }
-div.examplenum { font-size: 11pt; text-align: left; }
+div.examplenum { font-size: 11pt; text-align: left; margin-bottom:10px; }
 div.column { display: inline-block; width: 50%; vertical-align: top; }
 div.example > div:nth-child(2) { clear:left; background-color: #D3E1E4; }
 div.example > div:nth-child(3) { clear:right; background-color: #C9CaCE; }
@@ -60,7 +60,18 @@ div.example > div:nth-child(3) { clear:right; background-color: #C9CaCE; }
  color: white;
 }
 #watermark a { color: white; }
-a.dingus { margin-left: 1em; color: red; cursor: pointer; }
+a.dingus { 
+  margin-left: 1em;
+  cursor: pointer;
+  line-height: 30px;
+  padding: 4px 7px;
+  color: #FFF;
+  background-color: #33C3F0;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.2);
+  border-color: #4FCAEF;
+  border-bottom: 2px #2A9EC1 solid;
+  border-right: 2px #2A9EC1 solid;
+}
 a.footnoteRef > sup:before {
   content: "[";
 }
