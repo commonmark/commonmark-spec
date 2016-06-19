@@ -3370,7 +3370,7 @@ To see why, note that in
 
 the `- bar` is indented too far to start a list, and can't
 be an indented code block because indented code blocks cannot
-interrupt paragraphs, so it is a [paragraph continuation line].
+interrupt paragraphs, so it is a paragraph continuation line.
 
 A block quote can be empty:
 
