@@ -7956,7 +7956,7 @@ consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document and is not followed by `[]` or a link label.
 The contents of the first link label are parsed as inlines,
-which are used as the link's text.  the link's URI and title
+which are used as the link's text.  The link's URI and title
 are provided by the matching link reference definition.
 Thus, `[foo]` is equivalent to `[foo][]`.
 
