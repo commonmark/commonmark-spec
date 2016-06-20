@@ -3240,8 +3240,8 @@ Four spaces gives us a code block:
 ````````````````````````````````
 
 
-The Laziness clause allows us to omit the `>` before a
-paragraph continuation line:
+The Laziness clause allows us to omit the `>` before
+[paragraph continuation text]:
 
 ```````````````````````````````` example
 > # Foo
@@ -3347,8 +3347,8 @@ foo
 ````````````````````````````````
 
 
-Note that in the following case, we have a paragraph
-continuation line:
+Note that in the following case, we have a [lazy
+continuation line]:
 
 ```````````````````````````````` example
 > foo
@@ -3370,7 +3370,7 @@ To see why, note that in
 
 the `- bar` is indented too far to start a list, and can't
 be an indented code block because indented code blocks cannot
-interrupt paragraphs, so it is a paragraph continuation line.
+interrupt paragraphs, so it is [paragraph continuation text].
 
 A block quote can be empty:
 
