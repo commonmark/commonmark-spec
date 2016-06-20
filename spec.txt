@@ -3370,7 +3370,7 @@ To see why, note that in
 
 the `- bar` is indented too far to start a list, and can't
 be an indented code block because indented code blocks cannot
-interrupt paragraphs, so it is a [paragraph continuation line].
+interrupt paragraphs, so it is a paragraph continuation line.
 
 A block quote can be empty:
 
@@ -7956,7 +7956,7 @@ consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document and is not followed by `[]` or a link label.
 The contents of the first link label are parsed as inlines,
-which are used as the link's text.  the link's URI and title
+which are used as the link's text.  The link's URI and title
 are provided by the matching link reference definition.
 Thus, `[foo]` is equivalent to `[foo][]`.
 
