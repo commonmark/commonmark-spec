@@ -2302,6 +2302,7 @@ import Text.HTML.TagSoup
 main :: IO ()
 main = print $ parseTags tags
 </code></pre>
+okay
 .
 <pre language="haskell"><code>
 import Text.HTML.TagSoup
@@ -2309,6 +2310,7 @@ import Text.HTML.TagSoup
 main :: IO ()
 main = print $ parseTags tags
 </code></pre>
+<p>okay</p>
 ````````````````````````````````
 
 
@@ -2320,12 +2322,14 @@ A script tag (type 1):
 
 document.getElementById("demo").innerHTML = "Hello JavaScript!";
 </script>
+okay
 .
 <script type="text/javascript">
 // JavaScript example
 
 document.getElementById("demo").innerHTML = "Hello JavaScript!";
 </script>
+<p>okay</p>
 ````````````````````````````````
 
 
@@ -2338,6 +2342,7 @@ h1 {color:red;}
 
 p {color:blue;}
 </style>
+okay
 .
 <style
   type="text/css">
@@ -2345,6 +2350,7 @@ h1 {color:red;}
 
 p {color:blue;}
 </style>
+<p>okay</p>
 ````````````````````````````````
 
 
@@ -2433,11 +2439,13 @@ A comment (type 2):
 
 bar
    baz -->
+okay
 .
 <!-- Foo
 
 bar
    baz -->
+<p>okay</p>
 ````````````````````````````````
 
 
@@ -2450,12 +2458,14 @@ A processing instruction (type 3):
   echo '>';
 
 ?>
+okay
 .
 <?php
 
   echo '>';
 
 ?>
+<p>okay</p>
 ````````````````````````````````
 
 
@@ -2483,6 +2493,7 @@ function matchwo(a,b)
   }
 }
 ]]>
+okay
 .
 <![CDATA[
 function matchwo(a,b)
@@ -2496,6 +2507,7 @@ function matchwo(a,b)
   }
 }
 ]]>
+<p>okay</p>
 ````````````````````````````````
 
 
