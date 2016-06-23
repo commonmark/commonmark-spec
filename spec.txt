@@ -4439,13 +4439,18 @@ So, in this case we need two spaces indent:
 - foo
   - bar
     - baz
+      - boo
 .
 <ul>
 <li>foo
 <ul>
 <li>bar
 <ul>
-<li>baz</li>
+<li>baz
+<ul>
+<li>boo</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -4460,11 +4465,13 @@ One is not enough:
 - foo
  - bar
   - baz
+   - boo
 .
 <ul>
 <li>foo</li>
 <li>bar</li>
 <li>baz</li>
+<li>boo</li>
 </ul>
 ````````````````````````````````
 
