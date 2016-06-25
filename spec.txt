@@ -5964,18 +5964,22 @@ The following rules define emphasis and strong emphasis:
 
 9.  Emphasis begins with a delimiter that [can open emphasis] and ends
     with a delimiter that [can close emphasis], and that uses the same
-    character (`_` or `*`) as the opening delimiter.  There must
-    be a nonempty sequence of inlines between the open delimiter
-    and the closing delimiter; these form the contents of the emphasis
-    inline.
+    character (`_` or `*`) as the opening delimiter.  The
+    opening and closing delimiters must belong to separate
+    [delimiter runs].  If one of the delimiters can both
+    open and close emphasis, then the sum of the lengths of the
+    delimiter runs containing the opening and closing delimiters
+    must not be a multiple of 3.
 
 10. Strong emphasis begins with a delimiter that
     [can open strong emphasis] and ends with a delimiter that
     [can close strong emphasis], and that uses the same character
-    (`_` or `*`) as the opening delimiter.
-    There must be a nonempty sequence of inlines between the open
-    delimiter and the closing delimiter; these form the contents of
-    the strong emphasis inline.
+    (`_` or `*`) as the opening delimiter.  The
+    opening and closing delimiters must belong to separate
+    [delimiter runs].  If one of the delimiters can both open
+    and close strong emphasis, then the sum of the lengths of
+    the delimiter runs containing the opening and closing
+    delimiters must not be a multiple of 3.
 
 11. A literal `*` character cannot occur at the beginning or end of
     `*`-delimited emphasis or `**`-delimited strong emphasis, unless it
@@ -5999,9 +6003,7 @@ the following principles resolve ambiguity:
     so that the second begins before the first ends and ends after
     the first ends, the first takes precedence. Thus, for example,
     `*foo _bar* baz_` is parsed as `<em>foo _bar</em> baz_` rather
-    than `*foo <em>bar* baz</em>`.  For the same reason,
-    `**foo*bar**` is parsed as `<em><em>foo</em>bar</em>*`
-    rather than `<strong>foo*bar</strong>`.
+    than `*foo <em>bar* baz</em>`.
 
 16. When there are two potential emphasis or strong emphasis spans
     with the same closing delimiter, the shorter one (the one that
@@ -6581,18 +6583,30 @@ __foo_ bar_
 <p><em>foo <strong>bar</strong> baz</em></p>
 ````````````````````````````````
 
-
-But note:
-
 ```````````````````````````````` example
 *foo**bar**baz*
 .
-<p><em>foo</em><em>bar</em><em>baz</em></p>
+<p><em>foo<strong>bar</strong>baz</em></p>
 ````````````````````````````````
 
+Note that in the preceding case, the interpretation
 
-The difference is that in the preceding case, the internal delimiters
-[can close emphasis], while in the cases with spaces, they cannot.
+``` markdown
+<p><em>foo</em><em>bar<em></em>baz</em></p>
+```
+
+
+is precluded by the condition that a delimiter that
+can both open and close (like the `*` after `foo`
+cannot form emphasis if the sum of the lengths of
+the delimiter runs containing the opening and
+closing delimiters is a multiple of 3.
+
+The same condition ensures that the following
+cases are all strong emphasis nested inside
+emphasis, even when the interior spaces are
+omitted:
+
 
 ```````````````````````````````` example
 ***foo** bar*
@@ -6608,17 +6622,18 @@ The difference is that in the preceding case, the internal delimiters
 ````````````````````````````````
 
 
-Note, however, that in the following case we get no strong
-emphasis, because the opening delimiter is closed by the first
-`*` before `bar`:
+```````````````````````````````` example
+*foo**bar***
+.
+<p><em>foo<strong>bar</strong></em></p>
+````````````````````````````````
+
 
 ```````````````````````````````` example
 *foo**bar***
 .
-<p><em>foo</em><em>bar</em>**</p>
+<p><em>foo<strong>bar</strong></em></p>
 ````````````````````````````````
-
-
 
 Indefinite levels of nesting are possible:
 
@@ -6712,17 +6727,12 @@ ____foo__ bar__
 ````````````````````````````````
 
 
-But note:
-
 ```````````````````````````````` example
 **foo*bar*baz**
 .
-<p><em><em>foo</em>bar</em>baz**</p>
+<p><strong>foo<em>bar</em>baz</strong></p>
 ````````````````````````````````
 
-
-The difference is that in the preceding case, the internal delimiters
-[can close emphasis], while in the cases with spaces, they cannot.
 
 ```````````````````````````````` example
 ***foo* bar**
@@ -7035,13 +7045,6 @@ Rule 15:
 *foo _bar* baz_
 .
 <p><em>foo _bar</em> baz_</p>
-````````````````````````````````
-
-
-```````````````````````````````` example
-**foo*bar**
-.
-<p><em><em>foo</em>bar</em>*</p>
 ````````````````````````````````
 
 
