@@ -499,7 +499,7 @@ Markdown document.
 
 A line consisting of 0-3 spaces of indentation, followed by a sequence
 of three or more matching `-`, `_`, or `*` characters, each followed
-optionally by any number of spaces, forms a
+optionally by any number of spaces or tabs, forms a
 [thematic break](@).
 
 ```````````````````````````````` example
@@ -615,6 +615,15 @@ Spaces are allowed at the end:
 ````````````````````````````````
 
 
+Tabs are allowed both between and after the characters:
+
+```````````````````````````````` example
+-→-→-→-→
+.
+<hr />
+````````````````````````````````
+
+
 However, no other characters may occur in the line:
 
 ```````````````````````````````` example
@@ -630,8 +639,8 @@ a------
 ````````````````````````````````
 
 
-It is required that all of the [non-whitespace characters] be the same.
-So, this is not a thematic break:
+It is required that all of the characters (besides spaces and
+tabs) be the same.  So, this is not a thematic break:
 
 ```````````````````````````````` example
  *-*
