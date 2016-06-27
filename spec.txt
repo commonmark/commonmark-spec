@@ -1977,7 +1977,7 @@ by their start and end conditions.  The block begins with a line that
 meets a [start condition](@) (after up to three spaces
 optional indentation).  It ends with the first subsequent line that
 meets a matching [end condition](@), or the last line of
-the document, if no line is encountered that meets the
+the document or other [container block](@), if no line is encountered that meets the
 [end condition].  If the first line meets both the [start condition]
 and the [end condition], the block will contain just that line.
 
