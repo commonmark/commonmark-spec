@@ -336,9 +336,14 @@ the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 ## Tabs
 
 Tabs in lines are not expanded to [spaces].  However,
-in contexts where indentation is significant for the
-document's structure, tabs behave as if they were replaced
-by spaces with a tab stop of 4 characters.
+in contexts where whitespace helps to define block structure,
+tabs behave as if they were replaced by spaces with a tab stop
+of 4 characters.
+
+Thus, for exmaple, a tab can be used instead of four spaces
+in an indented code block.  (Note, however, that internal
+tabs are passed through as literal tabs, not expanded to
+spaces.)
 
 ```````````````````````````````` example
 →foo→baz→→bim
@@ -347,14 +352,12 @@ by spaces with a tab stop of 4 characters.
 </code></pre>
 ````````````````````````````````
 
-
 ```````````````````````````````` example
   →foo→baz→→bim
 .
 <pre><code>foo→baz→→bim
 </code></pre>
 ````````````````````````````````
-
 
 ```````````````````````````````` example
     a→a
@@ -365,6 +368,9 @@ by spaces with a tab stop of 4 characters.
 </code></pre>
 ````````````````````````````````
 
+In the following example, a continuation paragraph of a list
+item is indented with a tab; this has exactly the same effect
+as indentation with four spaces would:
 
 ```````````````````````````````` example
   - foo
@@ -392,6 +398,15 @@ by spaces with a tab stop of 4 characters.
 </li>
 </ul>
 ````````````````````````````````
+
+Normally the `>` that begins a block quote may be followed
+optionally by a space, which is not considered part of the
+content.  In the following case `>` is followed by a tab,
+which is treated as if it were expanded into spaces.
+Since one of theses spaces is considered part of the
+delimiter, `foo` is considered to be indented six spaces
+inside the block quote context, so we get an indented
+code block starting with two spaces.
 
 ```````````````````````````````` example
 >→→foo
@@ -441,6 +456,17 @@ bar
 </ul>
 ````````````````````````````````
 
+```````````````````````````````` example
+#→Foo
+.
+<h1>Foo</h1>
+````````````````````````````````
+
+```````````````````````````````` example
+*→*→*→
+.
+<hr />
+````````````````````````````````
 
 
 ## Insecure characters
