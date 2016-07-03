@@ -779,15 +779,6 @@ headings:
 ````````````````````````````````
 
 
-A tab will not work:
-
-```````````````````````````````` example
-#→foo
-.
-<p>#→foo</p>
-````````````````````````````````
-
-
 This is not a heading, because the first `#` is escaped:
 
 ```````````````````````````````` example
