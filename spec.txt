@@ -721,18 +721,17 @@ If you want a thematic break in a list item, use a different bullet:
 
 ## ATX headings
 
-An [ATX heading](@) consists of a string of characters, parsed
-as inline content, between an opening sequence of 1--6 unescaped
-`#` characters and an optional closing sequence of any number of
-unescaped `#` characters.  The opening sequence of `#`
-characters must be followed by a [space], a tab, or by the end of
-the line. The optional closing sequence of `#`s must be preceded
-by a [space] or tab and may be followed by spaces or tabs only.
-The opening `#` character may be indented 0-3 spaces.  The raw
-contents of the heading are stripped of leading and trailing
-spaces and tabs before being parsed as inline content.  The
-heading level is equal to the number of `#` characters in the
-opening sequence.
+An [ATX heading](@)
+consists of a string of characters, parsed as inline content, between an
+opening sequence of 1--6 unescaped `#` characters and an optional
+closing sequence of any number of unescaped `#` characters.
+The opening sequence of `#` characters must be followed by a
+[space] or by the end of line. The optional closing sequence of `#`s must be
+preceded by a [space] and may be followed by spaces only.  The opening
+`#` character may be indented 0-3 spaces.  The raw contents of the
+heading are stripped of leading and trailing spaces before being parsed
+as inline content.  The heading level is equal to the number of `#`
+characters in the opening sequence.
 
 Simple headings:
 
@@ -762,7 +761,7 @@ More than six `#` characters is not a heading:
 ````````````````````````````````
 
 
-At least one space or tab is required between the `#` characters and the
+At least one space is required between the `#` characters and the
 heading's contents, unless the heading is empty.  Note that many
 implementations currently do not require the space.  However, the
 space was required by the
@@ -780,21 +779,12 @@ headings:
 ````````````````````````````````
 
 
-A tab can be used instead of a space:
+A tab will not work:
 
 ```````````````````````````````` example
 #→foo
 .
-<h1>foo</h1>
-````````````````````````````````
-
-
-Any number of spaces and tabs can be used after the `#`s:
-
-```````````````````````````````` example
-# →→  foo
-.
-<h1>foo</h1>
+<p>#→foo</p>
 ````````````````````````````````
 
 
@@ -816,16 +806,16 @@ Contents are parsed as inlines:
 ````````````````````````````````
 
 
-Leading and trailing spaces and tabs are ignored in parsing inline content:
+Leading and trailing blanks are ignored in parsing inline content:
 
 ```````````````````````````````` example
-#  →→              foo  →→               
+#                  foo                     
 .
 <h1>foo</h1>
 ````````````````````````````````
 
 
-One to three spaces indentation are allowed before the first `#`:
+One to three spaces indentation are allowed:
 
 ```````````````````````````````` example
  ### foo
@@ -879,18 +869,18 @@ It need not be the same length as the opening sequence:
 ````````````````````````````````
 
 
-Spaces and tabs are allowed after the closing sequence:
+Spaces are allowed after the closing sequence:
 
 ```````````````````````````````` example
-### foo ###→     
+### foo ###     
 .
 <h3>foo</h3>
 ````````````````````````````````
 
 
-A sequence of `#` characters with anything but spaces or tabs
-following it is not a closing sequence, but counts as part of
-the contents of the heading:
+A sequence of `#` characters with anything but [spaces] following it
+is not a closing sequence, but counts as part of the contents of the
+heading:
 
 ```````````````````````````````` example
 ### foo ### b
@@ -899,18 +889,12 @@ the contents of the heading:
 ````````````````````````````````
 
 
-The closing sequence must be preceded by at least one space or tab:
+The closing sequence must be preceded by a space:
 
 ```````````````````````````````` example
 # foo#
 .
 <h1>foo#</h1>
-````````````````````````````````
-
-```````````````````````````````` example
-# foo→#
-.
-<h1>foo</h1>
 ````````````````````````````````
 
 
@@ -959,12 +943,10 @@ ATX headings can be empty:
 ## 
 #
 ### ###
-####→####
 .
 <h2></h2>
 <h1></h1>
 <h3></h3>
-<h4></h4>
 ````````````````````````````````
 
 
