@@ -3813,65 +3813,19 @@ any following content, so these are not list items:
 ````````````````````````````````
 
 
-A list item may not contain blocks that are separated by more than
-one blank line.  Thus, two blank lines will end a list, unless the
-two blanks are contained in a [fenced code block].
+A list item may contain blocks that are separated by more than
+one blank line.
 
 ```````````````````````````````` example
 - foo
 
-  bar
-
-- foo
-
 
   bar
-
-- ```
-  foo
-
-
-  bar
-  ```
-
-- baz
-
-  + ```
-    foo
-
-
-    bar
-    ```
 .
 <ul>
 <li>
 <p>foo</p>
 <p>bar</p>
-</li>
-<li>
-<p>foo</p>
-</li>
-</ul>
-<p>bar</p>
-<ul>
-<li>
-<pre><code>foo
-
-
-bar
-</code></pre>
-</li>
-<li>
-<p>baz</p>
-<ul>
-<li>
-<pre><code>foo
-
-
-bar
-</code></pre>
-</li>
-</ul>
 </li>
 </ul>
 ````````````````````````````````
@@ -3905,14 +3859,13 @@ A list item may contain any kind of block:
 
 
 A list item that contains an indented code block will preserve
-empty lines within the code block verbatim, unless there are two
-or more empty lines in a row (since as described above, two
-blank lines end the list):
+empty lines within the code block verbatim.
 
 ```````````````````````````````` example
 - Foo
 
       bar
+
 
       baz
 .
@@ -3920,33 +3873,13 @@ blank lines end the list):
 <li>
 <p>Foo</p>
 <pre><code>bar
+
 
 baz
 </code></pre>
 </li>
 </ul>
 ````````````````````````````````
-
-
-```````````````````````````````` example
-- Foo
-
-      bar
-
-
-      baz
-.
-<ul>
-<li>
-<p>Foo</p>
-<pre><code>bar
-</code></pre>
-</li>
-</ul>
-<pre><code>  baz
-</code></pre>
-````````````````````````````````
-
 
 Note that ordered list start numbers must be nine digits or less:
 
@@ -4936,8 +4869,7 @@ The number of windows in my house is
 
 but this rule should prevent most spurious list captures.
 
-There can be blank lines between items, but two blank lines end
-a list:
+There can be any number of blank lines between items:
 
 ```````````````````````````````` example
 - foo
@@ -4954,35 +4886,11 @@ a list:
 <li>
 <p>bar</p>
 </li>
-</ul>
-<ul>
-<li>baz</li>
-</ul>
-````````````````````````````````
-
-
-As illustrated above in the section on [list items],
-two blank lines between blocks *within* a list item will also end a
-list:
-
-```````````````````````````````` example
-- foo
-
-
-  bar
-- baz
-.
-<ul>
-<li>foo</li>
-</ul>
-<p>bar</p>
-<ul>
-<li>baz</li>
+<li>
+<p>baz</p>
+</li>
 </ul>
 ````````````````````````````````
-
-
-Indeed, two blank lines will end *all* containing lists:
 
 ```````````````````````````````` example
 - foo
@@ -4997,26 +4905,28 @@ Indeed, two blank lines will end *all* containing lists:
 <ul>
 <li>bar
 <ul>
-<li>baz</li>
-</ul>
+<li>
+<p>baz</p>
+<p>bim</p>
 </li>
 </ul>
 </li>
 </ul>
-<pre><code>  bim
-</code></pre>
+</li>
+</ul>
 ````````````````````````````````
 
 
-Thus, two blank lines can be used to separate consecutive lists of
-the same type, or to separate a list from an indented code block
-that would otherwise be parsed as a subparagraph of the final list
-item:
+To separate consecutive lists of the same type, or to separate a
+list from an indented code block that would otherwise be parsed
+as a subparagraph of the final list item, you can insert a blank HTML
+comment:
 
 ```````````````````````````````` example
 - foo
 - bar
 
+<!-- -->
 
 - baz
 - bim
@@ -5025,6 +4935,7 @@ item:
 <li>foo</li>
 <li>bar</li>
 </ul>
+<!-- -->
 <ul>
 <li>baz</li>
 <li>bim</li>
@@ -5039,6 +4950,7 @@ item:
 
 -   foo
 
+<!-- -->
 
     code
 .
@@ -5051,6 +4963,7 @@ item:
 <p>foo</p>
 </li>
 </ul>
+<!-- -->
 <pre><code>code
 </code></pre>
 ````````````````````````````````
