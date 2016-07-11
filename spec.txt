@@ -3621,7 +3621,10 @@ An [ordered list marker](@)
 is a sequence of 1--9 arabic digits (`0-9`), followed by either a
 `.` character or a `)` character.  (The reason for the length
 limit is that with 10 digits we start seeing integer overflows
-in some browsers.)
+in some browsers.)  Exception: In cases where ordered list markers
+interrupt paragraphs---that is, when they occur on a line
+that would otherwise count as [paragraph continuation
+text]---only `1.` and `1)` are allowed.
 
 The following rules define [list items]:
 
@@ -4853,28 +4856,20 @@ Foo
 </ul>
 ````````````````````````````````
 
-
 `Markdown.pl` does not allow this, through fear of triggering a list
 via a numeral in a hard-wrapped line:
 
-```````````````````````````````` example
+```````````````````````````````` markdown
 The number of windows in my house is
 14.  The number of doors is 6.
-.
-<p>The number of windows in my house is</p>
-<ol start="14">
-<li>The number of doors is 6.</li>
-</ol>
 ````````````````````````````````
+Oddly, though, `Markdown.pl` *does* allow a blockquote to
+interrupt a paragraph, even though the same considerations might
+apply.
 
-
-Oddly, `Markdown.pl` *does* allow a blockquote to interrupt a paragraph,
-even though the same considerations might apply.  We think that the two
-cases should be treated the same.  Here are two reasons for allowing
-lists to interrupt paragraphs:
-
-First, it is natural and not uncommon for people to start lists without
-blank lines:
+In CommonMark, we do allow lists to interrupt paragraphs, for
+two reasons.  First, it is natural and not uncommon for people
+to start lists without blank lines:
 
     I need to buy
     - new shoes
@@ -4908,17 +4903,38 @@ then
 
 by itself should be a paragraph followed by a nested sublist.
 
-Our adherence to the [principle of uniformity]
-thus inclines us to think that there are two coherent packages:
+Since it is well established Markdown practice to allow lists to
+interrupt paragraphs inside list items, the [principle of
+uniformity] requires us to allow this outside list items as
+well.  ([reStructuredText](http://docutils.sourceforge.net/rst.html)
+takes a different approach, requiring blank lines before lists
+even inside other list items.)
 
-1.  Require blank lines before *all* lists and blockquotes,
-    including lists that occur as sublists inside other list items.
+In order to solve of unwanted lists in paragraphs with
+hard-wrapped numerals, we allow only lists starting with `1` to
+interrupt paragraphs.  Thus,
 
-2.  Require blank lines in none of these places.
+```````````````````````````````` example
+The number of windows in my house is
+14.  The number of doors is 6.
+.
+<p>The number of windows in my house is
+14.  The number of doors is 6.</p>
+````````````````````````````````
 
-[reStructuredText](http://docutils.sourceforge.net/rst.html) takes
-the first approach, for which there is much to be said.  But the second
-seems more consistent with established practice with Markdown.
+We may still get an unintended result in cases like
+
+```````````````````````````````` example
+The number of windows in my house is
+1.  The number of doors is 6.
+.
+<p>The number of windows in my house is</p>
+<ol>
+<li>The number of doors is 6.</li>
+</ol>
+````````````````````````````````
+
+but this rule should prevent most spurious list captures.
 
 There can be blank lines between items, but two blank lines end
 a list:
