@@ -3621,12 +3621,7 @@ An [ordered list marker](@)
 is a sequence of 1--9 arabic digits (`0-9`), followed by either a
 `.` character or a `)` character.  (The reason for the length
 limit is that with 10 digits we start seeing integer overflows
-in some browsers.)  Exception: In cases where ordered list
-markers interrupt paragraphs---that is, when they occur on a
-line that would otherwise count as [paragraph continuation
-text]---list markers must be followed by some content other than
-spaces before the end of the line, and for ordered list markers,
-only `1.` and `1)` are allowed.
+in some browsers.)
 
 The following rules define [list items]:
 
@@ -3640,6 +3635,12 @@ The following rules define [list items]:
     (bullet or ordered) is determined by the type of its list marker.
     If the list item is ordered, then it is also assigned a start
     number, based on the ordered list marker.
+
+    Exceptions: When the list item interrupts a paragraph---that
+    is, when it starts on a line that would otherwise count as
+    [paragraph continuation text]---then (a) the lines *Ls* must
+    not begin with a blank line, and (b) if the list item is
+    ordered, the start number must be 1.
 
 For example, let *Ls* be the lines
 
