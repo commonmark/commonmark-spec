@@ -3621,10 +3621,12 @@ An [ordered list marker](@)
 is a sequence of 1--9 arabic digits (`0-9`), followed by either a
 `.` character or a `)` character.  (The reason for the length
 limit is that with 10 digits we start seeing integer overflows
-in some browsers.)  Exception: In cases where ordered list markers
-interrupt paragraphs---that is, when they occur on a line
-that would otherwise count as [paragraph continuation
-text]---only `1.` and `1)` are allowed.
+in some browsers.)  Exception: In cases where ordered list
+markers interrupt paragraphs---that is, when they occur on a
+line that would otherwise count as [paragraph continuation
+text]---list markers must be followed by some content other than
+spaces before the end of the line, and for ordered list markers,
+only `1.` and `1)` are allowed.
 
 The following rules define [list items]:
 
@@ -4207,6 +4209,20 @@ A list may start or end with an empty list item:
 </ul>
 ````````````````````````````````
 
+However, an empty list item cannot interrupt a paragraph:
+
+```````````````````````````````` example
+foo
+*
+
+foo
+1.
+.
+<p>foo
+*</p>
+<p>foo
+1.</p>
+````````````````````````````````
 
 
 4.  **Indentation.**  If a sequence of lines *Ls* constitutes a list item
@@ -6122,10 +6138,8 @@ A newline also counts as whitespace:
 *foo bar
 *
 .
-<p>*foo bar</p>
-<ul>
-<li></li>
-</ul>
+<p>*foo bar
+*</p>
 ````````````````````````````````
 
 
