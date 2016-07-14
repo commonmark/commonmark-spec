@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
-from html.parser import HTMLParser, HTMLParseError
+from html.parser import HTMLParser
+import urllib
+
+try:
+    from html.parser import HTMLParseError
+except ImportError:
+    # HTMLParseError was removed in Python 3.5. It could never be
+    # thrown, so we define a placeholder instead.
+    class HTMLParseError(Exception):
+        pass
+
 from html.entities import name2codepoint
 import sys
 import re
@@ -12,6 +22,7 @@ whitespace_re = re.compile('\s+')
 class MyHTMLParser(HTMLParser):
     def __init__(self):
         HTMLParser.__init__(self)
+        self.convert_charrefs = False
         self.last = "starttag"
         self.in_pre = False
         self.output = ""
@@ -51,7 +62,10 @@ class MyHTMLParser(HTMLParser):
             attrs.sort()
             for (k,v) in attrs:
                 self.output += " " + k
-                if v != None:
+                if v in ['href','src']:
+                    self.output += ("=" + '"' +
+                            urllib.quote(urllib.unquote(v), safe='/') + '"')
+                elif v != None:
                     self.output += ("=" + '"' + cgi.escape(v,quote=True) + '"')
         self.output += ">"
         self.last_tag = tag

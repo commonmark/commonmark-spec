@@ -2,19 +2,21 @@ SPEC=spec.txt
 SITE=_site
 SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
 
-.PHONY: spec update-site upload-site
+.PHONY: spec clean
 
-spec: spec.html # spec.pdf
+spec: spec.html # spec.pdf spec.md
 
-spec.md: $(SPEC)
-	python3 tools/makespec.py markdown > $@
+spec.md: spec.txt tools/template.commonmark
+	lua tools/make_spec.lua commonmark < $< > $@
 
 spec.html: spec.txt tools/template.html
-	python3 tools/makespec.py html > $@
+	lua tools/make_spec.lua html < $< > $@
 
-spec.pdf: spec.md tools/template.tex tools/specfilter.hs
-	pandoc -s $< --template tools/template.tex \
-	   --filter tools/specfilter.hs -o $@ --latex-engine=xelatex --toc \
-	   --number-sections -V documentclass=report -V tocdepth=2 \
-	   -V classoption=twosides
+spec.tex: spec.txt tools/template.latex
+	lua tools/make_spec.lua latex < $< > $@
 
+spec.pdf: spec.tex
+	xelatex $<
+
+clean:
+	-rm spec.tex spec.md spec.html

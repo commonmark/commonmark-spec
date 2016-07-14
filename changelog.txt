@@ -1,3 +1,214 @@
+[0.25]
+
+  * Added several more tab-handling cases (see jgm/cmark#101).
+  * Fixed spec test for tabs.  In the blockquote with a tab following
+    the `>`, only one space should be consumed, yielding two spaces
+    at the beginning of the content.
+  * Update license year range to 2016 (Prayag Verma).
+  * Fixed typo: setext heading line -> setext heading underline (#389).
+  * Fixed date 2015->2016 (#388)
+
+[0.24]
+
+  * New format for spec tests, new lua formatter for specs.
+    The format for the spec examples has changed from
+
+        .
+        markdown
+        .
+        html
+        .
+
+    to
+
+        ```````````````````````````````` example
+        markdown
+        .
+        html
+        ````````````````````````````````
+
+    One advantage of this is that `spec.txt` becomes a valid
+    CommonMark file.
+  * Change `tests/spec_test.py` to use the new format.
+  * Replace `tools/makespec.py` with a lua script, `tools/make_spec.lua`,
+    which uses the `lcmark` rock (and indirectly libcmark).  It can
+    generate HTML, LaTeX, and CommonMark versions of the spec.  Pandoc
+    is no longer needed for the latex/PDF version.  And, since the new
+    program uses the cmark API and operates directly on the parse tree,
+    we get much more reliable translations than we got with the old
+    Python script (#387).
+  * Remove whitelist of valid schemes.  Now a scheme is any sequence
+    of 2-32 characters, beginning with an ASCII letter, and containing
+    only ASCII letters, digits, and the symbols `-`, `+`, `.`.
+    Discussion at <http://talk.commonmark.org/t/555>.
+  * Added an example: URI schemes must be more than one character.
+  * Disallow spaces in link destinations, even inside pointy braces.
+    Discussion at <http://talk.commonmark.org/t/779> and
+    <http://talk.commonmark.org/t/1287/12>.
+  * Modify setext heading spec to allow multiline headings.
+    Text like
+
+        Foo
+        bar
+        ---
+        baz
+
+    is now interpreted as heading + paragraph, rather than
+    paragraph + thematic break + paragraph.
+  * Call U+FFFD the REPLACEMENT CHARACTER, not the "unknown code
+    point character."
+  * Change misleading undefined entity name example.
+  * Remove misleading claim about entity references in raw HTML
+    (a regression in 0.23).  Entity references are not treated
+    as literal text in raw HTML; they are just passed through.
+  * CommonMark.dtd: allow `item` in `custom_block`.
+
+[0.23]
+
+  * Don't allow space between link text and link label in a
+    reference link.  This fixes the problem of inadvertent capture:
+
+        [foo] [bar]
+
+        [foo]: /u1
+        [bar]: /u2
+  * Rename "horizontal rule" -> "thematic break".  This matches the HTML5
+    meaning for the hr element, and recognizes that the element may be
+    rendered in various ways (not always as a horizontal rule).
+    See http://talk.commonmark.org/t/horizontal-rule-or-thematic-break/912/3
+  * Rename "header" -> "heading".  This avoids a confusion that might arise
+    now that HTML5 has a "header" element, distinct from the "headings"
+    h1, h2, ...  Our headings correspond to HTML5 headings, not HTML5 headers.
+    The terminology of 'headings' is more natural, too.
+  * ATX headers: clarify that a space (or EOL) is needed; other whitespace
+    won't do (#373).  Added a test case.
+  * Rewrote "Entities" section with more correct terminology (#375).
+    Entity references and numeric character references.
+  * Clarified that spec does not dictate URL encoding/normalization policy.
+  * New test case: list item code block with empty line (Craig M.
+    Brandenburg).
+  * Added example with escaped backslash at end of link label (#325).
+  * Shortened an example so it doesn't wrap (#371).
+  * Fixed duplicate id "attribute".
+  * Fix four link targets (Lucas Werkmeister).
+  * Fix typo for link to "attributes" (Robin Stocker).
+  * Fix "delimiter" spellings and links (Sam Rawlins).
+  * Consistent usage of "we" instead of "I" (renzo).
+  * CommonMark.dtd - Rename `html` -> `html_block`,
+    `inline_html` -> `html_inline` for consistency.  (Otherwise it is too
+    hard to remember whether `html` is block or inline, a source of
+    some bugs.)
+  * CommonMark.dtd - added `xmlns` attribute to document.
+  * CommonMark.dtd - added `custom_block`, `custom_inline`.
+  * CommonMark.dtd - renamed `hrule` to `thematic_break`.
+  * Fixed some HTML inline tests, which were actually HTML blocks, given
+    the changes to block parsing rules since these examples were written
+    (#382).
+  * Normalize URLs when comparing test output.  This way we don't fail
+    tests for legitimate variations in URL escaping/normalization policies
+    (#334).
+  * `normalize.py`: don't use `HTMLParseError`, which has been removed
+    as of python 3.5 (#380).
+  * Minor spacing adjustments in test output, to match cmark's output,
+    since we test cmark without normalization.
+  * `makespec.py`:  remove need for link anchors to be on one line.
+  * `makespec.py`:  Only do two levels in the TOC.
+  * Use `display:inline-block` rather than floats for side-by-side.
+    This works when printed too.
+  * Added better print CSS.
+
+[0.22]
+
+  * Don't list `title` twice as HTML block tag (Robin Stocker).
+  * More direct example of type 7 HTML block starting with closing tag.
+  * Clarified rule 7 for HTML blocks.  `pre`, `script`, and `style`
+    are excluded because they're covered by other rules.
+  * Clarified that type 7 HTML blocks can start with a closing tag (#349).
+  * Removed `pre` tag from rule 6 of HTML blocks (#355).
+    It is already covered by rule 1, so this removes an ambiguity.
+  * Added `iframe` to list of tags that always start HTML blocks (#352).
+  * Added example of list item starting with two blanks (#332).
+  * Added test case clarifying laziness in block quotes (see
+    jgm/commonmark.js#60).
+  * Add an example with mixed indentation code block in "Tabs" section
+    (Robin Stocker).  This makes sure that implementations skip columns instead
+    of offsets for continued indented code blocks.
+  * Clarified that in ATX headers, the closing `#`s must be unescaped,
+    and removed misleading reference to "non-whitespace character" in
+    an example (#356).
+  * Changed anchor for "non-whitespace character" to reflect new name.
+  * Removed ambiguities concerning lines and line endings (#357, Lasse
+    R.H. Nielsen).  The previous spec allowed, technically, that a line
+    ending in `\r\n` might be considered to have two line endings,
+    or that the `\r` might be considered part of the line and the
+    `\n` the line ending. These fixes rule out those interpretations.
+  * Clarify that a character is any code point.
+  * Space in "code point".
+  * Capitalize "Unicode".
+  * Reflow paragraph to avoid unwanted list item (#360, #361).
+  * Avoid extra space before section number in `spec.md`.
+  * `makespec.py`: Use `check_output` for simpler `pipe_through_prog`.
+  * In README, clarified build requirements for `spec.html`, `spec.pdf`.
+  * Fixed some encoding issues in `makespec.py` (#353).
+  * Fixed various problems with `spec.pdf` generation (#353).
+  * Added version to coverpage in PDF version of spec.
+
+[0.21.1]
+
+  * Added date.
+
+[0.21]
+
+  * Changed handling of tabs.  Instead of having a preprocessing step
+    where tabs are converted to spaces, we now handle tabs directly in
+    the parser. This allows tabs to be retained in code blocks and code
+    spans. This change adds some general language to the effect that,
+    for purposes of determining block structure, tabs are to be treated
+    just like equivalent spaces.
+  * Completely rewrote spec for HTML blocks.  The new spec provides
+    better handling of tags like `<del>`, which can be either block
+    or inline level content, better handling of custom tags, and
+    better handling of verbatim contexts like `<pre>`, comments,
+    and `<script>`.
+  * Added 9-digit limit on ordered list start number.
+    Some browsers use signed 32-bit integers for indexing
+    the items of an ordered list, and this can lead to odd
+    or undefined behavior if 10-digit start numbers are allowed.
+  * Allow (non-initial) hyphens in tag names (#239). Custom
+    tags in HTML5 must contain hyphens.
+  * Clarified that HTML block is closed at end of containing
+    block, not just end of the document (as with fenced code blocks.)
+  * Specify nested link definition behavior in prose (Benjamin
+    Dumke-von der Ehe).
+  * Added test for edge case in link reference parsing
+    (Benjamin Dumke-von der Ehe, see jgm/commonmark.js#49).
+  * Added link tests with fragment identifiers and queries (David
+    Green, #342).
+  * Added test cases with a literal backslash in a link destination
+    (see jgm/commonmark.js#45).
+  * Added test for entity `&ngE;` which resolves to two code points.
+    Put entity tests on several lines for readability (see
+    jgm/commonmark.js#47).
+  * Fixed broken "pre" literal HTML example. Contents
+    weren't escaped properly.
+  * Simplified defn of "unicode whitespace character,"
+    rectifying omission of line tabulation, U+000B (#343).
+  * Removed ambiguity in definition of "line" (#346).
+  * Rewrapped two prose lines so `+` does not begin a line (#347).
+  * Added another test with overlapping emphasis markers.
+  * Fixed link to 'attributes'.
+  * Revised appendix, "A parsing strategy," and
+    added a description of emphasis/link parsing algorithm.
+  * `spec_tests.py` - set options for conversions, set library
+    paths in a more cross-platform way.
+  * `spec_tests.py`: force utf-8 on test failure output and
+    `--dump-tests` (#344, #345).
+  * `spec_tests.py`: Properly handle visible tab `→` in expected output.
+  * `normalize.py`:  Don't collapse whitespace inside pre tag.
+  * Added `spec.html` to `.gitignore` (#339).
+  * Add `-dev` suffix to spec version after release (eksperimental).
+  * Rename "non-space" to "non-whitespace" (Konstantin Zudov, #337).
+
 [0.20]
 
   * Require at least one nonspace character in a link label (#322).

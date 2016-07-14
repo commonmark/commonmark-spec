@@ -2,16 +2,16 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>${title}</title>
+<title>$title$</title>
 <style type="text/css">
-  body { font-family: Helvetica, arial, freesans, clean, sans-serif;
+body { font-family: Helvetica, arial, freesans, clean, sans-serif;
     line-height: 1.4;
     max-width: 48em;
     margin: auto;
     color: #333333;
     background-color: #fff;
     font-size: 13pt;
-  }
+}
 div#TOC ul { list-style: none; }
 h1 { font-size: 140%; font-weight: bold; border-top: 1px solid gray; padding-top: 0.5em; }
 h2 { font-size: 120%; font-weight: bold; }
@@ -19,6 +19,7 @@ h3 { font-size: 110%; font-weight: bold; }
 h4 { font-size: 100%; font-weight: bold; }
 a.definition { font-weight: bold; }
 span.space { position: relative; }
+span.number:after { content: "  " }
 span.space:after {
   content: "·";
   position: absolute;
@@ -39,9 +40,14 @@ pre {
 }
 code { font-family: monospace; background-color: #D3E1E4; }
 pre > code { background-color: transparent; }
-div.example > pre { float:left; width: 48%; }
-div.example > pre:nth-child(2) { clear:left; background-color: #D3E1E4; }
-div.example > pre:nth-child(3) { clear:right; background-color: #C9CaCE; }
+.example { font-size: 0; /* hack to get width:50% to work on inline-block */
+           padding-bottom: 6pt; }
+.column pre  { font-size: 11pt; padding-left: 6pt; padding-right: 6pt;
+               padding-top: 2pt; padding-bottom: 2pt; }
+div.examplenum { font-size: 11pt; text-align: left; margin-bottom:10px; }
+div.column { display: inline-block; width: 50%; vertical-align: top; }
+div.example > div:nth-child(2) { clear:left; background-color: #D3E1E4; }
+div.example > div:nth-child(3) { clear:right; background-color: #C9CaCE; }
 #watermark {
  position:fixed;
  bottom:0px;
@@ -54,8 +60,18 @@ div.example > pre:nth-child(3) { clear:right; background-color: #C9CaCE; }
  color: white;
 }
 #watermark a { color: white; }
-div.examplenum { font-size: 82%; text-align: left; }
-a.dingus { color: red; cursor: pointer; }
+a.dingus { 
+  margin-left: 1em;
+  cursor: pointer;
+  line-height: 30px;
+  padding: 4px 7px;
+  color: #FFF;
+  background-color: #33C3F0;
+  box-shadow: 2px 2px 2px rgba(0,0,0,.2);
+  border-color: #4FCAEF;
+  border-bottom: 2px #2A9EC1 solid;
+  border-right: 2px #2A9EC1 solid;
+}
 a.footnoteRef > sup:before {
   content: "[";
 }
@@ -66,8 +82,22 @@ a.footnoteRef > sup {
   vertical-align: baseline;
   font-size: 100%;
 }
+@media print {
+  @page {
+    size: auto;
+    margin: 1.2in 1.2in 1.2in 1.2in;
+  }
+  body {
+      margin: 0px;
+      line-height: 1.2;
+      font-size: 10pt;
+    }
+ .column pre  { font-size: 9pt; }
+ div.examplenum { font-size: 9pt; }
+ a.dingus { display: none; }
+}
 </style>
-<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 <script type="text/javascript">
 $$(document).ready(function() {
   $$("div.example").each(function(e) {
@@ -84,10 +114,10 @@ $$(document).ready(function() {
 </script>
 </head>
 <body>
-<h1 class="title">${title}</h1>
-<div class="version">Version ${version} (${date})</div>
+<h1 class="title">$title$</h1>
+<div class="version">Version $version$ ($date$)</div>
 <div class="authors">
-    <span class="author">${author}</span>
+    <span class="author">$author$</span>
 </div>
 <div class="license">
 <a rel="license"
@@ -105,6 +135,12 @@ $$(document).ready(function() {
    Commons Attribution-ShareAlike 4.0 International License</a>.</span>
 </div>
 <div id="watermark"></div>
-${body}
+
+<div id="TOC">
+$toc$
+</div>
+
+$body$
+
 </body>
 </html>

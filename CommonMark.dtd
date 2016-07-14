@@ -1,11 +1,13 @@
 <!-- DTD for CommonMark xml export format -->
 
 <!ENTITY % block
-         'block_quote|list|code_block|html|paragraph|header|hrule'>
+         'block_quote|list|code_block|paragraph|heading|thematic_break|html_block|custom_block'>
 <!ENTITY % inline
-         'text|softbreak|linebreak|code|inline_html|emph|strong|link|image'>
+         'text|softbreak|linebreak|code|emph|strong|link|image|html_inline|custom_inline'>
 
 <!ELEMENT document (%block;)*>
+<!ATTLIST document
+    xmlns CDATA #FIXED "http://commonmark.org/xml/1.0">
 
 <!-- block elements -->
 
@@ -25,17 +27,22 @@
           xml:space CDATA #FIXED "preserve"
           info CDATA #IMPLIED>
 
-<!ELEMENT html (#PCDATA)>
-<!ATTLIST html
-          xml:space CDATA #FIXED "preserve">
-
 <!ELEMENT paragraph (%inline;)*>
 
-<!ELEMENT header (%inline;)*>
-<!ATTLIST header
+<!ELEMENT heading (%inline;)*>
+<!ATTLIST heading
           level (1|2|3|4|5|6) #REQUIRED>
 
-<!ELEMENT hrule EMPTY>
+<!ELEMENT thematic_break  EMPTY>
+
+<!ELEMENT html_block (#PCDATA)>
+<!ATTLIST html_block
+          xml:space CDATA #FIXED "preserve">
+
+<!ELEMENT custom_block (%inline;|%block;|item)*>
+<!ATTLIST custom_block
+          on_enter CDATA #IMPLIED
+          on_exit CDATA #IMPLIED>
 
 <!-- inline elements -->
 
@@ -47,10 +54,6 @@
 
 <!ELEMENT code (#PCDATA)>
 <!ATTLIST code
-          xml:space CDATA #FIXED "preserve">
-
-<!ELEMENT inline_html (#PCDATA)>
-<!ATTLIST inline_html
           xml:space CDATA #FIXED "preserve">
 
 <!ELEMENT emph (%inline;)*>
@@ -66,6 +69,16 @@
 <!ATTLIST image
           url CDATA #REQUIRED
           title CDATA #IMPLIED>
+
+<!ELEMENT html_inline (#PCDATA)>
+<!ATTLIST html_inline
+          xml:space CDATA #FIXED "preserve">
+
+<!ELEMENT custom_inline (%inline;)*>
+<!ATTLIST custom_inline
+          on_enter CDATA #IMPLIED
+          on_exit CDATA #IMPLIED>
+
 
 <!-- All elements can have a sourcepos attribute.
      The format is SL:SC-EL:EC

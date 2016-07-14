@@ -1,0 +1,9 @@
+---
+title: $title$
+author: $author$
+version: $version$
+date: '$date$'
+license: '$license$'
+...
+
+$body$
