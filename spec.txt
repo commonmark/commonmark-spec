@@ -4730,8 +4730,7 @@ takes four spaces (a common case), but diverge in other cases.
 
 A [list](@) is a sequence of one or more
 list items [of the same type].  The list items
-may be separated by single [blank lines], but two
-blank lines end all containing lists.
+may be separated by any number of blank lines.
 
 Two list items are [of the same type](@)
 if they begin with a [list marker] of the same type.
