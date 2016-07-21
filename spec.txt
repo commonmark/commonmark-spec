@@ -6557,7 +6557,7 @@ Note that in the preceding case, the interpretation
 
 
 is precluded by the condition that a delimiter that
-can both open and close (like the `*` after `foo`
+can both open and close (like the `*` after `foo`)
 cannot form emphasis if the sum of the lengths of
 the delimiter runs containing the opening and
 closing delimiters is a multiple of 3.
