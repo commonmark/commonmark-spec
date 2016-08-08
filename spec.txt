@@ -4808,10 +4808,11 @@ Foo
 `Markdown.pl` does not allow this, through fear of triggering a list
 via a numeral in a hard-wrapped line:
 
-```````````````````````````````` markdown
+``` markdown
 The number of windows in my house is
 14.  The number of doors is 6.
-````````````````````````````````
+```
+
 Oddly, though, `Markdown.pl` *does* allow a blockquote to
 interrupt a paragraph, even though the same considerations might
 apply.
@@ -4820,10 +4821,12 @@ In CommonMark, we do allow lists to interrupt paragraphs, for
 two reasons.  First, it is natural and not uncommon for people
 to start lists without blank lines:
 
-    I need to buy
-    - new shoes
-    - a coat
-    - a plane ticket
+``` markdown
+I need to buy
+- new shoes
+- a coat
+- a plane ticket
+```
 
 Second, we are attracted to a
 
@@ -4835,20 +4838,24 @@ Second, we are attracted to a
 (Indeed, the spec for [list items] and [block quotes] presupposes
 this principle.) This principle implies that if
 
-      * I need to buy
-        - new shoes
-        - a coat
-        - a plane ticket
+``` markdown
+  * I need to buy
+    - new shoes
+    - a coat
+    - a plane ticket
+```
 
 is a list item containing a paragraph followed by a nested sublist,
 as all Markdown implementations agree it is (though the paragraph
 may be rendered without `<p>` tags, since the list is "tight"),
 then
 
-    I need to buy
-    - new shoes
-    - a coat
-    - a plane ticket
+``` markdown
+I need to buy
+- new shoes
+- a coat
+- a plane ticket
+```
 
 by itself should be a paragraph followed by a nested sublist.
 
