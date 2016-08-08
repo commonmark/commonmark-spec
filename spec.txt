@@ -4808,10 +4808,9 @@ Foo
 `Markdown.pl` does not allow this, through fear of triggering a list
 via a numeral in a hard-wrapped line:
 
-```````````````````````````````` markdown
-The number of windows in my house is
-14.  The number of doors is 6.
-````````````````````````````````
+    The number of windows in my house is
+    14.  The number of doors is 6.
+
 Oddly, though, `Markdown.pl` *does* allow a blockquote to
 interrupt a paragraph, even though the same considerations might
 apply.
