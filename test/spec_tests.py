@@ -93,7 +93,7 @@ def get_tests(specfile):
             l = line.strip()
             if l == "`" * 32 + " example":
                 state = 1
-            elif l == "`" * 32:
+            elif state == 2 and l == "`" * 32:
                 state = 0
                 example_number = example_number + 1
                 end_line = line_number
