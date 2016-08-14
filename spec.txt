@@ -1,8 +1,8 @@
 ---
 title: CommonMark Spec
 author: John MacFarlane
-version: 0.25
-date: '2016-03-24'
+version: 0.26
+date: '2016-07-15'
 license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 ...
 
@@ -2078,7 +2078,7 @@ by their start and end conditions.  The block begins with a line that
 meets a [start condition](@) (after up to three spaces
 optional indentation).  It ends with the first subsequent line that
 meets a matching [end condition](@), or the last line of
-the document or other [container block](@), if no line is encountered that meets the
+the document or other [container block]), if no line is encountered that meets the
 [end condition].  If the first line meets both the [start condition]
 and the [end condition], the block will contain just that line.
 
@@ -4823,8 +4823,7 @@ takes four spaces (a common case), but diverge in other cases.
 
 A [list](@) is a sequence of one or more
 list items [of the same type].  The list items
-may be separated by single [blank lines], but two
-blank lines end all containing lists.
+may be separated by any number of blank lines.
 
 Two list items are [of the same type](@)
 if they begin with a [list marker] of the same type.
@@ -4902,10 +4901,11 @@ Foo
 `Markdown.pl` does not allow this, through fear of triggering a list
 via a numeral in a hard-wrapped line:
 
-```````````````````````````````` markdown
+``` markdown
 The number of windows in my house is
 14.  The number of doors is 6.
-````````````````````````````````
+```
+
 Oddly, though, `Markdown.pl` *does* allow a blockquote to
 interrupt a paragraph, even though the same considerations might
 apply.
@@ -4914,10 +4914,12 @@ In CommonMark, we do allow lists to interrupt paragraphs, for
 two reasons.  First, it is natural and not uncommon for people
 to start lists without blank lines:
 
-    I need to buy
-    - new shoes
-    - a coat
-    - a plane ticket
+``` markdown
+I need to buy
+- new shoes
+- a coat
+- a plane ticket
+```
 
 Second, we are attracted to a
 
@@ -4929,20 +4931,24 @@ Second, we are attracted to a
 (Indeed, the spec for [list items] and [block quotes] presupposes
 this principle.) This principle implies that if
 
-      * I need to buy
-        - new shoes
-        - a coat
-        - a plane ticket
+``` markdown
+  * I need to buy
+    - new shoes
+    - a coat
+    - a plane ticket
+```
 
 is a list item containing a paragraph followed by a nested sublist,
 as all Markdown implementations agree it is (though the paragraph
 may be rendered without `<p>` tags, since the list is "tight"),
 then
 
-    I need to buy
-    - new shoes
-    - a coat
-    - a plane ticket
+``` markdown
+I need to buy
+- new shoes
+- a coat
+- a plane ticket
+```
 
 by itself should be a paragraph followed by a nested sublist.
 
@@ -6651,7 +6657,7 @@ Note that in the preceding case, the interpretation
 
 
 is precluded by the condition that a delimiter that
-can both open and close (like the `*` after `foo`
+can both open and close (like the `*` after `foo`)
 cannot form emphasis if the sum of the lengths of
 the delimiter runs containing the opening and
 closing delimiters is a multiple of 3.

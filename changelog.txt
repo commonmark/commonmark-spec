@@ -1,3 +1,47 @@
+[0.26]
+
+  * Empty list items can no longer interrupt a paragraph.
+    This removes an ambiguity between setext headers and
+    lists in cases like
+
+        foo
+        -
+
+    Removed the "two blank lines breaks out of lists" rule.
+    This is incompatible with the principle of uniformity
+    (and indeed with the spec for list items, which requires
+    that the meaning of a chunk of lines not change when it
+    is put into a list item.)
+  * Ordered list markers that interrupt a paragraph must start with 1.
+  * Improved the section on tabs.  Added some test cases for ATX
+    headers and thematic breaks.  Clarified that it's not just cases
+    that affect indentation that matter, but all cases where whitespace
+    matters for block structure.
+  * Removed example of ATX header with tab after `#`.
+  * Allow HTML blocks to end on the last line of their container
+    (Colin O'Dell, #103).
+  * Spec changes in strong/emph parsing.  See
+    https://talk.commonmark.org/t/emphasis-strong-emphasis-corner-cases/2123
+    for motivation.  This restores intuitive parsings for a number of cases.
+    The main change is to disallow strong or emph when one of
+    the delimiters is "internal" and the sum of the lengths of
+    the enclosing delimiter runs is a multiple of 3.  Thus,
+    `**foo*bar***` gets parsed `<strong>foo*bar</strong>` rather than
+    `<em><em>foo</em>bar</em>**` as before.  Thanks to Fletcher Penney
+    for discussion.
+  * Add tests to check that markdown parsing is working fine after an HTML
+    block end tag (Alexandre Mutel).
+  * Add test case for nested lists with an indent > 4 (Alexandre Mutel).
+  * Cleaned up terminology around lazy continuation lines.  Added some links.
+  * Fixed broken links and typos (Artyom, Matthias Geier, Sam Estep).
+  * Use `≤` instead of `<` in list item spec for clarity.
+  * Add point about readibility to "What is Markdown" section.
+  * Add example for list item starting with a blank line with spaces
+    (Robin Stocker).
+  * Make interact more button-like and clearer (Jeff Atwood).
+  * `spec_tests.py`: exit code is now sum of failures and errors.
+  * `spec_tests.py`: specify newline when opening file.
+
 [0.25]
 
   * Added several more tab-handling cases (see jgm/cmark#101).
