@@ -109,7 +109,7 @@ questions it does not answer:
     continuation paragraphs need to be indented four spaces, but is
     not fully explicit about sublists.  It is natural to think that
     they, too, must be indented four spaces, but `Markdown.pl` does
-    not require that.  This is hardly a "corner case," and divergences
+    not require that.  This is hardly a "corner case", and divergences
     between implementations on this issue often lead to surprises for
     users in real documents. (See [this comment by John
     Gruber](http://article.gmane.org/gmane.text.markdown.general/1997).)
