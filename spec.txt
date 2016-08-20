@@ -9045,7 +9045,7 @@ blocks.  But we cannot close unmatched blocks yet, because we may have a
 [lazy continuation line].
 
 2.  Next, after consuming the continuation markers for existing
-blocks, we look for new block starts (e.g. `>` for a block quote.
+blocks, we look for new block starts (e.g. `>` for a block quote).
 If we encounter a new block start, we close any blocks unmatched
 in step 1 before creating the new block as a child of the last
 matched block.
