@@ -6596,12 +6596,6 @@ omitted:
 ````````````````````````````````
 
 
-```````````````````````````````` example
-*foo**bar***
-.
-<p><em>foo<strong>bar</strong></em></p>
-````````````````````````````````
-
 Indefinite levels of nesting are possible:
 
 ```````````````````````````````` example
