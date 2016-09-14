@@ -5678,6 +5678,16 @@ single spaces, just as they would be by a browser:
 ````````````````````````````````
 
 
+Not all [Unicode whitespace] (for instance, non-breaking space) is
+collapsed, however:
+
+```````````````````````````````` example
+`a  b`
+.
+<p><code>a  b</code></p>
+````````````````````````````````
+
+
 Q: Why not just leave the spaces, since browsers will collapse them
 anyway?  A:  Because we might be targeting a non-HTML format, and we
 shouldn't rely on HTML-specific rendering assumptions.
@@ -7359,6 +7369,16 @@ may be used in titles:
 [link](/url "title \"&quot;")
 .
 <p><a href="/url" title="title &quot;&quot;">link</a></p>
+````````````````````````````````
+
+
+Titles must be separated from the link using a [whitespace].
+Other [Unicode whitespace] like non-breaking space doesn't work.
+
+```````````````````````````````` example
+[link](/url "title")
+.
+<p><a href="/url%C2%A0%22title%22">link</a></p>
 ````````````````````````````````
 
 
