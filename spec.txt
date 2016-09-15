@@ -8046,7 +8046,8 @@ following closing bracket:
 ````````````````````````````````
 
 
-Full references take precedence over shortcut references:
+Full and compact references take precedence over shortcut
+references:
 
 ```````````````````````````````` example
 [foo][bar]
@@ -8057,6 +8058,31 @@ Full references take precedence over shortcut references:
 <p><a href="/url2">foo</a></p>
 ````````````````````````````````
 
+```````````````````````````````` example
+[foo][]
+
+[foo]: /url1
+.
+<p><a href="/url1">foo</a></p>
+````````````````````````````````
+
+Inline links also take precedence:
+
+```````````````````````````````` example
+[foo]()
+
+[foo]: /url1
+.
+<p><a href="">foo</a></p>
+````````````````````````````````
+
+```````````````````````````````` example
+[foo](not a link)
+
+[foo]: /url1
+.
+<p><a href="/url1">foo</a>(not a link)</p>
+````````````````````````````````
 
 In the following case `[bar][baz]` is parsed as a reference,
 `[foo]` as normal text:
