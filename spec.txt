@@ -2026,8 +2026,8 @@ the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
 7.  **Start condition:**  line begins with a complete [open tag]
-or [closing tag] (with any [tag name] other than `script`,
-`style`, or `pre`) followed only by [whitespace]
+or [closing tag] (with any [tag name] other than `pre`, a [raw text element]
+name, or a [void element] name followed only by [whitespace]
 or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
@@ -8609,6 +8609,17 @@ the string `<![CDATA[`, a string of characters not including the string
 An [HTML tag](@) consists of an [open tag], a [closing tag],
 an [HTML comment], a [processing instruction], a [declaration],
 or a [CDATA section].
+
+A [raw text element](@) is one of the following elements
+as [defined](http://w3c.github.io/html/syntax.html#raw-text-elements)
+by the HTML spec:
+`script`, `style`.
+
+A [void element](@) is one of the following elements
+as [defined](http://w3c.github.io/html/syntax.html#void-elements)
+by the HTML spec:
+`area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `link`, `menuitem`,
+`meta`, `param`, `source`, `track`, `wbr`.
 
 Here are some simple open tags:
 
