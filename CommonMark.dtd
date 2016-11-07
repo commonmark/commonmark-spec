@@ -5,8 +5,8 @@
 <!ENTITY % inline
          'text|softbreak|linebreak|code|emph|strong|link|image|html_inline|custom_inline'>
 
-<!ELEMENT document (%block;)*>
-<!ATTLIST document
+<!ELEMENT CommonMark (%block;)*>
+<!ATTLIST CommonMark
     xmlns CDATA #FIXED "http://commonmark.org/xml/1.0">
 
 <!-- block elements -->
