@@ -2012,10 +2012,10 @@ followed by an uppercase ASCII letter.\
 
 6.  **Start condition:** line begins the string `<` or `</`
 followed by one of the strings (case-insensitive) `address`,
-`article`, `aside`, `basefont`, `blockquote`, `body`,
+`article`, `aside`, `blockquote`, `body`,
 `caption`, `center`, `colgroup`, `dd`, `details`, `dialog`,
 `dir`, `div`, `dl`, `dt`, `fieldset`, `figcaption`, `figure`,
-`footer`, `form`, `frame`, `frameset`,
+`footer`, `form`, `frameset`,
 `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `head`, `header`,
 `html`, `iframe`, `legend`, `li`, `main`, `menu`,
 `nav`, `noframes`, `ol`, `optgroup`, `option`, `p`,
