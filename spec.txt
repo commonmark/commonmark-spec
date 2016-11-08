@@ -8621,6 +8621,10 @@ by the HTML spec:
 `area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `link`, `menuitem`,
 `meta`, `param`, `source`, `track`, `wbr`.
 
+Additionally, the following legacy HTML elements are considered void:
+`basefont`, `bgsound`, `command`, `frame`, `image`, `isindex`, `keygen`,
+`nextid`.
+
 Here are some simple open tags:
 
 ```````````````````````````````` example
