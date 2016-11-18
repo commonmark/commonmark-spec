@@ -1,3 +1,23 @@
+[0.27]
+
+  * Update statement on blank lines and lists (Jesse Rosenthal).
+    The definition of a list still said that "two blank lines end all
+    containing lists." That rule has been removed.
+  * Clarify that the exception for ordered lists only applies to first
+    item in list (#420).
+  * Added cases clarifying precedence of shortcut links (#427).
+  * Added h2..h6 to block tag list (#430).
+  * Remove duplicated test (Maxim Dikun).  Tests 390 and 391 were the same.
+  * Use fenced code blocks for markdown examples that are not test cases
+    for uniformity.
+  * Added closing paren (#428).
+  * Test suite: Don't mess up on examples with 32 backticks (#423).
+  * Removed duplicate reference to "container block".
+  * Add examples for Unicode whitespace (Timothy Gu).  In light of
+    jgm/commonmark.js#107, add a few examples/test cases to make sure the
+    distinction between Unicode whitespace and regular whitespace is kept.
+  * Fix missing closing paren typo (Robin Stocker).
+
 [0.26]
 
   * Empty list items can no longer interrupt a paragraph.
