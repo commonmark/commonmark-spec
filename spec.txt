@@ -7148,8 +7148,7 @@ A [link destination](@) consists of either
 - a nonempty sequence of characters that does not include
   ASCII space or control characters, and includes parentheses
   only if (a) they are backslash-escaped or (b) they are part of
-  a balanced pair of unescaped parentheses that is not itself
-  inside a balanced pair of unescaped parentheses.
+  a balanced pair of unescaped parentheses.
 
 A [link title](@)  consists of either
 
@@ -7255,35 +7254,29 @@ Parentheses inside the link destination may be escaped:
 <p><a href="(foo)">link</a></p>
 ````````````````````````````````
 
-One level of balanced parentheses is allowed without escaping:
-
-```````````````````````````````` example
-[link]((foo)and(bar))
-.
-<p><a href="(foo)and(bar)">link</a></p>
-````````````````````````````````
-
-However, if you have parentheses within parentheses, you need to escape
-or use the `<...>` form:
+Any number parentheses are allowed without escaping, as long as they are
+balanced:
 
 ```````````````````````````````` example
 [link](foo(and(bar)))
 .
-<p>[link](foo(and(bar)))</p>
+<p><a href="foo(and(bar))">link</a></p>
+````````````````````````````````
+
+However, if you have unbalanced parentheses, you need to escape or use the
+`<...>` form:
+
+```````````````````````````````` example
+[link](foo\(and\(bar\))
+.
+<p><a href="foo(and(bar)">link</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-[link](foo(and\(bar\)))
+[link](<foo(and(bar)>)
 .
-<p><a href="foo(and(bar))">link</a></p>
-````````````````````````````````
-
-
-```````````````````````````````` example
-[link](<foo(and(bar))>)
-.
-<p><a href="foo(and(bar))">link</a></p>
+<p><a href="foo(and(bar)">link</a></p>
 ````````````````````````````````
 
 
