@@ -1,0 +1,15 @@
+{
+  "name": "commonmark-spec",
+  "version": "-",
+  "description": "Commonmark spec.",
+  "keywords": [
+    "commonmark",
+    "markdown"
+  ],
+  "repository": "jgm/CommonMark",
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "spec.txt"
+  ]
+}
