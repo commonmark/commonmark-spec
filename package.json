@@ -8,9 +8,7 @@
     "commonmark",
     "markdown"
   ],
-  "repository":
-    { "type": "git",
-      "url": "https://github.com/jgm/CommonMark.git" },
+  "repository": "jgm/CommonMark",
   "license": "MIT",
   "files": [
     "index.js",
