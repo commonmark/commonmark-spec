@@ -1,6 +1,5 @@
-SPEC=spec.txt
 SITE=_site
-SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' $(SPEC))
+SPECVERSION=$(shell perl -ne 'print $$1 if /^version: *([0-9.]+)/' spec.txt)
 
 .PHONY: spec clean
 
