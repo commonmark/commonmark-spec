@@ -28,4 +28,3 @@ var extractSpecTests = function(data) {
 
 exports.text = fs.readFileSync(path.join(__dirname, 'spec.txt'), 'utf8');
 exports.tests = extractSpecTests(exports.text);
-exports.version = exports.text.match(/^version: *([0-9.]*)/m)[1];
