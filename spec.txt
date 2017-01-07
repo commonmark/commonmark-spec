@@ -5976,8 +5976,8 @@ the following principles resolve ambiguity:
     an interpretation `<strong>...</strong>` is always preferred to
     `<em><em>...</em></em>`.
 
-14. An interpretation `<strong><em>...</em></strong>` is always
-    preferred to `<em><strong>..</strong></em>`.
+14. An interpretation `<em><strong>...</strong></em>` is always
+    preferred to `<strong><em>..</em></strong>`.
 
 15. When two potential emphasis or strong emphasis spans overlap,
     so that the second begins before the first ends and ends after
@@ -7000,14 +7000,14 @@ Rule 14:
 ```````````````````````````````` example
 ***foo***
 .
-<p><strong><em>foo</em></strong></p>
+<p><em><strong>foo</strong></em></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 _____foo_____
 .
-<p><strong><strong><em>foo</em></strong></strong></p>
+<p><em><strong><strong>foo</strong></strong></em></p>
 ````````````````````````````````
 
 
