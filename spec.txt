@@ -312,7 +312,7 @@ form feed (`U+000C`), or carriage return (`U+000D`).
 characters].
 
 A [Unicode whitespace character](@) is
-any code point in the Unicode `Zs` class, or a tab (`U+0009`),
+any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
 carriage return (`U+000D`), newline (`U+000A`), or form feed
 (`U+000C`).
 
@@ -331,7 +331,7 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 
 A [punctuation character](@) is an [ASCII
 punctuation character] or anything in
-the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
+the general Unicode categories  `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tabs
 
