@@ -5475,48 +5475,40 @@ foo
 
 ## Entity and numeric character references
 
-All valid HTML entity references and numeric character
+All entity references and numeric character
 references, except those occuring in code blocks and code spans,
-are recognized as such and treated as equivalent to the
-corresponding Unicode characters.  Conforming CommonMark parsers
-need not store information about whether a particular character
-was represented in the source using a Unicode character or
-an entity reference.
+are recognized as such.  Conforming implementations may retain
+the entities in the HTML output or convert them to unicode characters.
 
-[Entity references](@) consist of `&` + any of the valid
-HTML5 entity names + `;`. The
-document <https://html.spec.whatwg.org/multipage/entities.json>
-is used as an authoritative source for the valid entity
-references and their corresponding code points.
+[Entity references](@) consist of `&` + an ASCII letter +
+0--31 ASCII alphanumerics + `;`.
 
 ```````````````````````````````` example
 &nbsp; &amp; &copy; &AElig; &Dcaron;
 &frac34; &HilbertSpace; &DifferentialD;
 &ClockwiseContourIntegral; &ngE;
+&abcdefghijabcdefghijabcdefghijab;
 .
-<p>  &amp; © Æ Ď
-¾ ℋ ⅆ
-∲ ≧̸</p>
+<p>&nbsp; &amp; &copy; &AElig; &Dcaron;
+&frac34; &HilbertSpace; &DifferentialD;
+&ClockwiseContourIntegral; &ngE;
+&abcdefghijabcdefghijabcdefghijab;</p>
 ````````````````````````````````
 
-
-[Decimal numeric character
-references](@)
-consist of `&#` + a string of 1--8 arabic digits + `;`. A
-numeric character reference is parsed as the corresponding
-Unicode character. Invalid Unicode code points will be replaced by
-the REPLACEMENT CHARACTER (`U+FFFD`).  For security reasons,
-the code point `U+0000` will also be replaced by `U+FFFD`.
+[Decimal numeric character references](@) consist of `&#` + a
+string of 1--8 arabic digits + `;`. A numeric character
+reference is parsed as the corresponding Unicode character.
+Invalid Unicode code points will be replaced by the REPLACEMENT
+CHARACTER (`U+FFFD`).  For security reasons, the code point
+`U+0000` will also be replaced by `U+FFFD`.
 
 ```````````````````````````````` example
 &#35; &#1234; &#992; &#98765432; &#0;
 .
-<p># Ӓ Ϡ � �</p>
+<p>&#35; &#1234; &#992; &#98765432; &#0;</p>
 ````````````````````````````````
 
-
-[Hexadecimal numeric character
-references](@) consist of `&#` +
+[Hexadecimal numeric character references](@) consist of `&#` +
 either `X` or `x` + a string of 1-8 hexadecimal digits + `;`.
 They too are parsed as the corresponding Unicode character (this
 time specified with a hexadecimal numeral instead of decimal).
@@ -5524,20 +5516,23 @@ time specified with a hexadecimal numeral instead of decimal).
 ```````````````````````````````` example
 &#X22; &#XD06; &#xcab;
 .
-<p>&quot; ആ ಫ</p>
+<p>&#X22; &#XD06; &#xcab;</p>
 ````````````````````````````````
 
 
 Here are some nonentities:
 
 ```````````````````````````````` example
-&nbsp &x; &#; &#x;
-&ThisIsNotDefined; &hi?;
+&nbsp &1; &#; &#x;
+&ThisIsTooLongXXXXXXXXXXXXXXXXXXXXXX;
+&#123456890;
+&hi?;
 .
-<p>&amp;nbsp &amp;x; &amp;#; &amp;#x;
-&amp;ThisIsNotDefined; &amp;hi?;</p>
+<p>&amp;nbsp &amp;1; &amp;#; &amp;#x;
+&amp;ThisIsTooLongXXXXXXXXXXXXXXXXXXXXXX;
+&amp;#123456890;
+&amp;hi?;</p>
 ````````````````````````````````
-
 
 Although HTML5 does accept some entity references
 without a trailing semicolon (such as `&copy`), these are not
@@ -5550,13 +5545,13 @@ recognized here, because it makes the grammar too ambiguous:
 ````````````````````````````````
 
 
-Strings that are not on the list of HTML5 named entities are not
-recognized as entity references either:
+Strings do not need to be on the list of HTML5 named entities to
+be recognized as entity references:
 
 ```````````````````````````````` example
 &MadeUpEntity;
 .
-<p>&amp;MadeUpEntity;</p>
+<p>&MadeUpEntity;</p>
 ````````````````````````````````
 
 
@@ -5574,7 +5569,7 @@ URLs, [link titles], and [fenced code block][] [info strings]:
 ```````````````````````````````` example
 [foo](/f&ouml;&ouml; "f&ouml;&ouml;")
 .
-<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
+<p><a href="/f&ouml;&ouml;" title="f&ouml;&ouml;">foo</a></p>
 ````````````````````````````````
 
 
@@ -5583,7 +5578,7 @@ URLs, [link titles], and [fenced code block][] [info strings]:
 
 [foo]: /f&ouml;&ouml; "f&ouml;&ouml;"
 .
-<p><a href="/f%C3%B6%C3%B6" title="föö">foo</a></p>
+<p><a href="/f&ouml;&ouml;" title="f&ouml;&ouml;">foo</a></p>
 ````````````````````````````````
 
 
@@ -5592,7 +5587,7 @@ URLs, [link titles], and [fenced code block][] [info strings]:
 foo
 ```
 .
-<pre><code class="language-föö">foo
+<pre><code class="language-f&ouml;&ouml;">foo
 </code></pre>
 ````````````````````````````````
 
