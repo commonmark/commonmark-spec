@@ -8319,11 +8319,11 @@ The link labels are case-insensitive:
 ````````````````````````````````
 
 
-If you just want bracketed text, you can backslash-escape the
-opening `!` and `[`:
+If you just want a literal `!` followed by bracketed text, you can
+backslash-escape the opening `[`:
 
 ```````````````````````````````` example
-\!\[foo]
+!\[foo]
 
 [foo]: /url "title"
 .
