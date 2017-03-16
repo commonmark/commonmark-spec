@@ -11,10 +11,12 @@ license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 ## What is Markdown?
 
 Markdown is a plain text format for writing structured documents,
-based on conventions used for indicating formatting in email and
-usenet posts.  It was developed in 2004 by John Gruber, who wrote
-the first Markdown-to-HTML converter in Perl, and it soon became
-ubiquitous.  In the next decade, dozens of implementations were
+based on conventions for indicating formatting in email
+and usenet posts.  It was developed by John Gruber (with
+help from Aaron Swartz) and released in 2004 in the form of a
+[syntax description](http://daringfireball.net/projects/markdown/syntax)
+and a Perl script (`Markdown.pl`) for converting Markdown to
+HTML.  In the next decade, dozens of implementations were
 developed in many languages.  Some extended the original
 Markdown syntax with conventions for footnotes, tables, and
 other document elements.  Some allowed Markdown documents to be
