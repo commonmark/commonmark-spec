@@ -5938,7 +5938,7 @@ The following rules define emphasis and strong emphasis:
 7.  A double `**` [can close strong emphasis](@)
     iff it is part of a [right-flanking delimiter run].
 
-8.  A double `__` [can close strong emphasis]
+8.  A double `__` [can close strong emphasis] iff
     it is part of a [right-flanking delimiter run]
     and either (a) not part of a [left-flanking delimiter run]
     or (b) part of a [left-flanking delimiter run]
