@@ -404,8 +404,8 @@ as indentation with four spaces would:
 Normally the `>` that begins a block quote may be followed
 optionally by a space, which is not considered part of the
 content.  In the following case `>` is followed by a tab,
-which is treated as if it were expanded into spaces.
-Since one of theses spaces is considered part of the
+which is treated as if it were expanded into three spaces.
+Since one of these spaces is considered part of the
 delimiter, `foo` is considered to be indented six spaces
 inside the block quote context, so we get an indented
 code block starting with two spaces.
