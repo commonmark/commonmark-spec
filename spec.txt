@@ -483,7 +483,7 @@ We can think of a document as a sequence of
 quotations, lists, headings, rules, and code blocks.  Some blocks (like
 block quotes and list items) contain other blocks; others (like
 headings and paragraphs) contain [inline](@) content---text,
-links, emphasized text, images, code, and so on.
+links, emphasized text, images, and so on.
 
 ## Precedence
 
