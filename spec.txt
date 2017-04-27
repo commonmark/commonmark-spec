@@ -3194,9 +3194,12 @@ with a following space, or (b) a single character `>` not followed by a space.
 The following rules define [block quotes]:
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
-    of blocks *Bs*, then the result of prepending a [block quote
+    of blocks *Bs*, then the result of prepending the same [block quote
     marker] to the beginning of each line in *Ls*
-    is a [block quote](#block-quotes) containing *Bs*.
+    is a [block quote](#block-quotes) containing *Bs*. If some lines in *Ls*
+    are blank lines, then trailing whitespace after a block quote marker
+    may be omitted without affecting the interpertation of which block quote
+    marker was prepended.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quotes) with contents *Bs*, then the result of deleting
