@@ -3198,7 +3198,7 @@ The following rules define [block quotes]:
     marker] to the beginning of each line in *Ls*
     is a [block quote](#block-quotes) containing *Bs*. If some lines in *Ls*
     are blank lines, then trailing whitespace after a block quote marker
-    may be omitted without affecting the interpertation of which block quote
+    may be omitted without affecting the interpretation of which block quote
     marker was prepended.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
