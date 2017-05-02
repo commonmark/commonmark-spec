@@ -541,6 +541,10 @@ ___
 ````````````````````````````````
 
 
+Note that the first two lines could also be interpreted as a [setext
+header](#setext-header). In ambiguous cases like these, the horizontal rule
+takes precedence.
+
 Wrong characters:
 
 ```````````````````````````````` example
