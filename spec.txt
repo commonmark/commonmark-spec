@@ -251,7 +251,7 @@ considerably.  As a result, users are often surprised to find that
 a document that renders one way on one system (say, a github wiki)
 renders differently on another (say, converting to docbook using
 pandoc).  To make matters worse, because nothing in Markdown counts
-as a "syntax error," the divergence often isn't discovered right away.
+as a "syntax error", the divergence often isn't discovered right away.
 
 ## About this document
 
