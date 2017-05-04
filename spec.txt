@@ -3250,14 +3250,19 @@ Indentation is determined by the shortest marker (on a non-blank line):
 
 ```````````````````````````````` example
 >- - asdf
+>
 >  - sdfg
 .
 <blockquote>
 <ul>
 <li>
 <ul>
-<li>asdf</li>
-<li>sdfg</li>
+<li>
+<p>asdf</p>
+</li>
+<li>
+<p>sdfg</p>
+</li>
 </ul>
 </li>
 </ul>
@@ -3269,14 +3274,19 @@ The following is equivalent to the above (but now using the longer marker):
 
 ```````````````````````````````` example
 > - - asdf
+>
 >   - sdfg
 .
 <blockquote>
 <ul>
 <li>
 <ul>
-<li>asdf</li>
-<li>sdfg</li>
+<li>
+<p>asdf</p>
+</li>
+<li>
+<p>sdfg</p>
+</li>
 </ul>
 </li>
 </ul>
