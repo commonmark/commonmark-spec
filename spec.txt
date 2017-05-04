@@ -3246,6 +3246,74 @@ baz</p>
 ````````````````````````````````
 
 
+Indentation is determined by the shortest marker (on a non-blank line):
+
+```````````````````````````````` example
+>- - asdf
+>  - sdfg
+.
+<blockquote>
+<ul>
+<li>
+<ul>
+<li>asdf</li>
+<li>sdfg</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+````````````````````````````````
+
+
+The following is equivalent to the above (but now using the longer marker):
+
+```````````````````````````````` example
+> - - asdf
+>   - sdfg
+.
+<blockquote>
+<ul>
+<li>
+<ul>
+<li>asdf</li>
+<li>sdfg</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+````````````````````````````````
+
+
+List within a block quote, with the first item indented by three spaces:
+
+```````````````````````````````` example
+>   1. a
+>2. b
+.
+<blockquote>
+<ol>
+<li>a</li>
+<li>b</li>
+</ol>
+</blockquote>
+````````````````````````````````
+
+
+The shortest marker may not occur on the first line, meaning four spaces is too many:
+```````````````````````````````` example
+>    1. a
+>2. b
+.
+<blockquote>
+<pre><code>1. a
+</code></pre>
+<ol start="2">
+<li>b</li>
+</ol>
+</blockquote>
+````````````````````````````````
+
+
 The `>` characters can be indented 1-3 spaces:
 
 ```````````````````````````````` example
