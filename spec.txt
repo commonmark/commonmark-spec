@@ -658,7 +658,7 @@ a------
 ````````````````````````````````
 
 
-It is required that all of the [non-whitespace characters] be the same.
+It is required that all of the non-[space] characters be the same.
 So, this is not a thematic break:
 
 ```````````````````````````````` example
