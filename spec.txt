@@ -5979,7 +5979,7 @@ the following principles resolve ambiguity:
     `<em><em>...</em></em>`.
 
 14. An interpretation `<em><strong>...</strong></em>` is always
-    preferred to `<strong><em>..</em></strong>`.
+    preferred to `<strong><em>...</em></strong>`.
 
 15. When two potential emphasis or strong emphasis spans overlap,
     so that the second begins before the first ends and ends after
