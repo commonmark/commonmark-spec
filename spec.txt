@@ -7568,7 +7568,8 @@ characters inside the square brackets.
 
 One label [matches](@)
 another just in case their normalized forms are equal.  To normalize a
-label, perform the *Unicode case fold* and collapse consecutive internal
+label, perform the *Unicode case fold*, strip leading and trailing
+[whitespace] and collapse consecutive internal
 [whitespace] to a single space.  If there are multiple
 matching reference link definitions, the one that comes first in the
 document is used.  (It is desirable in such cases to emit a warning.)
