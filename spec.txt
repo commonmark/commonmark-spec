@@ -7953,7 +7953,8 @@ allowed between the two sets of brackets:
 A [shortcut reference link](@)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
-document and is not followed by `[]` or a link label.
+document and is not followed by `[]` or a [link label] that
+[matches] a [link reference definition].
 The contents of the first link label are parsed as inlines,
 which are used as the link's text.  The link's URI and title
 are provided by the matching link reference definition.
@@ -8104,8 +8105,8 @@ Here, though, `[foo][bar]` is parsed as a reference, since
 ````````````````````````````````
 
 
-Here `[foo]` is not parsed as a shortcut reference, because it
-is followed by a link label (even though `[bar]` is not defined):
+Here `[foo]` is parsed as a shortcut reference, although it
+is followed by a link label (but the label `[bar]` is not defined):
 
 ```````````````````````````````` example
 [foo][bar][baz]
@@ -8113,7 +8114,7 @@ is followed by a link label (even though `[bar]` is not defined):
 [baz]: /url1
 [foo]: /url2
 .
-<p>[foo]<a href="/url1">bar</a></p>
+<p><a href="/url2">foo</a><a href="/url1">bar</a></p>
 ````````````````````````````````
 
 
