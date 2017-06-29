@@ -5852,14 +5852,14 @@ characters that is not preceded or followed by a `_` character.
 
 A [left-flanking delimiter run](@) is
 a [delimiter run] that is (a) not followed by [Unicode whitespace],
-and (b) either not followed by a [punctuation character], or
+and (b) not followed by a [punctuation character], or
 preceded by [Unicode whitespace] or a [punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
 A [right-flanking delimiter run](@) is
 a [delimiter run] that is (a) not preceded by [Unicode whitespace],
-and (b) either not preceded by a [punctuation character], or
+and (b) not preceded by a [punctuation character], or
 followed by [Unicode whitespace] or a [punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
