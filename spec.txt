@@ -5798,6 +5798,15 @@ we just have literal backticks:
 <p>`foo</p>
 ````````````````````````````````
 
+The following case also illustrates the need for opening and
+closing backtick strings to be equal in length:
+
+```````````````````````````````` example
+`foo``bar``
+.
+<p>`foo<code>bar</code></p>
+````````````````````````````````
+
 
 ## Emphasis and strong emphasis
 
