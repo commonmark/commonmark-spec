@@ -5856,8 +5856,9 @@ for efficient parsing strategies that do not backtrack.
 
 First, some definitions.  A [delimiter run](@) is either
 a sequence of one or more `*` characters that is not preceded or
-followed by a `*` character, or a sequence of one or more `_`
-characters that is not preceded or followed by a `_` character.
+followed by a non-backslash-escaped `*` character, or a sequence
+of one or more `_` characters that is not preceded or followed by
+a non-backslash-escaped `_` character.
 
 A [left-flanking delimiter run](@) is
 a [delimiter run] that is (a) not followed by [Unicode whitespace],
