@@ -1645,6 +1645,15 @@ With tildes:
 </code></pre>
 ````````````````````````````````
 
+Fewer than three backticks is not enough:
+
+```````````````````````````````` example
+``
+foo
+``
+.
+<p><code>foo</code></p>
+````````````````````````````````
 
 The closing code fence must use the same character as the opening
 fence:
