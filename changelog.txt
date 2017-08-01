@@ -24,6 +24,15 @@
   * Clarify definition of delimiter runs (Aidan Woods, #485).
   * Clarify precedence of thematic breaks over list items
     in the list spec, not just the thematic break spec (Aidan Woods).
+  * Clarify definition of link labels and normalization
+    procedure (Matthias Geier, #479).
+  * Clarify that the end of an HTML block is determined by its
+    start, and is not changed by HTML tags encountered inside
+    the block.  Give an example of a case where a block ends
+    before an interior element has been closed (Yuki Izumi, #459).
+    In the future we might consider changing the spec to handle
+    this case more intuitively; this change just documents more
+    explicitly what the spec requires.
   * Acknowledge Aaron Swartz's role in developing Markdown.
   * Remove misleading backslash in example for disabling image markup
     (Matthias Geier).
