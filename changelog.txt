@@ -2,7 +2,10 @@
 
   * Allow unlimited balanced pairs of parentheses in link URLs
     (@kivikakk, jgm/cmark#166).  The rationale is that there are many URLs
-    containing unescaped nested parentheses.
+    containing unescaped nested parentheses.  Note that
+    implementations are allowed to impose limits on parentheses
+    nesting for performance reasons, but at least three levels
+    of nesting should be supported.
   * Change Rule 14 for Emphasis.  Previously the nesting
     Strong (Emph (...)) was preferred over Emph (Strong (...)).
     This change makes Emph (Strong (...)) preferred.

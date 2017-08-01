@@ -7159,7 +7159,9 @@ A [link destination](@) consists of either
 - a nonempty sequence of characters that does not include
   ASCII space or control characters, and includes parentheses
   only if (a) they are backslash-escaped or (b) they are part of
-  a balanced pair of unescaped parentheses.
+  a balanced pair of unescaped parentheses.  (Implementations
+  may impose limits on parentheses nesting to avoid performance
+  issues, but at least three levels of nesting should be supported.)
 
 A [link title](@)  consists of either
 
@@ -7265,7 +7267,7 @@ Parentheses inside the link destination may be escaped:
 <p><a href="(foo)">link</a></p>
 ````````````````````````````````
 
-Any number parentheses are allowed without escaping, as long as they are
+Any number of parentheses are allowed without escaping, as long as they are
 balanced:
 
 ```````````````````````````````` example
