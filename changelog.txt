@@ -22,6 +22,8 @@
     This change simplifies parsing.  It goes against the majority
     of implementations, but only on something utterly trivial.
   * Clarify definition of delimiter runs (Aidan Woods, #485).
+  * Clarify precedence of thematic breaks over list items
+    in the list spec, not just the thematic break spec (Aidan Woods).
   * Acknowledge Aaron Swartz's role in developing Markdown.
   * Remove misleading backslash in example for disabling image markup
     (Matthias Geier).
