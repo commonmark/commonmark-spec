@@ -2042,6 +2042,37 @@ or [closing tag] (with any [tag name] other than `script`,
 or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
+HTML blocks continue until they are closed by their appropriate
+[end condition], or the last line of the document or other [container block].
+This means any HTML **within an HTML block** that might otherwise be recognised
+as a start condition will be ignored by the parser and passed through as-is,
+without changing the parser's state.
+
+For instance, `<pre>` within a HTML block started by `<table>` will not affect
+the parser state; as the HTML block was started in by start condition 6, it
+will end at any blank line. This can be surprising:
+
+```````````````````````````````` example
+<table><tr><td>
+<pre>
+**Hello**,
+
+_world_.
+</pre>
+</td></tr></table>
+.
+<table><tr><td>
+<pre>
+**Hello**,
+<p><em>world</em>.
+</pre></p>
+</td></tr></table>
+````````````````````````````````
+
+In this case, the HTML block is terminated by the newline — the `**hello**`
+text remains verbatim — and regular parsing resumes, with a paragraph,
+emphasised `world` and inline and block HTML following.
+
 All types of [HTML blocks] except type 7 may interrupt
 a paragraph.  Blocks of type 7 may not interrupt a paragraph.
 (This restriction is intended to prevent unwanted interpretation
