@@ -7587,13 +7587,15 @@ that [matches] a [link reference definition] elsewhere in the document.
 A [link label](@)  begins with a left bracket (`[`) and ends
 with the first right bracket (`]`) that is not backslash-escaped.
 Between these brackets there must be at least one [non-whitespace character].
-Unescaped square bracket characters are not allowed in
-[link labels].  A link label can have at most 999
-characters inside the square brackets.
+Unescaped square bracket characters are not allowed inside the
+opening and closing square brackets of [link labels].  A link
+label can have at most 999 characters inside the square
+brackets.
 
 One label [matches](@)
 another just in case their normalized forms are equal.  To normalize a
-label, perform the *Unicode case fold*, strip leading and trailing
+label, strip off the opening and closing brackets,
+perform the *Unicode case fold*, strip leading and trailing
 [whitespace] and collapse consecutive internal
 [whitespace] to a single space.  If there are multiple
 matching reference link definitions, the one that comes first in the
