@@ -3648,11 +3648,15 @@ The following rules define [list items]:
     If the list item is ordered, then it is also assigned a start
     number, based on the ordered list marker.
 
-    Exceptions: When the first list item in a [list] interrupts
-    a paragraph---that is, when it starts on a line that would
-    otherwise count as [paragraph continuation text]---then (a)
-    the lines *Ls* must not begin with a blank line, and (b) if
-    the list item is ordered, the start number must be 1.
+    Exceptions:
+    
+    1. When the first list item in a [list] interrupts
+       a paragraph---that is, when it starts on a line that would
+       otherwise count as [paragraph continuation text]---then (a)
+       the lines *Ls* must not begin with a blank line, and (b) if
+       the list item is ordered, the start number must be 1.
+    2. If any line is a [thematic break][thematic breaks] then
+       that line is not a list item.
 
 For example, let *Ls* be the lines
 
@@ -7589,7 +7593,8 @@ characters inside the square brackets.
 
 One label [matches](@)
 another just in case their normalized forms are equal.  To normalize a
-label, perform the *Unicode case fold* and collapse consecutive internal
+label, perform the *Unicode case fold*, strip leading and trailing
+[whitespace] and collapse consecutive internal
 [whitespace] to a single space.  If there are multiple
 matching reference link definitions, the one that comes first in the
 document is used.  (It is desirable in such cases to emit a warning.)
