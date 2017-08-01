@@ -3680,7 +3680,7 @@ The following rules define [list items]:
     number, based on the ordered list marker.
 
     Exceptions:
-    
+
     1. When the first list item in a [list] interrupts
        a paragraph---that is, when it starts on a line that would
        otherwise count as [paragraph continuation text]---then (a)
