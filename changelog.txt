@@ -1,3 +1,38 @@
+[0.28]
+
+  * Allow unlimited balanced pairs of parentheses in link URLs
+    (@kivikakk, jgm/cmark#166).  The rationale is that there are many URLs
+    containing unescaped nested parentheses.
+  * Change Rule 14 for Emphasis.  Previously the nesting
+    Strong (Emph (...)) was preferred over Emph (Strong (...)).
+    This change makes Emph (Strong (...)) preferred.
+    Note that the commonmark reference implementations
+    were not entirely consistent about this rule, giving
+    different results for
+
+        ***hi***
+
+    and
+
+        ***hi****
+
+    This change simplifies parsing.  It goes against the majority
+    of implementations, but only on something utterly trivial.
+  * Acknowledge Aaron Swartz's role in developing Markdown.
+  * Remove misleading backslash in example for disabling image markup
+    (Matthias Geier).
+  * Fix Unicode terminology (general category, not class)
+    (Philipp Matthias Schaefer).
+  * Add another illustrative case for code spans (#463).
+  * Remove possibly misleading 'either's (#467).
+  * Fix typo (Aidan Woods).
+  * Clarify that some blocks can contain code spans (Matthias Geier).
+  * Fix typo and clarified tab expansion rule (Scott Abbey).
+  * Add a missing "iff" (Matthias Geier).
+  * Add release checklist.
+  * Added npm package for spec (Vitaly Puzrin).
+  * Remove SPEC variable from Makefile.
+
 [0.27]
 
   * Update statement on blank lines and lists (Jesse Rosenthal).
