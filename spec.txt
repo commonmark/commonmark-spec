@@ -3309,7 +3309,7 @@ List within a block quote, with the first item indented by three spaces:
 ````````````````````````````````
 
 
-The shortest marker may not occur on the first line, meaning four spaces is too many:
+The shortest marker might not occur on the first line, meaning four spaces is too many:
 ```````````````````````````````` example
 >    1. a
 >2. b
