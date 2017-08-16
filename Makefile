@@ -17,6 +17,9 @@ spec.tex: spec.txt tools/template.latex
 spec.pdf: spec.tex
 	xelatex $<
 
+spec.json: spec.txt
+	python3 test/spec_tests.py --dump-tests < $< > $@
+
 npm:
 	# Do a sanity check first on versions
 	grep -q '"version": *"$(SPECVERSION)' package.json && \
