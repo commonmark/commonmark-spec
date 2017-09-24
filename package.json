@@ -8,7 +8,7 @@
     "commonmark",
     "markdown"
   ],
-  "repository": "jgm/CommonMark",
+  "repository": "commonmark/CommonMark",
   "license": "MIT",
   "files": [
     "index.js",
