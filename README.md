@@ -17,12 +17,12 @@ of the spec.
 
 The reference implementations live in separate repositories:
 
-- <https://github.com/jgm/cmark> (C)
-- <https://github.com/jgm/commonmark.js> (JavaScript)
+- <https://github.com/commonmark/cmark> (C)
+- <https://github.com/commonmark/commonmark.js> (JavaScript)
 
 There is a list of third-party libraries
 in a dozen different languages
-[here](https://github.com/jgm/CommonMark/wiki/List-of-CommonMark-Implementations).
+[here](https://github.com/commonmark/CommonMark/wiki/List-of-CommonMark-Implementations).
 
 Running tests against the spec
 ------------------------------
@@ -160,7 +160,7 @@ Contributing
 There is a [forum for discussing
 CommonMark](http://talk.commonmark.org); you should use it instead of
 github issues for questions and possibly open-ended discussions.
-Use the [github issue tracker](http://github.com/jgm/CommonMark/issues)
+Use the [github issue tracker](http://github.com/commonmark/CommonMark/issues)
 only for simple, clear, actionable issues.
 
 Authors

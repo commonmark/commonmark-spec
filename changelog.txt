@@ -1,7 +1,7 @@
 [0.28]
 
   * Allow unlimited balanced pairs of parentheses in link URLs
-    (@kivikakk, jgm/cmark#166).  The rationale is that there are many URLs
+    (@kivikakk, commonmark/cmark#166).  The rationale is that there are many URLs
     containing unescaped nested parentheses.  Note that
     implementations are allowed to impose limits on parentheses
     nesting for performance reasons, but at least three levels
@@ -64,7 +64,7 @@
   * Test suite: Don't mess up on examples with 32 backticks (#423).
   * Removed duplicate reference to "container block".
   * Add examples for Unicode whitespace (Timothy Gu).  In light of
-    jgm/commonmark.js#107, add a few examples/test cases to make sure the
+    commonmark/commonmark.js#107, add a few examples/test cases to make sure the
     distinction between Unicode whitespace and regular whitespace is kept.
   * Fix missing closing paren typo (Robin Stocker).
 
@@ -114,7 +114,7 @@
 
 [0.25]
 
-  * Added several more tab-handling cases (see jgm/cmark#101).
+  * Added several more tab-handling cases (see commonmark/cmark#101).
   * Fixed spec test for tabs.  In the blockquote with a tab following
     the `>`, only one space should be consumed, yielding two spaces
     at the beginning of the content.
@@ -243,7 +243,7 @@
   * Added `iframe` to list of tags that always start HTML blocks (#352).
   * Added example of list item starting with two blanks (#332).
   * Added test case clarifying laziness in block quotes (see
-    jgm/commonmark.js#60).
+    commonmark/commonmark.js#60).
   * Add an example with mixed indentation code block in "Tabs" section
     (Robin Stocker).  This makes sure that implementations skip columns instead
     of offsets for continued indented code blocks.
@@ -295,14 +295,14 @@
   * Specify nested link definition behavior in prose (Benjamin
     Dumke-von der Ehe).
   * Added test for edge case in link reference parsing
-    (Benjamin Dumke-von der Ehe, see jgm/commonmark.js#49).
+    (Benjamin Dumke-von der Ehe, see commonmark/commonmark.js#49).
   * Added link tests with fragment identifiers and queries (David
     Green, #342).
   * Added test cases with a literal backslash in a link destination
-    (see jgm/commonmark.js#45).
+    (see commonmark/commonmark.js#45).
   * Added test for entity `&ngE;` which resolves to two code points.
     Put entity tests on several lines for readability (see
-    jgm/commonmark.js#47).
+    commonmark/commonmark.js#47).
   * Fixed broken "pre" literal HTML example. Contents
     weren't escaped properly.
   * Simplified defn of "unicode whitespace character,"
