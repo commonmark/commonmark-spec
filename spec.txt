@@ -337,16 +337,10 @@ the Unicode classes `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
 ## Tabs
 
-<<<<<<< HEAD
-Tabs in lines are immediately expanded to [spaces][space], with a tab
-width of 4 characters:
-<!-- A tab _stop_ of 4 characters would imply that there was a jump position every 4th character from the left, adjoining spaces could be collapsed. This is not hte case. -->
-=======
 Tabs in lines are not expanded to [spaces].  However,
 in contexts where whitespace helps to define block structure,
 tabs behave as if they were replaced by spaces with a tab stop
 of 4 characters.
->>>>>>> jgm/master
 
 Thus, for example, a tab can be used instead of four spaces
 in an indented code block.  (Note, however, that internal
@@ -663,8 +657,7 @@ a------
 <p>---a---</p>
 ````````````````````````````````
 
-<<<<<<< HEAD
-2 spaces at the end do not establish a continuation on the next line of code:
+Unlike within text, 2 spaces at the end do not establish a continuation on the next line of code:
 
 .
 ---  
@@ -682,8 +675,6 @@ a
 
 It is required that all of the [non-space character]s be the same.
 So, this is not a horizontal rule:
-=======
->>>>>>> jgm/master
 
 It is required that all of the [non-whitespace characters] be the same.
 So, this is not a thematic break:
@@ -1024,17 +1015,6 @@ a counter may be added.
 <h1 id="foo-1">Foo</h1>
 .
 
-## Setext headers
-
-A [setext header](@setext-header)
-consists of a line of text, containing at least 1 [non-space character],
-with no more than 3 spaces indentation, followed by a [setext header
-underline].  The line of text must be
-one that, were it not followed by the setext header underline,
-would be interpreted as part of a paragraph:  it cannot be
-interpretable as a [code fence], [ATX header][ATX headers],
-[block quote][block quotes], [horizontal rule][horizontal rules],
-=======
 ## Setext headings
 
 A [setext heading](@) consists of one or more
@@ -1045,20 +1025,14 @@ that, were they not followed by the setext heading underline,
 they would be interpreted as a paragraph:  they cannot be
 interpretable as a [code fence], [ATX heading][ATX headings],
 [block quote][block quotes], [thematic break][thematic breaks],
->>>>>>> jgm/master
 [list item][list items], or [HTML block][HTML blocks].
 
 A [setext heading underline](@) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
 spaces indentation and any number of trailing spaces.  If a line
 containing a single `-` can be interpreted as an
-<<<<<<< HEAD
-empty [list item][list items], it should be interpreted this way
-and not as a [setext header underline].
-=======
 empty [list items], it should be interpreted this way
 and not as a [setext heading underline].
->>>>>>> jgm/master
 
 The heading is a level 1 heading if `=` characters are used in
 the [setext heading underline], and a level 2 heading if `-`
@@ -1110,12 +1084,7 @@ Foo
 <h1>Foo</h1>
 ````````````````````````````````
 
-<<<<<<< HEAD
-The header content can be indented up to 3 spaces, and need
-=======
-
-The heading content can be indented up to three spaces, and need
->>>>>>> jgm/master
+The heading content can be indented up to 3 spaces, and need
 not line up with the underlining:
 
 ```````````````````````````````` example
@@ -1151,12 +1120,7 @@ Foo
 <hr />
 ````````````````````````````````
 
-<<<<<<< HEAD
-The setext header underline can be indented up to 3 spaces, and
-=======
-
-The setext heading underline can be indented up to three spaces, and
->>>>>>> jgm/master
+The setext heading underline can be indented up to 3 spaces, and
 may have trailing spaces:
 
 ```````````````````````````````` example
@@ -1656,19 +1620,11 @@ Trailing spaces are included in the code block's content:
 
 ## Fenced code blocks
 
-<<<<<<< HEAD
-A [code fence](@code-fence) is a sequence
-of at least 3 consecutive backtick characters (`` ` ``) or
-tildes (`~`).  (Tildes and backticks cannot be mixed.)
-A [fenced code block](@fenced-code-block)
-begins with a code fence, indented no more than 3 spaces.
-=======
 A [code fence](@) is a sequence
 of at least three consecutive backtick characters (`` ` ``) or
 tildes (`~`).  (Tildes and backticks cannot be mixed.)
 A [fenced code block](@)
-begins with a code fence, indented no more than three spaces.
->>>>>>> jgm/master
+begins with a code fence, indented no more than 3 spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
