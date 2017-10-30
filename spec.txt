@@ -106,9 +106,9 @@ does not specify the syntax unambiguously.  Here are some examples of
 questions it does not answer:
 
 1.  How much indentation is needed for a sublist?  The spec says that
-    continuation paragraphs need to be indented four spaces, but is
+    continuation paragraphs need to be indented 4 spaces, but is
     not fully explicit about sublists.  It is natural to think that
-    they, too, must be indented four spaces, but `Markdown.pl` does
+    they, too, must be indented 4 spaces, but `Markdown.pl` does
     not require that.  This is hardly a "corner case," and divergences
     between implementations on this issue often lead to surprises for
     users in real documents. (See [this comment by John
@@ -342,7 +342,7 @@ in contexts where whitespace helps to define block structure,
 tabs behave as if they were replaced by spaces with a tab stop
 of 4 characters.
 
-Thus, for example, a tab can be used instead of four spaces
+Thus, for example, a tab can be used instead of 4 spaces
 in an indented code block.  (Note, however, that internal
 tabs are passed through as literal tabs, not expanded to
 spaces.)
@@ -372,7 +372,7 @@ spaces.)
 
 In the following example, a continuation paragraph of a list
 item is indented with a tab; this has exactly the same effect
-as indentation with four spaces would:
+as indentation with 4 spaces would:
 
 ```````````````````````````````` example
   - foo
@@ -406,9 +406,9 @@ optionally by a space, which is not considered part of the
 content.  In the following case `>` is followed by a tab,
 which is treated as if it were expanded into spaces.
 Since one of theses spaces is considered part of the
-delimiter, `foo` is considered to be indented six spaces
+delimiter, `foo` is considered to be indented 6 spaces
 inside the block quote context, so we get an indented
-code block starting with two spaces.
+code block starting with 2 spaces.
 
 ```````````````````````````````` example
 >→→foo
@@ -804,7 +804,7 @@ More than six `#` characters is not a heading:
 ````````````````````````````````
 
 
-At least one space is required between the `#` characters and the
+At least 1 space is required between the `#` characters and the
 heading's contents, unless the heading is empty.  Note that many
 implementations currently do not require the space.  However, the
 space was required by the
@@ -849,7 +849,7 @@ Leading and trailing blanks are ignored in parsing inline content:
 ````````````````````````````````
 
 
-One to three spaces indentation are allowed:
+One to 3 spaces indentation are allowed:
 
 ```````````````````````````````` example
  ### foo
@@ -862,7 +862,7 @@ One to three spaces indentation are allowed:
 ````````````````````````````````
 
 
-Four spaces are too much:
+But 4 spaces are too much:
 
 ```````````````````````````````` example
     # foo
@@ -1444,7 +1444,7 @@ An [indented code block](@) is composed of one or more
 An [indented chunk](@) is a sequence of non-blank lines,
 each indented four or more spaces. The contents of the code block are
 the literal contents of the lines, including trailing
-[line endings], minus four spaces of indentation.
+[line endings], minus 4 spaces of indentation.
 An indented code block has no [info string].
 
 An indented code block cannot interrupt a paragraph, so there must be
@@ -1599,7 +1599,7 @@ Heading
 ````````````````````````````````
 
 
-The first line can be indented more than four spaces:
+The first line can be indented more than 4 spaces:
 
 ```````````````````````````````` example
         foo
@@ -1870,7 +1870,7 @@ aaa
 ````````````````````````````````
 
 
-Four spaces indentation produces an indented code block:
+Indentation of 4 spaces produces an indented code block:
 
 ```````````````````````````````` example
     ```
@@ -2050,7 +2050,7 @@ as raw HTML (and will not be escaped in HTML output).
 
 There are seven kinds of [HTML block], which can be defined
 by their start and end conditions.  The block begins with a line that
-meets a [start condition](@) (after up to three spaces
+meets a [start condition](@) (after up to 3 spaces
 optional indentation).  It ends with the first subsequent line that
 meets a matching [end condition](@), or the last line of
 the document or other [container block]), if no line is encountered that meets the
@@ -2789,7 +2789,7 @@ lines.
 ## Link reference definitions
 
 A [link reference definition](@)
-consists of a [link label], indented up to three spaces, followed
+consists of a [link label], indented up to 3 spaces, followed
 by a colon (`:`), optional [whitespace] (including up to one
 [line ending]), a [link destination],
 optional [whitespace] (including up to one
@@ -3002,7 +3002,7 @@ This is a link reference definition, but it has no title:
 
 
 This is not a link reference definition, because it is indented
-four spaces:
+4 spaces:
 
 ```````````````````````````````` example
     [foo]: /url "title"
@@ -3171,7 +3171,7 @@ ccc</p>
 ````````````````````````````````
 
 
-However, the first line may be indented at most three spaces,
+However, the first line may be indented at most 3 spaces,
 or an indented code block will be triggered:
 
 ```````````````````````````````` example
@@ -3323,7 +3323,7 @@ baz</p>
 ````````````````````````````````
 
 
-Four spaces gives us a code block:
+But 4 spaces gives us a code block:
 
 ```````````````````````````````` example
     > # Foo
@@ -3658,7 +3658,7 @@ baz</p>
 
 When including an indented code block in a block quote,
 remember that the [block quote marker] includes
-both the `>` and a following space.  So *five spaces* are needed after
+both the `>` and a following space.  So *5 spaces* are needed after
 the `>`:
 
 ```````````````````````````````` example
@@ -3759,9 +3759,9 @@ with two lines.</p>
 The most important thing to notice is that the position of
 the text after the list marker determines how much indentation
 is needed in subsequent blocks in the list item.  If the list
-marker takes up two spaces, and there are three spaces between
+marker takes up 2 spaces, and there are 3 spaces between
 the list marker and the next [non-whitespace character], then blocks
-must be indented five spaces in order to fall under the list
+must be indented 5 spaces in order to fall under the list
 item.
 
 Here are some examples showing how far content must be indented to be
@@ -3871,7 +3871,7 @@ far enough past the blockquote marker:
 ````````````````````````````````
 
 
-Note that at least one space is needed between the list marker and
+Note that at least 1 space is needed between the list marker and
 any following content, so these are not list items:
 
 ```````````````````````````````` example
@@ -4004,7 +4004,7 @@ A start number may not be negative:
     constitute a sequence of blocks *Bs* starting with an indented code
     block and not separated from each other by more than one blank line,
     and *M* is a list marker of width *W* followed by
-    one space, then the result of prepending *M* and the following
+    1 space, then the result of prepending *M* and the following
     space to the first line of *Ls*, and indenting subsequent lines of
     *Ls* by *W + 1* spaces, is a list item with *Bs* as its contents.
     If a line is empty, then it need not be indented.  The type of the
@@ -4012,7 +4012,7 @@ A start number may not be negative:
     marker.  If the list item is ordered, then it is also assigned a
     start number, based on the ordered list marker.
 
-An indented code block will have to be indented four spaces beyond
+An indented code block will have to be indented 4 spaces beyond
 the edge of the region where text will be included in the list item.
 In the following case that is 6 spaces:
 
@@ -4300,7 +4300,7 @@ foo
     list item with the same contents and attributes.  If a line is
     empty, then it need not be indented.
 
-Indented one space:
+Indented 1 space:
 
 ```````````````````````````````` example
  1.  A paragraph
@@ -4324,7 +4324,7 @@ with two lines.</p>
 ````````````````````````````````
 
 
-Indented two spaces:
+Indented 2 spaces:
 
 ```````````````````````````````` example
   1.  A paragraph
@@ -4348,7 +4348,7 @@ with two lines.</p>
 ````````````````````````````````
 
 
-Indented three spaces:
+Indented 3 spaces:
 
 ```````````````````````````````` example
    1.  A paragraph
@@ -4372,7 +4372,7 @@ with two lines.</p>
 ````````````````````````````````
 
 
-Four spaces indent gives a code block:
+But 4 spaces indent gives a code block:
 
 ```````````````````````````````` example
     1.  A paragraph
@@ -4483,7 +4483,7 @@ The rules for sublists follow from the general rules above.  A sublist
 must be indented the same number of spaces a paragraph would need to be
 in order to be included in the list item.
 
-So, in this case we need two spaces indent:
+So, in this case we need 2 spaces indent:
 
 ```````````````````````````````` example
 - foo
@@ -4613,7 +4613,7 @@ baz</li>
 John Gruber's Markdown spec says the following about list items:
 
 1. "List markers typically start at the left margin, but may be indented
-   by up to three spaces. List markers must be followed by one or more
+   by up to 3 spaces. List markers must be followed by one or more
    spaces or a tab."
 
 2. "To make lists look nice, you can wrap items with hanging indents....
@@ -4633,23 +4633,23 @@ John Gruber's Markdown spec says the following about list items:
    indented twice — 8 spaces or two tabs."
 
 These rules specify that a paragraph under a list item must be indented
-four spaces (presumably, from the left margin, rather than the start of
+4 spaces (presumably, from the left margin, rather than the start of
 the list marker, but this is not said), and that code under a list item
-must be indented eight spaces instead of the usual four.  They also say
+must be indented eight spaces instead of the usual 4.  They also say
 that a block quote must be indented, but not by how much; however, the
-example given has four spaces indentation.  Although nothing is said
+example given has 4 spaces indentation.  Although nothing is said
 about other kinds of block-level content, it is certainly reasonable to
 infer that *all* block elements under a list item, including other
-lists, must be indented four spaces.  This principle has been called the
+lists, must be indented 4 spaces.  This principle has been called the
 *four-space rule*.
 
 The four-space rule is clear and principled, and if the reference
 implementation `Markdown.pl` had followed it, it probably would have
 become the standard.  However, `Markdown.pl` allowed paragraphs and
-sublists to start with only two spaces indentation, at least on the
+sublists to start with only 2 spaces indentation, at least on the
 outer level.  Worse, its behavior was inconsistent: a sublist of an
-outer-level list needed two spaces indentation, but a sublist of this
-sublist needed three spaces.  It is not surprising, then, that different
+outer-level list needed 2 spaces indentation, but a sublist of this
+sublist needed 3 spaces.  It is not surprising, then, that different
 implementations of Markdown have developed very different rules for
 determining what comes under a list item.  (Pandoc and python-Markdown,
 for example, stuck with Gruber's syntax description and the four-space
@@ -4709,7 +4709,7 @@ as the four-space rule demands, rather than a single list,
 </ul>
 ```
 
-The choice of four spaces is arbitrary.  It can be learned, but it is
+The choice of 4 spaces is arbitrary.  It can be learned, but it is
 not likely to be guessed, and it trips up beginners regularly.
 
 Would it help to adopt a two-space rule?  The problem is that such
@@ -4759,7 +4759,7 @@ as
 This is extremely unintuitive.
 
 Rather than requiring a fixed indent from the margin, we could require
-a fixed indent (say, two spaces, or even one space) from the list marker (which
+a fixed indent (say, 2 spaces, or even 1 space) from the list marker (which
 may itself be indented).  This proposal would remove the last anomaly
 discussed.  Unlike the spec presented above, it would count the following
 as a list item with a subparagraph, even though the paragraph `bar`
@@ -4773,7 +4773,7 @@ is not indented as far as the first paragraph `foo`:
 
 Arguably this text does read like a list item with `bar` as a subparagraph,
 which may count in favor of the proposal.  However, on this proposal indented
-code would have to be indented six spaces after the list marker.  And this
+code would have to be indented 6 spaces after the list marker.  And this
 would break a lot of existing Markdown, which has the pattern:
 
 ``` markdown
@@ -4782,17 +4782,17 @@ would break a lot of existing Markdown, which has the pattern:
         indented code
 ```
 
-where the code is indented eight spaces.  The spec above, by contrast, will
+where the code is indented 8 spaces.  The spec above, by contrast, will
 parse this text as expected, since the code block's indentation is measured
 from the beginning of `foo`.
 
 The one case that needs special treatment is a list item that *starts*
 with indented code.  How much indentation is required in that case, since
 we don't have a "first paragraph" to measure from?  Rule #2 simply stipulates
-that in such cases, we require one space indentation from the list marker
-(and then the normal four spaces for the indented code).  This will match the
+that in such cases, we require 1 space indentation from the list marker
+(and then the normal 4 spaces for the indented code).  This will match the
 four-space rule in cases where the list marker plus its initial indentation
-takes four spaces (a common case), but diverge in other cases.
+takes 4 spaces (a common case), but diverge in other cases.
 
 ## Lists
 
@@ -7786,7 +7786,7 @@ Unicode case fold is used:
 ````````````````````````````````
 
 
-Consecutive internal [whitespace] is treated as one space for
+Consecutive internal [whitespace] is treated as 1 space for
 purposes of determining matching:
 
 ```````````````````````````````` example
@@ -8851,7 +8851,7 @@ baz</p>
 
 
 For a more visible alternative, a backslash before the
-[line ending] may be used instead of two spaces:
+[line ending] may be used instead of 2 spaces:
 
 ```````````````````````````````` example
 foo\
@@ -8862,7 +8862,7 @@ baz</p>
 ````````````````````````````````
 
 
-More than two spaces can be used:
+More than 2 spaces can be used:
 
 ```````````````````````````````` example
 foo       
