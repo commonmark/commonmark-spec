@@ -1,3 +1,73 @@
+[0.28]
+
+  * Allow unlimited balanced pairs of parentheses in link URLs
+    (@kivikakk, commonmark/cmark#166).  The rationale is that there are many URLs
+    containing unescaped nested parentheses.  Note that
+    implementations are allowed to impose limits on parentheses
+    nesting for performance reasons, but at least three levels
+    of nesting should be supported.
+  * Change Rule 14 for Emphasis.  Previously the nesting
+    Strong (Emph (...)) was preferred over Emph (Strong (...)).
+    This change makes Emph (Strong (...)) preferred.
+    Note that the commonmark reference implementations
+    were not entirely consistent about this rule, giving
+    different results for
+
+        ***hi***
+
+    and
+
+        ***hi****
+
+    This change simplifies parsing.  It goes against the majority
+    of implementations, but only on something utterly trivial.
+  * Clarify definition of delimiter runs (Aidan Woods, #485).
+  * Clarify precedence of thematic breaks over list items
+    in the list spec, not just the thematic break spec (Aidan Woods).
+  * Clarify definition of link labels and normalization
+    procedure (Matthias Geier, #479).
+  * Clarify that the end of an HTML block is determined by its
+    start, and is not changed by HTML tags encountered inside
+    the block.  Give an example of a case where a block ends
+    before an interior element has been closed (Yuki Izumi, #459).
+    In the future we might consider changing the spec to handle
+    this case more intuitively; this change just documents more
+    explicitly what the spec requires.
+  * Acknowledge Aaron Swartz's role in developing Markdown.
+  * Remove misleading backslash in example for disabling image markup
+    (Matthias Geier).
+  * Fix Unicode terminology (general category, not class)
+    (Philipp Matthias Schaefer).
+  * Add another illustrative case for code spans (#463).
+  * Remove possibly misleading 'either's (#467).
+  * Fix typo (Aidan Woods).
+  * Clarify that some blocks can contain code spans (Matthias Geier).
+  * Fix typo and clarified tab expansion rule (Scott Abbey).
+  * Add a missing "iff" (Matthias Geier).
+  * Add release checklist.
+  * Added npm package for spec (Vitaly Puzrin).
+  * Remove SPEC variable from Makefile.
+
+[0.27]
+
+  * Update statement on blank lines and lists (Jesse Rosenthal).
+    The definition of a list still said that "two blank lines end all
+    containing lists." That rule has been removed.
+  * Clarify that the exception for ordered lists only applies to first
+    item in list (#420).
+  * Added cases clarifying precedence of shortcut links (#427).
+  * Added h2..h6 to block tag list (#430).
+  * Remove duplicated test (Maxim Dikun).  Tests 390 and 391 were the same.
+  * Use fenced code blocks for markdown examples that are not test cases
+    for uniformity.
+  * Added closing paren (#428).
+  * Test suite: Don't mess up on examples with 32 backticks (#423).
+  * Removed duplicate reference to "container block".
+  * Add examples for Unicode whitespace (Timothy Gu).  In light of
+    commonmark/commonmark.js#107, add a few examples/test cases to make sure the
+    distinction between Unicode whitespace and regular whitespace is kept.
+  * Fix missing closing paren typo (Robin Stocker).
+
 [0.26]
 
   * Empty list items can no longer interrupt a paragraph.
@@ -44,7 +114,7 @@
 
 [0.25]
 
-  * Added several more tab-handling cases (see jgm/cmark#101).
+  * Added several more tab-handling cases (see commonmark/cmark#101).
   * Fixed spec test for tabs.  In the blockquote with a tab following
     the `>`, only one space should be consumed, yielding two spaces
     at the beginning of the content.
@@ -173,7 +243,7 @@
   * Added `iframe` to list of tags that always start HTML blocks (#352).
   * Added example of list item starting with two blanks (#332).
   * Added test case clarifying laziness in block quotes (see
-    jgm/commonmark.js#60).
+    commonmark/commonmark.js#60).
   * Add an example with mixed indentation code block in "Tabs" section
     (Robin Stocker).  This makes sure that implementations skip columns instead
     of offsets for continued indented code blocks.
@@ -225,14 +295,14 @@
   * Specify nested link definition behavior in prose (Benjamin
     Dumke-von der Ehe).
   * Added test for edge case in link reference parsing
-    (Benjamin Dumke-von der Ehe, see jgm/commonmark.js#49).
+    (Benjamin Dumke-von der Ehe, see commonmark/commonmark.js#49).
   * Added link tests with fragment identifiers and queries (David
     Green, #342).
   * Added test cases with a literal backslash in a link destination
-    (see jgm/commonmark.js#45).
+    (see commonmark/commonmark.js#45).
   * Added test for entity `&ngE;` which resolves to two code points.
     Put entity tests on several lines for readability (see
-    jgm/commonmark.js#47).
+    commonmark/commonmark.js#47).
   * Fixed broken "pre" literal HTML example. Contents
     weren't escaped properly.
   * Simplified defn of "unicode whitespace character,"
