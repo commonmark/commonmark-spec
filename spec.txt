@@ -673,9 +673,6 @@ a
 <p>a</p>
 .
 
-It is required that all of the [non-space character]s be the same.
-So, this is not a horizontal rule:
-
 It is required that all of the [non-whitespace characters] be the same.
 So, this is not a thematic break:
 
@@ -1104,6 +1101,7 @@ Foo
 <h2>Foo</h2>
 <h1>Foo</h1>
 ````````````````````````````````
+
 
 The heading content can be indented up to 3 spaces, and need
 not line up with the underlining:
