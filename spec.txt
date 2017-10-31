@@ -1584,7 +1584,7 @@ begins with a code fence, indented no more than three spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
-spaces and called the [info string](@).
+whitespace and called the [info string](@).
 The [info string] may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
