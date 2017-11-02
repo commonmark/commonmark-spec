@@ -8624,7 +8624,7 @@ a [single-quoted attribute value], or a [double-quoted attribute value].
 
 An [unquoted attribute value](@)
 is a nonempty string of characters not
-including spaces, `"`, `'`, `=`, `<`, `>`, or `` ` ``.
+including [whitespace], `"`, `'`, `=`, `<`, `>`, or `` ` ``.
 
 A [single-quoted attribute value](@)
 consists of `'`, zero or more
@@ -8745,9 +8745,13 @@ Illegal [whitespace]:
 ```````````````````````````````` example
 < a><
 foo><bar/ >
+<foo bar=baz
+bim!bop />
 .
 <p>&lt; a&gt;&lt;
-foo&gt;&lt;bar/ &gt;</p>
+foo&gt;&lt;bar/ &gt;
+&lt;foo bar=baz
+bim!bop /&gt;</p>
 ````````````````````````````````
 
 
