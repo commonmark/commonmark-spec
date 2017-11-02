@@ -102,10 +102,10 @@ source, not just in the processed document.
 
 ## Why is a spec needed?
 
-John Gruber's [canonical description of Markdown's
-syntax](http://daringfireball.net/projects/markdown/syntax)
-does not specify the syntax unambiguously.  Here are some examples of
-questions it does not answer:
+John Gruber's [canonical description of Markdown's syntax](
+http://daringfireball.net/projects/markdown/syntax) 
+does not specify the syntax unambiguously.  
+Here are some examples of questions it does not answer:
 
 1.  How much indentation is needed for a sublist?  The spec says that
     continuation paragraphs need to be indented four spaces, but is
@@ -898,15 +898,18 @@ Spaces are allowed after the closing sequence:
 
 
 A sequence of `#` characters with anything but [spaces] following it
-is not a closing sequence, but counts as part of the contents of the
-heading:
+is only a closing sequence, if the number of its `#` characters 
+exactly matches the respective number in the opening sequence. 
+Whatever is following the first matching closing sequence 
+is treated as an [info string]. 
 
 ```````````````````````````````` example
 ### foo ### b
 .
-<h3>foo ### b</h3>
+<h3>foo</h3>
 ````````````````````````````````
 
+Otherwise it counts as part of the contents of the heading.
 
 The closing sequence must be preceded by a space:
 
@@ -968,7 +971,7 @@ ATX headings can be empty:
 <h3></h3>
 ````````````````````````````````
 
-Note that MediaWiki markup uses the equals sign `=` for ATX-like headings instead 
+Note: MediaWiki markup uses the equals sign `=` for ATX-like headings instead 
 and uses the number sign `#` for ordered list items. 
 This constitutes one major incompatibility between CommonMark and MediaWiki.
 
@@ -1870,7 +1873,6 @@ aaa
     ```
 </code></pre>
 ````````````````````````````````
-
 
 
 Code fences (opening and closing) cannot contain internal spaces:
@@ -5676,6 +5678,7 @@ A [backtick string](@)
 is a string of one or more backtick characters (`` ` ``) that is neither
 preceded nor followed by a backtick.
 
+
 A [code span](@) begins with a backtick string and ends with
 a backtick string of equal length.  The contents of the code span are
 the characters between the two backtick strings, with leading and
@@ -7177,7 +7180,8 @@ __a<http://foo.bar/?q=__>
 ## Links
 
 A link contains [link text] (the visible text), a [link destination]
-(the URI that is the link destination), and optionally a [link title].
+(the URI that is the link destination), and optionally an [info string] 
+that usually starts with or only consists of a [link title].
 There are two basic kinds of links in Markdown.  In [inline links] the
 destination and title are given immediately after the link text.  In
 [reference links] the destination and title are defined elsewhere in
@@ -7217,7 +7221,14 @@ A [link destination](@) consists of either
   may impose limits on parentheses nesting to avoid performance
   issues, but at least three levels of nesting should be supported.)
 
-A [link title](@)  consists of either
+A [link info string](@) works like any other [info string], 
+but it should contain a [link title], which may be empty 
+and should come first. It starts after the first run of whitespace
+that terminates the [link destination].
+All kinds of brackets should occur either in properly nested pairs 
+or backslash-escaped inside a link info string.
+  
+A [link title](@) consists of either
 
 - a sequence of zero or more characters between straight double-quote
   characters (`"`), including a `"` character only if it is
@@ -7248,22 +7259,30 @@ above.
 Here is a simple inline link:
 
 ```````````````````````````````` example
-[link](/uri "title")
+[link](/url info string)
 .
-<p><a href="/uri" title="title">link</a></p>
+<p><a href="/url">link</a></p>
 ````````````````````````````````
 
-
-The title may be omitted:
+The info string is usually just a title:
 
 ```````````````````````````````` example
-[link](/uri)
+[link](/url "title")
 .
-<p><a href="/uri">link</a></p>
+<p><a href="/url" title="title">link</a></p>
 ````````````````````````````````
 
 
-Both the title and the destination may be omitted:
+The info string may be omitted:
+
+```````````````````````````````` example
+[link](/url)
+.
+<p><a href="/url">link</a></p>
+````````````````````````````````
+
+
+Both the info string and the destination may be omitted:
 
 ```````````````````````````````` example
 [link]()
@@ -7278,32 +7297,61 @@ Both the title and the destination may be omitted:
 <p><a href="">link</a></p>
 ````````````````````````````````
 
+The link text may be empty, but this will 
+usually render the link inaccessible in the output.
+
+```````````````````````````````` example
+[](/url "title")
+.
+<p><a href="/url" title="title"></a></p>
+````````````````````````````````
 
 The destination cannot contain spaces or line breaks,
-even if enclosed in pointy brackets:
+i.e. whitespace.
 
 ```````````````````````````````` example
-[link](/my uri)
+[link](/foo bar)
 .
-<p>[link](/my uri)</p>
+<p>[link](/foo bar)</p>													<-- legacy
+<p><a href="/foo">link</a></p>
 ````````````````````````````````
 
+Except if enclosed in pointy brackets:
 
 ```````````````````````````````` example
-[link](</my uri>)
+[link](</foo bar>)
 .
-<p>[link](&lt;/my uri&gt;)</p>
+<p><a href="/foo%20bar">link</a></p>
 ````````````````````````````````
 
+There can be a line break before or after an info string:
 
 ```````````````````````````````` example
 [link](foo
 bar)
 .
-<p>[link](foo
-bar)</p>
+<p><a href="foo">link</a></p>
 ````````````````````````````````
 
+```````````````````````````````` example
+[link](foo bar
+)
+.
+<p><a href="foo">link</a></p>
+````````````````````````````````
+
+But no empty line:
+
+```````````````````````````````` example
+[link](foo
+
+bar)
+.
+<p>[link](foo</p>
+<p>bar)</p>
+````````````````````````````````
+
+There can also be no line break inside the target with angular brackets:
 
 ```````````````````````````````` example
 [link](<foo
@@ -7321,8 +7369,8 @@ Parentheses inside the link destination may be escaped:
 <p><a href="(foo)">link</a></p>
 ````````````````````````````````
 
-Any number of parentheses are allowed without escaping, as long as they are
-balanced:
+Any number of parentheses are allowed without escaping, 
+as long as they are balanced:
 
 ```````````````````````````````` example
 [link](foo(and(bar)))
@@ -7330,8 +7378,8 @@ balanced:
 <p><a href="foo(and(bar))">link</a></p>
 ````````````````````````````````
 
-However, if you have unbalanced parentheses, you need to escape or use the
-`<...>` form:
+However, if you have unbalanced parentheses, 
+you need to escape them:
 
 ```````````````````````````````` example
 [link](foo\(and\(bar\))
@@ -7339,6 +7387,7 @@ However, if you have unbalanced parentheses, you need to escape or use the
 <p><a href="foo(and(bar)">link</a></p>
 ````````````````````````````````
 
+Or use the `<...>` form:
 
 ```````````````````````````````` example
 [link](<foo(and(bar)>)
@@ -7364,15 +7413,22 @@ A link can contain fragment identifiers and queries:
 
 [link](http://example.com#fragment)
 
+[link](?foo=3)
+
 [link](http://example.com?foo=3#frag)
 .
 <p><a href="#fragment">link</a></p>
 <p><a href="http://example.com#fragment">link</a></p>
+<p><a href="?foo=3">link</a></p>
 <p><a href="http://example.com?foo=3#frag">link</a></p>
 ````````````````````````````````
 
 
-Note that a backslash before a non-escapable character is
+Note: Optional extensions to this specification may make variables 
+from query parameters available for transclusion in the text 
+via templates or variables, e.g. `{{foo}}` or `$foo$` possibly.
+
+As usual, a backslash before a non-escapable character is
 just a backslash:
 
 ```````````````````````````````` example
@@ -7397,10 +7453,11 @@ about how to escape or normalize URLs in the output.
 <p><a href="foo%20b%C3%A4">link</a></p>
 ````````````````````````````````
 
+(`auml;` = _ä_ = U+00E4 = 0xC3A4 in UTF-8.)
 
 Note that, because titles can often be parsed as destinations,
-if you try to omit the destination and keep the title, you'll
-get unexpected results:
+trying to omit the destination and keep the title,
+will lead to unexpected results:
 
 ```````````````````````````````` example
 [link]("title")
@@ -7408,17 +7465,30 @@ get unexpected results:
 <p><a href="%22title%22">link</a></p>
 ````````````````````````````````
 
+This can be avoided by usually harmless dummy destinations 
+that refer to the document itself:
+
+```````````````````````````````` example
+[link](# "title")
+
+[link](? "title")
+.
+<p><a href="#" title="title">link</a></p>
+<p><a href="?" title="title">link</a></p>
+````````````````````````````````
 
 Titles may be in single quotes, double quotes, or parentheses:
 
 ```````````````````````````````` example
 [link](/url "title")
+
 [link](/url 'title')
+
 [link](/url (title))
 .
-<p><a href="/url" title="title">link</a>
-<a href="/url" title="title">link</a>
-<a href="/url" title="title">link</a></p>
+<p><a href="/url" title="title">link</a></p>
+<p><a href="/url" title="title">link</a></p>
+<p><a href="/url" title="title">link</a></p>
 ````````````````````````````````
 
 
@@ -7426,13 +7496,15 @@ Backslash escapes and entity and numeric character references
 may be used in titles:
 
 ```````````````````````````````` example
-[link](/url "title \"&quot;")
+[link](/url "title \"&quot;&#x22;&#34;")
 .
-<p><a href="/url" title="title &quot;&quot;">link</a></p>
+<p><a href="/url" title="title &quot;&quot;&quot;&quot;">link</a></p>
 ````````````````````````````````
 
+(Whether or not character references are normalized to a canonic form 
+should probably be left to the implementation and output format.)
 
-Titles must be separated from the link using a [whitespace].
+Info strings must be separated from the destination using a [whitespace].
 Other [Unicode whitespace] like non-breaking space doesn't work.
 
 ```````````````````````````````` example
@@ -7475,13 +7547,13 @@ titles with no closing quotation mark, though 1.0.2b8 does not.
 It seems preferable to adopt a simple, rational rule that works
 the same way in inline links and link reference definitions.)
 
-[Whitespace] is allowed around the destination and title:
+[Whitespace] is allowed around the destination and info string:
 
 ```````````````````````````````` example
-[link](   /uri
+[link](   /url
   "title"  )
 .
-<p><a href="/uri" title="title">link</a></p>
+<p><a href="/url" title="title">link</a></p>
 ````````````````````````````````
 
 
@@ -7489,79 +7561,87 @@ But it is not allowed between the link text and the
 following parenthesis:
 
 ```````````````````````````````` example
-[link] (/uri)
+[link] (/url)
 .
-<p>[link] (/uri)</p>
+<p>[link] (/url)</p>
 ````````````````````````````````
 
 
-The link text may contain balanced brackets, but not unbalanced ones,
-unless they are escaped:
+The link text may contain balanced brackets: 
 
 ```````````````````````````````` example
-[link [foo [bar]]](/uri)
+[link [foo [bar]]](/url)
 .
-<p><a href="/uri">link [foo [bar]]</a></p>
+<p><a href="/url">link [foo [bar]]</a></p>
+````````````````````````````````
+
+But not unbalanced ones:
+
+```````````````````````````````` example
+[link] bar](/url)
+.
+<p>[link] bar](/url)</p>
+````````````````````````````````
+
+```````````````````````````````` example
+[link [bar](/url)
+.
+<p>[link <a href="/url">bar</a></p>
 ````````````````````````````````
 
 
-```````````````````````````````` example
-[link] bar](/uri)
-.
-<p>[link] bar](/uri)</p>
-````````````````````````````````
-
+Unless they are escaped:
 
 ```````````````````````````````` example
-[link [bar](/uri)
+[link \[bar](/url)
 .
-<p>[link <a href="/uri">bar</a></p>
-````````````````````````````````
-
-
-```````````````````````````````` example
-[link \[bar](/uri)
-.
-<p><a href="/uri">link [bar</a></p>
+<p><a href="/url">link [bar</a></p>
 ````````````````````````````````
 
 
 The link text may contain inline content:
 
 ```````````````````````````````` example
-[link *foo **bar** `#`*](/uri)
+[link *foo **bar** `#`*](/url)
 .
-<p><a href="/uri">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
+<p><a href="/url">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-[![moon](moon.jpg)](/uri)
+[![moon](moon.jpg)](/url)
 .
-<p><a href="/uri"><img src="moon.jpg" alt="moon" /></a></p>
+<p><a href="/url"><img src="moon.jpg" alt="moon" /></a></p>
 ````````````````````````````````
 
 
 However, links may not contain other links, at any level of nesting.
 
 ```````````````````````````````` example
-[foo [bar](/uri)](/uri)
+[foo [bar](/url)](/url)
 .
-<p>[foo <a href="/uri">bar</a>](/uri)</p>
+<p>[foo <a href="/url">bar</a>](/url)</p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-[foo *[bar [baz](/uri)](/uri)*](/uri)
+[foo *[bar [baz](/url)](/url)*](/url)
 .
-<p>[foo <em>[bar <a href="/uri">baz</a>](/uri)</em>](/uri)</p>
+<p>[foo <em>[bar <a href="/url">baz</a>](/url)</em>](/url)</p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-![[[foo](uri1)](uri2)](uri3)
+![[[foo](url1)](url2)](url3)
 .
-<p><img src="uri3" alt="[foo](uri2)" /></p>
+<p><img src="url3" alt="[foo](url2)" /></p>
+````````````````````````````````
+
+
+```````````````````````````````` example
+[![[foo](url1)](url2)](url3)
+.
+<p><a href="url3"><img src="url2" alt="[foo](url1)" /></a></p>
 ````````````````````````````````
 
 
@@ -7569,9 +7649,9 @@ These cases illustrate the precedence of link text grouping over
 emphasis grouping:
 
 ```````````````````````````````` example
-*[foo*](/uri)
+*[foo*](/url)
 .
-<p>*<a href="/uri">foo*</a></p>
+<p>*<a href="/url">foo*</a></p>
 ````````````````````````````````
 
 
@@ -7603,9 +7683,9 @@ and autolinks over link grouping:
 
 
 ```````````````````````````````` example
-[foo`](/uri)`
+[foo`](/url)`
 .
-<p>[foo<code>](/uri)</code></p>
+<p>[foo<code>](/url)</code></p>
 ````````````````````````````````
 
 
@@ -7655,7 +7735,6 @@ Here is a simple example:
 <p><a href="/url" title="title">foo</a></p>
 ````````````````````````````````
 
-
 The rules for the [link text] are the same as with
 [inline links].  Thus:
 
@@ -7665,18 +7744,18 @@ unless they are escaped:
 ```````````````````````````````` example
 [link [foo [bar]]][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p><a href="/uri">link [foo [bar]]</a></p>
+<p><a href="/url">link [foo [bar]]</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 [link \[bar][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p><a href="/uri">link [bar</a></p>
+<p><a href="/url">link [bar</a></p>
 ````````````````````````````````
 
 
@@ -7685,38 +7764,38 @@ The link text may contain inline content:
 ```````````````````````````````` example
 [link *foo **bar** `#`*][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p><a href="/uri">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
+<p><a href="/url">link <em>foo <strong>bar</strong> <code>#</code></em></a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 [![moon](moon.jpg)][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p><a href="/uri"><img src="moon.jpg" alt="moon" /></a></p>
+<p><a href="/url"><img src="moon.jpg" alt="moon" /></a></p>
 ````````````````````````````````
 
 
 However, links may not contain other links, at any level of nesting.
 
 ```````````````````````````````` example
-[foo [bar](/uri)][ref]
+[foo [bar](/url)][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p>[foo <a href="/uri">bar</a>]<a href="/uri">ref</a></p>
+<p>[foo <a href="/url">bar</a>]<a href="/url">ref</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 [foo *bar [baz][ref]*][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p>[foo <em>bar <a href="/uri">baz</a></em>]<a href="/uri">ref</a></p>
+<p>[foo <em>bar <a href="/url">baz</a></em>]<a href="/url">ref</a></p>
 ````````````````````````````````
 
 
@@ -7729,18 +7808,18 @@ emphasis grouping:
 ```````````````````````````````` example
 *[foo*][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p>*<a href="/uri">foo*</a></p>
+<p>*<a href="/url">foo*</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 [foo *bar][ref]
 
-[ref]: /uri
+[ref]: /url
 .
-<p><a href="/uri">foo *bar</a></p>
+<p><a href="/url">foo *bar</a></p>
 ````````````````````````````````
 
 
@@ -7750,7 +7829,7 @@ and autolinks over link grouping:
 ```````````````````````````````` example
 [foo <bar attr="][ref]">
 
-[ref]: /uri
+[ref]: /url
 .
 <p>[foo <bar attr="][ref]"></p>
 ````````````````````````````````
@@ -7759,7 +7838,7 @@ and autolinks over link grouping:
 ```````````````````````````````` example
 [foo`][ref]`
 
-[ref]: /uri
+[ref]: /url
 .
 <p>[foo<code>][ref]</code></p>
 ````````````````````````````````
@@ -7768,7 +7847,7 @@ and autolinks over link grouping:
 ```````````````````````````````` example
 [foo<http://example.com/?search=][ref]>
 
-[ref]: /uri
+[ref]: /url
 .
 <p>[foo<a href="http://example.com/?search=%5D%5Bref%5D">http://example.com/?search=][ref]</a></p>
 ````````````````````````````````
@@ -7843,13 +7922,16 @@ link text and the link label, then in the following we will have
 a single reference link, not two shortcut reference links, as
 intended:
 
-``` markdown
+```````````````````````````````` example
 [foo]
 [bar]
 
 [foo]: /url1
 [bar]: /url2
-```
+.
+<p><a href="/url1">foo</a>
+<a href="/url2">bar</a></p>
+````````````````````````````````
 
 (Note that [shortcut reference links] were introduced by Gruber
 himself in a beta version of `Markdown.pl`, but never included
@@ -7886,26 +7968,41 @@ labels define equivalent inline content:
 ````````````````````````````````
 
 
-[Link labels] cannot contain brackets, unless they are
-backslash-escaped:
+The normalized labels contain any formatting characters verbatim:
+
+```````````````````````````````` example
+[foo][bar]
+
+[foo][*bar*]
+
+[*bar*]: /url1
+
+[bar]: /url2
+.
+<p><a href="/url2">foo</a></p>
+<p><a href="/url1">foo</a></p>
+````````````````````````````````
+
+
+[Link labels] cannot contain brackets: 
 
 ```````````````````````````````` example
 [foo][ref[]
 
-[ref[]: /uri
+[ref[]: /url
 .
 <p>[foo][ref[]</p>
-<p>[ref[]: /uri</p>
+<p>[ref[]: /url</p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
 [foo][ref[bar]]
 
-[ref[bar]]: /uri
+[ref[bar]]: /url
 .
 <p>[foo][ref[bar]]</p>
-<p>[ref[bar]]: /uri</p>
+<p>[ref[bar]]: /url</p>
 ````````````````````````````````
 
 
@@ -7920,22 +8017,71 @@ backslash-escaped:
 
 
 ```````````````````````````````` example
+[[[foo]]]
+
+[foo]: /url
+.
+<p>[[<a href="/url">foo</a>]]</p>
+````````````````````````````````
+
+
+Unless they are backslash-escaped:
+
+```````````````````````````````` example
 [foo][ref\[]
 
-[ref\[]: /uri
+[ref\[]: /url
 .
-<p><a href="/uri">foo</a></p>
+<p><a href="/url">foo</a></p>
 ````````````````````````````````
 
 
 Note that in this example `]` is not backslash-escaped:
 
 ```````````````````````````````` example
-[bar\\]: /uri
+[bar\\]: /url
 
 [bar\\]
 .
-<p><a href="/uri">bar\</a></p>
+<p><a href="/url">bar\</a></p>
+````````````````````````````````
+
+
+Since unescaped square brackets are not allowed in link labels,
+they can never look like links or image references:
+
+```````````````````````````````` example
+[foo][[foo](bar)]
+
+[[foo](bar)]: /url1
+
+[[foo]]: /url2
+
+[foo]: /url3
+.
+<p><a href="/url3">foo</a>[<a href="bar">foo</a>]</p>
+<p>[<a href="bar">foo</a>]: /url1</p>
+<p>[<a href="/url3">foo</a>]: /url2</p>
+````````````````````````````````
+
+In particular, labels that would make valid image links 
+are not collapsed to their link text:
+
+```````````````````````````````` example
+[foo][![alt](/url1)]
+
+[foo][![alt]]
+
+[![alt]]
+
+[alt]: /url2
+
+[![alt]]: /url3
+.
+<p>[foo][<img src="/url1" alt="alt" />]</p>
+<p>[foo][<img src="/url2" alt="alt" />]</p>
+<p>[<img src="/url2" alt="alt" />]</p>
+<p>[<img src="/url2" alt="alt" />]: /url3</p>
 ````````````````````````````````
 
 
@@ -7944,10 +8090,10 @@ A [link label] must contain at least one [non-whitespace character]:
 ```````````````````````````````` example
 []
 
-[]: /uri
+[]: /url
 .
 <p>[]</p>
-<p>[]: /uri</p>
+<p>[]: /url</p>
 ````````````````````````````````
 
 
@@ -7956,12 +8102,12 @@ A [link label] must contain at least one [non-whitespace character]:
  ]
 
 [
- ]: /uri
+ ]: /url
 .
 <p>[
 ]</p>
 <p>[
-]: /uri</p>
+]: /url</p>
 ````````````````````````````````
 
 
@@ -7970,7 +8116,7 @@ consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document, followed by the string `[]`.
 The contents of the first link label are parsed as inlines,
-which are used as the link's text.  The link's URI and title are
+which are used as the link's text.  The link's destination and title are
 provided by the matching reference link definition.  Thus,
 `[foo][]` is equivalent to `[foo][foo]`.
 
@@ -8003,9 +8149,9 @@ The link labels are case-insensitive:
 ````````````````````````````````
 
 
-
 As with full reference links, [whitespace] is not
-allowed between the two sets of brackets:
+allowed between the two sets of brackets, 
+so the first pair is treated as a [shortcut reference link]:
 
 ```````````````````````````````` example
 [foo] 
@@ -8023,9 +8169,9 @@ consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document and is not followed by `[]` or a link label.
 The contents of the first link label are parsed as inlines,
-which are used as the link's text.  The link's URI and title
+which are used as the link's text.  The link's destination and title
 are provided by the matching link reference definition.
-Thus, `[foo]` is equivalent to `[foo][]`.
+Thus, `[foo]` is equivalent to `[foo][]` and `[foo][foo]`.
 
 ```````````````````````````````` example
 [foo]
@@ -8139,13 +8285,6 @@ Inline links also take precedence:
 <p><a href="">foo</a></p>
 ````````````````````````````````
 
-```````````````````````````````` example
-[foo](not a link)
-
-[foo]: /url1
-.
-<p><a href="/url1">foo</a>(not a link)</p>
-````````````````````````````````
 
 In the following case `[bar][baz]` is parsed as a reference,
 `[foo]` as normal text:
@@ -8172,8 +8311,9 @@ Here, though, `[foo][bar]` is parsed as a reference, since
 ````````````````````````````````
 
 
-Here `[foo]` is not parsed as a shortcut reference, because it
-is followed by a link label (even though `[bar]` is not defined):
+Here, `[foo]` is not parsed as a shortcut reference, because it
+is followed by a link label (even though `[bar]` is not defined
+and is then found to be a link text instead):
 
 ```````````````````````````````` example
 [foo][bar][baz]
@@ -8204,6 +8344,9 @@ this is standardly used as the image's `alt` attribute.
 <p><img src="/url" alt="foo" title="title" /></p>
 ````````````````````````````````
 
+Though this spec is concerned with parsing, not rendering, it is
+recommended that in rendering to HTML, only the plain string content
+of the [image description] be used:  
 
 ```````````````````````````````` example
 ![foo *bar*]
@@ -8228,12 +8371,20 @@ this is standardly used as the image's `alt` attribute.
 ````````````````````````````````
 
 
-Though this spec is concerned with parsing, not rendering, it is
-recommended that in rendering to HTML, only the plain string content
-of the [image description] be used.  Note that in
+Note that in
 the above example, the alt attribute's value is `foo bar`, not `foo
 [bar](/url)` or `foo <a href="/url">bar</a>`.  Only the plain string
 content is rendered, without formatting.
+With an implementation that treated an image as a floating figure
+if it is the only content of a paragraph, 
+the HTML output for this example would differ:
+
+``` HTML
+<figure><img src="/url2" alt="foo bar"><figcaption>foo <a href="/url">bar</a></figcaption></figure>
+```
+
+
+The rules for inline formatting other than links is the same as for links:
 
 ```````````````````````````````` example
 ![foo *bar*][]
@@ -8252,6 +8403,8 @@ content is rendered, without formatting.
 <p><img src="train.jpg" alt="foo bar" title="train &amp; tracks" /></p>
 ````````````````````````````````
 
+
+Inline image:
 
 ```````````````````````````````` example
 ![foo](train.jpg)
@@ -8415,7 +8568,7 @@ If you want a link after a literal `!`, backslash-escape the
 
 ## Autolinks
 
-[Autolink](@)s are absolute URIs and email addresses inside
+[Autolink](@)s are absolute URLs and email addresses inside
 `<` and `>`. They are parsed as links, with the URL or email address
 as the link label.
 
@@ -8500,14 +8653,33 @@ with their syntax:
 ````````````````````````````````
 
 
-Spaces are not allowed in autolinks:
+Spaces are not allowed in autolink URLs.
+The first whitespace is used to separate the URL from the optional [info string]
+which is retained for the link text:
 
 ```````````````````````````````` example
-<http://foo.bar/baz bim>
+<http://foo.bar/baz info string>
 .
-<p>&lt;http://foo.bar/baz bim&gt;</p>
+<p><a href="http://foo.bar/baz">http://foo.bar/baz info string</a></p>
 ````````````````````````````````
 
+If the URL is enclosed in another set of angular brackets, 
+it may contain whitespace:
+
+```````````````````````````````` example
+<<http://foo.bar/baz bim>>
+.
+<p><a href="http://foo.bar/baz%20bim">http://foo.bar/baz bim</a></p>
+````````````````````````````````
+
+These can also contain relative targets,
+because they can never be confused with HTML tags:
+
+```````````````````````````````` example
+<</url>>
+.
+<p><a href="/url">/url</a></p>
+````````````````````````````````
 
 Backslash-escapes do not work inside autolinks:
 
@@ -8528,8 +8700,11 @@ for these purposes, is anything that matches
 the [non-normative regex from the HTML5
 spec](https://html.spec.whatwg.org/multipage/forms.html#e-mail-state-(type=email)):
 
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
-    (?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+``` regex
+/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?
+(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+```
+
 
 Examples of email autolinks:
 
@@ -8544,6 +8719,13 @@ Examples of email autolinks:
 <foo+special@Bar.baz-bar0.com>
 .
 <p><a href="mailto:foo+special@Bar.baz-bar0.com">foo+special@Bar.baz-bar0.com</a></p>
+````````````````````````````````
+
+
+```````````````````````````````` example
+<foo@bar.example.com "My Name">
+.
+<p><a href="mailto:foo@bar.example.com" title="My Name">foo@bar.example.com "My Name"</a></p>
 ````````````````````````````````
 
 
