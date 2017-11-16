@@ -112,7 +112,7 @@ the canonical syntax description:
     shouldn't make a difference. (See the section on HTML Blocks
     for details.) The spec's proposal makes it easy to include Markdown
     inside HTML block-level tags, if you want to, but also allows you to
-    exclude this. It is also makes parsing much easier, avoiding
+    exclude this. It also makes parsing much easier, avoiding
     expensive backtracking.
 
 -   It does not collapse adjacent bird-track blocks into a single
