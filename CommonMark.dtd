@@ -67,7 +67,7 @@
 
 <!ELEMENT image (%inline;)*>
 <!ATTLIST image
-          url CDATA #REQUIRED
+          destination CDATA #REQUIRED
           title CDATA #IMPLIED>
 
 <!ELEMENT html_inline (#PCDATA)>
