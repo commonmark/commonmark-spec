@@ -2069,7 +2069,7 @@ _world_.
 </td></tr></table>
 ````````````````````````````````
 
-In this case, the HTML block is terminated by the newline — the `**hello**`
+In this case, the HTML block is terminated by the newline — the `**Hello**`
 text remains verbatim — and regular parsing resumes, with a paragraph,
 emphasised `world` and inline and block HTML following.
 
