@@ -2414,6 +2414,32 @@ p {color:blue;}
 ````````````````````````````````
 
 
+Note that although `</script>`, `</pre>` and `</style>` can close type 1
+blocks, they cannot *open* an HTML block.
+They are not in the list of type 6 tags and they are explicitly ruled
+out from starting type 7 blocks.  Therefore, if they are not closing a
+type 1 block, they just appear as inline HTML [closing tag].
+All other closing tags can open either type 6 or type 7 HTML blocks:
+
+```````````````````````````````` example
+</script>
+
+</pre>
+
+</style>
+
+</table>
+
+</nonsense>
+.
+<p></script></p>
+<p></pre></p>
+<p></style></p>
+</table>
+</nonsense>
+````````````````````````````````
+
+
 If there is no matching end tag, the block will end at the
 end of the document (or the enclosing [block quote][block quotes]
 or [list item][list items]):
