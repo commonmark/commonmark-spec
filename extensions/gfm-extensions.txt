@@ -1,0 +1,1474 @@
+---
+title: Github extensions to Commonmark
+subtitle: Documentation and embedded conformance tests
+version: 0.1
+date: '2018-01-01'
+license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+alternative: https://github.com/github/cmark/blob/master/test/extensions.txt
+...
+
+GitHub traditionally supported Markdown with tables, strike-through, links from plain URLs and for `@` mentions and `#` issue numbers. 
+Their syntax variant is commonly known as _GitHub-flavored Markdown_ or GFM. 
+When the site switched to a CommonMark-compliant parser in mid-2017, GitHub kept these extensions.
+
+Tables
+======
+
+Tables consists of lines that are turned into rows. 
+The first, mandatory line contains the column headers and is turned into the tabular head. 
+The second, mandatory line is special: It specifies the number of columns and optionally the horizontal alignment of their contents, but is not turned into content.
+The third, optional line and any other following it contains body content. 
+
+Cells are delineated by the vertical line or pipe character `|`, optionally surrounded by whitespace characters. 
+This kind of tables is also known as _pipe tables_. 
+Lines _may_ and in some cases _must_ have a vertical line at their start or end or both. 
+Pipe tables that omit all outside left and right borders are sometimes called _simple tables_. 
+Lines may be indented (how exactly?) and can have any number of trailing whitespace characters. 
+Two trailing spaces improve the fallback rendering where this extension is not supported. 
+
+Minimal tables
+--------------
+
+```````````````````````````````` example
+A
+|-|
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+A
+|-
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+A
+-|
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+||
+|-|
+.
+<table>
+<thead>
+<tr><th></th></tr>
+</thead>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| |
+|-|
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+|A|
+|-|
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+| - |
+| B |
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Spaces and Gaps
+---------------
+
+Tables cannot contain blank lines anywhere:
+
+```````````````````````````````` example
+| A |
+
+|---|
+| B |
+.
+<p>| A |</p>
+<p>|---|
+| B |</p>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+
+| B |
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+</table>
+<p>| B |</p>
+````````````````````````````````
+
+Row lines may end with any number of spaces `    `. This will not mean a manual line break (e.g. `<br>`) inside a cell.
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+| B  
+not B | D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+<tr><td>not B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+A backslash ` \ ` before the end of a line does also not enforce an internal linebreak.
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+| B\
+not B | D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B\</td></tr>
+<tr><td>not B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Note that GFM outputs *every* line break input inside a paragraph as a forced line break, thereby violating good Markdown and Commonmark principles.
+
+It is recommended for table generators to add row-initial and row-final pipes, 
+and to add two spaces after each row-final pipe to improve rendering in legacy implementations.
+
+```````````````````````````````` example
+| A | C |  
+|---|---|  
+| B | D |  
+.
+<p>| A | C |<br>
+|---|---|<br>
+| B | D |<br>
+</p>
+````````````````````````````````
+
+Alternative implementations may allow tables to be fenced for the same reason, but GFM does not:
+
+~~~~~~~~~~~ markdown
+~~~~~~~~
+| A | C |
+|---|---|
+| B | D |
+~~~~~~~~
+.
+<pre>| A | C |
+|---|---|
+| B | D |</pre>
+~~~~~~~~~~~
+
+~~~~~~~~~~~ markdown
+`````````
+| A | C |
+|---|---|
+| B | D |
+`````````
+.
+<pre>| A | C |
+|---|---|
+| B | D |</pre>
+~~~~~~~~~~~
+
+White space around pipes is optional and meaningless. 
+(In other extensions, horizontal alignment is determined by the existence of spaces between the pipe and the start and the end of the cell contents.) 
+Automatic table generators may add additional whitespace to neatly align contents within the same column, unless the text becomes too long, which can easily happen with inline links for instance.
+
+```````````````````````````````` example
+| A | C|E|G |
+|---|--|-|--|
+| B | D|F|H |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th><th>E</th><th>G</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td><td>F</td><td>H</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+This also applies to the dividing line:
+
+```````````````````````````````` example
+| A | C | E | G |
+| - | --|---|-- |
+| B | D | F | H |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th><th>E</th><th>G</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td><td>F</td><td>H</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+### Divider lines
+
+The number of hyphens is irrelevant. One is sufficient.
+
+```````````````````````````````` example
+| A | B | C | D |
+|-|--|---|----|
+.
+<table>
+<thead>
+<tr><th>A</th><th>B</th><th>C</th><th>D</th></tr>
+</thead>
+</table>
+````````````````````````````````
+
+Equal signs `=` are not a valid alternative, although they pair with hyphens in Setext headings.
+
+```````````````````````````````` example
+| A | C |
+|===|===|
+| B | D |
+.
+<p>| A | C |
+|===|===|
+| B | D |</p>
+````````````````````````````````
+
+Neither are underlines `_` and asterisks `*` which are alternative characters to the hyphen in thematic breaks.
+They will be interpreted as emphasis markup if possible.
+
+```````````````````````````````` example
+| A | C |
+|___|___|
+| B | D |
+.
+<p>| A | C |
+|___|___|
+| B | D |</p>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+| ***|*** |
+| B | D |
+.
+<p>| A | C |
+| <em><strong>|</strong></em> |
+| B | D |</p>
+````````````````````````````````
+
+Nor are plus signs `+` which, like the asterisk `*`, are alternatives as bullet list markers.
+
+```````````````````````````````` example
+| A | C |
+|+++|+++|
+| B | D |
+.
+<p>| A | C |
+|+++|+++|
+| B | D |</p>
+````````````````````````````````
+
+Plus signs are also no valid alternative for internal pipes:
+
+```````````````````````````````` example
+| A | C |
+|---+---|
+| B | D |
+.
+<p>| A | C |
+|---+---|
+| B | D |</p>
+````````````````````````````````
+
+Edges
+-----
+
+### One missing
+
+ A |
+|---|
+| B |
+
+| A 
+|---|
+| B |
+
+| A |
+---|
+| B |
+
+| A |
+|---
+| B |
+
+| A |
+|---|
+ B |
+
+| A |
+|---|
+| B 
+
+ A | C |
+|---|---|
+| B | D |
+
+| A | C 
+|---|---|
+| B | D |
+
+| A | C |
+---|---|
+| B | D |
+
+| A | C |
+|---|---
+| B | D |
+
+| A | C |
+|---|---|
+ B | D |
+
+| A | C |
+|---|---|
+| B | D 
+
+### Two missing in same row
+
+| A | C |
+|---|---|
+| B | D |
+
+ A | C 
+|---|---|
+| B | D |
+
+| A | C |
+---|---
+| B | D |
+
+| A | C |
+|---|---|
+ B | D 
+
+ A | C 
+---|---
+| B | D |
+
+ A | C 
+|---|---|
+ B | D 
+
+| A | C |
+---|---
+ B | D 
+
+### All outer lines missing
+
+ A | C 
+---|---
+ B | D 
+
+### Single column
+
+ A
+|---|
+ B
+
+Boundaries
+----------
+
+Since outer pipes are optional in most cases, a line without any pipe character directly following a table will be considered a single cell in another row:
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+foo
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+<tr><td>foo</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+| B | D |
+foo
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+<tr><td>foo</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+But a pipe-less line directly preceding the table will be considered a paragraph that the seeming tabular lines become part of.
+
+```````````````````````````````` example
+foo
+| A |
+|---|
+| B |
+.
+<p>foo
+| A |
+|---|
+| B |</p>
+````````````````````````````````
+
+In other words, paragraphs cannot be interrupted by a table.
+
+```````````````````````````````` example
+foo
+| A |
+|---|
+| B |
+foo
+.
+<p>foo
+| A |
+|---|
+| B |
+foo</p>
+````````````````````````````````
+
+That means, there must be a blank line before and after each table.
+Two tables also need to be separated and there is no syntax for a *table footer* (i.e. `tfoot` in HTML):
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+| C |
+|---|
+| D |
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+<tr><td>C</td></tr>
+<tr><td>---</td></tr>
+<tr><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+* list
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+<ul>
+<li>list</li>
+</ul>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+1. list
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+<ol>
+<li>list</li>
+</ol>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+> quotation
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+<blockquote>quotation</blockquote>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+### heading
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+<h3>heading</h3>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+____
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+<hr />
+````````````````````````````````
+
+Nesting
+-------
+
+Tables can be nested inside quotations.
+
+```````````````````````````````` example
+> | A |
+> |---|
+> | B |
+.
+<blockquote>
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+</blockquote>
+````````````````````````````````
+
+And inside lists:
+
+```````````````````````````````` example
+- | A |
+  |---|
+  | B |
+.
+<ul>
+<li>
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+</li>
+</ul>
+````````````````````````````````
+
+```````````````````````````````` example
+1. | A |
+   |---|
+   | B |
+.
+<ol>
+<li>
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td></tr>
+</tbody>
+</table>
+</li>
+</ol>
+````````````````````````````````
+
+Unless improperly indented:
+
+```````````````````````````````` example
+- | A |
+|---|
+| B |
+.
+<ul>
+<li>- | A |
+|---|
+| B |</li>
+</ul>
+````````````````````````````````
+
+```````````````````````````````` example
+1. | A |
+|---|
+| B |
+.
+<ol>
+<li>- | A |
+|---|
+| B |</li>
+</ol>
+````````````````````````````````
+
+Nor headings. 
+
+ATX headings cannot span multiple lines except with explicit internal line breaks.
+
+```````````````````````````````` example
+### | A |
+|---|
+| B |
+.
+<h3>| A |</h3>
+<p>|---|
+| B |</p>
+````````````````````````````````
+
+Setext headings can span multiple lines but not contain other blocks.
+
+```````````````````````````````` example
+| A |
+|---|
+| B |
+====
+.
+<h1>| A |
+|---|
+| B |</h1>
+````````````````````````````````
+
+No tables
+---------
+
+GFM tables absolutely need a divider line after the table head row.
+
+```````````````````````````````` example
+| a | b |
+````````````````````````````````
+
+```````````````````````````````` example
+||
+--
+````````````````````````````````
+
+```````````````````````````````` example
+|
+|-|
+````````````````````````````````
+
+```````````````````````````````` example
+| 
+-|
+````````````````````````````````
+
+```````````````````````````````` example
+| 
+|-
+````````````````````````````````
+
+The table head row cannot be omitted, even if a table body row is provided.
+
+```````````````````````````````` example
+|---|
+| A |
+.
+<p>|---|
+| A |</p>
+````````````````````````````````
+
+The divider row must contain at least one pipe character `|`.
+
+```````````````````````````````` example
+| A |
+---
+| B |
+.
+<h2>| A |</h2>
+<p>| B |</p>
+````````````````````````````````
+
+```````````````````````````````` example
+| A |
+---
+ B
+.
+<h2>| A |</h2>
+<p>B</p>
+````````````````````````````````
+
+```````````````````````````````` example
+ A
+---
+| B |
+.
+<h2>A</h2>
+<p>| B |</p>
+````````````````````````````````
+
+```````````````````````````````` example
+ A
+---
+ B
+.
+<h2>A</h2>
+<p>B</p>
+````````````````````````````````
+
+Horizontal Alignment
+--------------------
+
+```````````````````````````````` example
+| very long heading | very long heading | very long heading | very long heading |
+|----|:----|:----:|----:|
+| auto | left | center | right |
+.
+<table>
+<thead>
+<tr><th>very long heading</th><th>very long heading</th><th>very long heading</th><th>very long heading</th></tr>
+</thead>
+<tbody>
+<tr><td>auto</td><td align="left">left</td><td align="center">center</td><td align="right">right</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Cells spanning multiple rows or columns
+---------------------------------------
+
+This syntax extension does not support an equivalent of the `rowspan` and `colspan` cell attributes in HTML. 
+
+Other extensions use adjacent pipes for row spans, i.e. cells without even whitespace inside are merged with the one to their left (or right).
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+| BD ||
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>BD</td><td></td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td colspan="2">BD</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+|| BD |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td></td><td>BD</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td colspan="2">BD</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Row Headers
+-----------
+
+This syntax extension does not support an equivalent of the `th` element in HTML outside the column headers in `thead`. 
+
+Other extensions may use alternative separators or additional markup, e.g. `#` as in headings.
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+! B ! D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>! B ! D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><th>B</th><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+| B ! D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B ! D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><th>B</th><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+! B | D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>! B</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><th>B</th><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+|# B #| D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td># B #</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><th>B</th><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | C |
+|---|---|
+|# B | D |
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td># B</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><th>B</th><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Table Captions
+--------------
+
+This syntax extension does not support an equivalent of the `caption` element in HTML.
+
+Other extensions may use either a directly/closely preceding or succeeding standard heading (ATX or Setext style) or a 7th-level heading `#######` as a table caption.
+
+```````````````````````````````` example
+###### Caption
+| A | B |
+|---|---|
+| C | D |
+.
+<h6>Caption</h6>
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<caption>Caption</caption>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+####### Caption
+| A | B |
+|---|---|
+| C | D |
+.
+<p>####### Caption</p>
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<caption>Caption</caption>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | B |
+|---|---|
+| C | D |
+####### Caption
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+<p>####### Caption</p>
+.
+<table>
+<caption>Caption</caption>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+Caption
+----
+| A | B |
+|---|---|
+| C | D |
+.
+<h2>Caption</h2>
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+.
+<table>
+<caption>Caption</caption>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Yet other extension may use other conventions which may be shared with other floats like figures.
+
+```````````````````````````````` example
+| A | B |
+|---|---|
+| C | D |
+: Caption
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+<tr><td>: Caption</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| A | B |
+|---|---|
+| C | D |
+[Caption]
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+<tr><td>[Caption]</td></tr>
+</tbody>
+</table>
+.
+<table>
+<thead>
+<tr><th>A</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>B</td><td>D</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Markup inside
+-------------
+
+Tables can contain any kind of inline markup.
+
+```````````````````````````````` example
+| emphasis |
+|----|
+| *asterisk* |
+| **asterisks** |
+| _underscore_ |
+| __underscores__ |
+| _*mix*_ |
+| `code` |
+| <i>HTML</i> |
+.
+<table>
+<thead>
+<tr><th><em>emphasis</em></th></tr>
+</thead>
+<tbody>
+<tr><td><em>asterisk</em></td></tr>
+<tr><td><strong>asterisks</strong></td></tr>
+<tr><td><em>underscore</em></td></tr>
+<tr><td><strong>underscores</strong></tr>
+<tr><td><em><em>mix</em></em></td></tr>
+<tr><td><code>code</code></td></tr>
+<tr><td><i>HTML</i></td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+```````````````````````````````` example
+| links |
+|----|
+| [link](destination "title") |
+| [link][label] |
+| [label] |
+| <http://example.com> |
+| http://example.com |
+
+[label]: foo "title"
+.
+<table>
+<thead>
+<tr><th>links</th></tr>
+</thead>
+<tbody>
+<tr><td><a href="destination" title="title">link</a></td></tr>
+<tr><td><a href="foo" title="title">link</a></td></tr>
+<tr><td><a href="foo" title="title">link</a></td></tr>
+<tr><td><a href="http://example.com">http://example.com</a></td></tr>
+<tr><td>http://example.com</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Literal pipe characters `|` need to be escaped with a backslash `\` even within backtick `` ` `` code spans or quoted link titles, unless these come from a link reference definition.
+
+```````````````````````````````` example
+| A | B | C |
+|---|---|---|
+| **|** | **\|** |
+| _|_ | _\|_ |
+| `|` | `\|` |
+| [foo](bar "|") | [foo](bar "\|") |
+| [baz] |||
+
+[baz]: quuz "|"
+.
+<table>
+<thead><tr>A</th><th>B</th><th>C</th></tr>
+</thead>
+<tbody>
+<tr><td>**</td><td>**</td><td><strong>|</strong></td></tr>
+<tr><td>_</td><td>_</td><td><em>|</em></td></tr>
+<tr><td>`</td><td>`</td><td><code>|</code></td></tr>
+<tr><td>[foo](bar "</td><td>")</td><td><a href="bar" title="|">foo</a></td></tr>
+<tr><td><a href="quuz" title="|">baz</a></td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Reference link definitions cannot appear inside tables.
+
+```````````````````````````````` example
+[foo]
+
+| [foo]: bar | [baz]: quuz |
+|----|
+| [foo]: bar | [baz]: quuz |
+
+[baz]: quuz
+.
+<p>[foo]</p>
+<table>
+<thead>
+<tr><th>[foo]: bar</th><th><a href="quuz">baz</a>: quuz</th></tr>
+</thead>
+<tbody>
+<tr><td>[foo]: bar</td><td><a href="quuz">baz</a>: quuz</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Blocks cannot occur inside table cells
+
+```````````````````````````````` example
+| A |
+|---|
+| 1. no list |
+| - no list |
+| > no quote |
+.
+<table>
+<thead>
+<tr><th>A</th></tr>
+</thead>
+<tbody>
+<tr><td>1. no list</td></tr>
+<tr><td>- no list</td></tr>
+<tr><td>&gt; no quote</td></tr>
+</tbody>
+</table>
+````````````````````````````````
+
+Strikethrough
+=============
+
+Strikethroughs, i.e. deletions, are marked up with a tilde character `~` on both sides.
+
+```````````````````````````````````````````````` example
+A proper ~strikethrough~.
+.
+<p>A proper <del>strikethrough</del>.</p>
+````````````````````````````````````````````````
+
+Strikethrough can contain line breaks.
+
+```````````````````````````````````````````````` example
+This is ~a
+strikethrough~.
+.
+<p>This is <del>a
+strikethrough</del>.</p>
+````````````````````````````````````````````````
+
+But not empty lines:
+
+```````````````````````````````````````````````` example
+These are ~not strikethroughs.
+
+No, they are not~
+.
+<p>These are ~not strikethroughs.</p>
+<p>No, they are not~</p>
+````````````````````````````````````````````````
+
+Tildes must be next to a non-whitespace character. Other tildes can be part of the stricken text.
+
+```````````````````````````````````````````````` example
+This ~ isn't ~ legit.
+
+This ~is ~ legit~.
+.
+<p>This ~ isn't ~ legit.</p>
+<p>This <del>is ~ legit</del>.</p>
+````````````````````````````````````````````````
+
+Multiple tildes are collapsed, even if the prefix and suffix do not match in length:
+
+```````````````````````````````````````````````` example
+These are ~~~three~~~ ~odd~~~ ~~~strikethroughs~.
+.
+<p>These are <del>three</del> <del>odd</del> <del>strikethroughs</del><.</p>
+````````````````````````````````````````````````
+
+Footnotes
+=========
+
+Footnotes are a special form of shortcut reference links 
+where the link label starts with a circumflex `^` 
+and the link text is automatically generated as a footnote marker. 
+Footnote reference definitions may be a bit more complex than link reference definitions. 
+
+```````````````````````````````````````````````` example
+This is some text![^1]. Other text.[^footnote].
+
+[^1]: Some *bolded* footnote definition.
+
+Hi!
+
+[^footnote]:
+    > Blockquotes can be in a footnote.
+
+        as well as code blocks
+
+    or, naturally, simple paragraphs.
+
+[^unused]: This is unused.
+.
+<p>This is some text!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>. Other text.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>.</p>
+<p>Hi!</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<p>Some <em>bolded</em> footnote definition. <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2">
+<blockquote>
+<p>Blockquotes can be in a footnote.</p>
+</blockquote>
+<pre><code>as well as code blocks
+</code></pre>
+<p>or, naturally, simple paragraphs. <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+```````````````````````````````````````````````` example
+Here's a thing[^other-note].
+
+[^other-note]:       no code block here (spaces are stripped away)
+.
+<p>Here's a thing<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<p>no code block here (spaces are stripped away) <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+```````````````````````````````````````````````` example
+And another thing[^codeblock-note].
+
+[^codeblock-note]:
+        this is now a code block (8 spaces indentation)
+.
+<p>And another thing<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<pre><code>this is now a code block (8 spaces indentation)
+</code></pre>
+<a href="#fnref1" class="footnote-backref">↩</a>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+While some other implementations will turn footnote labels that do not have a matching footnote reference definition into the footnote text, GFM does not do this.
+
+```````````````````````````````````````````````` example
+This doesn't have a referent[^nope].
+.
+<p>This doesn't have a referent[^nope].</p>
+.
+<p>This doesn't have a referent<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+nope
+<a href="#fnref1" class="footnote-backref">↩</a>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
