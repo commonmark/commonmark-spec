@@ -1,0 +1,93 @@
+Footnotes
+=========
+
+_Footnotes_ are a special form of _shortcut reference links_ 
+where the _link label_ starts with a circumflex `^` 
+and the _link text_ is automatically generated as a _footnote marker_. 
+_Footnote reference definitions_ may be a bit more complex than _link reference definitions_. 
+
+```````````````````````````````````````````````` example
+This is some text![^1]. Other text.[^footnote].
+
+[^1]: Some *bolded* footnote definition.
+
+Hi!
+
+[^footnote]:
+    > Blockquotes can be in a footnote.
+
+        as well as code blocks
+
+    or, naturally, simple paragraphs.
+
+[^unused]: This is unused.
+.
+<p>This is some text!<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>. Other text.<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup>.</p>
+<p>Hi!</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<p>Some <em>bolded</em> footnote definition. <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+<li id="fn2">
+<blockquote>
+<p>Blockquotes can be in a footnote.</p>
+</blockquote>
+<pre><code>as well as code blocks
+</code></pre>
+<p>or, naturally, simple paragraphs. <a href="#fnref2" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+```````````````````````````````````````````````` example
+Here's a thing[^other-note].
+
+[^other-note]:       no code block here (spaces are stripped away)
+.
+<p>Here's a thing<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<p>no code block here (spaces are stripped away) <a href="#fnref1" class="footnote-backref">↩</a></p>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+```````````````````````````````````````````````` example
+And another thing[^codeblock-note].
+
+[^codeblock-note]:
+        this is now a code block (8 spaces indentation)
+.
+<p>And another thing<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+<pre><code>this is now a code block (8 spaces indentation)
+</code></pre>
+<a href="#fnref1" class="footnote-backref">↩</a>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````
+
+While some other implementations will turn footnote labels that do not have a matching footnote reference definition into the footnote text, GFM does not do this.
+
+```````````````````````````````````````````````` example
+This doesn't have a referent[^nope].
+.
+<p>This doesn't have a referent[^nope].</p>
+.
+<p>This doesn't have a referent<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>.</p>
+<section class="footnotes">
+<ol>
+<li id="fn1">
+nope
+<a href="#fnref1" class="footnote-backref">↩</a>
+</li>
+</ol>
+</section>
+````````````````````````````````````````````````

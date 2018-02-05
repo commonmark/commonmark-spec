@@ -1,0 +1,53 @@
+Strikethrough
+=============
+
+Strikethroughs, i.e. deletions, are marked up with a tilde character `~` on both sides.
+
+**Issue**: Should either be exactly two tildes or exactly one tilde on both sides. 
+Align with [Critic Markup](critic-markup) and [subscripts](vertical-offset).
+
+```````````````````````````````````````````````` example
+A proper ~strikethrough~.
+.
+<p>A proper <del>strikethrough</del>.</p>
+````````````````````````````````````````````````
+
+Strikethrough can contain line breaks.
+
+```````````````````````````````````````````````` example
+This is ~a
+strikethrough~.
+.
+<p>This is <del>a
+strikethrough</del>.</p>
+````````````````````````````````````````````````
+
+But not empty lines:
+
+```````````````````````````````````````````````` example
+These are ~not strikethroughs.
+
+No, they are not~
+.
+<p>These are ~not strikethroughs.</p>
+<p>No, they are not~</p>
+````````````````````````````````````````````````
+
+Tildes must be next to a non-whitespace character. Other tildes can be part of the stricken text.
+
+```````````````````````````````````````````````` example
+This ~ isn't ~ legit.
+
+This ~is ~ legit~.
+.
+<p>This ~ isn't ~ legit.</p>
+<p>This <del>is ~ legit</del>.</p>
+````````````````````````````````````````````````
+
+Multiple tildes are collapsed, even if the prefix and suffix do not match in length:
+
+```````````````````````````````````````````````` example
+These are ~~~three~~~ ~odd~~~ ~~~strikethroughs~.
+.
+<p>These are <del>three</del> <del>odd</del> <del>strikethroughs</del><.</p>
+````````````````````````````````````````````````
