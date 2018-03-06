@@ -136,11 +136,6 @@ the canonical syntax description:
     of perfectly natural looking lists that nearly every existing
     implementation flubs up.)
 
--   The spec stipulates that two blank lines break out of all list
-    contexts.  This is an attempt to deal with issues that often come up
-    when someone wants to have two adjacent lists, or a list followed by
-    an indented code block.
-
 -   Changing bullet characters, or changing from bullets to numbers or
     vice versa, starts a new list. We think that is almost always going
     to be the writer's intent.
