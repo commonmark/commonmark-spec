@@ -5049,11 +5049,9 @@ item:
  - b
   - c
    - d
-    - e
-   - f
-  - g
- - h
-- i
+  - e
+ - f
+- g
 .
 <ul>
 <li>a</li>
@@ -5063,11 +5061,53 @@ item:
 <li>e</li>
 <li>f</li>
 <li>g</li>
-<li>h</li>
-<li>i</li>
 </ul>
 ````````````````````````````````
 
+
+```````````````````````````````` example
+1. a
+
+  2. b
+
+   3. c
+.
+<ol>
+<li>
+<p>a</p>
+</li>
+<li>
+<p>b</p>
+</li>
+<li>
+<p>c</p>
+</li>
+</ol>
+````````````````````````````````
+
+Note, however, that list items may not be indented more than
+three spaces.  Here `- e` is treated as a paragraph continuation
+line, because it is indented more than three spaces:
+
+```````````````````````````````` example
+- a
+ - b
+  - c
+   - d
+    - e
+.
+<ul>
+<li>a</li>
+<li>b</li>
+<li>c</li>
+<li>d
+- e</li>
+</ul>
+````````````````````````````````
+
+And here, `3. c` is treated as in indented code block,
+because it is indented four spaces and preceded by a
+blank line.
 
 ```````````````````````````````` example
 1. a
@@ -5083,10 +5123,9 @@ item:
 <li>
 <p>b</p>
 </li>
-<li>
-<p>c</p>
-</li>
 </ol>
+<pre><code>3. c
+</code></pre>
 ````````````````````````````````
 
 
