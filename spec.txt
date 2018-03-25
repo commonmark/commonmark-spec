@@ -2811,7 +2811,7 @@ them.
 
 ```````````````````````````````` example
 [Foo bar]:
-<my%20url>
+<my url>
 'title'
 
 [Foo bar]
@@ -7237,7 +7237,7 @@ following rules apply:
 A [link destination](@) consists of either
 
 - a sequence of zero or more characters between an opening `<` and a
-  closing `>` that contains no spaces, line breaks, or unescaped
+  closing `>` that contains no line breaks or unescaped
   `<` or `>` characters, or
 
 - a nonempty sequence of characters that does not include
@@ -7308,9 +7308,8 @@ Both the title and the destination may be omitted:
 <p><a href="">link</a></p>
 ````````````````````````````````
 
-
-The destination cannot contain spaces or line breaks,
-even if enclosed in pointy brackets:
+The destination can only contain spaces if it is
+enclosed in pointy brackets:
 
 ```````````````````````````````` example
 [link](/my uri)
@@ -7318,13 +7317,14 @@ even if enclosed in pointy brackets:
 <p>[link](/my uri)</p>
 ````````````````````````````````
 
-
 ```````````````````````````````` example
 [link](</my uri>)
 .
-<p>[link](&lt;/my uri&gt;)</p>
+<p><a href="my%20uri">link</a></p>
 ````````````````````````````````
 
+The destination cannot contain line breaks,
+even if enclosed in pointy brackets:
 
 ```````````````````````````````` example
 [link](foo
@@ -7333,7 +7333,6 @@ bar)
 <p>[link](foo
 bar)</p>
 ````````````````````````````````
-
 
 ```````````````````````````````` example
 [link](<foo
