@@ -6681,6 +6681,17 @@ cannot form emphasis if the sum of the lengths of
 the delimiter runs containing the opening and
 closing delimiters is a multiple of 3.
 
+
+For the same reason, we don't get two consecutive
+emphasis sections in this example:
+
+```````````````````````````````` example
+*foo**bar*
+.
+<p><em>foo**bar</em></p>
+````````````````````````````````
+
+
 The same condition ensures that the following
 cases are all strong emphasis nested inside
 emphasis, even when the interior spaces are
@@ -6721,12 +6732,6 @@ Indefinite levels of nesting are possible:
 *foo [*bar*](/url)*
 .
 <p><em>foo <a href="/url"><em>bar</em></a></em></p>
-````````````````````````````````
-
-```````````````````````````````` example
-*foo**bar*
-.
-<p><em>foo**bar</em></p>
 ````````````````````````````````
 
 
