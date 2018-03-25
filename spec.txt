@@ -5587,14 +5587,14 @@ references and their corresponding code points.
 
 [Decimal numeric character
 references](@)
-consist of `&#` + a string of 1--8 arabic digits + `;`. A
+consist of `&#` + a string of 1--7 arabic digits + `;`. A
 numeric character reference is parsed as the corresponding
 Unicode character. Invalid Unicode code points will be replaced by
 the REPLACEMENT CHARACTER (`U+FFFD`).  For security reasons,
 the code point `U+0000` will also be replaced by `U+FFFD`.
 
 ```````````````````````````````` example
-&#35; &#1234; &#992; &#98765432; &#0;
+&#35; &#1234; &#992; &#0;
 .
 <p># Ӓ Ϡ � �</p>
 ````````````````````````````````
@@ -5602,7 +5602,7 @@ the code point `U+0000` will also be replaced by `U+FFFD`.
 
 [Hexadecimal numeric character
 references](@) consist of `&#` +
-either `X` or `x` + a string of 1-8 hexadecimal digits + `;`.
+either `X` or `x` + a string of 1-6 hexadecimal digits + `;`.
 They too are parsed as the corresponding Unicode character (this
 time specified with a hexadecimal numeral instead of decimal).
 
@@ -5617,9 +5617,13 @@ Here are some nonentities:
 
 ```````````````````````````````` example
 &nbsp &x; &#; &#x;
+&#987654321;
+&#abcdef0;
 &ThisIsNotDefined; &hi?;
 .
 <p>&amp;nbsp &amp;x; &amp;#; &amp;#x;
+&amp;#987654321;
+&amp;#abcdef0;
 &amp;ThisIsNotDefined; &amp;hi?;</p>
 ````````````````````````````````
 
