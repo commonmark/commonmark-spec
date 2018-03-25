@@ -2612,7 +2612,8 @@ bar
 
 
 However, a following blank line is needed, except at the end of
-a document, and except for blocks of types 1--5, above:
+a document, and except for blocks of types 1--5, [above][HTML
+block]:
 
 ```````````````````````````````` example
 <div>
@@ -2758,8 +2759,8 @@ an indented code block:
 
 Fortunately, blank lines are usually not necessary and can be
 deleted.  The exception is inside `<pre>` tags, but as described
-above, raw HTML blocks starting with `<pre>` *can* contain blank
-lines.
+[above][HTML blocks], raw HTML blocks starting with `<pre>`
+*can* contain blank lines.
 
 ## Link reference definitions
 
@@ -4458,9 +4459,10 @@ continued here.</p>
 6.  **That's all.** Nothing that is not counted as a list item by rules
     #1--5 counts as a [list item](#list-items).
 
-The rules for sublists follow from the general rules above.  A sublist
-must be indented the same number of spaces a paragraph would need to be
-in order to be included in the list item.
+The rules for sublists follow from the general rules
+[above][List items].  A sublist must be indented the same number
+of spaces a paragraph would need to be in order to be included
+in the list item.
 
 So, in this case we need two spaces indent:
 
