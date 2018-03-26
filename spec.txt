@@ -7337,7 +7337,7 @@ enclosed in pointy brackets:
 ```````````````````````````````` example
 [link](</my uri>)
 .
-<p><a href="my%20uri">link</a></p>
+<p><a href="/my%20uri">link</a></p>
 ````````````````````````````````
 
 The destination cannot contain line breaks,
