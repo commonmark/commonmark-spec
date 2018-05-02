@@ -2023,22 +2023,22 @@ followed by an uppercase ASCII letter.\
 
 6.  **Start condition:** line begins the string `<` or `</`
 followed by one of the strings (case-insensitive) `address`,
-`article`, `aside`, `base`, `basefont`, `blockquote`, `body`,
-`caption`, `center`, `col`, `colgroup`, `dd`, `details`, `dialog`,
+`article`, `aside`, `blockquote`, `body`,
+`caption`, `center`, `colgroup`, `dd`, `details`, `dialog`,
 `dir`, `div`, `dl`, `dt`, `fieldset`, `figcaption`, `figure`,
-`footer`, `form`, `frame`, `frameset`,
-`h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `head`, `header`, `hr`,
-`html`, `iframe`, `legend`, `li`, `link`, `main`, `menu`, `menuitem`,
-`meta`, `nav`, `noframes`, `ol`, `optgroup`, `option`, `p`, `param`,
-`section`, `source`, `summary`, `table`, `tbody`, `td`,
-`tfoot`, `th`, `thead`, `title`, `tr`, `track`, `ul`, followed
+`footer`, `form`, `frameset`,
+`h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `head`, `header`,
+`html`, `iframe`, `legend`, `li`, `main`, `menu`,
+`nav`, `noframes`, `ol`, `optgroup`, `option`, `p`,
+`section`, `summary`, `table`, `tbody`, `td`,
+`tfoot`, `th`, `thead`, `title`, `tr`, `ul`, followed
 by [whitespace], the end of the line, the string `>`, or
 the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
 7.  **Start condition:**  line begins with a complete [open tag]
-or [closing tag] (with any [tag name] other than `script`,
-`style`, or `pre`) followed only by [whitespace]
+or [closing tag] (with any [tag name] other than `pre`, a [raw text element]
+name, or a [void element] name followed only by [whitespace]
 or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
@@ -8718,6 +8718,21 @@ the string `<![CDATA[`, a string of characters not including the string
 An [HTML tag](@) consists of an [open tag], a [closing tag],
 an [HTML comment], a [processing instruction], a [declaration],
 or a [CDATA section].
+
+A [raw text element](@) is one of the following elements
+as [defined](http://w3c.github.io/html/syntax.html#raw-text-elements)
+by the HTML spec:
+`script`, `style`.
+
+A [void element](@) is one of the following elements
+as [defined](http://w3c.github.io/html/syntax.html#void-elements)
+by the HTML spec:
+`area`, `base`, `br`, `col`, `embed`, `hr`, `img`, `input`, `link`, `menuitem`,
+`meta`, `param`, `source`, `track`, `wbr`.
+
+Additionally, the following legacy HTML elements are considered void:
+`basefont`, `bgsound`, `command`, `frame`, `image`, `isindex`, `keygen`,
+`nextid`.
 
 Here are some simple open tags:
 
