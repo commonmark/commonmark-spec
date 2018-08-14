@@ -514,8 +514,8 @@ one block element does not affect the inline parsing of any other.
 ## Container blocks and leaf blocks
 
 We can divide blocks into two types:
-[container block](@)s,
-which can contain other blocks, and [leaf block](@)s,
+[container blocks](@),
+which can contain other blocks, and [leaf blocks](@),
 which cannot.
 
 # Leaf blocks
@@ -1996,9 +1996,10 @@ by their start and end conditions.  The block begins with a line that
 meets a [start condition](@) (after up to three spaces
 optional indentation).  It ends with the first subsequent line that
 meets a matching [end condition](@), or the last line of
-the document or other [container block]), if no line is encountered that meets the
-[end condition].  If the first line meets both the [start condition]
-and the [end condition], the block will contain just that line.
+the document or other [container block](#container-blocks)), if no
+line is encountered that meets the [end condition].  If the first line
+meets both the [start condition] and the [end condition], the block
+will contain just that line.
 
 1.  **Start condition:**  line begins with the string `<script`,
 `<pre`, or `<style` (case-insensitive), followed by whitespace,
@@ -2043,10 +2044,11 @@ or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 HTML blocks continue until they are closed by their appropriate
-[end condition], or the last line of the document or other [container block].
-This means any HTML **within an HTML block** that might otherwise be recognised
-as a start condition will be ignored by the parser and passed through as-is,
-without changing the parser's state.
+[end condition], or the last line of the document or other [container
+block](#container-blocks).  This means any HTML **within an HTML
+block** that might otherwise be recognised as a start condition will
+be ignored by the parser and passed through as-is, without changing
+the parser's state.
 
 For instance, `<pre>` within a HTML block started by `<table>` will not affect
 the parser state; as the HTML block was started in by start condition 6, it
@@ -3208,7 +3210,7 @@ aaa
 
 # Container blocks
 
-A [container block] is a block that has other
+A [container block](#container-blocks) is a block that has other
 blocks as its contents.  There are two basic kinds of container blocks:
 [block quotes] and [list items].
 [Lists] are meta-containers for [list items].
