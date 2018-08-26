@@ -5719,13 +5719,12 @@ a backtick string of equal length.  The contents of the code span are
 the characters between the two backtick strings, normalized in the
 following ways:
 
-- First, [line endings] are converted to [spaces], unless they are
-  adjacent to [spaces], in which case they are ignored.
-- If the string both begins *and* ends with a [space] character,
-  a single [space] character is removed from the front and back.
-  This allows you to include code that begins or ends with backtick
-  characters, which must be separated by whitespace from the opening
-  or closing backtick strings.
+- First, [line endings] are converted to [spaces].
+- If the resulting string both begins *and* ends with a [space]
+  character, a single [space] character is removed from the
+  front and back.  This allows you to include code that begins
+  or ends with backtick characters, which must be separated by
+  whitespace from the opening or closing backtick strings.
 
 This is a simple code span:
 
@@ -5783,8 +5782,7 @@ stripped in this way:
 ````````````````````````````````
 
 
-[Line endings] are treated like spaces, unless they
-come after spaces, in which case they are ignored.
+[Line endings] are treated like spaces:
 
 ```````````````````````````````` example
 ``
@@ -5793,12 +5791,12 @@ bar
 baz
 ``
 .
-<p><code>foo bar  baz</code></p>
+<p><code>foo bar   baz</code></p>
 ````````````````````````````````
 
 ```````````````````````````````` example
-`` 
-foo  
+``
+foo 
 ``
 .
 <p><code>foo </code></p>
@@ -5808,7 +5806,7 @@ foo
 Interior spaces are not collapsed:
 
 ```````````````````````````````` example
-`foo   bar  
+`foo   bar 
 baz`
 .
 <p><code>foo   bar  baz</code></p>
@@ -9038,7 +9036,7 @@ bar</em></p>
 Line breaks do not occur inside code spans
 
 ```````````````````````````````` example
-`code  
+`code 
 span`
 .
 <p><code>code  span</code></p>
