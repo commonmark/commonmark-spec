@@ -2888,7 +2888,7 @@ whitespace:
 
 [foo]
 .
-<p>[foo]: &lt;bar&gt;(baz)</p>
+<p>[foo]: <bar>(baz)</p>
 <p>[foo]</p>
 ````````````````````````````````
 
