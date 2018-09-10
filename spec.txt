@@ -2880,6 +2880,18 @@ The link destination may not be omitted:
 <p>[foo]</p>
 ````````````````````````````````
 
+The title must be separated from the link destination by
+whitespace:
+
+```````````````````````````````` example
+[foo]: <bar>(baz)
+
+[foo]
+.
+<p>[foo]: &lt;bar&gt;(baz)</p>
+<p>[foo]</p>
+````````````````````````````````
+
 
 Both title and destination can contain backslash escapes
 and literal backslashes:
