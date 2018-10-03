@@ -167,9 +167,13 @@ local create_anchors = function(doc, meta, to)
           end
         end
       end
+      local children = {};
       while child do
-        node_append_child(anchor, child)
+        children[#children + 1] = child
         child = cmark.node_next(child)
+      end
+      for _,child in ipairs(children) do
+        node_append_child(anchor, child)
       end
       cmark.node_insert_before(cur, anchor)
       cmark.node_unlink(cur)
