@@ -1584,8 +1584,8 @@ begins with a code fence, indented no more than three spaces.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
-whitespace and called the [info string](@).
-The [info string] may not contain any backtick
+whitespace and called the [info string](@). If the [info string] comes
+after a backtick fence, it may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
 beginning of a fenced code block.)
@@ -1970,6 +1970,18 @@ foo
 .
 <p><code>aa</code>
 foo</p>
+````````````````````````````````
+
+
+[Info strings] for tilde code blocks can contain backticks and tildes:
+
+```````````````````````````````` example
+~~~ aa ``` ~~~
+foo
+~~~
+.
+<pre><code class="language-aa">foo
+</code></pre>
 ````````````````````````````````
 
 
