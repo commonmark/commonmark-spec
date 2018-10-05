@@ -4,6 +4,8 @@
          'block_quote|list|code_block|paragraph|heading|thematic_break|html_block|custom_block'>
 <!ENTITY % inline
          'text|softbreak|linebreak|code|emph|strong|link|image|html_inline|custom_inline'>
+<!ENTITY % nolink
+         'text|softbreak|linebreak|code|emph|strong|image|html_inline|custom_inline'>
 
 <!ELEMENT document (%block;)*>
 <!ATTLIST document
@@ -18,6 +20,7 @@
           type (bullet|ordered) #REQUIRED
           start CDATA #IMPLIED
           tight (true|false) #REQUIRED
+          bullet (asterisk|hyphen|plus) #IMPLIED
           delimiter (period|paren) #IMPLIED>
 
 <!ELEMENT item (%block;)*>
@@ -25,15 +28,19 @@
 <!ELEMENT code_block (#PCDATA)>
 <!ATTLIST code_block
           xml:space CDATA #FIXED "preserve"
+          fence (backtick|tilde) #IMPLIED
           info CDATA #IMPLIED>
 
 <!ELEMENT paragraph (%inline;)*>
 
 <!ELEMENT heading (%inline;)*>
 <!ATTLIST heading
-          level (1|2|3|4|5|6) #REQUIRED>
+          level (1|2|3|4|5|6) #REQUIRED
+          type (underlined|prefixed) #IMPLIED>
 
-<!ELEMENT thematic_break  EMPTY>
+<!ELEMENT thematic_break EMPTY>
+<!ATTLIST thematic_break
+          marker (asterisk|hyphen|underscore) #IMPLIED>
 
 <!ELEMENT html_block (#PCDATA)>
 <!ATTLIST html_block
@@ -51,24 +58,34 @@
 <!ELEMENT softbreak EMPTY>
 
 <!ELEMENT linebreak EMPTY>
+<!ATTLIST linebreak
+          marker (spaces|backslash)>
 
 <!ELEMENT code (#PCDATA)>
 <!ATTLIST code
           xml:space CDATA #FIXED "preserve">
 
 <!ELEMENT emph (%inline;)*>
+<!ATTLIST emph
+          marker (asterisk|underscore)>
 
 <!ELEMENT strong (%inline;)*>
+<!ATTLIST strong
+          marker (asterisk|underscore)>
 
-<!ELEMENT link (%inline;)*>
+<!ELEMENT link (%nolink;)*>
 <!ATTLIST link
           destination CDATA #REQUIRED
-          title CDATA #IMPLIED>
+          title CDATA #IMPLIED
+          label CDATA #IMPLIED
+          type (inline|reference|shortcut|auto)>
 
 <!ELEMENT image (%inline;)*>
 <!ATTLIST image
           destination CDATA #REQUIRED
-          title CDATA #IMPLIED>
+          title CDATA #IMPLIED
+          label CDATA #IMPLIED
+          type (inline|reference|shortcut)>
 
 <!ELEMENT html_inline (#PCDATA)>
 <!ATTLIST html_inline
