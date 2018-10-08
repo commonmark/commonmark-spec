@@ -2900,8 +2900,7 @@ whitespace:
 
 [foo]
 .
-<p>[foo]: <bar>(baz)</p>
-<p>[foo]</p>
+<p><a href="&lt;bar&gt;(baz)">foo</a></p>
 ````````````````````````````````
 
 
