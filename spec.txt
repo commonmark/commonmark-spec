@@ -102,8 +102,8 @@ source, not just in the processed document.
 
 ## Why is a spec needed?
 
-John Gruber's [canonical description of Markdown's syntax](
-http://daringfireball.net/projects/markdown/syntax) 
+John Gruber's [canonical description of Markdown's 
+syntax](http://daringfireball.net/projects/markdown/syntax) 
 does not specify the syntax unambiguously.  
 Here are some examples of questions it does not answer:
 
@@ -749,7 +749,7 @@ If you want a thematic break in a list item, use a different bullet:
 
 ## ATX headings
 
-An [ATX heading](@) or [prefixed heading](@)
+An [ATX heading](@)
 consists of a string of characters, parsed as inline content, between an
 opening sequence of 1--6 unescaped `#` characters and an optional
 closing sequence of any number of unescaped `#` characters.
@@ -971,14 +971,10 @@ ATX headings can be empty:
 <h3></h3>
 ````````````````````````````````
 
-Note: MediaWiki markup uses the equals sign `=` for ATX-like headings instead 
-and uses the number sign `#` for ordered list items. 
-This constitutes one major incompatibility between CommonMark and MediaWiki.
-
 
 ## Setext headings
 
-A [setext heading](@) or [underlined heading](@) consists of one or more
+A [setext heading](@) consists of one or more
 lines of text, each containing at least one [non-whitespace
 character], with no more than 3 spaces indentation, followed by
 a [setext heading underline].  The lines of text must be such
@@ -990,8 +986,8 @@ interpretable as a [code fence], [ATX heading][ATX headings],
 
 A [setext heading underline](@) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
-spaces indentation and any number of trailing spaces.  
-If a line containing a single `-` can be interpreted as an
+spaces indentation and any number of trailing spaces. If a line 
+containing a single `-` can be interpreted as an
 empty [list item][list items], it *should* be interpreted this way
 and not as a [setext heading underline].
 
@@ -1314,11 +1310,6 @@ One can find four different interpretations:
 3. paragraph "Foo bar --- baz"
 4. heading "Foo bar", paragraph "baz"
 
-Interpretation 3 does not comply with the CommonMark rule 
-that both a [thematic break] and a setext heading 
-can interrupt a paragraph, 
-i.e. they do not need a blank line before or after.
-
 We find interpretation 4 most natural, and interpretation 4
 increases the expressive power of CommonMark, by allowing
 multiline headings.  Authors who want interpretation 1 can
@@ -1600,7 +1591,7 @@ spaces and called the [info string](@).
 The [info string] may not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
-beginning of a fenced code block.) 
+beginning of a fenced code block.)
 
 The content of the code block consists of all subsequent lines, until
 a closing [code fence] of the same type as the code block
@@ -7180,7 +7171,7 @@ __a<http://foo.bar/?q=__>
 ## Links
 
 A link contains [link text] (the visible text), a [link destination]
-(the URI that is the link destination), and optionally an [info string] 
+(the URL that is the link destination), and optionally an [info string] 
 that usually starts with or only consists of a [link title].
 There are two basic kinds of links in Markdown.  In [inline links] the
 destination and title are given immediately after the link text.  In
@@ -7312,7 +7303,6 @@ i.e. whitespace.
 ```````````````````````````````` example
 [link](/foo bar)
 .
-<p>[link](/foo bar)</p>													<-- legacy
 <p><a href="/foo">link</a></p>
 ````````````````````````````````
 
