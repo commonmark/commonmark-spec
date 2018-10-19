@@ -1,0 +1,31 @@
+Explicit Target IDs
+===========
+
+See also
+--------
+
+- [Info Strings extension](infostring)
+- [Generic Metadata extension](generic-metadata)
+- [Attributes extension](attribute)
+
+Introduction
+------------
+
+Probably the best-supported subset of the [Attributes extension](attribute) are explicitly set target IDs for headings and other strucutral document elements.
+
+They are inteded for use in URL fragment identifiers and CSS Selectors, which they also inherit the hash sign prefix `#` from.
+
+```````````````````````````````````````````````` example
+{#foo}
+#foo
+#123
+#foo bar
+#foo_bar
+#foo-bar
+#foo%20bar
+#'foo bar'
+#"foo bar"
+#(foo bar)
+.
+<a id="foo" name="foo"></a>
+````````````````````````````````````````````````

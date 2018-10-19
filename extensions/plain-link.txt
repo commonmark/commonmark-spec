@@ -1,0 +1,65 @@
+Plain Links
+===========
+
+See also
+--------
+
++ 
+
+Introduction
+------------
+
+Many humans can easily spot absolute URLs, email addresses and file names in prose, but for computers this is a difficult task when false negatives and false positives shall be avoided.
+
+Absolute URL
+------------
+
+### Protocol Schemes
+
+- `http`, `https`
+
+Email Address
+-------------
+
+`[]@[]\.[]`
+
+Account Mention
+---------------
+
+`@[A-z\d-]+`
+
+User or Group, `@all` may be special
+
+Thread Number
+-------------
+
+`#\d+`
+
+On GitHub and GitLab this is used for _issues_. GitHub also uses it for _pull requests_, GitLab uses `!`  for _merge requests_.
+
+GFM
+---
+
+G(L)FM will recognize the following, `!request`, `$snippet`, `~label`, `%milestone`, `commit...range` / `@commit...range` :
+
+| input                      | cross-project reference                 | shortcut within same namespace | references                      |
+| :------------------------- | --------------------------------------- | ------------------------------ | :------------------------------ |
+| `@user_name`               |                                         |                                | specific user                   |
+| `@group_name`              |                                         |                                | specific group                  |
+| `@all`                     |                                         |                                | entire team                     |
+| `namespace/project>`       |                                         |                                | project                         |
+| `#12345`                   | `namespace/project#123`                 | `project#123`                  | issue                           |
+| `!123`                     | `namespace/project!123`                 | `project!123`                  | merge request                   |
+| `$123`                     | `namespace/project$123`                 | `project$123`                  | snippet                         |
+| `~123`                     |                                         |                                | label by ID                     |
+| `~bug`                     |                                         |                                | one-word label by name          |
+| `~"feature request"`       | `namespace/project~"Some label"`        | `project~"Some label"`         | multi-word label by name        |
+| `%123`                     | `namespace/project%123`                 | `project%123`                  | project milestone by ID         |
+| `%v1.23`                   |                                         |                                | one-word milestone by name      |
+| `%"release candidate"`     |                                         |                                | multi-word milestone by name    |
+| `9ba12248`                 | `namespace/project@9ba12248`            | `project@9ba12248`             | specific commit                 |
+| `9ba12248...b19a04f5`      | `namespace/project@9ba12248...b19a04f5` | `project@9ba12248...b19a04f5`  | commit range comparison         |
+| `[README](doc/README)`     |                                         |                                | repository file references      |
+| `[README](doc/README#L13)` |                                         |                                | repository file line references |
+
+The label notation with tilde may collide with subscript notation.

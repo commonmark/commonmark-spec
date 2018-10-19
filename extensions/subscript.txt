@@ -1,0 +1,51 @@
+Subscript Text and Indices
+===========
+
+See also
+--------
+
++ [GitLab flavor](GitLab.flavor) (but *not* GitHub)
++ [Superscript Text extension](superscript)
++ [Strike-Through extension](strikethrough)
++ [Deleted Text extension](deletion)
+
+Introduction
+------------
+
+Standard syntax
+---------------
+
+Subscript text is enclosed in a pair of tilde characters `~`.
+
+```````````````````````````````````````````````` example
+foo~bar~
+NO~x~
+CO~2~ H~2~O
+C~6~H~12~O~6~
+YP~b~P~r~
+.
+NO<sub>x</sub>
+foo<sub>bar</sub>
+CO<sub>2</sub> H<sub>2</sub>O
+C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>
+YP<sub>b</sub>P<sub>r</sub>
+````````````````````````````````````````````````
+
+Truncated syntax
+----------------
+
+A single-letter or purely numeric string can omit the trailing tilde suffix `~`. A single letter index must be followed by a non-letter, i.e. a word boundary or a digit.
+
+```example
+foo~bar
+NO~x
+CO~2 H~2O
+C~6H~12O~6
+YP~bP~r
+.
+foo~bar
+NO<sub>x</sub>
+CO<sub>2</sub> H<sub>2</sub>O
+C<sub>6</sub>H<sub>12</sub>O<sub>6</sub>
+YP<sub>bP<sub>r
+```

@@ -1,0 +1,44 @@
+Superscript Text and Indices
+===========
+
+See also
+--------
+
+- [Subscript Text extension](subscript)
+
+Introduction
+---------------
+
+Standard syntax
+---------------
+
+Superscript text is enclosed in a pair of circumflex characters `^`.
+
+```````````````````````````````````````````````` example
+foo^bar^
+M^r^ M^rs^
+m^2^
+^14^C
+.
+foo<sup>bar</sup>
+M<sup>r</sup> M<sup>rs</sup>
+m<sup>2</sup>
+<sup>14</sup>C
+````````````````````````````````````````````````
+
+Truncated syntax
+----------------
+
+A single-letter or purely numeric string can omit the trailing tilde suffix `~`. A single letter index must be followed by a non-letter, i.e. a word boundary or a digit.
+
+```example
+foo^bar
+M^r M^rs
+m^2
+^14C
+.
+foo^bar
+M<sup>r</sup> M^rs
+m<sup>2</sup>
+<sup>14</sup>C
+```

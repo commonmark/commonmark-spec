@@ -1,0 +1,111 @@
+Info Strings
+===========
+
+See also
+--------
+
++ [Attributes extension](attribute)
+
+Introduction
+------------
+
+
+
+Code Blocks
+-----------
+
+```example
+~~~ foo
+bar
+~~~
+.
+<pre data-info="foo"><code>
+bar
+</code></pre>
+```
+
+
+
+~~~example
+``` foo
+bar
+```
+.
+<pre data-info="foo"><code>
+bar
+</code></pre>
+~~~
+
+Headings
+--------
+
+### Prefixed Headings
+
+ATX-style headings without the optional suffix do not support info strings without curly braces.
+
+### Suffixed Headings
+
+```example
+## Foo ## bar
+.
+<h2 data-info="bar">Foo</h2>
+```
+
+### Underlined Headings
+
+```example
+Foo
+--- bar
+.
+<h2 data-info="bar">Foo</h2>
+```
+
+Quotations
+----------
+
+```example
+> Foo < bar
+.
+<blockquote data-info="bar">Foo</blockquote>
+```
+
+Links and Embedded Media
+------------------------
+
+Besides _link text_, all types of links feature a mandatory _link destination_ (or source) attribute and an optional _link title_ attribute. Reference links also have an explicit (shortcut links an implicit) _link label_. At least _destination_ and _title_ can be considered special cases and forms of an _info string_. In other words everything inside the parentheses of an inline link or within the definition of a reference link is an _info string_.
+
+### Inline Links
+
+`[text](infos-tring)`
+
+### Reference Links
+
+`[text][explicit label]`
+
+`[label]: info-string`
+
+### Non-destination Links
+
+`[text](<> rest of info string)`
+
+`[text]("" rest of info string)`
+
+`[text]('' rest of info string)`
+
+`[text](() rest of info string)`
+
+`[text](# rest of info string)`
+
+`[text](? rest of info string)`
+
+`[text](; rest of info string)`
+
+`[text](. rest of info string)`
+
+Lists
+-----
+
+### Whole List
+
+### List Items
+

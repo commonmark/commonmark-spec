@@ -1,0 +1,19 @@
+# {Extension Name}
+
+See also
+--------
+
+- [ flavor]()
+- [ extension]()
+
+Introduction
+------------
+
+
+
+```example
+Markdown
+.
+HTML
+```
+

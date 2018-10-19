@@ -1,0 +1,61 @@
+Character Macros or Emoji Short Codes
+=================
+
+See also
+--------
+
+- [GitHub flavor](GitHub.flavor)
+- [GitLab flavor](GitLab.flavor)
+
+Introduction
+------------
+
+- `\b:([a-z\d_+-]+):\b` general
+- `\b:([a-z\d+][a-z\d+-]*):\b` hyphen
+- `\b:([a-z\d+][a-z\d_+]*):\b` underscore
+
+_Character macros_ are similar to named character references in HTML (inherited from SGML and XML, often called _entities_) which start with an ampersand `&` and usually end with a semicoln `;`. These _short codes_ start and end with a single colon `:`. The enclosed codes themselves may (but rarely do) start with a non-letter. 
+
+There are several slightly different predefined sets for emojis, e.g. they may prefer either the underscore `_`  or the hyphen `-` to concatenate words. Some are updated more regularly and quickly than others to support new additions to the standard Unicode Emoji set. 
+
+Implementations may substitute the code either by a single character, a sequence of characters or, especially in the case of emojis, by an embedded image.
+
+`````````````````````````````` example
+:+1: :100: :cat: :smile-cat: :smile_cat:
+.
+
+``````````````````````````````
+
+:+1: :100::cat: ​ :smile_cat:
+
+Character macros are handled like any inline text. 
+
+```````````````````````````````````` example
+_:cat:_
+.
+<em></em>
+````````````````````````````````````
+
+They cannot contain other markup themselves, but may appear inside other inline markup.
+
+`````````````````````````````````````````` example
+:_cat_: :*dog*:
+.
+:_cat_: :<em>dog</em>:
+``````````````````````````````````````````
+
+Defining new macros
+-------------------
+
+**Issue:** There is no established way to define custom macros within markdown.
+
+``````````````````````````````````````` example
+:foo:
+
+  [:foo:]: bar
+.
+bar
+```````````````````````````````````````
+
+
+

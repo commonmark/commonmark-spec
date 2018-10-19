@@ -1,0 +1,46 @@
+Explicit Image Size
+===========
+
+See also
+--------
+
++ [Attributes extension](attributes)
++ [Info Strings extension](infostring)
++ [Floating Figures extension](figure)
+
+Introduction
+------------
+
+Relative Size
+-------------
+
+maximize, minimize, scale, relative to page / paragraph / …
+
+Absolute Size
+-------------
+
+```example
+![foo](bar.baz 400:300)
+![foo](bar.baz 400*300)
+![foo](bar.baz 400x300)
+![foo](bar.baz =400:300)
+![foo](bar.baz =400*300)
+![foo](bar.baz =400x300)
+![foo](bar.baz 400:300)
+.
+<img alt="foo" src="bar.baz" width="400" height="300" />
+```
+
+Width only
+----------
+
+Height only
+-----------
+
+Fixed Aspect Ratio
+------------------
+
+Alternative Resolutions
+-----------------------
+
+`srcset`

@@ -1,0 +1,273 @@
+Generic Attributes
+===========
+
+See also
+--------
+
+- [Info Strings extension](infostring) (beyond fenced code blocks)
+- [Generic Metadata extension](generic-metadata) (curly braces)
+- [Image Size extension](image-size) (can specify two or more attributes at once)
+- [Explicit Target ID extension](explicit-target)
+
+Introduction
+------------
+
+Even the original Markdown specification describes means to include some attributes that are not directly rendered in the result. The places where these may occur are severely limited, but their syntax and semantics are rather well defined. They are:
+
+- link destinations `[foo](destination)`
+- link titles `[foo](bar "title")`
+- link labels `[foo][label]`
+
+One of the few additions introduced by CommonMark, inspired by existing implementations, are fenced (code) blocks which may contain arbitrary metadata in the opening fence. Some early versions of the specification restricted these _info strings_ and explained how this would be used for stuff like tagging of programming languages for syntax highlighting of source code.
+
+Many existing and popular implementations come with metadata extensions, usually inside curly braces, and apply some of the principles described herein. Everything is optional, but a conforming implementation *must not* interpret one of the following attribute tyes as another.
+
+There are four types of attributes. The default attribute consists only of a string or number without intermittent whitespace. Enclosed attributes are delimited by matching brackets or certain characters (especially quotation marks). Prefixed attributes follow a single punctuation mark. Range or ratio attributes consist of two values separated by an infix, e.g. a dash `-`. The type of the attribute may depend on the type of its value, textual or numeric.
+
+Title and Caption
+-----------------
+
+Since it is inherited from link syntax, there are three ways to specify the _title_. 
+If applicable, the parentheses variant is used for figure captions and the like, while the quoted strings are preferably used for tooltips.
+
+```````````````````````````````````````````````` example
+{ "title'" }
+{ 'title"' }
+{ (caption) }
+.
+<p title="title'">
+<p title='title"'>
+<p title="caption">
+````````````````````````````````````````````````
+
+Identifier and Class
+--------------------
+
+URL fragment identifiers and CSS Selectors use a hash sign `#` to prefix document-wide unique IDs. The latter also uses a period `.` to prefix categorizing classes.
+
+```````````````````````````````````````````````` example
+{ #id .class }
+.
+<p id="id" class="class">
+````````````````````````````````````````````````
+
+Like CSS Selectors, these can be chained without intervening spaces.
+
+```````````````````````````````````````````````` example
+{ #id.class }
+{ .class#id }
+{ .class.more }
+.
+<p id="id" class="class">
+<p id="id" class="class">
+<p class="class more">
+````````````````````````````````````````````````
+
+Multiple ID attributes are usually disallowed by the output format and the first one specified should be used.
+
+```````````````````````````````````````````````` example
+{ #id #more }
+{ #id#more }
+.
+<p id="id">
+<p id="id">
+````````````````````````````````````````````````
+
+
+Destination
+-----------
+
+In standard link syntax, the _link destination_ (i.e. URL) *may* optionally be enclosed in angular brackets, but must always come first. In other contexts, every URL *should* be enclosed as well, but it may appear anywhere. Every local or relative URL *must* be enclosed.
+
+```````````````````````````````````````````````` example
+{ <destination> }
+{ <destination> }
+> { <destination> }
+.
+<p src="destination">
+<p href="destination">
+<blockquote cite="destination">
+````````````````````````````````````````````````
+
+Key-Value Pairs
+---------------
+
+Values can be enclosed like titles in quotation marks or parentheses.
+TODO: space-separated vs. comma-separated
+
+```````````````````````````````````````````````` example
+{ key=value }
+{ key:value }
+{ @custom=value }
+{ @custom:value }
+{ @custom }
+.
+<p
+key="value" 
+key="value"
+@data-custom="value" 
+@data-custom="value" 
+@data-custom="custom"
+>
+````````````````````````````````````````````````
+
+We could either reuse _link title_ syntax or CSS Selectors syntax (as for `id` and `class`) to enclose values with whitespace inside
+
+```````````````````````````````````````````````` example
+{ key="value with spaces" }
+{ key='value with spaces' }
+{ key=(value with spaces) }
+{ [key=value with spaces] }
+.
+<p
+key="value with spaces" 
+key="value with spaces" 
+key="value with spaces" 
+key="value with spaces" 
+>
+````````````````````````````````````````````````
+
+Styling
+-------
+
+Since HTML is such a popular output format and it is almost always used with CSS for styling, there is a special syntax to include CSS rules.
+
+```example
+{ {property: value} }
+.
+<p style="property: value">
+```
+
+Boolean Toggles
+---------------
+
+The exact output, especially the attribute value, depends on the language and sometimes on the types of the particular element and attribute.
+
+```````````````````````````````````````````````` example
+{ +on -off }
+{ +on -off }
+{ +on -off }
+.
+<p on="true" off="false">
+<p on="1" off="0">
+<p on="on" off="">
+````````````````````````````````````````````````
+
+TODO: `~default`, `*foo`?
+
+Predefined Value
+----------------
+
+Form inputs in particular often have a machine-readable value specified as an attribute instead of textual content.
+
+*Coordinate with Width and Height and with Key-Value Pairs!*
+
+*Not final yet!*
+
+```````````````````````````````````````````````` example
+{ ?val }
+{ !val }
+{ =val }
+.
+<p value="val">
+````````````````````````````````````````````````
+
+Width and Height
+----------------
+
++ Also see: [Image Size extension](image-size)
+
+*Not final yet!*
+
+```example
+{ =400*300 }
+{ 400*300 }
+{ *300 }
+{ 400* }
+{ 400:300 }
+.
+<p width="400" height="300">
+<p width="400" height="300">
+<p height="300">
+<p width="400">
+<p width="400" height="300">
+```
+
+Execution
+---------
+
+Where code blocks etc. should not be rendered as source code but should be interpreted by some external parser, this needs to be stated explicitly.
+
+*Coordinate with Width and Height!*
+
+*Not final yet!*
+
+```````````````````````````````````````````````` example
+{ =parser }
+{ !parser }
+.
+<p script="parser">
+````````````````````````````````````````````````
+
+Content Language
+----------------
+
+Many output languages, including HTML, support the tagging of text content with codes for natural languages according to BCP47. This can improve (automatic) translations and speech synthesis in particular.
+
+*Not final yet!*
+
+```````````````````````````````````````````````` example
+{ :en-US }
+.
+<p lang="en-US">
+````````````````````````````````````````````````
+
+Input Pattern
+-------------
+
+Form extensions need a way to limit valid user input.
+
+```````````````````````````````````````````````` example
+{ /match/ }
+.
+<p pattern="match">
+````````````````````````````````````````````````
+
+Other
+-----
+
+```````````````````````````````````````````````` example
+{
+{foo} [foo]
+!foo :foo &foo %foo $foo *foo _foo ^foo
+}
+.
+<p
+foo
+foo
+>
+````````````````````````````````````````````````
+
+Syntax Highlighting
+-------------------
+
+While `.class` is intended for literal class names, many Javascript syntax highlighting plugins expect a certain kind of class value, usually prepended by a certain namespace-like prefix. In applicable environments, i.e. mostly the info string of fenced code blocks, the first _word_ (which must not have a punctuation prefix) is used for this case.
+
+Some existing implementations 
+
+```````````````````````````````````````````````` example
+~~~ foo
+bar
+~~~
+.
+<pre><code class="language-foo">
+bar
+</code></pre>
+````````````````````````````````````````````````
+
+Arbitrary key-value pairs
+-------------------------
+
+### Equals syntax
+
+### Colon syntax

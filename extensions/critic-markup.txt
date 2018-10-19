@@ -1,0 +1,16 @@
+Critic Markup
+===========
+
+See also
+--------
+
+- Source: http://criticmarkup.com
+
+Introduction
+------------
+
+```````````````````````````````````````````````` example
+Markdown
+.
+HTML
+````````````````````````````````````````````````

@@ -1,0 +1,19 @@
+Inline Mathematics
+===========
+
+See also
+--------
+
++ [Floating Figures extension](figure)
++ [Diagrams extension](diagram)
+
+Introduction
+------------
+
+
+
+```````````````````````````````````````````````` example
+Markdown
+.
+HTML
+````````````````````````````````````````````````

@@ -1,0 +1,30 @@
+Floating Figures
+===========
+
+See also
+--------
+
++ [Image Size extension](image-size)
+
+Introduction
+------------
+
+
+
+Images
+------
+
+### Other content
+
+### Caption
+
+```````````````````````````````````````````````` example
+
+![Foo](bar.jpeg "baz")
+
+.
+<figure>
+<figcaption>baz</figcaption>
+<img src="bar.jpeg" alt="Foo"/>
+</figure>
+````````````````````````````````````````````````

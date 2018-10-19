@@ -1,0 +1,227 @@
+Relative Section Links
+===========
+
+See also
+--------
+
+- [`rel` Microformats](http://microformats.org/wiki/existing-rel-values)
+- [Sections extension](section) – implicitly and explciitly defined sections using existing heading and separator markup
+- [Attributes extension](attribute) – describes how the metadata content marked up according to the extensions below should be interpreted, i.e. the `#ID` syntax inspired by CSS Selectors and URL Fragment Identifiers
+- [Info Strings extension](infostring) – low-level ways of adding invisible metadata to some existing types of markup
+- [Generic block and inline Metadata extension](generic-metadata) – high-level way of adding invisible metadata to almost any type of markup with curly braces `{}`
+- [Implicit Link Targets extension](implicit-target) – turn textual content or labels into implicit targets
+- [Explicit Link Targets extension](explicit-target) – override implicit targets and add additional ones
+
+Introduction
+------------
+
+This extension specifies a simple symbolic syntax for local link targets. It overloads reference link `[text][label]` and inline link `[text](destination)` syntax with predefined _labels_ and _destinations_, respectively.
+
+The difference between `[section][...]` and `[section](#...)` is that the latter shall always output the literal text only, whereas the former may be amended or substituted automatically with target type names, section or page numbers.
+
+Where the following examples have `section` as a `rel` value, it could equally be a `chapter` or `subsection`. In any case, `href="#..."` stands in for the actual target that cannot be determined from the example source alone.
+
+~~~~ markdown
+Chapter
+=======
+
+First Section
+-------------
+
+Second Section
+--------------
+
+Third Section
+-------------
+
+_Assume all examples here._
+
+### First Subsection
+
+### Second Subsection
+
+### Last Subsection
+
+Fourth Section
+-------------
+
+Named Section
+-------------
+
+Last Section
+------------
+
+Another Chapter
+===============
+~~~~
+
+Referencing other parts of the document
+---------------------------------------
+
+### Root Section
+
+`root`, `begin` and `top` may be synonyms for `start`.
+
+```````````````````````````````````````````````` example
+[top section][^]	[top section](#^)
+.
+<a href="#chapter" rel="start">top section</a>
+````````````````````````````````````````````````
+
+### Parent Section
+
+`up` is a synonym for `parent`. `ancestor` is no standard. Grandparents and earlier ancestors are referenced by chaining the symbol.
+
+```````````````````````````````````````````````` example
+[up up section][...]	[up up section](#...)
+[up section][..]	[up section](#..)
+.
+<a href="#..." rel="ancestor section"> section</a>
+<a href="#chapter" rel="parent chapter">up section</a>
+````````````````````````````````````````````````
+
+### This Section
+
+Some of the other markers could be combined to make indirect self references, e.g. `<>`, `><` or `../`. A direct syntax `.` or `/` is available nevertheless.
+
+```example
+[this section][.]	[this section](#.)
+[this section][<>]	[this section](#<>)
+[this section][/]	[this section](#/)
+.
+<a href="#third-section" rel="self section">this section</a>
+<a href="#third-section" rel="self section">this section</a>
+<a href="#third-section" rel="self section">this section</a>
+```
+
+### Sibling Sections
+
+The previous and next section are referenced by pseudo arrows, i.e. angualr brackets `<` and `>`; the first and last sibling section require a vertical bar `|` besides the tip of that arrow. Other siblings can be accessed with a chain of pseudo arrows.
+
+```````````````````````````````````````````````` example
+[next section][>]	[next section](#>)
+[previous section][<]	[previous section](#<)
+[first section][|<]	[first section](#|<)
+[last section][>|]	[last section](#>|)
+[next next section][>>]	[next next section](#>>)
+.
+<a href="#fourth-section" rel="next sibling section">next section</a>
+<a href="#second-section" rel="prev sibling section">previous section</a>
+<a href="#first-section" rel="first sibling section">first section</a>
+<a href="#last-section" rel="last sibling section">last section</a>
+<a href="#named-section" rel="sibling section">next next section</a>
+````````````````````````````````````````````````
+
+### Child Sections
+
+`descendant` may be an almost synonym for `child`.
+
+```````````````````````````````````````````````` example
+[first subsection][./]	[first subsection](#./)
+[first subsection][/]	[first subsection](#/)	-- or self?
+[first subsection][/|<]	[first subsection](#/|<)
+[second subsection][/>|]	[second subsection](#/>|)
+[last subsection][/>|]	[last subsection](#/>|)
+.
+<a href="#first-subsection" rel="first child subsection">first section</a>
+<a href="#first-subsection" rel="first child subsection">first section</a>
+<a href="#first-subsection" rel="first child subsection">first section</a>
+<a href="#second-subsection" rel="child subsection">second section</a>
+<a href="#last-subsection" rel="last child subsection">last section</a>
+````````````````````````````````````````````````
+
+### Named Section
+
+Arbitrary names, either set explicitly or implicitly.
+
+```````````````````````````````````````````````` example
+[named section][#name]	[named section](#name)
+.
+<a href="#name" rel="section">named section</a>
+````````````````````````````````````````````````
+
+
+Overrides
+---------
+
+Any relative section link used within reference syntax can be overriden with standard reference link definitions. However, according to Commonmark there can only be a single such definition that is taken into account, i.e. authors cannot specify a new target for _next_ `[>]` in each section individually, unless they are in separate files. This is especially useful in larger projects where the markdown source is split across several files. For HTML output, these redefinitions may be repeated as `<link>` elements in the document `<head>` and this should include references that are unused in the prose.
+
+```````````````````````````````````````````````` example
+[next section][>]
+[top section][^]
+
+  [>]: #foo
+  [^]: ./
+  [<]: previous.html
+.
+<a href="#foo" rel="next sibling">next section</a>
+<a href="./" rel="top ancestor">top section</a>
+<link rel="prev" href="previous.html" />
+````````````````````````````````````````````````
+
+Furthermore, if an [explicit ID extension](explicit-target) is also supported, headings and other parts of the document may claim to be the respective target by self-assigning one of these unusual IDs.
+
+```````````````````````````````````````````````` example
+[next figure][>]
+[top heading][^]
+
+![image](source.jpg){#>}
+
+# Heading # #^
+.
+<p><a href="_next" rel="next sibling section">next figure</a>
+<a href="_top" rel="top ancestor section">top heading</a></p>
+<p><img alt="image" src="source.jpg" id="_next"/></p>
+<h1 id="_top" rev="top ancestor heading">Heading</h1>
+````````````````````````````````````````````````
+
+Since not every output format (nor URL syntax) may support all of the possible punctuation marks verbatim in valid target IDs, they may be transcribed as necessary, cf. the [implicit targets extension](implicit-target).
+
+### Index, Glossary, TOC, Bibliography
+
+*This section is in _brainstorming_ state only.*
+
+With [info string extension](infostring):
+
+```example
+## Index ## #-
+## Glossary ## #:
+## Table of Contents ## #=
+## List of Figures ## #!
+## List of Tables ## #|
+## List of Code Listings ## #;
+## Bibliography ## #~
+## Abstract ## #?
+.
+<h2 rev="index">Index</h2>
+<h2 rev="glossary">Glossary</h2>
+<h2 rev="toc">Table of Contents</h2>
+<h2 rev="lof">List of Figures</h2>
+<h2 rev="lot">List of Tables</h2>
+<h2 rev="loc">List of Code Listings</h2>
+<h2 rev="bibliography">Bibliography</h2>
+<h2 rev="abstract">Abstract</h2>
+```
+
+With [generic metadata extension](generic-metadata):
+
+```example
+## Index {#-}
+## Glossary {#:}
+## Table of Contents {#=}
+## List of Figures {#!}
+## List of Tables {#|}
+## List of Code Listings {#;}
+## Bibliography {#~}
+## Abstract {#?}
+.
+<h2 rev="index">Index</h2>
+<h2 rev="glossary">Glossary</h2>
+<h2 rev="toc">Table of Contents</h2>
+<h2 rev="lof">List of Figures</h2>
+<h2 rev="lot">List of Tables</h2>
+<h2 rev="loc">List of Code Listings</h2>
+<h2 rev="bibliography">Bibliography</h2>
+<h2 rev="abstract">Abstract</h2>
+```
+

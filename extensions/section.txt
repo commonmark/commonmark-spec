@@ -1,0 +1,387 @@
+Implicit and Explicit Sections
+===========
+
+See also
+--------
+
+- [relative links extension](relative-link) – symbolic references for structural document-internal links like _next section_
+- Commonmark Discourse:
+  - [Horizontal rules as (hierarchical) section breaks etc.](https://talk.commonmark.org/t/horizontal-rules-as-hierarchical-section-breaks-etc/1241)
+  - [Explicit section not possible?](https://talk.commonmark.org/t/explicit-section-not-possible/796>
+  - [Horizontal Rule or Thematic Break](https://talk.commonmark.org/t/horizontal-rule-or-thematic-break/912)
+  - [Third level Setext-style headings with `~`](https://talk.commonmark.org/t/third-level-setext-style-headings-with/2664)
+  - [Harmonizing headings, horizontal rules, tables and even bullet lists](https://talk.commonmark.org/t/harmonizing-headings-horizontal-rules-tables-and-even-bullet-lists/1876)
+
+Introduction
+------------
+
+Markdown was specified before HTML 5 introduced the `<section>` element type. Its six ATX heading levels exactly match the levels available in HTML, although this incremental syntax could easily support even lower levels.
+
+Naively, the structure and outline of a document is simply created by the heading levels: 
+Each heading starts a new section and ends all open sections that are at the same or a lower level.
+This produces satisfactory results in simple cases, but leaves some control missing. 
+No section is anonymous because it necessarily has a heading.
+
+````````````````````````````````````````````````````````````` example
+# 1
+## 1.1
+### 1.1.1
+#### 1.1.1.1
+### 1.1.2
+# 2
+## 2.1
+.
+<section>
+<h1>1</h1>
+<section>
+<h2>1.1</h2>
+<section>
+<h3>1.1.1</h3>
+<section>
+<h4>1.1.1.1</h4>
+</section>
+</section>
+<section>
+<h3>1.1.2</h3>
+</section>
+</section>
+</section>
+<section>
+<h1>2</h1>
+<section>
+<h2>2.1</h2>
+</section>
+</section>
+`````````````````````````````````````````````````````````````
+
+Sometimes, people want one of the following things:
+
+- end the current (named) section and begin a sibling anonymous section, which could only be done with headings if they supported being empty
+
+  ```````````````` html
+  # Foo
+  
+  bar
+  
+  <!-- do something here -->
+  
+  baz
+  .
+  <section><h1>Foo</h1>
+    <p>bar</p>
+  </section><section>
+    <p>baz</p>
+  </section>
+  ````````````````
+
+- end the current (child) section and continue within the parent section, which is impossible to do with headings because they necessarily start either a child, a sibling or an aunt/uncle section
+
+  ````````````````````` html
+  # Foo
+  
+  bar
+  
+  ## Baz
+  
+  quuz
+  
+  <!-- do something here to switch up a level -->
+  
+  lorem
+  .
+  <section><h1>Foo</h1>
+    <p>bar</p>
+    <section><h2>Baz</h2>
+      <p>quuz</p>
+    </section>
+    <p>lorem</p>
+  </section>
+  `````````````````````
+
+- implicitly introduce anonymous child sections to the current section, i.e. just end one (and start the next) without explicitly starting the first one with a heading or something else
+
+  ```````````````` html 
+  # Foo
+  
+  <!-- automatically start a subsection here -->
+  
+  bar
+  
+  <!-- do something here to force and separate subsections -->
+  
+  baz
+  .
+  <section><h1>Foo</h1>
+    <section>
+      <p>bar</p>
+    </section>
+    <section>
+      <p>baz</p>
+    </section>
+  </section>
+  ````````````````
+
+Headings
+--------
+
+> underlined Setext headings create section, prefixed ATX headings don't? 
+> Setext heading levels are relative, ATX heading levels are absolute?
+
++ `===` equal-sign underline makes a new top-level section
++ `---` hyphen underline  …
++ this works for arbitrary levels with `---` overlines if specified accordingly
+
+### Prefixed (ATX) Headings
+
+These use the number sign as a prefix which strongly suggests they are intended to be enumerated automatically at absolute levels.
+
+~~~~ markdown
+# Part
+## Chapter
+### Section
+#### Subsection
+##### Subsubsection
+###### Paragraph
+####### Caption (non-standard)
+~~~~
+
+### Affixed (ATX) Headings
+
+~~~~ markdown
+# Part ##############
+## Chapter ##########
+### Section #########
+#### Subsection #####
+##### Subsubsection #
+###### Paragraph ####
+####### Caption ##### 
+~~~~
+
+### Underlined (Setext) Headings
+
+~~~~markdown
+Top-Level Heading
+=================
+
+Second-Level Heading
+--------------------
+
+Non-standard Third-level Heading
+### ############################
+~~~~
+
+### Boxed Headings
+
+A _boxed heading_ or _flowerbox heading_ is an underlined heading that is directly preceded by a thematic break. More precisely, the underline and the overline *should* both consist of hyphens `-`. 
+
+````````````````````````````````````````````````````````````` example
+-------------
+Boxed Heading
+-------------
+
+_______________________
+Alternate Boxed Heading
+=======================
+.
+<h2>Boxed Heading</h2>
+<h1>Alternate Boxed Heading</h1>
+`````````````````````````````````````````````````````````````
+
+This is especially useful for multiline headings.
+
+```example
+-------
+A
+Tall
+Boxed 
+Heading
+-------
+.
+<h2>A Tall Boxed Heading</h2>
+```
+
+### Numbered Headings
+
+````````````````````````````````````````````````````````````` example
+# Chapter
+## 1 Heading
+## 1. Heading
+.
+<h1 data-level="1">Chapter</h1>
+<h2 data-level="1" data-number="1">Heading</h2>
+<h2 data-level="2" data-number="1.1">Heading</h2>
+`````````````````````````````````````````````````````````````
+
+### Empty Headings
+
+If prefixed headings have no non-whitespace textual content, they may be stripped _or_ they may be used to introduce anonymous sections at that level.
+
+```example
+# 
+## 
+### 
+####
+#####
+######
+.
+<section><h1></h1>
+<section><h2></h2>
+<section><h3></h3>
+<section><h4></h4>
+<section><h5></h5>
+<section><h6></h6>
+</section>
+</section>
+</section>
+</section>
+</section>
+</section>
+```
+
+By definition, underlined headings need lines above the underline that would otherwise be parsed as a paragraph. While empty top-level headings could be defined, an empty second-level heading is virtually identical to one of the three types of thematic breaks, i.e. the one using at least three hyphens `---`. 
+
+```example
+
+====
+
+----
+.
+<section><h1></h1>
+<section><h2></h2>
+</section>
+</section>
+```
+
+Empty paragraphs can be generated by empty HTML comments or elements, which could be stripped by a conformant parser, while empty Commonmark elements (e.g. `[]()`) result in their markers being used verbatim. Non-printing Unicode characters that are not _whitespace_ in the Commonmark sense do *not* truly lead to empty headings because parsers are not allowed to strip them away, unlike useless HTML elements.
+
+```example
+<!---->
+====
+
+<a></a>
+----
+
+### <a/>
+.
+<section><h1><!----></h1>
+<section><h2><a></a></h2>
+<section><h3><a/></h3>
+</section>
+</section>
+</section>
+```
+
+There are two interesting cases, which are both types of empty strong emphasis `____` and `****`, because they equate to the other two kinds of thematic breaks.
+
+```example
+____
+====
+
+****
+----
+.
+<section><h1></h1>
+<section><h2></h2>
+</section>
+</section>
+```
+
+
+
+Thematic Breaks or Horizontal Lines
+-----------------------------------
+
+There are three different types of thematic breaks that are handled identically in vanilla Commonmark. 
+They differ only by the character they repeatedly use: hyphen `-`, asterisk `*` or underscore `_`. 
+The first two of these are also used as list bullets, the last two are also used for inline emphasis markup. 
+The hyphen, alongside the equals sign, is also used in underlined headings.
+
+This extension changes the semantics of thematic breaks.
+
++ end section, continue parent section: `***`?
++ end all open sections, start new top level section: `___`?, can thus be used as a marker before the very first heading to have implicit sections at all
++ new slide or new page, same section: `---`?, can thus be used as overline of underlined headings which start a new (sub)section
++ start a new level-2 section without a heading: `---`, can thus be used as overline of underlined headings which start a new (sub)section
+
+Three spaced asterisks `* * *` are commonly used in novels to indicate the end of a scene or line of thought that was not explicitly started. The chapter or section continues afterwards.
+
+````````````````````````````````````````````````````````````` example
+# Level 1 #
+
+Foo
+
+## Level 2 ##
+
+Bar
+
+ * * *
+
+Baz
+.
+<section>
+  <h1>Level 1</h1>
+  <p>Foo</p>
+  <section>
+    <h2>Level 2</h2>
+    <p>Bar</p>
+  </section>
+  <p>Baz</p>
+</section>
+`````````````````````````````````````````````````````````````
+
+````````````````````````````````````````````````````````````` example
+Level 1
+=======
+
+Level 2
+-------
+
+Foo
+
+---
+
+Bar
+
+### Level 3
+
+Baz
+
+---
+
+Quuz
+.
+<section>
+  <h1>Level 1</h1>
+  <section>
+    <h2>Level 2</h2>
+    <p>Foo</p>
+  </section>
+  <section>
+    <p>Bar</p>
+    <section>
+      <h3>Level 3</h3>
+      <p>Baz</p>
+    </section>
+  </section>
+  <section>
+    <p>Quuz</p>
+  </section>
+</section>
+`````````````````````````````````````````````````````````````
+
+````````````````````````````````````````````````````````````` example
+___
+.
+<section>
+</section>
+`````````````````````````````````````````````````````````````
+
+
+
+Paged Media
+-----------
+
+Almost all formats for simple **slide presentations** that build upon markdown use thematic breaks to separate two slides. They seem to prefer hyphens `—`, but all three types are usually supported in the same way.
+
+In **printouts** of markdown documents, thematic breaks often result in horizontal lines but could result in paging breaks as well: either a _spread break_ (i.e. continue at the top of the next *even*-numbered page), _sheet break_ (i.e. continue at the top of the next *odd*-numbered page), _page break_ or _column break_.
+

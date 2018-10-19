@@ -1,0 +1,56 @@
+Color Swatches
+===========
+
+See also
+--------
+
+- [GitLab flavor](GitLab.flavor)
+
+Introduction
+------------
+
+On [GitLab](https://gitlab.com/gitlab-org/gitlab-ce/blob/master/doc/user/markdown.md#colors) it is possible to have color written in Hex, RGB or HSL format rendered with a color indicator. It is implemented as a kind of implicit syntax highlighting of inline code spans marked by backticks `` ` ``. The colors need to be written in a format supported by [CSS Colors Level 3], which includes triplets of hexadecimal 8-bit RGB values preceded by a hash sign which is also widespread outside CSS. The respective code span will be followed by a color _chip_ or _swatch_.
+
+```````````````````````````````````````````````` example
+`#F00`  
+`#F00A`  
+`#FF0000`  
+`#FF0000AA`  
+`RGB(0,255,0)`  
+`RGB(0%,100%,0%)`  
+`RGBA(0,255,0,0.7)`  
+`HSL(540,70%,50%)`  
+`HSLA(540,70%,50%,0.7)`
+.
+<code>#F00</code>
+<code>#F00A</code>  
+<code>#FF0000</code>  
+<code>#FF0000AA</code>  
+<code>RGB(0,255,0)</code>  
+<code>RGB(0%,100%,0%)</code>  
+<code>RGBA(0,255,0,0.7)</code>  
+<code>HSL(540,70%,50%)</code>  
+<code>HSLA(540,70%,50%,0.7)</code>
+````````````````````````````````````````````````
+
+## Supported formats:
+
+* hexadecimal RGB: `` `#RGB[A]` `` or `` `#RRGGBB[AA]` ``
+* RGB: `` `RGB[A](R, G, B[, A])` ``
+* HSL: `` `HSL[A](H, S, L[, A])` ``
+
+Named colors are not supported.
+
+Test Cases
+----------
+
+Hexadecimal digits are case-insensitive:
+
+Color notation identifiers are case.insensitive:
+
+Whitespace is allowed:
+
+Alpha can be specified as a percentage or a float between zero and one:
+
+Hue can be specified in (implied) degrees or with another angular unit:
+

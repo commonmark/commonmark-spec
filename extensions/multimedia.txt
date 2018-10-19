@@ -1,0 +1,77 @@
+Embedded Multimedia
+===========
+
+See also
+--------
+
++ [Image Size extension](image-size)
+
+Introduction
+------------
+
+Markdown was developed before HTML5 made audio and video content first-class citizens on the web, and in a time when interactive content was mostly done with Shockwave Flash or Java applets.
+
+If the destination resolves to a resource whose URL path component ends in a dot followed by a sequence of three to nine basic case-insensitive roman letters or digits `/\.[A-z0-9]$/`, this is used to estimate a file type as follows:
+
++ still bitmap image ()`<img>`)
+  + `.jpeg`, `.jpg`, `.jpe`, `.jfif`, `.jif`
+  + `.png`
+  + `.gif`
+  + `.tiff`, `.tif`
+  + `.webp`
+  + `.bmp`, `.rle`
++ animated bitmap image (`<img>` or `<object>`)
+  + `.agif` GIF
+  + `.apng`, `.ang` PNG
+  + `.mng`, `.jng` MNG
+  + `.webm`
++ vector image or document, possibly animated or with embedded bitmaps (`<img>` or `<object`)
+  + `.svg`, `.svgz`
+  + `.ai` Adobe
+  + `.psd` Photoshop
+  + `.pdf`
+  + `.ps` Postscript
++ multimedia application or applet (`<embed>`, `<object>` or `<applet>`)
+  + `.swf` Shockwave Flash
+  + `.jar` Java
++ video, probably with audio (`<video>`)
+  + `.mpeg`, `.ts`, `.mp4`, `.mpv`, `.avc` MPEG
+  + `.qt`, `.mov` Quicktime
+  + `.msk` Matroska
+  + `.dat`?
++ audio (`<audio>`)
+  + `.mp2`, `.mp3`, `.mpa` MPEG
+  + `.ogg`, `.vorbis`
+  + `.spx` Speex
+  + `.wav`, `.wave`
+  + `.aiff`, `.aif`
++ text (`<iframe>` or `<object>`)
+  + `.txt`, `.text`, `.me`, `.nfo`, `.asc`
+  + `.md`, `.markdown`
+  + `.html`, `.htm`, `.xhtml`, `.xht`, `.xml`, `.sgml`
+  + `.c`, `.h`, `.cpp`
+  + `.go`
+  + `.java`
++ script (`<script>`)
+  + `.js`, `.es` Javascript, Ecmascript
+  + `.ts` Typescript
+  + `.vb`, `.vbs` Visualbasic
+
+Audio
+-----
+
+Video
+-----
+
+Animation
+---------
+
+Interaction
+-----------
+
+```````````````````````````````````````````````` example
+![foo](bar.ext)
+.
+<audio><source/></audio>
+<video><source/></video>
+````````````````````````````````````````````````

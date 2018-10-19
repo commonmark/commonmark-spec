@@ -1,0 +1,69 @@
+To-Do Lists
+===========
+
+See also
+--------
+
+- [Forms, Quizzes and Questionaires extension](form)
+
+Introduction
+------------
+
+- `^ {0,3}[*+-]\s{0,3}\[[xX ]?\]\s{0,3}.*$`
+- `^ {0,3}\d+[.)]\s{1,3}\[[xX ]?\]\s{0,3}.*$`
+
+Checkbox
+
+```````````````````````````````````````````` example
+- [ ] foo
+- [] bar
+-[ ] baz
+-[] quuz
+.
+<ul>
+<li><input type="checkbox" /> foo</li>
+<li><input type="checkbox" /> bar</li>
+<li><input type="checkbox" /> baz</li>
+<li><input type="checkbox" /> quuz</li>
+</ul>
+````````````````````````````````````````````
+All types of bullet lists work.
+
+```````````````````````````````````````````` example
++ [ ] foo
+- [ ] bar
+* [ ] baz
+.
+<ul><li><input type="checkbox" /> foo</li></ul>
+<ul><li><input type="checkbox" /> bar</li></ul>
+<ul><li><input type="checkbox" /> baz</li></ul>
+````````````````````````````````````````````
+All types of enumerated lists work.
+
+```example
+1. [ ] foo
+1) [ ] bar
+.
+<ol><li><input type="checkbox" /> foo</li></ol>
+<ol><li><input type="checkbox" /> bar</li></ol>
+```
+
+Selected or checked items are marked with the letter `X`.
+
+```````````````````````````````````````````` example
+- [ ] foo
+- [x] bar
+- [X] baz
+- [+] quuz
+- [-] 
+.
+<ul>
+<li><input type="checkbox" /> foo</li>
+<li><input type="checkbox" checked /> bar</li>
+<li><input type="checkbox" checked /> baz</li>
+<li><input type="checkbox" /> quuz</li>
+</ul>
+````````````````````````````````````````````
+
+**Issue:** More complete implementations of [forms](form) are possible and should be compatible with this [GFM](Github.flavor) feature.
+

@@ -1,0 +1,30 @@
+Implicit Link Targets
+===========
+
+See also
+--------
+
++ [Explicit Link Targets extension](explixit-target)
+
+Introduction
+------------
+
+_Slugify_
+
+Headings
+--------
+
+Captioned Figures, Tables and other Blocks
+------------------------------------------
+
+Reference Links
+---------------
+
+Empty Reference Link Definitions
+--------------------------------
+
+```````````````````````````````````````````````` example
+Markdown
+.
+HTML
+````````````````````````````````````````````````

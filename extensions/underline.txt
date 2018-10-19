@@ -1,0 +1,52 @@
+Underlined Text
+===========
+
+See also
+--------
+
+- [Markua flavor](Markua.flavor)
+- [Inserted Text extension](insert)
+- [Emphasis extension](emphasis)
+- [Strike-Through extension](strikethrough)
+
+Introduction
+------------
+
+By the way, HTML5 redefines `<u>`.
+
+Plain
+-----
+
+```example
+_foo_
+__foo__
+___foo___
+.
+<u>foo</u>
+<u><u>foo</u></u>
+<u><u><u>foo</u></u></u>
+```
+
+Combined with Presentational Emphasis
+-------------------------------------
+
+```````````````````````````````````````````````` example
+_foo_ *foo*
+__bar__ **bar**
+___baz___ ***baz***
+____quuz____ ****quuz****
+_____dolor_____
+______sit______
+_______amet_______
+________boing________
+.
+<i>foo</i> <em>foo</em>
+<b>bar</b> <strong>bar</strong>
+<b><i>baz</i></b> <strong><em>baz</em></strong>
+<u>quuz</u> <strong><strong>quuz</strong></strong>
+<u><i>dolor</i></u>
+<u><b>sit</b></u>
+<u><b><i>amet</i></b></u>
+<u><u>boing</u></u>
+````````````````````````````````````````````````
+

@@ -1,0 +1,39 @@
+Fenced Quotation
+===========
+
+See also
+--------
+
+- [RedCarpet flavor](RedCarpet.flavor)
+- [GitLab flavor](GitLab.flavor)
+
+Standard Syntax
+---------------
+
+*Exactly* or *at least* three opening angle brackets `>>>`?
+
+```````````````````````````````````````````````` example
+>>>
+Quotation
+>>>
+.
+<blockquote>
+Quotation
+</blockquote>
+````````````````````````````````````````````````
+
+Alternative Syntax
+------------------
+
+Closing fence uses the opposite bracket `<<<`.
+
+```example
+>>>
+Quotation
+<<<
+.
+<blockquote>
+Quotation
+</blockquote>
+```
+

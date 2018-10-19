@@ -1,0 +1,53 @@
+Definition Lists
+===========
+
+See also
+--------
+
+Introduction
+------------
+
+Short and simple style
+----------------------
+
+```example
+- [Term]: Definition
+.
+<dl>
+<dt>Term</dt><dd>Definition</dd>
+</dl>
+```
+
+Long and complex style
+----------------------
+
+```````````````````````````````````````````````` example
+- Term: 
+: Definition
+.
+<dl>
+<dt>Term</dt><dd>Definition</dd>
+</dl>
+````````````````````````````````````````````````
+
+Multiple terms sharing a single definition and single terms with multiple definitions are supported in the intuitive way.
+
+```example
+- First Term:
+- Second Term:
+: Common Definition
+
+- Term:
+: First Definition
+: Second Definition
+.
+<dl>
+<div>
+<dt>First Term</dt><dt>Second Term</dt><dd>Common Definition</dd>
+</div>
+<div>
+<dt>Term</dt><dd>First Definition</dd><dd>Second Definition</dd>
+</div>
+</dl>
+```
+

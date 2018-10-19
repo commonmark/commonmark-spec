@@ -1,0 +1,622 @@
+Text Span
+=========
+
+See also
+--------
+
+- [Generic Metadata extension](generic-metadata)
+- [Info Strings extension](info-string)
+- [Attributes extension](attribute)
+- [Footnotes, Sidenotes and Endnotes extension](footnote) – `[^foo]`, `[^1]`
+- [Media Embedding extension](multimedia)
+- [Abbreviations and Acronyms extension](abbr)
+- [Forms extension](form)
+- [Quizzes extension](quiz)
+- Discussion: [Generic text spans `[foo]` with special cases](https://talk.commonmark.org/t/generic-text-spans-foo-with-special-cases/2959)
+
+Introduction
+------------
+
+This extension redefines traditional link syntax as a special case of text spans, relying upon [some attributes](attribute) and some magic. This is similar to incorporating [info strings](infostring) into links only.
+
+The exact type of output may depend on the attributes provided or on additional prefixes, as in links vs. images preceded by an exclamation mark `!`.
+
+Square Syntax
+-------------
+
+A span is text inside square brackets `[` and `]`. Spans can be empty. 
+
+```example
+[foo]
+[]
+.
+<span>foo</span>
+<span></span>
+```
+
+Spans can contain new lines but not blank lines. 
+
+```example
+[foo
+]
+[foo
+
+]
+.
+<p><span>foo
+</span></p>
+<p>[foo</p>
+<p>]</p>
+```
+
+Literal square brackets should be escaped with a backslash `\`.
+
+```example
+\[]
+\[\]
+[\]
+.
+[]
+[]
+[]
+```
+
+A span that immediately follows another span, however, is considered a _referencing label_ for that first span. A span that starts a line (possibly indented) and is immediately followed by a colon (and optional whitespace) is considered a _defining label_ and whatever follows are _attributes_ applicable to all spans that share the same referencing label. The _defining label_ and its attributes are collectively also known as a _span definition_. If a referencing label has no corresponding defining label, it does not magically turn back into a second span! Unused span definitions are silently dropped from the output. If multiple span definitions using the same defining label are present, the first one is used – but sectioning extensions may alter this behavior to choose the semantically closest definition.
+
+`````````````````````````````````````````````````````````` example
+[foo] [bar]
+[foo][label]
+[foo][bar]
+
+[label]: attributes
+[label]: unused
+[baz]: unused
+.
+<span>foo</span> <span>bar</span>
+<span attributes name="label">foo</span>
+<span name="bar">foo</span>
+<span name="bar">foo</span>
+``````````````````````````````````````````````````````````
+
+Span definitions may also be put into a non-nested list. They will be used the same as normal span definitions, but they remain in the output as [definition lists](definition-list), including unused and duplicate definitions. Implementations *should* merge duplicate labels and they *may* resort bullet lists but not enumerated lists. (In HTML5 output, terms and their definition may be wrapped inside a `<div>`  element.)
+
+```example
+[foo][bar]
+
+- [bar]: baz
+- [lorem]: ipsum
+- [bar]: quuz
+.
+<p><span baz name="bar">foo</span></p>
+<dl>
+<dt>bar</dt><dd>baz</dd><dd>quuz</dd>
+<dt>lorem</dt><dd>ipsum</dd>
+</dl>
+```
+
+If the span has no referencing label but there is a defining label that matches the span text, said _shortcut_ span definition is used – explicit labels take precedence, though. If a consecutive span, i.e. a referencing label, is empty, it is truncated. In both cases, the label remains anonymous, hence should never appear in the output, but the same defining label may be used as a referencing label  of course and then may appear in the output.
+
+
+`````````````````````````````````````````````````````````` example
+[foo]
+[foo] []
+[foo][]
+[bar][]
+[foo][baz]
+[foo][bar][baz]
+[bar][foo][baz]
+
+[foo]: attributes
+[baz]: preferred
+.
+<span attributes>foo</span>
+<span attributes>foo</span> <span></span>
+<span attributes>foo</span>
+<span>bar</span>
+<span preferred name="baz">foo</span>
+<span name="bar">foo</span><span preferred name="baz">baz</span>
+<span attributes name="foo">bar</span><span preferred name="baz">baz</span>
+``````````````````````````````````````````````````````````
+
+Round Syntax
+------------
+
+Attributes can also be specified inline directly after the span if they are put inside consecutive round parentheses. Only one pair of parentheses is recognized.
+
+`````````````````````````````````````````````````````````` example
+[foo](attributes)
+[foo] (bar)
+[foo](attributes)(baz)
+.
+<span attributes>foo</span>
+<span>foo</span> (bar)
+<span attributes>foo</span>(baz)
+``````````````````````````````````````````````````````````
+
+Curly Syntax
+------------
+
+Alternatively, curly braces can be used instead of round parentheses. Curly syntax is quite similar to round syntax, but multiple pairs are supported, they may follow round parentheses but not the other way around, and curly syntax is not necessarily limited to spans in square brackets, see the [Generic Metadata extension](generic-metadata).
+
+`````````````````````````````````````````````````````````` example
+[foo]{attributes}
+[foo] {attributes}
+[foo]{attributes}{attributes}
+[foo](attributes){attributes}
+[foo]{attributes}(attributes)
+.
+<span attributes>foo</span>
+<span>foo</span> {attributes}
+<span attributes attributes>foo</span>
+<span attributes attributes>foo</span>
+<span attributes>foo</span>(attributes)
+``````````````````````````````````````````````````````````
+
+Curly braces cannot appear before a referencing label in square brackets, because that is then considered just another span. They may, however, appear after a referencing label.
+
+`````````````````````````````````````````````````````````` example
+[foo]{attributes}[bar]
+[foo][bar]{attributes}
+
+[bar]: referenced
+.
+<span attributes>foo</span><span referenced>bar</span>
+<span referenced attributes>foo</span>
+``````````````````````````````````````````````````````````
+
+As a special case, if the only attribute is (CSS) style information – with properties before a colon each and their values terminated by a semicolon – inside curly braces, the round parentheses or curly braces may be omitted.
+
+```example
+[foo]{property: value;}
+[foo]{property: value}
+[foo]{property:}
+[foo][bar]
+
+[bar]: {property: value;}
+.
+<span style="property: value;">foo</span>
+<span style="property: value">foo</span>
+<span property\:>foo</span>
+<span style="property: value" name="bar">foo</span>
+```
+
+Angular Syntax
+--------------
+
+As a special case, if the only attribute is a destination inside angular brackets `<>`, the round parentheses `()` or curly braces `{}` may be omitted. If, furthermore, the span text is the empty string or whitespace only, the square brackets `[]` may be omitted and the destination is taken as the span text, *but* round parentheses `()` (unlike curly braces `{}`) *must* be omitted in this case as well, otherwise they will be output as literals.
+
+`````````````````````````````````````````````````````````` example
+[foo](<destination>)
+[foo]{<destination>}
+[foo]<destination>
+[](<destination>)
+[]{<destination>}
+[]<destination>
+(<destination>)
+{<destination>}
+<destination>
+.
+<a href="destination">foo</a>
+<a href="destination">foo</a>
+<a href="destination">foo</a>
+<a href="destination">destination</a>
+<a href="destination">destination</a>
+<a href="destination">destination</a>
+(<a href="destination">destination</a>)
+<a href="destination">destination</a>
+<a href="destination">destination</a>
+``````````````````````````````````````````````````````````
+
+Since multiple consecutive pairs of curly braces `{}` are allowed, the truncated angular syntax may be followed by one or more such pairs as well.
+
+```example
+[foo]{<destination>}{attributes}
+[foo](<destination>){attributes}
+[foo]<destination>{attributes}
+[](<destination>){attributes}
+[]{<destination>}{attributes}
+[]<destination>{attributes}
+(<destination>){attributes}
+{<destination>}{attributes}
+<destination>{attributes}
+.
+<a href="destination" attributes>foo</a>
+<a href="destination" attributes>foo</a>
+<a href="destination" attributes>foo</a>
+<a href="destination" attributes>destination</a>
+<a href="destination" attributes>destination</a>
+<a href="destination" attributes>destination</a>
+(<a href="destination">destination</a>){attributes}
+<a href="destination" attributes>destination</a>
+<a href="destination" attributes>destination</a>
+```
+
+Link or Embedded Media
+----------------------
+
+- See: [Media Embedding extension](multimedia)
+
+If _attributes_ include a destination inside angular brackets `<>` and it is the first attribute, the text span *must* be considered a link that points to another resource. If a destination appears in any other place, the span *may* be considered a link or some other type depending on the other attributes.
+
+`````````````````````````````````````````````````````````` example
+[foo][label]
+[foo](<destination> attributes)
+[foo]{<destination> attributes}
+
+[label]: <destination> attributes
+.
+<a href="destination" attributes name="label">foo</a>
+<a href="destination" attributes>foo</a>
+<a href="destination" attributes>foo</a>
+``````````````````````````````````````````````````````````
+
+A link preceded by an exclamation mark `!`  embeds another resource, most often an image, but possibly also audio, video or text.
+
+```example
+![foo][label]
+![foo](<destination> attributes)
+![foo]{<destination> attributes}
+
+[label]: <destination> attributes
+.
+<img alt="foo" src="destination" attributes name="label">
+<img alt="foo" src="destination" attributes>
+<img alt="foo" src="destination" attributes>
+```
+
+Definition
+----------
+
+A *term* that is defined within the paragraph or section should be marked up so it can be styled and included in indices.
+
+```example
+[foo][label]
+[foo](attributes)
+[foo]{attributes}
+
+[label]: attributes
+.
+<dfn attributes name="label">foo</dfn>
+<dfn attributes>foo</dfn>
+<dfn attributes>foo</dfn>
+```
+
+Abbreviation or Acronym
+-----------------------
+
+If the first attribute is a title in double `""` or single `''` quotation marks (but not in round parentheses `()`), the span is considered an abbreviation and the title contains its expansion.
+
+```example
+[foo][label]
+[foo]("bar" attributes)
+[foo]{"bar" attributes}
+[foo]('bar' attributes)
+[foo]((bar) attributes)
+
+[label]: "bar" attributes
+.
+<abbr title="bar" attributes name="label">foo</abbr>
+<abbr title="bar" attributes>foo</abbr>
+<abbr title="bar" attributes>foo</abbr>
+<abbr title="bar" attributes>foo</abbr>
+<span title="bar" attributes>foo</span>
+```
+
+This will most often be used with shortcut reference spans, because it is reusable that way.
+
+```example
+[foo]
+
+[foo]: "bar"
+.
+<abbr title="bar">foo</abbr>
+```
+
+Index Entry
+-----------
+
+```example
+[foo][label]
+[foo](attributes)
+[foo]{attributes}
+
+[label]: attributes
+.
+< attributes name="label">foo</>
+< attributes>foo</>
+< attributes>foo</>
+```
+
+Citation or Name
+----------------
+
+If the first attribute is a language code preceded by a colon `:`, the span is considered a citation or name.
+
+```example
+[foo][label]
+[foo](:en attributes)
+[foo]{:en attributes}
+
+[label]: :en attributes
+.
+<cite lang="en" attributes name="label">foo</cite>
+<cite lang="en" attributes>foo</cite>
+<cite lang="en" attributes>foo</cite>
+```
+
+The language code can be omitted to inherited the default document language, but it is usually considered good style to provide the language, possibly `und` (for _undefined_ or _unknown_), `zxx` (_not applicable_), `mis` (_missing_) or `mul` (_multiple_).
+
+```example
+[foo][label]
+[foo](: attributes)
+[foo]{: attributes}
+
+[label]: : attributes
+.
+<cite attributes name="label">foo</cite>
+<cite attributes>foo</cite>
+<cite attributes>foo</cite>
+```
+
+Forms
+-----
+
+*This section is in the very early stages of development!*
+
+*Some subsections are more stable and uncontroversial than others.*
+
+### Form
+
+All form widgets within a manual, explicit top-level or second-level section or any automatic, implicit [section](section) belong to the same form. The first submit widget applies.
+
+```example
+## Foo
+[___]
+## Bar
+[___]
+---
+[___]
+.
+<section><h2>Foo</h2>
+<form><input type="text"/></form>
+</section>
+<section><h2>Bar</h2>
+<form><input type="text"/></form>
+</section>
+<section>
+<form><input type="text"/></form>
+</section>
+```
+
+### Fieldset
+
+Widgets can be grouped by *explicit* subsections.
+
+```example
+***
+[___]
+[___]
+***
+.
+<fieldset>
+<input type="text"/>
+<input type="text"/>
+</fieldset>
+```
+
+A seventh-level heading is interpreted as a *caption* or *legend*.
+
+```example
+### Foo
+[___]
+.
+<fieldset><legend>Foo</legend>
+<input type="text"/>
+</fieldset>
+```
+
+### Labels
+
+```example
+[___]("foo")
+[___]('foo:')
+[___][bar]
+
+[bar]: (foo)
+.
+<label><input type="text"/>foo</label>
+<label>foo: <input type="text"/></label>
+<label for="bar">foo</label> <input type="text" name="bar"/>
+```
+
+### Textual Input Widgets
+
+For consistency, every textual input widget is triggered by a distinctive string of three characters as single content of a span.
+
+```example
+[___]
+[***]
+[???] [__?] [_?_] [?__]
+[+##] [+__]
+[://] [:./]  
+[_@_] [@] [@@@]
+[_@_](+) [_@_]+
+.
+<input type="text"/>
+<input type="password"/>
+<input type="search"/>
+<input type="tel"/>
+<input type="url"/>
+<input type="email"/>
+<input type="email" mutliple/>
+```
+
+A valid pattern, which the input has to conform to, can be specified inside a pair of forward slashes `//` as established by regular expressions.
+
+```example
+[___](/foo/)
+[___]/foo/
+.
+<input type="text pattern="foo"/>
+<input type="text pattern="foo"/>
+```
+
+A placeholder, which describes the expected input to the user, can be specified in round parentheses `()`, i.e. a specialized _title_ which elsewhere results in a _caption_. The parentheses are optional in an inline link if they are the only attribute.
+
+```example
+[___]((foo))
+[___](foo)
+.
+<input type="text placeholder="foo"/>
+<input type="text placeholder="foo"/>
+```
+
+### Numeric Input Widgets
+
+Numeric input widgets either result in a single number being submitted or a fixed-length tuple of numbers. Ranges consist of two numbers, a start and an end value. Date and time types use up to three numbers or even six when combined. Their notation follows ISO 8601 extended format. To avoid literal letters, weeks use an additional hyphen. RGB colors use three or four numbers, the latter if an alpha channel is specified.
+
+```example
+[###]
+[#-#]
+[####-##-##] [CCYY-MM-DD]
+[##:##:##]   [hh:mm:ss]
+[####-##]    [CCYY-MM]
+[####--##]   [CCYY-wWW]
+[####-##-## ##:##:##] [CCYY-MM-DD hh:mm:ss]
+[######] [########]
+.
+<input type="number"/>
+<input type="range"/>
+<input type="date"/>
+<input type="time"/>
+<input type="month"/>
+<input type="week"/>
+<input type="datetime-local"/>
+<input type="color"/>
+```
+
+Minimum, maximum and interval step values can be specified as numeric attributes with a dash `-` in between.
+
+```example
+[###](0-9)
+[###](0-)
+[###](-9)
+[#-#](2) [#-#](@2)
+[#-#](0-9 2) [#-#](0-9 @2)
+.
+<input type="number" min="0" max="9"/>
+<input type="number" min="0"/>
+<input type="number" max="9"/>
+<input type="range" step="2"/>
+<input type="range" min="0" max="9" step="2"/>
+```
+
+### Common Attributes
+
+`size`, `maxlength` (`text`), `autocomplete`, `autofocus`, `height` / `width`, (`form`)
+
+```example
+[___](=foo)
+.
+<input type="text value="foo"/>
+```
+
+### Action Widgets
+
+Some inputs can only be activated and do not accept arbitrary input.
+
+```example
+[..] [.]
+[..]+
+[=] [===]
+[/] [=/=]
+![___](<destination>)
+![###](<destination>)
+.
+<input type="file"/>
+<input type="file" multiple/>
+<input type="submit"/>
+<input type="reset"/>
+<input type="image"/>
+<input type="button"/>
+```
+
+There is no way to add any of the `formaction` (`<destination>`), `formenctype` (`application/x-www-form-urlencoded` ~ `%` | `multipart/form-data` ~  `..` | `text/plain` ~ `+`), `formmethod` (`get` ~ `?` | `post` ~ `!`), `formnovalidate` (boolean), `formtarget` attributes, except for adding them literally.
+
+For `submit` and `image` there are several attributes that apply to the whole form unless multiple ones are specified.
+
+```example
+[=](formaction="bar") [=](!bar) [=](<bar>) [=]<bar>
+[=](formenctype="multipart/form-data") [=](%) [=](..) [=](+)
+[=](formmethod="get") [=](formmethod="post") [=](?) [=](!)
+[=](+formnovalidate) [=](~)
+[=](formtarget="_blank") [=](__blank) [=](_)
+.
+<input type="file"/>
+<input type="submit"/>
+<input type="reset"/>
+<input type="image"/>
+<input type="button"/>
+```
+
+The optional `height` and `width` of an image button can be specified in the same way as in the [Image Size extension](image-size).
+
+```example
+![___](<destination> 400:300)
+![___](<destination> 400:)
+![___](<destination> :300)
+.
+<input type="image" width="400" height="300"/>
+<input type="image" width="400"/>
+<input type="image" height="300"/>
+```
+
+### Group Input Widgets
+
+*should probably require bullet lists to effectively group*
+
+```example
+[+]
+[-]
+[_]
+[*] [(*)] [](*) (*)
+[()] [(_)] [](_) (_)
+[^^^]????
+????
+.
+<input type="checkbox" checked/>
+<input type="checkbox"/>
+<input type="checkbox"/>
+<input type="radio" checked/>
+<input type="radio"/>
+<select><option value="bar">foo</option></select>
+<input list="bar"/><datalist id="bar"><option value="foo"/></datalist>
+```
+
+`disabled`, `readonly`
+
+```example
++ [_]
+- [_]
+* [_]
+.
+<input type="checkbox" required/>
+<input type="checkbox"/>
+<input type="checkbox"/>
+```
+
+### Block Input Widgets
+
+`<textarea>`
+
+Additional Prefix
+-----------------
+
+Besides the exclamation mark `!` for embedding of multimedia content (primarily images), other prefix characters may be used.
+
+```example
+![foo](attributes)
+.
+< attributes>foo</>
+```
+

@@ -1,0 +1,46 @@
+Inline Diffs
+===========
+
+See also
+--------
+
+- [GitLab flavor](GitLab.flavor)
+- [Critic Markup](http://criticmarkup.com/)
+
+Introduction
+------------
+
+With inline diffs tags you can display `{+` additions `+}` or `[-` deletions `-]`.
+
+The wrapping tags can be either curly braces or square brackets: `[+` additions `+]` or `{-` deletions `-}`.
+
+```````````````````````````````````````````````` example
+- {+ additions +}
+- [+ additions +]
+- {- deletions -}
+- [- deletions -]
+.
+<ul>
+<li><ins>additions</ins></li>
+<li><ins>additions</ins></li>
+<li><del>deletions</del></li>
+<li><del>deletions</del></li>
+</ul>
+````````````````````````````````````````````````
+
+However the wrapping tags cannot be mixed as such:
+
+```````````````````````````````````````````````` example
+- {+ additions +]
+- [+ additions +}
+- {- deletions -]
+- [- deletions -}
+.
+<ul>
+<li>{+ additions +]</li>
+<li>[+ additions +}</li>
+<li>{- deletions -]</li>
+<li>[- deletions -}</li>
+</ul>
+````````````````````````````````````````````````
+

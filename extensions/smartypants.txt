@@ -1,0 +1,196 @@
+Typography
+==========
+
+See also
+--------
+
++ [Text Macros extension](shortcode)
+
+Introduction
+------------
+
+Hyphen-Minus `-`
+----------------
+
+````exam
+foo-bar
+foo--bar
+foo---bar
+foo----bar
+foo - bar
+foo -- bar
+foo --- bar
+foo ---- bar
+foo- bar
+foo-- bar
+foo--- bar
+foo---- bar
+foo -bar
+foo --bar
+foo ---bar
+foo ----bar
+-foo-
+--foo--
+---foo---
+----foo----
+.
+foo-bar
+foo--bar
+foo---bar
+foo----bar
+foo - bar
+foo -- bar
+foo --- bar
+foo ---- bar
+foo- bar
+foo-- bar
+foo--- bar
+foo---- bar
+foo -bar
+foo --bar
+foo ---bar
+foo ----bar
+-foo-
+--foo--
+---foo---
+----foo----
+````
+
+
+
+```exam
+123-456
+123--456
+123---456
+123----456
+123 - 456
+123 -- 456
+123 --- 456
+123 ---- 456
+123- 456
+123-- 456
+123--- 456
+123---- 456
+123 -456
+123 --456
+123 ---456
+123 ----456
+-123-
+--123--
+---123---
+----123----
+.
+123-456
+123--456
+123---456
+123----456
+123 - 456
+123 -- 456
+123 --- 456
+123 ---- 456
+123- 456
+123-- 456
+123--- 456
+123---- 456
+123 -456
+123 --456
+123 ---456
+123 ----456
+-123-
+--123--
+---123---
+----123----
+```
+
+Apostrophe `'`
+--------------
+
+```exam
+'foo' bar
+'foo bar'
+'foo 'bar
+foo' bar'
+foo' bar
+foo 'bar
+foo' 'bar
+123'
+'123
+'123'
+.
+'foo' bar
+'foo bar'
+'foo 'bar
+foo' bar'
+foo' bar
+foo 'bar
+foo' 'bar
+123'
+'123
+'123'
+```
+
+Quotation Mark `"`
+------------------
+
+```exam
+"foo" bar
+"foo bar"
+"foo "bar
+foo" bar"
+foo" bar
+foo "bar
+foo" "bar
+123"
+"123
+"123"
+.
+"foo" bar
+"foo bar"
+"foo "bar
+foo" bar"
+foo" bar
+foo "bar
+foo" "bar
+123"
+"123
+"123"
+```
+
+Period `.`
+----------
+
+```exam
+foo.bar
+foo.bar.
+foo. bar
+foo.  bar
+foo.. bar
+foo... bar
+foo . bar
+foo .. bar
+foo ... bar
+foo .bar
+foo ..bar
+foo ...bar
+foo. .bar
+foo.. ..bar
+foo... ...bar
+.
+foo.bar
+foo.bar.
+foo. bar
+foo.  bar
+foo.. bar
+foo... bar
+foo . bar
+foo .. bar
+foo ... bar
+foo .bar
+foo ..bar
+foo ...bar
+foo. .bar
+foo.. ..bar
+foo... ...bar
+
+```
+

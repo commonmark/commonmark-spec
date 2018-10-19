@@ -1,0 +1,21 @@
+Inserted Content
+===========
+
+See also
+--------
+
++ [Deleted Content extension](deletion)
++ [Critic Markup](critic-markup)
+
+Introduction
+------------
+
+
+
+```````````````````````````````````````````````` example
+++foo++
+^^foo^^
+^^^^foo^^^^
+.
+HTML
+````````````````````````````````````````````````

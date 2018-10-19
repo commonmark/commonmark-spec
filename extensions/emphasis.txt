@@ -1,0 +1,49 @@
+Presentational Emphasis
+===========
+
+See also
+--------
+
++ [Markua flavor](Markua.flavor)
+
+- [Underlined Text extension](underline)
+
+Introduction
+------------
+
+In vanilla Commonmark and Markdown, there are two ways to mark up emphasis: either with asterisks `*` or with underscores `_`. In original Markdown, there is absolutely no difference between them, while in Commonmark, only asterisks are supported for intra-word emphasis as in `foo*bar*baz`. HTML on the other hand, has two sets of element types, one consisting of  `<em>` and `<strong>` considered *semantic*, the other consisting of `<i>` and `<b>` considered *presentational* (_italic font_, _bold face_) – at least before HTML 5 altered their meaning. Basically all implementations produce the semantic element types.
+
+This extension alters the representation of underscored `_` emphasis in HTML output (and other formats that provide the same distinction) to use the more presentational tags. This is useful for authors who actually need to distinguish presentational markup from semantic markup or who follow the rather recent recommendations from the HTML Living Standard.
+
+Plain
+-----
+
+```example
+_foo_ *foo*
+__bar__ **bar**
+___baz___ ***baz***
+____quuz____ ****quuz****
+.
+<i>foo</i> <em>foo</em>
+<b>bar</b> <strong>bar</strong>
+<b><i>baz</i></b> <strong><em>baz</em></strong>
+<b><b>quuz</b></b> <strong><strong>quuz</strong></strong>
+```
+
+Combined with Underlined Text
+-----------------------------
+
+```````````````````````````````````````````````` example
+____quuz____
+_____dolor_____
+______sit______
+_______amet_______
+________boing________
+.
+<u>quuz</u>
+<u><i>dolor</i></u>
+<u><b>sit</b></u>
+<u><b><i>amet</i></b></u>
+<u><u>boing</u></u>
+````````````````````````````````````````````````
+

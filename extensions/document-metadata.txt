@@ -1,0 +1,71 @@
+Metadata
+========
+
+See also
+--------
+
+Introduction
+------------
+
+YAML
+----
+
+YAML always starts with a triple-hyphen fence `---`, commonly only supported at the start of the document, and usually ends with the same fence.
+
+```
+---
+Title: YAML Metadata Extension
+---
+.
+<head>
+<title>YAML Metadata Extension</title>
+<meta property="og:title" name="twitter:title" content="YAML Metadata Extension"/>
+</head>
+```
+
+Some implementations also accept a triple-period end fence `...`:
+
+```
+---
+Title: YAML Metadata Extension
+...
+.
+<head>
+<title>YAML Metadata Extension</title>
+<meta property="og:title" name="twitter:title" content="YAML Metadata Extension"/>
+</head>
+```
+
+TOML
+----
+
+`+++` fences.
+
+*TO DO: actual TOML syntax*
+
+```
++++
+Title: YAML Metadata Extension
++++
+.
+<head>
+<title>YAML Metadata Extension</title>
+<meta property="og:title" name="twitter:title" content="YAML Metadata Extension"/>
+</head>
+```
+
+JSON
+----
+
+`{`  start fence and `}` end fence
+
+```` 
+{
+"Title": "YAML Metadata Extension"
+}
+.
+<head>
+<title>YAML Metadata Extension</title>
+<meta property="og:title" name="twitter:title" content="YAML Metadata Extension"/>
+</head>
+````

@@ -1,0 +1,91 @@
+Generic Metadata
+===========
+
+## See also
+
++ [Markua flavor](Markua.flavor)
+
+- [Attributes extension](attribute) (meaning of the content)
+- [Info Strings extension](infostring) (without curly braces)
+
+Introduction
+------------
+
+Generic metadata is added inside a pair of matching curly braces `{}`. Existing implementations differ in where exactly they expect this.
+
+Before Inline
+-------------
+
+```example
+{attributes}*emphasis*
+{attributes}[link text](destination)
+.
+<em data-attributes="attributes">emphasis</em>
+<a href="destination" data-attributes="attributes">link text</a>
+```
+
+Inside Inline
+-------------
+
+```example
+*emphasis{attributes}*
+*{attributes}emphasis*
+[link text](destination {attributes})
+[link text]{attributes}(destination)
+.
+<em data-attributes="attributes">emphasis</em>
+<em data-attributes="attributes">emphasis</em>
+<a href="destination" data-attributes="attributes">link text</a>
+<a href="destination" data-attributes="attributes">link text</a>
+```
+
+After Inline
+------------
+
+```example
+*emphasis*{attributes}
+[link text](destination){attributes}
+.
+<em data-attributes="attributes">emphasis</em>
+<a href="destination" data-attributes="attributes">link text</a>
+```
+
+Before Block
+------------
+
+```example
+{attributes}
+Heading
+------------
+.
+<h2 data-attributes="attributes">Heading</h2>
+```
+
+Inside Block
+------------
+
+```example
+Heading {attributes}
+--------------------
+
+{attributes} Heading
+--------------------
+
+Heading
+------- {attributes}
+.
+<h2 data-attributes="attributes">Heading</h2>
+<h2 data-attributes="attributes">Heading</h2>
+<h2 data-attributes="attributes">Heading</h2>
+```
+
+After Block
+-----------
+
+```````````````````````````````````````````````` example
+Heading
+-------
+{attributes}
+.
+<h2 data-attributes="attributes">Heading</h2>
+````````````````````````````````````````````````

@@ -1,6 +1,14 @@
 Footnotes
 =========
 
+See also
+--------
+
++ [Text Spans extension](span)
+
+Introduction
+------------
+
 _Footnotes_ are a special form of _shortcut reference links_ 
 where the _link label_ starts with a circumflex `^` 
 and the _link text_ is automatically generated as a _footnote marker_. 

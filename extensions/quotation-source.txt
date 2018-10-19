@@ -1,0 +1,29 @@
+Quotation Source
+===========
+
+See also
+--------
+
++ Discussion: []()
+
+Introduction
+------------
+
+
+
+```````````````````````````````````````````````` example
+> Foo:
+> bar
+
+> foo
+> -- Bar
+.
+<blockquote>
+<cite>Foo:</cite>
+bar
+</blockquote>
+<blockquote>
+foo
+<cite>-- Bar</cite>
+</blockquote>
+````````````````````````````````````````````````

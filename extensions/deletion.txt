@@ -1,0 +1,21 @@
+Deleted Content
+===========
+
+See also
+--------
+
+- [Strike-Through extension](strikethrough) – often virtually identical, `<s>` vs. `<del>`
+- [Inserted Content extension](insert) – opposite
+- [Critic Markup](critic-markup) – superset
+- [Subscript Text extension](subscript) – also uses tilde `~`
+
+Introduction
+------------
+
+```````````````````````````````````````````````` example
+~~foo~~
+~~~~foo~~~~
+.
+<del>foo</del>
+<del>foo</del>
+````````````````````````````````````````````````

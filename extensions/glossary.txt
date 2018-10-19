@@ -1,0 +1,18 @@
+Glossaries
+===========
+
+See also
+--------
+
++ [Definition Lists extension](definition-list)
+
+Introduction
+------------
+
+
+
+```````````````````````````````````````````````` example
+Markdown
+.
+HTML
+````````````````````````````````````````````````
