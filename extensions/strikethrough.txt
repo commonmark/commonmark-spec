@@ -1,65 +1,53 @@
-Strike-Through Text
+Strikethrough
 =============
 
-See also
---------
+Strikethroughs, i.e. deletions, are marked up with a tilde character `~` on both sides.
 
-- [GitHub flavor](GitHub.flavor) – produces `<del>`
-- [GitLab flavor](GitLab.flavor) – ?
-- [Deleted Content extension](deletion) – virtually identical, `<del>` vs. `<s>`
-- [Subscript Text extension](subscript) – also uses tilde `~`
-- [Critic Markup extension](critic-markup)
-
-Introduction
-------------
-
-Strikethroughs, i.e. deletions, are marked up with two tilde characters `~~` on both sides.
-
-Possibly single marker for for subscript and double marker for strikethrough.
+**Issue**: Should either be exactly two tildes or exactly one tilde on both sides. 
+Align with [Critic Markup](critic-markup) and [subscripts](vertical-offset).
 
 ```````````````````````````````````````````````` example
-A proper ~~strikethrough~~.
+A proper ~strikethrough~.
 .
-<p>A proper <s>strikethrough</s>.</p>
+<p>A proper <del>strikethrough</del>.</p>
 ````````````````````````````````````````````````
 
 Strikethrough can contain line breaks.
 
 ```````````````````````````````````````````````` example
-This is ~~a
-strikethrough~~.
+This is ~a
+strikethrough~.
 .
-<p>This is <s>a
-strikethrough</s>.</p>
+<p>This is <del>a
+strikethrough</del>.</p>
 ````````````````````````````````````````````````
 
 But not empty lines:
 
 ```````````````````````````````````````````````` example
-These are ~~not strikethroughs.
+These are ~not strikethroughs.
 
-No, they are not~~
+No, they are not~
 .
-<p>These are ~~not strikethroughs.</p>
-<p>No, they are not~~</p>
+<p>These are ~not strikethroughs.</p>
+<p>No, they are not~</p>
 ````````````````````````````````````````````````
 
 Tildes must be next to a non-whitespace character. Other tildes can be part of the stricken text.
 
 ```````````````````````````````````````````````` example
-This ~~ isn't ~~ legit.
+This ~ isn't ~ legit.
 
-This ~~is ~~ legit~~.
+This ~is ~ legit~.
 .
-<p>This ~~ isn't ~~ legit.</p>
-<p>This <s>is ~~ legit</s>.</p>
+<p>This ~ isn't ~ legit.</p>
+<p>This <del>is ~ legit</del>.</p>
 ````````````````````````````````````````````````
 
-**Issue:** In GFM, for legacy reasons, a single tilde is also supported and multiple tildes are collapsed.
+Multiple tildes are collapsed, even if the prefix and suffix do not match in length:
 
 ```````````````````````````````````````````````` example
 These are ~~~three~~~ ~odd~~~ ~~~strikethroughs~.
 .
-<p>These are <del>three</del> <del>odd</del>~~ ~~<del>strikethroughs</del>.</p>
+<p>These are <del>three</del> <del>odd</del> <del>strikethroughs</del><.</p>
 ````````````````````````````````````````````````
-

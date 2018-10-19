@@ -1,14 +1,6 @@
 Basic Pipe Tables
 =================
 
-See also
---------
-
-- 
-
-Introduction
-------------
-
 Tables consists of lines that are turned into rows. 
 The first, mandatory line contains the column headers and is turned into the tabular head. 
 The second, mandatory line is special: It specifies the number of columns and optionally the horizontal alignment of their contents, but is not turned into content.
@@ -225,11 +217,11 @@ and to add two spaces after each row-final pipe to improve rendering in legacy i
 Alternative implementations may allow tables to be fenced for the same reason, but GFM does not:
 
 ~~~~~~~~~~~ markdown
-​~~~~~~~~
+~~~~~~~~
 | A | C |
 |---|---|
 | B | D |
-​~~~~~~~~
+~~~~~~~~
 .
 <pre>| A | C |
 |---|---|
@@ -400,7 +392,7 @@ Edges
 | B | D |
 
 | A | C |
-|---|---|
+|---|---
 | B | D |
 
 | A | C |

@@ -1,11 +1,3 @@
 HTML Filtering
 ==============
 
-See also
---------
-
-+ 
-
-Introduction
-------------
-

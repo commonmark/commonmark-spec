@@ -1,0 +1,24 @@
+Plain Links
+===========
+
+Absolute URL
+------------
+
+### Protocol Schemes
+
+- `http`, `https`
+
+Email Address
+-------------
+
+`[]@[]\.[]`
+
+Account Mention
+---------------
+
+`@[A-z\d-]+`
+
+Thread Number
+-------------
+
+`#\d+`

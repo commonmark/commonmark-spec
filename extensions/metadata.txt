@@ -1,0 +1,11 @@
+Metadata
+========
+
+YAML
+----
+
+```` 
+---
+Title: YAML Metadata Extension
+---
+````
