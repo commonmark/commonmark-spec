@@ -7952,8 +7952,8 @@ labels define equivalent inline content:
 ````````````````````````````````
 
 
-[Link labels] cannot contain brackets, unless they are 
-backslash-escaped: 
+[Link labels] cannot contain brackets, unless they are
+backslash-escaped:
 
 ```````````````````````````````` example
 [foo][ref[]
@@ -8566,32 +8566,13 @@ with their syntax:
 
 
 Spaces are not allowed in autolink URLs.
-The first whitespace is used to separate the URL from the optional [info string]
-which is retained for the link text:
 
 ```````````````````````````````` example
-<http://foo.bar/baz info string>
+<http://foo.bar/baz bim>
 .
-<p><a href="http://foo.bar/baz">http://foo.bar/baz info string</a></p>
+<p>&lt;http://foo.bar/baz bim&gt;</p>
 ````````````````````````````````
 
-If the URL is enclosed in another set of angular brackets, 
-it may contain whitespace:
-
-```````````````````````````````` example
-<<http://foo.bar/baz bim>>
-.
-<p><a href="http://foo.bar/baz%20bim">http://foo.bar/baz bim</a></p>
-````````````````````````````````
-
-These can also contain relative targets,
-because they can never be confused with HTML tags:
-
-```````````````````````````````` example
-<</url>>
-.
-<p><a href="/url">/url</a></p>
-````````````````````````````````
 
 Backslash-escapes do not work inside autolinks:
 
@@ -8631,13 +8612,6 @@ Examples of email autolinks:
 <foo+special@Bar.baz-bar0.com>
 .
 <p><a href="mailto:foo+special@Bar.baz-bar0.com">foo+special@Bar.baz-bar0.com</a></p>
-````````````````````````````````
-
-
-```````````````````````````````` example
-<foo@bar.example.com "My Name">
-.
-<p><a href="mailto:foo@bar.example.com" title="My Name">foo@bar.example.com "My Name"</a></p>
 ````````````````````````````````
 
 
