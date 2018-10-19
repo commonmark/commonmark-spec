@@ -5669,7 +5669,6 @@ A [backtick string](@)
 is a string of one or more backtick characters (`` ` ``) that is neither
 preceded nor followed by a backtick.
 
-
 A [code span](@) begins with a backtick string and ends with
 a backtick string of equal length.  The contents of the code span are
 the characters between the two backtick strings, with leading and
@@ -7359,8 +7358,8 @@ Parentheses inside the link destination may be escaped:
 <p><a href="(foo)">link</a></p>
 ````````````````````````````````
 
-Any number of parentheses are allowed without escaping, 
-as long as they are balanced:
+Any number of parentheses are allowed without escaping, as long as they are 
+balanced:
 
 ```````````````````````````````` example
 [link](foo(and(bar)))
@@ -7368,8 +7367,7 @@ as long as they are balanced:
 <p><a href="foo(and(bar))">link</a></p>
 ````````````````````````````````
 
-However, if you have unbalanced parentheses, 
-you need to escape them:
+However, if you have unbalanced parentheses, you need to escape them:
 
 ```````````````````````````````` example
 [link](foo\(and\(bar\))
@@ -7413,10 +7411,6 @@ A link can contain fragment identifiers and queries:
 <p><a href="http://example.com?foo=3#frag">link</a></p>
 ````````````````````````````````
 
-
-Note: Optional extensions to this specification may make variables 
-from query parameters available for transclusion in the text 
-via templates or variables, e.g. `{{foo}}` or `$foo$` possibly.
 
 As usual, a backslash before a non-escapable character is
 just a backslash:
@@ -7958,23 +7952,8 @@ labels define equivalent inline content:
 ````````````````````````````````
 
 
-The normalized labels contain any formatting characters verbatim:
-
-```````````````````````````````` example
-[foo][bar]
-
-[foo][*bar*]
-
-[*bar*]: /url1
-
-[bar]: /url2
-.
-<p><a href="/url2">foo</a></p>
-<p><a href="/url1">foo</a></p>
-````````````````````````````````
-
-
-[Link labels] cannot contain brackets: 
+[Link labels] cannot contain brackets, unless they are 
+backslash-escaped: 
 
 ```````````````````````````````` example
 [foo][ref[]
@@ -8007,17 +7986,6 @@ The normalized labels contain any formatting characters verbatim:
 
 
 ```````````````````````````````` example
-[[[foo]]]
-
-[foo]: /url
-.
-<p>[[<a href="/url">foo</a>]]</p>
-````````````````````````````````
-
-
-Unless they are backslash-escaped:
-
-```````````````````````````````` example
 [foo][ref\[]
 
 [ref\[]: /url
@@ -8034,44 +8002,6 @@ Note that in this example `]` is not backslash-escaped:
 [bar\\]
 .
 <p><a href="/url">bar\</a></p>
-````````````````````````````````
-
-
-Since unescaped square brackets are not allowed in link labels,
-they can never look like links or image references:
-
-```````````````````````````````` example
-[foo][[foo](bar)]
-
-[[foo](bar)]: /url1
-
-[[foo]]: /url2
-
-[foo]: /url3
-.
-<p><a href="/url3">foo</a>[<a href="bar">foo</a>]</p>
-<p>[<a href="bar">foo</a>]: /url1</p>
-<p>[<a href="/url3">foo</a>]: /url2</p>
-````````````````````````````````
-
-In particular, labels that would make valid image links 
-are not collapsed to their link text:
-
-```````````````````````````````` example
-[foo][![alt](/url1)]
-
-[foo][![alt]]
-
-[![alt]]
-
-[alt]: /url2
-
-[![alt]]: /url3
-.
-<p>[foo][<img src="/url1" alt="alt" />]</p>
-<p>[foo][<img src="/url2" alt="alt" />]</p>
-<p>[<img src="/url2" alt="alt" />]</p>
-<p>[<img src="/url2" alt="alt" />]: /url3</p>
 ````````````````````````````````
 
 
@@ -8334,9 +8264,6 @@ this is standardly used as the image's `alt` attribute.
 <p><img src="/url" alt="foo" title="title" /></p>
 ````````````````````````````````
 
-Though this spec is concerned with parsing, not rendering, it is
-recommended that in rendering to HTML, only the plain string content
-of the [image description] be used:  
 
 ```````````````````````````````` example
 ![foo *bar*]
@@ -8361,18 +8288,13 @@ of the [image description] be used:
 ````````````````````````````````
 
 
+Though this spec is concerned with parsing, not rendering, it is
+recommended that in rendering to HTML, only the plain string content
+of the [image description] be used. 
 Note that in
 the above example, the alt attribute's value is `foo bar`, not `foo
 [bar](/url)` or `foo <a href="/url">bar</a>`.  Only the plain string
 content is rendered, without formatting.
-With an implementation that treated an image as a floating figure
-if it is the only content of a paragraph, 
-the HTML output for this example would differ:
-
-``` HTML
-<figure><img src="/url2" alt="foo bar"><figcaption>foo <a href="/url">bar</a></figcaption></figure>
-```
-
 
 The rules for inline formatting other than links is the same as for links:
 
