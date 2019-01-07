@@ -9513,7 +9513,7 @@ closers:
     of the delimiter stack.  If the closing node is removed, reset
     `current_position` to the next element in the stack.
 
-- If none in found:
+- If none is found:
 
   + Set `openers_bottom` to the element before `current_position`.
     (We know that there are no openers for this kind of closer up to and
