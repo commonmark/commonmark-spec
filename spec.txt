@@ -7332,7 +7332,8 @@ A [link title](@)  consists of either
   backslash-escaped, or
 
 - a sequence of zero or more characters between matching parentheses
-  (`(...)`), including a `)` character only if it is backslash-escaped.
+  (`(...)`), including a `(` or `)` character only if it is
+  backslash-escaped.
 
 Although [link titles] may span multiple lines, they may not contain
 a [blank line].
