@@ -657,6 +657,21 @@ a------
 <p>---a---</p>
 ````````````````````````````````
 
+Unlike within text, two spaces at the end do not establish a continuation on the next line of code:
+
+```````````````````````````````` example
+---  
+---
+
+---  
+a
+.
+<hr />
+<hr />
+
+<hr />
+<p>a</p>
+````````````````````````````````
 
 It is required that all of the [non-whitespace characters] be the same.
 So, this is not a thematic break:
