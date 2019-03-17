@@ -9481,8 +9481,8 @@ just above `stack_bottom` (or the first element if `stack_bottom`
 is NULL).
 
 We keep track of the `openers_bottom` for each delimiter
-type (`*`, `_`) and delimiter length (modulo 3).  Initialize
-this to `stack_bottom`.
+type (`*`, `_`) and each length of the closing delimiter run
+(modulo 3).  Initialize this to `stack_bottom`.
 
 Then we repeat the following until we run out of potential
 closers:
