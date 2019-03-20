@@ -1922,9 +1922,11 @@ bar
 
 
 An [info string] can be provided after the opening code fence.
-Opening and closing spaces will be stripped, and the first word, prefixed
-with `language-`, is used as the value for the `class` attribute of the
-`code` element within the enclosing `pre` element.
+Although this spec doesn't mandate any particular treatment of
+the info string, the first word is typically used to specify
+the language of the code block. In HTML output, the language is
+normally indicated by adding a class to the `code` element consisting
+of `language-` followed by the language name.
 
 ```````````````````````````````` example
 ```ruby
