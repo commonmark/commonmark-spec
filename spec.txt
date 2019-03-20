@@ -7420,7 +7420,7 @@ bar>)</p>
 Pointy brackets that enclose links must be unescaped:
 
 ```````````````````````````````` example
-[link](<foo/>)
+[link](<foo\>)
 .
 <p><a href="%3Cfoo%3E">link</a></p>
 ````````````````````````````````
