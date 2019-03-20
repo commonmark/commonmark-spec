@@ -1613,10 +1613,9 @@ A fenced code block may interrupt a paragraph, and does not require
 a blank line either before or after.
 
 The content of a code fence is treated as literal text, not parsed
-as inlines.  The first word of the [info string] is typically used to
-specify the language of the code sample, and rendered in the `class`
-attribute of the `code` tag.  However, this spec does not mandate any
-particular treatment of the [info string].
+as inlines.  The first word of the [info string] is used to
+specify the language of the code sample, and is rendered in the `class`
+attribute of the `code` tag after the prefix `language-`.
 
 Here is a simple example with backticks:
 
