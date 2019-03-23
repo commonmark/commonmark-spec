@@ -6109,7 +6109,8 @@ The following rules define emphasis and strong emphasis:
     [delimiter runs].  If one of the delimiters can both
     open and close emphasis, then the sum of the lengths of the
     delimiter runs containing the opening and closing delimiters
-    must not be a multiple of 3.
+    must not be a multiple of 3 unless both lengths are
+    multiples of 3.
 
 10. Strong emphasis begins with a delimiter that
     [can open strong emphasis] and ends with a delimiter that
@@ -6119,7 +6120,8 @@ The following rules define emphasis and strong emphasis:
     [delimiter runs].  If one of the delimiters can both open
     and close strong emphasis, then the sum of the lengths of
     the delimiter runs containing the opening and closing
-    delimiters must not be a multiple of 3.
+    delimiters must not be a multiple of 3 unless both lengths
+    are multiples of 3.
 
 11. A literal `*` character cannot occur at the beginning or end of
     `*`-delimited emphasis or `**`-delimited strong emphasis, unless it
@@ -6738,7 +6740,8 @@ is precluded by the condition that a delimiter that
 can both open and close (like the `*` after `foo`)
 cannot form emphasis if the sum of the lengths of
 the delimiter runs containing the opening and
-closing delimiters is a multiple of 3.
+closing delimiters is a multiple of 3 unless
+both lengths are multiples of 3.
 
 
 For the same reason, we don't get two consecutive
@@ -6775,6 +6778,23 @@ omitted:
 *foo**bar***
 .
 <p><em>foo<strong>bar</strong></em></p>
+````````````````````````````````
+
+
+When the lengths of the interior closing and opening
+delimiter runs are *both* multiples of 3, though,
+they can match to create emphasis:
+
+```````````````````````````````` example
+foo***bar***baz
+.
+<p>foo<em><strong>bar</strong></em>baz</p>
+````````````````````````````````
+
+```````````````````````````````` example
+foo******bar*********baz
+.
+<p>foo<strong><strong><strong>bar</strong></strong></strong>***baz</p>
 ````````````````````````````````
 
 
