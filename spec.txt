@@ -328,8 +328,10 @@ that is not a [whitespace character].
 
 An [ASCII punctuation character](@)
 is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
-`*`, `+`, `,`, `-`, `.`, `/`, `:`, `;`, `<`, `=`, `>`, `?`, `@`,
-`[`, `\`, `]`, `^`, `_`, `` ` ``, `{`, `|`, `}`, or `~`.
+`*`, `+`, `,`, `-`, `.`, `/` (U+0021–2F), 
+`:`, `;`, `<`, `=`, `>`, `?`, `@` (U+003A–0040),
+`[`, `\`, `]`, `^`, `_`, `` ` `` (U+005B–0060), 
+`{`, `|`, `}`, or `~` (U+007B–007E).
 
 A [punctuation character](@) is an [ASCII
 punctuation character] or anything in
