@@ -7338,12 +7338,13 @@ A [link destination](@) consists of either
   closing `>` that contains no line breaks or unescaped
   `<` or `>` characters, or
 
-- a nonempty sequence of characters that does not include
-  ASCII space or control characters, and includes parentheses
-  only if (a) they are backslash-escaped or (b) they are part of
-  a balanced pair of unescaped parentheses.  (Implementations
-  may impose limits on parentheses nesting to avoid performance
-  issues, but at least three levels of nesting should be supported.)
+- a nonempty sequence of characters that does not start with
+  `<`, does not include ASCII space or control characters, and
+  includes parentheses only if (a) they are backslash-escaped or
+  (b) they are part of a balanced pair of unescaped parentheses.
+  (Implementations may impose limits on parentheses nesting to
+  avoid performance issues, but at least three levels of nesting
+  should be supported.)
 
 A [link title](@)  consists of either
 
