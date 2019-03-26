@@ -2054,9 +2054,9 @@ the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
 7.  **Start condition:**  line begins with a complete [open tag]
-or [closing tag] (with any [tag name] other than `script`,
-`style`, or `pre`) followed only by [whitespace]
-or the end of the line.\
+(with any [tag name] other than `script`,
+`style`, or `pre`) or a complete [closing tag],
+followed only by [whitespace] or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 HTML blocks continue until they are closed by their appropriate
