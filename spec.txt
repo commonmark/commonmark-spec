@@ -2896,6 +2896,17 @@ The link destination may not be omitted:
 <p>[foo]</p>
 ````````````````````````````````
 
+ However, an empty link destination may be specified using
+ angle brackets:
+
+```````````````````````````````` example
+[foo]: <>
+
+[foo]
+.
+<p><a href="">foo</a></p>
+````````````````````````````````
+
 The title must be separated from the link destination by
 whitespace:
 
