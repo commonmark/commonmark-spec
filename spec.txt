@@ -1872,7 +1872,7 @@ Code fences (opening and closing) cannot contain internal spaces:
 ``` ```
 aaa
 .
-<p><code></code>
+<p><code> </code>
 aaa</p>
 ````````````````````````````````
 
