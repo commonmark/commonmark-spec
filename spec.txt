@@ -7464,6 +7464,15 @@ bar>)
 bar>)</p>
 ````````````````````````````````
 
+The destination can contain `)` if it is enclosed
+in pointy brackets:
+
+```````````````````````````````` example
+[a](<b)c>)
+.
+<p><a href="b)c">a</a></p>
+````````````````````````````````
+
 Pointy brackets that enclose links must be unescaped:
 
 ```````````````````````````````` example
@@ -7472,6 +7481,18 @@ Pointy brackets that enclose links must be unescaped:
 <p>[link](&lt;foo&gt;)</p>
 ````````````````````````````````
 
+These are not links, because the opening pointy bracket
+is not matched properly:
+
+```````````````````````````````` example
+[a](<b)c
+[a](<b)c>
+[a](<b>c)
+.
+<p>[a](&lt;b)c
+[a](&lt;b)c&gt;
+[a](<b>c)</p>
+````````````````````````````````
 
 Parentheses inside the link destination may be escaped:
 
