@@ -827,7 +827,7 @@ Contents are parsed as inlines:
 ````````````````````````````````
 
 
-Leading and trailing blanks are ignored in parsing inline content:
+Leading and trailing [whitespace] is ignored in parsing inline content:
 
 ```````````````````````````````` example
 #                  foo                     
@@ -1020,6 +1020,20 @@ The content of the header may span more than one line:
 ```````````````````````````````` example
 Foo *bar
 baz*
+====
+.
+<h1>Foo <em>bar
+baz</em></h1>
+````````````````````````````````
+
+The contents are the result of parsing the headings's raw
+content as inlines.  The heading's raw content is formed by
+concatenating the lines and removing initial and final
+[whitespace].
+
+```````````````````````````````` example
+  Foo *bar
+baz*→
 ====
 .
 <h1>Foo <em>bar
@@ -5488,9 +5502,9 @@ Thus, for example, in
 <p><code>hi</code>lo`</p>
 ````````````````````````````````
 
-
 `hi` is parsed as code, leaving the backtick at the end as a literal
 backtick.
+
 
 ## Backslash escapes
 
