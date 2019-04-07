@@ -3131,6 +3131,17 @@ are defined:
 ````````````````````````````````
 
 
+Whether something is a [link reference definition] is
+independent of whether the link reference it defines is
+used in the document.  Thus, for example, the following
+document contains just a link reference definition, and
+no visible content:
+
+```````````````````````````````` example
+[foo]: /url
+.
+````````````````````````````````
+
 
 ## Paragraphs
 
