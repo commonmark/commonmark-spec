@@ -1,3 +1,95 @@
+[0.29]
+
+  * Clarify that entities can't be used to indicate structure (#474).
+    For example, you can't use `&#42;` instead of `*` for a bullet
+    list, or `&#10;` to create a new paragraph.
+  * Limit numerical entities to 6 hex or 7 decimal digits (#487).
+    This is all that is needed given the upper bound on
+    unicode code points.
+  * Specify dropping of initial/final whitespace in setext heading content
+    (#461).
+  * Add example with a reference link definition where the reference is never
+    used (#454).
+  * Add example with setext header after reference link defs (#395).
+  * Clarify that script, pre, style close tags can begin an HTML block (#517).
+  * Remove `meta` from list of block tags in start condition #6 of
+    HTML blocks (#527).  meta tags are used in some inline contexts (though
+    this isn't valid HTML5), e.g.  in schema.org.
+  * Disallow newlines inside of unquoted attributes (#507,
+    Shyouhei Urabe) as per HTML spec:
+    <https://html.spec.whatwg.org/multipage/syntax.html#unquoted>.
+  * Remove vestigial restriction in list item spec (#543).
+    The "not separated by more than one blank line" was a left-over
+    from an earlier version of the spec in which two blank lines
+    ended a list.
+  * Fix tests where list items are indented 4+ spaces (#497).
+    The tests did not accord with the spec here; these
+    lines should be continuation lines (if no blank space)
+    or indented code blocks (if blank space).
+  * Clarify tildes and backticks in info strings (#119).
+    We disallow backticks in info strings after backtick fences
+    only. Both backticks and tildes are allowed in info strings
+    after tilde fences.  Add example.
+  * Indicate that info string is trimmed of all whitespace (#505, Ashe
+    Connor).  As noted in
+    <https://github.com/github/cmark/issues/60>, the info string
+    is not only trimmed of "spaces" (U+0020) but also of tabs.
+  * Don't strip spaces in code span containing only spaces (#569).
+    This allows one to include a code span with just spaces,
+    using the most obvious syntax.
+  * Add example w/ reference link w/ empty destination in `<>` (#172).
+  * Disallow link destination beginning with `<` unless it is inside `<..>`
+    (#538).  This brings the description in line with the spec example:
+    ```
+    [foo]: <bar>(baz)
+
+     [foo]
+     .
+     <p>[foo]: <bar>(baz)</p>
+     <p>[foo]</p>
+    ```
+  * Allow spaces inside link destinations in pointy brackets (#503).
+    This reverts a change in 0.24 and should make things easier
+    for people working with image paths containing spaces.
+  * Remove redundant condition.  We don't need to specify that the absolute
+    URI in an autolink doesn't contain `<`, since this is specified in
+    the description of an absolute URI.
+  * Add additional spec examples involving link destinations in `<>` (#473).
+  * Add test for `[test](<url\>)` (#562).
+  * Disallow unescaped `(` in parenthesized link titles (#526).
+  * Add example showing need for space before title in reference link (#469).
+  * Add codepoints for punctuation characters (#564, Christoph Päper).
+  * Clarify the left- and right-flanking definitions (#534, Jay Martin).
+  * Match interior delimiter runs if lengths of both are multiples of 3
+    (#528).  This gives better results on `a***b***c` without giving bad
+    results on the cases that motivated the original multiple of 3 rule.
+  * Add another test case for emphasis (#509, Michael Howell).
+  * Code spans: don't collapse interior space (#532).
+  * Simplify revisions to code span normalization rules.
+    Remove the complex rule about ignoring newlines adjacent
+    to spaces. Now newlines are simply converted to spaces.
+  * Replace image 'url' with 'destination' (#512, Phill).
+  * Add some links for occurrences of "above" (#480).
+  * Various typo fixes (#514, Kenta Sato; #533, nikolas;
+    tnaia, #556; #551, Grahame Grieve).
+  * Create .gitattributes so that changelog.txt is highlighted as
+    markdown (#499, Christoph Päper).
+  * Update GitHub links (Morten Piibeleht).
+  * Update references to container and leaf block headers to use the
+    correct pluralization (#531, Elijah Hamovitz).
+  * Rephrase example #111 to indicate that the rendering is not mandated
+    (#568).
+  * Improve documentation of parsing strategy (#563).
+    Note that `openers_bottom` needs to be indexed to
+    delimiter run lengths as well as types.
+  * make_spec.lua: Fix migration of children nodes in create_anchors (#536,
+    Zhiming Wang).  This resulted in some bugs in the rendered spec
+    (where words would be dropped from links).
+  * Fix dingus link when double clicking Markdown code (#535, Zhiming Wang).
+    Prior to this commit, the link opened is always `/dingus/?text=` (no
+    text).
+  * Add spec.json generator to Makefile (M Pacer).
+
 [0.28]
 
   * Allow unlimited balanced pairs of parentheses in link URLs
