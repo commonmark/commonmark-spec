@@ -5539,6 +5539,7 @@ not have their usual Markdown meanings:
 \* not a list
 \# not a heading
 \[foo]: /url "not a reference"
+\&ouml; not a character entity
 .
 <p>*not emphasized*
 &lt;br/&gt; not a tag
@@ -5547,7 +5548,8 @@ not have their usual Markdown meanings:
 1. not a list
 * not a list
 # not a heading
-[foo]: /url &quot;not a reference&quot;</p>
+[foo]: /url &quot;not a reference&quot;
+&amp;ouml; not a character entity</p>
 ````````````````````````````````
 
 
