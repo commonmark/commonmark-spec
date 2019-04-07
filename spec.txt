@@ -8686,7 +8686,7 @@ If you want a link after a literal `!`, backslash-escape the
 as the link label.
 
 A [URI autolink](@) consists of `<`, followed by an
-[absolute URI] not containing `<`, followed by `>`.  It is parsed as
+[absolute URI] followed by `>`.  It is parsed as
 a link to the URI, with the URI as the link's label.
 
 An [absolute URI](@),
