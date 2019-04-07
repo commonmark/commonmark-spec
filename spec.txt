@@ -3076,6 +3076,25 @@ and thematic breaks, and it need not be followed by a blank line.
 </blockquote>
 ````````````````````````````````
 
+```````````````````````````````` example
+[foo]: /url
+bar
+===
+[foo]
+.
+<h1>bar</h1>
+<p><a href="/url">foo</a></p>
+````````````````````````````````
+
+```````````````````````````````` example
+[foo]: /url
+===
+[foo]
+.
+<p>===
+<a href="/url">foo</a></p>
+````````````````````````````````
+
 
 Several [link reference definitions]
 can occur one after another, without intervening blank lines.
