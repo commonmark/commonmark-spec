@@ -156,7 +156,7 @@ local create_anchors = function(doc, meta, to)
                                stop="}\\label{" .. ident .. "}}",
                                block = true})
         else
-          anchor = make_html_block('h' .. tostring(level),
+          anchor = make_html_block('h' .. tostring(math.floor(level)),
                       {{'id', ident},
                        {'href', '#'..ident},
                        {'class', 'definition'}})
