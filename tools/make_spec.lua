@@ -31,7 +31,7 @@ local extract_references = function(doc)
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
           node_type == cmark.NODE_HEADING) then
       local child = cmark.node_first_child(cur)
-      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT, 0))
+      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT + OPT_UNSAFE, 0))
       local ident = to_identifier(label)
       if refs[label] then
         warn("duplicate reference " .. label)
@@ -119,7 +119,7 @@ local create_anchors = function(doc, meta, to)
 
       local anchor
       local child = cmark.node_first_child(cur)
-      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT, 0))
+      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT + OPT_UNSAFE, 0))
       local ident = to_identifier(label)
       if node_type == cmark.NODE_LINK then
         if format == 'latex' then
