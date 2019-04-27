@@ -2027,9 +2027,9 @@ start and end conditions.  The block begins with a line that meets a
 It ends with the first subsequent line that meets a matching [end
 condition](@), or the last line of the document, or the last line of
 the [container block](#container-blocks) containing the current HTML
-block, if no line is encountered that meets the [end condition].  If
-the first line meets both the [start condition] and the [end
-condition], the block will contain just that line.
+block, if no line is encountered that meets the [end condition](@). 
+If the first line meets both the [start condition] and the [end
+condition](@), the block will contain just that line.
 
 1.  **Start condition:**  line begins with the string `<script`,
 `<pre`, or `<style` (case-insensitive), followed by whitespace,
@@ -2074,7 +2074,7 @@ followed only by [whitespace] or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 HTML blocks continue until they are closed by their appropriate
-[end condition], or the last line of the document or other [container
+[end condition](@), or the last line of the document or other [container
 block](#container-blocks).  This means any HTML **within an HTML
 block** that might otherwise be recognised as a start condition will
 be ignored by the parser and passed through as-is, without changing
