@@ -23,6 +23,18 @@ local render_number = function(tbl)
   return table.concat(buf, '.')
 end
 
+local extract_label = function(cur)
+  local label = ""
+  for subcur, subentering, subnode_type in cmark.walk(cur) do
+    if subentering and subnode_type == cmark.NODE_TEXT then
+      label = label .. cmark.node_get_literal(subcur)
+    elseif subentering and subnode_type == cmark.NODE_SOFTBREAK then
+      label = label .. " "
+    end
+  end
+  return label
+end
+
 local extract_references = function(doc)
   local cur, entering, node_type
   local refs = {}
@@ -30,8 +42,7 @@ local extract_references = function(doc)
     if not entering and
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
           node_type == cmark.NODE_HEADING) then
-      local child = cmark.node_first_child(cur)
-      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT + OPT_UNSAFE, 0))
+      local label = extract_label(cur)
       local ident = to_identifier(label)
       if refs[label] then
         warn("duplicate reference " .. label)
@@ -118,8 +129,7 @@ local create_anchors = function(doc, meta, to)
           node_type == cmark.NODE_HEADING) then
 
       local anchor
-      local child = cmark.node_first_child(cur)
-      local label = trim(cmark.render_commonmark(child, OPT_DEFAULT + OPT_UNSAFE, 0))
+      local label = extract_label(cur)
       local ident = to_identifier(label)
       if node_type == cmark.NODE_LINK then
         if format == 'latex' then
@@ -167,7 +177,8 @@ local create_anchors = function(doc, meta, to)
           end
         end
       end
-      local children = {};
+      local children = {}
+      local child = cmark.node_first_child(cur)
       while child do
         children[#children + 1] = child
         child = cmark.node_next(child)
