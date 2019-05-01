@@ -8070,11 +8070,11 @@ Matching is case-insensitive:
 Unicode case fold is used:
 
 ```````````````````````````````` example
-[Толпой][Толпой] is a Russian word.
+[ẞ]
 
-[ТОЛПОЙ]: /url
+[SS]: /url
 .
-<p><a href="/url">Толпой</a> is a Russian word.</p>
+<p><a href="/url">ẞ</a></p>
 ````````````````````````````````
 
 
