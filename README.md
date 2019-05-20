@@ -39,6 +39,40 @@ actually running the tests, you can do:
 
 and you'll get all the tests in JSON format.
 
+Running tests against the spec with JavaScript
+----------------------------------------------
+
+The `commonmark-spec` npm package published from this repo exports an array of test objects extracted from the spec. Note that the shape of these test objects is different than that of the output from `text/spec_tests.py`:
+
+```json
+{
+  "markdown": "Foo\nBar\n---\n",
+  "html": "<h2>Foo\nBar</h2>\n",
+  "section": "Setext headings",
+  "number": 65
+}
+```
+
+Testing commonmark conformance in a custom parser could be done as follows:
+
+```js
+import { tests } from 'commonmark-spec'
+import customParser from '../custom-parser'
+
+describe('Commonmark support', () => {
+
+  // loop through the specs
+  tests.forEach(spec => {
+
+    // output the markdown test subject as the description
+    test(spec.markdown, () => {
+
+      // assert that the custom parser's HTML output matches the output in the spec
+      expect(customParser(spec.markdown)).toEqual(spec.html)
+    }
+  })
+})
+```
 
 The spec
 --------
