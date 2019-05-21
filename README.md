@@ -42,7 +42,9 @@ and you'll get all the tests in JSON format.
 Running tests against the spec with JavaScript
 ----------------------------------------------
 
-The `commonmark-spec` npm package published from this repo exports an array of test objects extracted from the spec. Note that the shape of these test objects is different than that of the output from `text/spec_tests.py`:
+The `commonmark-spec` npm package published from this repo exports an array of
+test objects extracted from the spec. Note that the shape of these test objects
+is different than that of the output from `text/spec_tests.py`:
 
 ```json
 {
@@ -67,7 +69,8 @@ describe('Commonmark support', () => {
     // output the markdown test subject as the description
     test(spec.markdown, () => {
 
-      // assert that the custom parser's HTML output matches the output in the spec
+      // assert that the custom parser's HTML output matches the output in the
+      // spec
       expect(customParser(spec.markdown)).toEqual(spec.html)
     }
   })
