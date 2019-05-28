@@ -39,6 +39,21 @@ actually running the tests, you can do:
 
 and you'll get all the tests in JSON format.
 
+JavaScript developers may find it more convenient to use the
+[`commonmark-spec` npm package], which is published from this
+repository.  It exports an array `tests` of JSON objects with
+the format
+
+```json
+{
+  "markdown": "Foo\nBar\n---\n",
+  "html": "<h2>Foo\nBar</h2>\n",
+  "section": "Setext headings",
+  "number": 65
+}
+```
+
+[`commonmark-spec` npm package]: https://www.npmjs.com/package/commonmark-spec
 
 The spec
 --------
