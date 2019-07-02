@@ -1668,7 +1668,7 @@ Fewer than three backticks is not enough:
 foo
 ``
 .
-<p><code>foo</code></p>
+foo
 ````````````````````````````````
 
 The closing code fence must use the same character as the opening
