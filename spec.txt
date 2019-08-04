@@ -9443,7 +9443,7 @@ blocks.  But we cannot close unmatched blocks yet, because we may have a
 blocks, we look for new block starts (e.g. `>` for a block quote).
 If we encounter a new block start, we close any blocks unmatched
 in step 1 before creating the new block as a child of the last
-matched block.
+matched container block.
 
 3.  Finally, we look at the remainder of the line (after block
 markers like `>`, list markers, and indentation have been consumed).
