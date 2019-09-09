@@ -5661,6 +5661,10 @@ with the following exceptions:
   `*` in emphasis delimiters, bullet list markers, or thematic
   breaks.
 
+- Entity and numeric character references are replaced before
+  deciding whether a [delimiter run] can open and/or close
+  emphasis.
+
 Conforming CommonMark parsers need not store information about
 whether a particular character was represented in the source
 using a Unicode character or an entity reference.
@@ -5798,6 +5802,16 @@ text in code spans and code blocks:
 .
 <pre><code>f&amp;ouml;f&amp;ouml;
 </code></pre>
+````````````````````````````````
+
+
+Entity and numeric character references are replaced before deciding
+whether a [delimiter run] can open and/or close emphasis.
+
+```````````````````````````````` example
+i*&#105;i*i
+.
+<p>i<em>ii</em>i</p>
 ````````````````````````````````
 
 
