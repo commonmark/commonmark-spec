@@ -639,7 +639,7 @@ using a Unicode character or an entity reference.
 
 [Entity references](@) consist of `&` + any of the valid
 HTML5 entity names + `;`. The
-document <https://html.spec.whatwg.org/multipage/entities.json>
+document <https://html.spec.whatwg.org/entities.json>
 is used as an authoritative source for the valid entity
 references and their corresponding code points.
 
