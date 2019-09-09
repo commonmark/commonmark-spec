@@ -326,6 +326,9 @@ A [space](@) is `U+0020`.
 A [non-whitespace character](@) is any character
 that is not a [whitespace character].
 
+An [ASCII control character](@) is a character between `U+0000–7F` (both
+including) or `U+007F`.
+
 An [ASCII punctuation character](@)
 is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `*`, `+`, `,`, `-`, `.`, `/` (U+0021–2F), 
@@ -7463,10 +7466,11 @@ A [link destination](@) consists of either
   closing `>` that contains no line breaks or unescaped
   `<` or `>` characters, or
 
-- a nonempty sequence of characters that does not start with
-  `<`, does not include ASCII space or control characters, and
-  includes parentheses only if (a) they are backslash-escaped or
-  (b) they are part of a balanced pair of unescaped parentheses.
+- a nonempty sequence of characters that does not start with `<`,
+  does not include [ASCII control characters][ASCII control character]
+  or [whitespace][], and includes parentheses only if (a) they are
+  backslash-escaped or (b) they are part of a balanced pair of
+  unescaped parentheses.
   (Implementations may impose limits on parentheses nesting to
   avoid performance issues, but at least three levels of nesting
   should be supported.)
@@ -8708,9 +8712,9 @@ a link to the URI, with the URI as the link's label.
 
 An [absolute URI](@),
 for these purposes, consists of a [scheme] followed by a colon (`:`)
-followed by zero or more characters other than ASCII
-[whitespace] and control characters, `<`, and `>`.  If
-the URI includes these characters, they must be percent-encoded
+followed by zero or more characters other [ASCII control
+characters][ASCII control character] or [whitespace][] , `<`, and `>`.
+If the URI includes these characters, they must be percent-encoded
 (e.g. `%20` for a space).
 
 For purposes of this spec, a [scheme](@) is any sequence
