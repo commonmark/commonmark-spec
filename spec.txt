@@ -294,12 +294,12 @@ of [characters] rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
 A [line](@) is a sequence of zero or more [characters]
-other than newline (`U+000A`) or carriage return (`U+000D`),
+other than line feed (`U+000A`) or carriage return (`U+000D`),
 followed by a [line ending] or by the end of file.
 
-A [line ending](@) is a newline (`U+000A`), a carriage return
-(`U+000D`) not followed by a newline, or a carriage return and a
-following newline.
+A [line ending](@) is a line feed (`U+000A`), a carriage return
+(`U+000D`) not followed by a line feed, or a carriage return and a
+following line feed.
 
 A line containing no characters, or a line containing only spaces
 (`U+0020`) or tabs (`U+0009`), is called a [blank line](@).
@@ -307,14 +307,14 @@ A line containing no characters, or a line containing only spaces
 The following definitions of character classes will be used in this spec:
 
 A [whitespace character](@) is a space
-(`U+0020`), tab (`U+0009`), newline (`U+000A`), or carriage return (`U+000D`).
+(`U+0020`), tab (`U+0009`), line feed (`U+000A`), or carriage return (`U+000D`).
 
 [Whitespace](@) is a sequence of one or more [whitespace
 characters].
 
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-carriage return (`U+000D`), newline (`U+000A`), or form feed (`U+000C`).
+carriage return (`U+000D`), line feed (`U+000A`), or form feed (`U+000C`).
 
 [Unicode whitespace](@) is a sequence of one
 or more [Unicode whitespace characters].
@@ -2443,7 +2443,7 @@ _world_.
 </td></tr></table>
 ````````````````````````````````
 
-In this case, the HTML block is terminated by the newline — the `**Hello**`
+In this case, the HTML block is terminated by the blank line — the `**Hello**`
 text remains verbatim — and regular parsing resumes, with a paragraph,
 emphasised `world` and inline and block HTML following.
 
@@ -6439,7 +6439,7 @@ whitespace:
 ````````````````````````````````
 
 
-A newline also counts as whitespace:
+A line ending also counts as whitespace:
 
 ```````````````````````````````` example
 *foo bar
@@ -6604,7 +6604,7 @@ __ foo bar__
 ````````````````````````````````
 
 
-A newline counts as whitespace:
+A line ending counts as whitespace:
 ```````````````````````````````` example
 __
 foo bar__
