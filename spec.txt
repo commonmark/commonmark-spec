@@ -326,7 +326,7 @@ A [space](@) is `U+0020`.
 A [non-whitespace character](@) is any character
 that is not a [whitespace character].
 
-An [ASCII control character](@) is a character between `U+0000–7F` (both
+An [ASCII control character](@) is a character between `U+0000–1F` (both
 including) or `U+007F`.
 
 An [ASCII punctuation character](@)
