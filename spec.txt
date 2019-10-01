@@ -307,16 +307,14 @@ A line containing no characters, or a line containing only spaces
 The following definitions of character classes will be used in this spec:
 
 A [whitespace character](@) is a space
-(`U+0020`), tab (`U+0009`), newline (`U+000A`), line tabulation (`U+000B`),
-form feed (`U+000C`), or carriage return (`U+000D`).
+(`U+0020`), tab (`U+0009`), newline (`U+000A`), or carriage return (`U+000D`).
 
 [Whitespace](@) is a sequence of one or more [whitespace
 characters].
 
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-carriage return (`U+000D`), newline (`U+000A`), or form feed
-(`U+000C`).
+carriage return (`U+000D`), newline (`U+000A`), or form feed (`U+000C`).
 
 [Unicode whitespace](@) is a sequence of one
 or more [Unicode whitespace characters].
