@@ -308,7 +308,7 @@ The following definitions of character classes will be used in this spec:
 
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-carriage return (`U+000D`), line feed (`U+000A`), or form feed (`U+000C`).
+line feed (`U+000A`), form feed (`U+000C`), or carriage return (`U+000D`).
 
 [Unicode whitespace](@) is a sequence of one or more
 [Unicode whitespace characters].
