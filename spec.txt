@@ -327,7 +327,7 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `[`, `\`, `]`, `^`, `_`, `` ` `` (U+005B–0060), 
 `{`, `|`, `}`, or `~` (U+007B–007E).
 
-A [punctuation character](@) is an [ASCII
+A [Unicode punctuation character](@) is an [ASCII
 punctuation character] or anything in
 the general Unicode categories  `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
 
@@ -6129,17 +6129,17 @@ a non-backslash-escaped `_` character.
 
 A [left-flanking delimiter run](@) is
 a [delimiter run] that is (1) not followed by [Unicode whitespace],
-and either (2a) not followed by a [punctuation character], or
-(2b) followed by a [punctuation character] and
-preceded by [Unicode whitespace] or a [punctuation character].
+and either (2a) not followed by a [Unicode punctuation character], or
+(2b) followed by a [Unicode punctuation character] and
+preceded by [Unicode whitespace] or a [Unicode punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
 A [right-flanking delimiter run](@) is
 a [delimiter run] that is (1) not preceded by [Unicode whitespace],
-and either (2a) not preceded by a [punctuation character], or
-(2b) preceded by a [punctuation character] and
-followed by [Unicode whitespace] or a [punctuation character].
+and either (2a) not preceded by a [Unicode punctuation character], or
+(2b) preceded by a [Unicode punctuation character] and
+followed by [Unicode whitespace] or a [Unicode punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
@@ -6194,7 +6194,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [left-flanking delimiter run]
     and either (a) not part of a [right-flanking delimiter run]
     or (b) part of a [right-flanking delimiter run]
-    preceded by punctuation.
+    preceded by Unicode punctuation.
 
 3.  A single `*` character [can close emphasis](@)
     iff it is part of a [right-flanking delimiter run].
@@ -6203,7 +6203,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [right-flanking delimiter run]
     and either (a) not part of a [left-flanking delimiter run]
     or (b) part of a [left-flanking delimiter run]
-    followed by punctuation.
+    followed by Unicode punctuation.
 
 5.  A double `**` [can open strong emphasis](@)
     iff it is part of a [left-flanking delimiter run].
@@ -6212,7 +6212,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [left-flanking delimiter run]
     and either (a) not part of a [right-flanking delimiter run]
     or (b) part of a [right-flanking delimiter run]
-    preceded by punctuation.
+    preceded by Unicode punctuation.
 
 7.  A double `**` [can close strong emphasis](@)
     iff it is part of a [right-flanking delimiter run].
@@ -6221,7 +6221,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [right-flanking delimiter run]
     and either (a) not part of a [left-flanking delimiter run]
     or (b) part of a [left-flanking delimiter run]
-    followed by punctuation.
+    followed by Unicode punctuation.
 
 9.  Emphasis begins with a delimiter that [can open emphasis] and ends
     with a delimiter that [can close emphasis], and that uses the same
