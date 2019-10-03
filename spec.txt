@@ -4055,7 +4055,7 @@ baz</p>
 
 When including an indented code block in a block quote,
 remember that the [block quote marker] includes
-both the `>` and a following spaces of indentation.  So *five spaces* are needed
+both the `>` and a following space of indentation.  So *five spaces* are needed
 after the `>`:
 
 ```````````````````````````````` example
