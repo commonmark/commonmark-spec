@@ -8097,7 +8097,7 @@ Unicode case fold is used:
 ````````````````````````````````
 
 
-Consecutive internal spaces, tabs, and line endings, is treated as one space for
+Consecutive internal spaces, tabs, and line endings are treated as one space for
 purposes of determining matching:
 
 ```````````````````````````````` example
@@ -8110,7 +8110,7 @@ purposes of determining matching:
 ````````````````````````````````
 
 
-No spaces, tabs, or line endings, are allowed between the [link text] and the
+No spaces, tabs, or line endings are allowed between the [link text] and the
 [link label]:
 
 ```````````````````````````````` example
