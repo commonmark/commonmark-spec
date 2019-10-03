@@ -4271,7 +4271,7 @@ far enough past the blockquote marker:
 ````````````````````````````````
 
 
-Note that at least one spaces or tab is needed between the list marker and
+Note that at least one space or tab is needed between the list marker and
 any following content, so these are not list items:
 
 ```````````````````````````````` example
