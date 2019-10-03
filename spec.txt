@@ -3348,7 +3348,7 @@ bar
 
 
 This is not a link reference definition, because there are
-characters other than tabs or spaces after the title:
+characters other than spaces or tabs after the title:
 
 ```````````````````````````````` example
 [foo]: /url "title" ok
