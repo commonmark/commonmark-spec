@@ -7459,7 +7459,7 @@ A [link destination](@) consists of either
 
 - a nonempty sequence of characters that does not start with `<`,
   does not include [ASCII control characters][ASCII control character]
-  or or [space] character, and includes parentheses only if (a) they are
+  or [space] character, and includes parentheses only if (a) they are
   backslash-escaped or (b) they are part of a balanced pair of
   unescaped parentheses.
   (Implementations may impose limits on parentheses nesting to
