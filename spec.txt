@@ -4448,7 +4448,7 @@ And in this case it is 11 spaces:
 
 
 If the *first* block in the list item is an indented code block,
-then by rule #2, the contents must be indented *one* spaces of indentation after
+then by rule #2, the contents must be indented *one* space of indentation after
 the list marker:
 
 ```````````````````````````````` example
