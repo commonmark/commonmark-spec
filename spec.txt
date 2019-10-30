@@ -7484,12 +7484,12 @@ Although [link titles] may span multiple lines, they may not contain
 a [blank line].
 
 An [inline link](@) consists of a [link text] followed immediately
-by a left parenthesis `(`, optional spaces, tabs, and up to one line ending,
-optional link information, and a right parenthesis `)`.
-Link information consists of a [link destination], an optional [link title], and
-optional spaces, tabs, and up to one line ending.
-If a title is present, it must be separated from the link destination by spaces,
-tabs, and up to one line ending.
+by a left parenthesis `(`, an optional [link destination], an optional
+[link title], and a right parenthesis `)`.
+These four components may be separated by spaces, tabs, and up to one line
+ending.
+If both [link destination] and [link title] are present, they *must* be
+separated by spaces, tabs, and up to one line ending.
 
 The link's text consists of the inlines contained
 in the [link text] (excluding the enclosing square brackets).
