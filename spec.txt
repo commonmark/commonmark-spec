@@ -6194,7 +6194,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [left-flanking delimiter run]
     and either (a) not part of a [right-flanking delimiter run]
     or (b) part of a [right-flanking delimiter run]
-    preceded by Unicode punctuation.
+    preceded by a [Unicode punctuation character].
 
 3.  A single `*` character [can close emphasis](@)
     iff it is part of a [right-flanking delimiter run].
@@ -6203,7 +6203,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [right-flanking delimiter run]
     and either (a) not part of a [left-flanking delimiter run]
     or (b) part of a [left-flanking delimiter run]
-    followed by Unicode punctuation.
+    followed by a [Unicode punctuation character].
 
 5.  A double `**` [can open strong emphasis](@)
     iff it is part of a [left-flanking delimiter run].
@@ -6212,7 +6212,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [left-flanking delimiter run]
     and either (a) not part of a [right-flanking delimiter run]
     or (b) part of a [right-flanking delimiter run]
-    preceded by Unicode punctuation.
+    preceded by a [Unicode punctuation character].
 
 7.  A double `**` [can close strong emphasis](@)
     iff it is part of a [right-flanking delimiter run].
@@ -6221,7 +6221,7 @@ The following rules define emphasis and strong emphasis:
     it is part of a [right-flanking delimiter run]
     and either (a) not part of a [left-flanking delimiter run]
     or (b) part of a [left-flanking delimiter run]
-    followed by Unicode punctuation.
+    followed by a [Unicode punctuation character].
 
 9.  Emphasis begins with a delimiter that [can open emphasis] and ends
     with a delimiter that [can close emphasis], and that uses the same
