@@ -7485,9 +7485,12 @@ a [blank line].
 
 An [inline link](@) consists of a [link text] followed immediately
 by a left parenthesis `(`, optional spaces, tabs, and up to one line ending,
-an optional [link destination], an optional [link title] separated from the link
-destination by spaces, tabs, and up to one line ending, optional spaces, tabs,
-and up to one line ending, and a right parenthesis `)`.
+optional link information, and a right parenthesis `)`.
+Link information consists of a [link destination], an optional [link title], and
+optional spaces, tabs, and up to one line ending.
+If a title is present, it must be separated from the link destination by spaces,
+tabs, and up to one line ending.
+
 The link's text consists of the inlines contained
 in the [link text] (excluding the enclosing square brackets).
 The link's URI consists of the link destination, excluding enclosing
