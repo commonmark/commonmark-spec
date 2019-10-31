@@ -2389,7 +2389,7 @@ need not match the start tag).
 **End condition:** line contains the string `?>`.
 
 4.  **Start condition:** line begins with the string `<!`
-followed by an uppercase ASCII letter.\
+followed by an ASCII letter.\
 **End condition:** line contains the character `>`.
 
 5.  **Start condition:**  line begins with the string
@@ -8947,10 +8947,8 @@ consists of the string `<?`, a string
 of characters not including the string `?>`, and the string
 `?>`.
 
-A [declaration](@) consists of the
-string `<!`, a name consisting of one or more uppercase ASCII letters,
-[whitespace], a string of characters not including the
-character `>`, and the character `>`.
+A [declaration](@) consists of the string `<!`, an ASCII letter, zero or more
+characters not including the character `>`, and the character `>`.
 
 A [CDATA section](@) consists of
 the string `<![CDATA[`, a string of characters not including the string
