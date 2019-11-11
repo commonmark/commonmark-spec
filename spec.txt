@@ -7622,6 +7622,13 @@ However, if you have unbalanced parentheses, you need to escape or use the
 `<...>` form:
 
 ```````````````````````````````` example
+[link](foo(and(bar))
+.
+<p>[link](foo(and(bar))</p>
+````````````````````````````````
+
+
+```````````````````````````````` example
 [link](foo\(and\(bar\))
 .
 <p><a href="foo(and(bar)">link</a></p>
