@@ -2424,7 +2424,7 @@ block** that might otherwise be recognised as a start condition will
 be ignored by the parser and passed through as-is, without changing
 the parser's state.
 
-For instance, `<pre>` within a HTML block started by `<table>` will not affect
+For instance, `<pre>` within an HTML block started by `<table>` will not affect
 the parser state; as the HTML block was started in by start condition 6, it
 will end at any blank line. This can be surprising:
 
