@@ -168,7 +168,6 @@ local create_anchors = function(doc, meta, to)
         else
           anchor = make_html_block('h' .. tostring(math.floor(level)),
                       {{'id', ident},
-                       {'href', '#'..ident},
                        {'class', 'definition'}})
           if num ~= '' then
             local numspan = make_html_inline('span', {{'class','number'}})
