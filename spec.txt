@@ -4566,8 +4566,7 @@ the above case:
 
 3.  **Item starting with a blank line.**  If a sequence of lines *Ls*
     starting with a single [blank line] constitute a (possibly empty)
-    sequence of blocks *Bs*, not separated from each other by more than
-    one blank line, and *M* is a list marker of width *W*,
+    sequence of blocks *Bs*, and *M* is a list marker of width *W*,
     then the result of prepending *M* to the first line of *Ls*, and
     indenting subsequent lines of *Ls* by *W + 1* spaces, is a list
     item with *Bs* as its contents.
