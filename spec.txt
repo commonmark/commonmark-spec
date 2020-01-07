@@ -3538,7 +3538,7 @@ ddd</p>
 ````````````````````````````````
 
 
-Multiple blank lines between paragraph have no effect:
+Multiple blank lines between paragraphs have no effect:
 
 ```````````````````````````````` example
 aaa
