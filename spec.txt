@@ -7512,7 +7512,8 @@ Here is a simple inline link:
 ````````````````````````````````
 
 
-The title may be omitted:
+The title, the link text and even 
+the destination may be omitted:
 
 ```````````````````````````````` example
 [link](/uri)
@@ -7520,8 +7521,12 @@ The title may be omitted:
 <p><a href="/uri">link</a></p>
 ````````````````````````````````
 
+```````````````````````````````` example
+[](./target.md)
+.
+<p><a href="./target.md"></a></p>
+````````````````````````````````
 
-Both the title and the destination may be omitted:
 
 ```````````````````````````````` example
 [link]()
@@ -7534,6 +7539,13 @@ Both the title and the destination may be omitted:
 [link](<>)
 .
 <p><a href="">link</a></p>
+````````````````````````````````
+
+
+```````````````````````````````` example
+[]()
+.
+<p><a href=""></a></p>
 ````````````````````````````````
 
 The destination can only contain spaces if it is
