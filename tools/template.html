@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>$title$</title>
@@ -24,13 +24,12 @@ span.space:after {
   content: "·";
   position: absolute;
   /* create a mark that indicates a space (trick from D. Greenspan) */
-  top: 0px; bottom: 7px; left: 1px; right: 1px;
+  top: 0; bottom: 7px; left: 1px; right: 1px;
   color: #AAA;
 }
 div.example { overflow: hidden; }
 p { text-align: justify; }
-pre { padding: 0.5em; margin-left: 0; margin-right: 0; margin-top: 0.2em;
-  margin-bottom: 0.5em; font-size: 88%; }
+pre { padding: 0.5em; margin: 0.2em 0 0.5em; font-size: 88%; }
 pre {
  white-space: pre-wrap;       /* css-3 */
  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
@@ -40,23 +39,22 @@ pre {
 }
 code { font-family: monospace; background-color: #D3E1E4; }
 pre > code { background-color: transparent; }
-.example { font-size: 0; /* hack to get width:50% to work on inline-block */
+.example { font-size: 0; /* hack to get width: 50% to work on inline-block */
            padding-bottom: 6pt; }
-.column pre  { font-size: 11pt; padding-left: 6pt; padding-right: 6pt;
-               padding-top: 2pt; padding-bottom: 2pt; }
-div.examplenum { font-size: 11pt; text-align: left; margin-bottom:10px; }
+.column pre  { font-size: 11pt; padding: 2pt 6pt; }
+div.examplenum { font-size: 11pt; text-align: left; margin-bottom: 10px; }
 div.column { display: inline-block; width: 50%; vertical-align: top; }
 div.example > div:nth-child(2) { clear:left; background-color: #D3E1E4; }
 div.example > div:nth-child(3) { clear:right; background-color: #C9CaCE; }
 #watermark {
- position:fixed;
- bottom:0px;
- left:0px;
+ position: fixed;
+ bottom: 0;
+ left: 0;
  padding: 1em;
  width: 100%;
  font-size: 120%;
- opacity:0.7;
- z-index:99;
+ opacity: 0.7;
+ z-index: 99;
  color: white;
 }
 #watermark a { color: white; }
@@ -67,7 +65,7 @@ a.dingus {
   padding: 4px 7px;
   color: #FFF;
   background-color: #33C3F0;
-  box-shadow: 2px 2px 2px rgba(0,0,0,.2);
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, .2);
   border-color: #4FCAEF;
   border-bottom: 2px #2A9EC1 solid;
   border-right: 2px #2A9EC1 solid;
@@ -88,7 +86,7 @@ a.footnoteRef > sup {
     margin: 1.2in 1.2in 1.2in 1.2in;
   }
   body {
-      margin: 0px;
+      margin: 0;
       line-height: 1.2;
       font-size: 10pt;
     }
@@ -122,9 +120,9 @@ $$(document).ready(function() {
 <div class="license">
 <a rel="license"
    href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative
-   Commons BY-SA" style="border-width:0"
+   Commons BY-SA" style="border-width: 0;"
    src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png"
-   /></a><br/><span style="display:none"><span xmlns:dct="http://purl.org/dc/terms/"
+   /></a><br/><span style="display: none;"><span xmlns:dct="http://purl.org/dc/terms/"
    href="http://purl.org/dc/dcmitype/Text" property="dct:title"
    rel="dct:type">CommonMark Spec</span> by
    <a xmlns:cc="http://creativecommons.org/ns#"
