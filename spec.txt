@@ -644,6 +644,30 @@ such as mixed bold/italic mark-up:
 ````````````````````````````````
 
 
+Zero-width space can be used to escape an indicator of inline structure with content:
+```````````````````````````````` example
+2&#x200B;*3&#x200B;*4 = 20
+.
+<p>2​*3​*4 = 20</p>
+````````````````````````````````
+
+
+However, unlike backslash escapes, zero-width space cannot be used to escape each in a series of consecutive indicators of inline structure:
+```````````````````````````````` example
+2&#x200B;*&#x200B;*3&#x200B;*&#x200B;*4 = 4096
+.
+<p>2​*​<em>3​</em>​*4 = 4096</p>
+````````````````````````````````
+
+
+Instead, it would be necessary to escape only the initial indicator of inline structure in a set of consecutive indicators:
+```````````````````````````````` example
+2&#x200B;**3&#x200B;**4 = 4096
+.
+<p>2​**3​**4 = 4096</p>
+````````````````````````````````
+
+
 ## Entity and numeric character references
 
 Valid HTML entity references and numeric character references
