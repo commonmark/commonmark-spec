@@ -620,11 +620,11 @@ foo
 ````````````````````````````````
 
 
-## Zero-width space escapes
+## Zero-width space (escapes)
 
-For most use-cases requiring an escape it's worth considering using backslash escapes first, but zero-width space escapes can useful sometimes as well.
+For most use-cases requiring escapes it's worth considering using backslash escapes, but zero-width space can be useful sometimes as well (including as an escape character).
 
-Zero width space can be used to ensure emphasis in East Asian text:
+Zero-width space can be used to ensure emphasis in East Asian text:
 
 ```````````````````````````````` example
 棕色*狐狸。*&#x200b;跳过
@@ -633,7 +633,7 @@ Zero width space can be used to ensure emphasis in East Asian text:
 ````````````````````````````````
 
 
-Zero width space escapes can also be used in to achieve some combined effects
+Zero-width space escapes can also be used to achieve some combined effects
 such as mixed bold/italic mark-up:
 
 ```````````````````````````````` example
