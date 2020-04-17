@@ -657,7 +657,7 @@ content:
 
 
 However, unlike backslash escapes, zero-width space cannot be used to escape
-each in a series of consecutive indicators of inline structure:
+each in a set of consecutive indicators of inline structure:
 ```````````````````````````````` example
 2&#x200B;*&#x200B;*3&#x200B;*&#x200B;*4 = 2,417851639×10²⁴
 .
