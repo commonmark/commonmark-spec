@@ -646,7 +646,8 @@ bold/italic mark-up:
 ````````````````````````````````
 
 
-Zero-width space can be used to escape an indicator of inline structure with content:
+Zero-width space can be used to escape an indicator of inline structure with
+content:
 ```````````````````````````````` example
 2&#x200B;*3&#x200B;*4 = 20
 .
@@ -654,7 +655,8 @@ Zero-width space can be used to escape an indicator of inline structure with con
 ````````````````````````````````
 
 
-However, unlike backslash escapes, zero-width space cannot be used to escape each in a series of consecutive indicators of inline structure:
+However, unlike backslash escapes, zero-width space cannot be used to escape
+each in a series of consecutive indicators of inline structure:
 ```````````````````````````````` example
 2&#x200B;*&#x200B;*3&#x200B;*&#x200B;*4 = 4096
 .
@@ -662,7 +664,8 @@ However, unlike backslash escapes, zero-width space cannot be used to escape eac
 ````````````````````````````````
 
 
-Instead, it would be necessary to escape only the initial indicator of inline structure in a set of consecutive indicators:
+Instead, it would be necessary to escape only the initial indicator of inline
+structure in a set of consecutive such indicators:
 ```````````````````````````````` example
 2&#x200B;**3&#x200B;**4 = 4096
 .
