@@ -622,6 +622,8 @@ foo
 
 ## Zero-width space escapes
 
+For most use-cases requiring an escape it's worth considering using backslash escapes first, but zero-width space escapes can useful sometimes as well.
+
 Zero width space can be used to ensure emphasis in East Asian text:
 
 ```````````````````````````````` example
