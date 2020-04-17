@@ -650,27 +650,27 @@ bold/italic mark-up:
 Zero-width space can be used to escape an indicator of inline structure with
 content:
 ```````````````````````````````` example
-2&#x200B;*3&#x200B;*4 = 20
+2&#x200B;*3&#x200B;*4 = 24
 .
-<p>2​*3​*4 = 20</p>
+<p>2​*3​*4 = 24</p>
 ````````````````````````````````
 
 
 However, unlike backslash escapes, zero-width space cannot be used to escape
 each in a series of consecutive indicators of inline structure:
 ```````````````````````````````` example
-2&#x200B;*&#x200B;*3&#x200B;*&#x200B;*4 = 4096
+2&#x200B;*&#x200B;*3&#x200B;*&#x200B;*4 = 2,417851639×10²⁴
 .
-<p>2​*​<em>3​</em>​*4 = 4096</p>
+<p>2​*​<em>3​</em>​*4 = 2,417851639×10²⁴</p>
 ````````````````````````````````
 
 
-Instead, it would be necessary to escape only the initial indicator of inline
-structure in a set of consecutive such indicators:
+Instead, it would be necessary, for instance, to escape only the initial
+indicator of inline structure in a set of consecutive such indicators:
 ```````````````````````````````` example
-2&#x200B;**3&#x200B;**4 = 4096
+2&#x200B;**3&#x200B;**4 = 2,417851639×10²⁴
 .
-<p>2​**3​**4 = 4096</p>
+<p>2​**3​**4 = 2,417851639×10²⁴</p>
 ````````````````````````````````
 
 
