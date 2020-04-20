@@ -624,7 +624,7 @@ foo
 
 For most use-cases requiring escapes it's worth considering using backslash
 escapes, but zero-width space can be useful sometimes as well (to change the
-meaning of a neighboring character).
+meaning of an adjacent character).
 
 Given differences in utilization of whitespace, zero-width space can be used to
 ensure emphasis, etc. in East Asian text:
