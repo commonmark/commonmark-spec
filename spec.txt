@@ -313,10 +313,15 @@ form feed (`U+000C`), or carriage return (`U+000D`).
 [Whitespace](@) is a sequence of one or more [whitespace
 characters].
 
+A [zero-width space](@) character is a non-printing and usually invisible
+character (`U+000D`) (encodable in HTML as \&#x200B; or \&#8203;), which can be
+used, for instance, for special spacing effects in text (and which in Markdown
+can also be used to change the meaning of an adjacent character).
+
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-carriage return (`U+000D`), newline (`U+000A`), or form feed
-(`U+000C`).
+carriage return (`U+000D`), newline (`U+000A`), form feed
+(`U+000C`), or [zero-width space].
 
 [Unicode whitespace](@) is a sequence of one
 or more [Unicode whitespace characters].
@@ -623,8 +628,8 @@ foo
 ## Zero-width space
 
 For most use-cases requiring escapes it's worth considering using [backslash
-escapes], but zero-width space can be useful sometimes as well (to change the
-meaning of an adjacent character).
+escapes], but [zero-width space] can be useful sometimes as well (to change the
+meaning of an adjacent character, etc.).
 
 Given differences in utilization of whitespace, zero-width space can be used to
 ensure emphasis, etc. in East Asian text:
