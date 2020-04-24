@@ -641,6 +641,24 @@ ensure emphasis, etc. in East Asian text:
 ````````````````````````````````
 
 
+Zero-width space may also need to be used to achieve some emphasis effects 
+while satisfying Markdown's [emphasis and strong emphasis] rules:
+
+```````````````````````````````` example
+Hello *Super-*&#8203;**man**
+.
+<p>Hello <em>Super-</em>​<strong>man</strong></p>
+
+````````````````````````````````
+
+```````````````````````````````` example
+Hello ***Super***&#8203;**-man**
+.
+<p>Hello <em><strong>Super</strong></em>​<strong>-man</strong></p>
+
+````````````````````````````````
+
+
 Zero-width space can also be used to achieve some combined effects such as mixed
 bold/italic mark-up:
 
