@@ -1093,7 +1093,7 @@ closing sequence of any number of unescaped `#` characters.
 The opening sequence of `#` characters must be followed by spaces or tabs, or
 by the end of line. The optional closing sequence of `#`s must be preceded by
 spaces or tabs and may be followed by spaces or tabs only.  The opening
-`#` character may be indented 0-3 spaces of indentation.  The raw contents of
+`#` character may be preceded by 1-3 spaces of indentation.  The raw contents of
 the heading are stripped of leading and trailing space or tabs before being
 parsed as inline content.  The heading level is equal to the number of `#`
 characters in the opening sequence.
@@ -1320,7 +1320,7 @@ interpretable as a [code fence], [ATX heading][ATX headings],
 
 A [setext heading underline](@) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
-spaces of indentation and any number of trailing space or tabs.  If a line
+spaces of indentation and any number of trailing spaces or tabs.  If a line
 containing a single `-` can be interpreted as an
 empty [list items], it should be interpreted this way
 and not as a [setext heading underline].
@@ -1390,8 +1390,8 @@ Foo
 ````````````````````````````````
 
 
-The heading content can be indented up to three spaces of indentation, and need
-not line up with the underlining:
+The heading content can be preceded by up to three spaces of indentation, and
+need not line up with the underlining:
 
 ```````````````````````````````` example
    Foo
@@ -1427,8 +1427,8 @@ Foo
 ````````````````````````````````
 
 
-The setext heading underline can be indented up to three spaces of indentation,
-and may have trailing spaces or tabs:
+The setext heading underline can be preceded by up to three spaces of
+indentation, and may have trailing spaces or tabs:
 
 ```````````````````````````````` example
 Foo
@@ -1887,7 +1887,7 @@ Heading
 ````````````````````````````````
 
 
-The first line can be indented more than four spaces of indentation:
+The first line can be preceded by more than four spaces of indentation:
 
 ```````````````````````````````` example
         foo
@@ -1931,7 +1931,7 @@ A [code fence](@) is a sequence
 of at least three consecutive backtick characters (`` ` ``) or
 tildes (`~`).  (Tildes and backticks cannot be mixed.)
 A [fenced code block](@)
-begins with a code fence, indented no more than three spaces of indentation.
+begins with a code fence, preceded by no more than three spaces of indentation.
 
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
@@ -1945,12 +1945,12 @@ The content of the code block consists of all subsequent lines, until
 a closing [code fence] of the same type as the code block
 began with (backticks or tildes), and with at least as many backticks
 or tildes as the opening code fence.  If the leading code fence is
-indented N spaces of indentation, then up to N spaces of indentation are removed
-from each line of the content (if present).  (If a content line is not
+preceded by N spaces of indentation, then up to N spaces of indentation are
+removed from each line of the content (if present).  (If a content line is not
 indented, it is preserved unchanged.  If it is indented N spaces or less, all
 of the indentation is removed.)
 
-The closing code fence may be indented up to three spaces of indentation, and
+The closing code fence may be preceded by up to three spaces of indentation, and
 may be followed only by spaces or tabs, which are ignored.  If the end of the
 containing block (or document) is reached and no closing code fence
 has been found, the code block contains all of the lines after the
@@ -2178,7 +2178,7 @@ aaa
 ````````````````````````````````
 
 
-Closing fences may be indented by 0-3 spaces of indentation, and their
+Closing fences may be preceded by 1-3 spaces of indentation, and their
 indentation need not match that of the opening fence:
 
 ```````````````````````````````` example
@@ -2938,7 +2938,7 @@ function matchwo(a,b)
 ````````````````````````````````
 
 
-The opening tag can be indented 1-3 spaces of indentation, but not 4:
+The opening tag can be preceded by 1-3 spaces of indentation, but not 4:
 
 ```````````````````````````````` example
   <!-- foo -->
@@ -3132,7 +3132,8 @@ deleted.  The exception is inside `<pre>` tags, but as described
 ## Link reference definitions
 
 A [link reference definition](@)
-consists of a [link label], indented up to three spaces of indentation, followed
+consists of a [link label], optionally preceded by up to three spaces of
+indentation, followed
 by a colon (`:`), optional spaces or tabs (including up to one
 [line ending]), a [link destination],
 optional spaces or tabs (including up to one
@@ -3567,7 +3568,7 @@ ccc</p>
 ````````````````````````````````
 
 
-However, the first line may be indented at most three spaces of indentation,
+However, the first line may be preceded by at most three spaces of indentation,
 or an indented code block will be triggered:
 
 ```````````````````````````````` example
@@ -3705,7 +3706,7 @@ baz</p>
 ````````````````````````````````
 
 
-The `>` characters can be indented 1-3 spaces of indentation:
+The `>` characters can be preceded by 1-3 spaces of indentation:
 
 ```````````````````````````````` example
    > # Foo
@@ -4411,7 +4412,7 @@ A start number may not be negative:
     marker.  If the list item is ordered, then it is also assigned a
     start number, based on the ordered list marker.
 
-An indented code block will have to be indented four spaces of indentation
+An indented code block will have to be preceded by four spaces of indentation
 beyond the edge of the region where text will be included in the list item.
 In the following case that is 6 spaces:
 
@@ -4512,7 +4513,7 @@ in which the lines to be included in a list item begin with a
 characer other than a space or tab, and (b) cases in which
 they begin with an indented code
 block.  In a case like the following, where the first block begins with
-a three spaces of indentation, the rules do not allow us to form a list item by
+three spaces of indentation, the rules do not allow us to form a list item by
 indenting the whole thing and prepending a list marker:
 
 ```````````````````````````````` example
@@ -5505,7 +5506,7 @@ item:
 </ol>
 ````````````````````````````````
 
-Note, however, that list items may not be indented more than
+Note, however, that list items may not be preceded by more than
 three spaces of indentation.  Here `- e` is treated as a paragraph continuation
 line, because it is indented more than three spaces:
 
