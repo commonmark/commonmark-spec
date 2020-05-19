@@ -8914,6 +8914,10 @@ so custom tags (and even, say, DocBook tags) may be used.
 
 Here is the grammar for tags:
 
+An optional [namespace](@) consists of an ASCII letter
+followed by zero or more ASCII letters, digits, or
+hyphens (`-`), ending with a colon (`:`).
+
 A [tag name](@) consists of an ASCII letter
 followed by zero or more ASCII letters, digits, or
 hyphens (`-`).
