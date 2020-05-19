@@ -4561,7 +4561,7 @@ the above case:
     starting with a single [blank line] constitute a (possibly empty)
     sequence of blocks *Bs*, and *M* is a list marker of width *W*,
     then the result of prepending *M* to the first line of *Ls*, and
-    indenting subsequent lines of *Ls* by *W + 1* spaces of indentation, is a
+    preceding subsequent lines of *Ls* by *W + 1* spaces of indentation, is a
     list item with *Bs* as its contents.
     If a line is empty, then it need not be indented.  The type of the
     list item (bullet or ordered) is determined by the type of its list
@@ -4694,7 +4694,7 @@ foo
 
 
 4.  **Indentation.**  If a sequence of lines *Ls* constitutes a list item
-    according to rule #1, #2, or #3, then the result of indenting each line
+    according to rule #1, #2, or #3, then the result of preceding each line
     of *Ls* by 1-3 spaces of indentation (the same for each line) also
     constitutes a list item with the same contents and attributes.  If a line is
     empty, then it need not be indented.
