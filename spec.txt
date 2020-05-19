@@ -1730,8 +1730,8 @@ baz</p>
 An [indented code block](@) is composed of one or more
 [indented chunks] separated by blank lines.
 An [indented chunk](@) is a sequence of non-blank lines,
-each indented four or more spaces of indentation. The contents of the code block
-are the literal contents of the lines, including trailing
+each preceded by four or more spaces of indentation. The contents of the code
+block are the literal contents of the lines, including trailing
 [line endings], minus four spaces of indentation.
 An indented code block has no [info string].
 
@@ -4449,8 +4449,8 @@ And in this case it is 11 spaces:
 
 
 If the *first* block in the list item is an indented code block,
-then by rule #2, the contents must be indented *one* space of indentation after
-the list marker:
+then by rule #2, the contents must be preceded by *one* space of indentation
+after the list marker:
 
 ```````````````````````````````` example
     indented code
