@@ -9729,3 +9729,39 @@ closers:
 After we're done, we remove all delimiters above `stack_bottom` from the
 delimiter stack.
 
+
+# Appendix: Media Type and file extension
+
+MarkDown is primarily intended as a "write" format for generating HTML,
+which could then be served over HTTP with the
+[Content-Type](https://tools.ietf.org/html/rfc7231#section-3.1.1.5) header
+`text/html` or similar. However there may be cases where MarkDown 
+is served as-is, for instance as part of HTTP-based editing of 
+the MarkDown source.
+
+## Media Type
+
+HTTP clients and servers can indicate that a resource is
+MarkDown of the CommonMark variant, encoded in character set UTF-8,
+by using the HTTP header:
+
+    Content-Type: text/markdown; charset=UTF-8; variant=CommonMark
+
+Background: [RFC7763](https://tools.ietf.org/html/rfc7763) registers
+[`text/markdown`](https://www.iana.org/assignments/media-types/text/markdown)
+in the [IANA media type registry](https://www.iana.org/assignments/media-types/text/markdown). 
+[RFC7764](https://tools.ietf.org/html/rfc7764) registers 
+[`CommonMark`](https://tools.ietf.org/html/rfc7764#section-3.5) as a _variant_ of MarkDown.
+
+## File Extension
+
+To indicate a local file is a MarkDown file compliant with CommonMark it
+is recommended to use the file extension `.commonmark.md` although
+`.commonmark.markdown` may also be used. 
+
+Background: [RFC7764 section 2.1](https://tools.ietf.org/html/rfc7764#section-2.1)
+recommends using `.markdown` or `.md` with the variant identifier
+as a prefix to the file extension. As file extensions tend to be all
+lowercase and some file systems preserve file case,
+the variant is expressed as `commonmark` - note however that
+file extensions should be compared case-insensitively when reading.
