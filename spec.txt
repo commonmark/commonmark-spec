@@ -3664,9 +3664,12 @@ with a following space, or (b) a single character `>` not followed by a space.
 The following rules define [block quotes]:
 
 1.  **Basic case.**  If a string of lines *Ls* constitute a sequence
-    of blocks *Bs*, then the result of prepending a [block quote
+    of blocks *Bs*, then the result of prepending the same [block quote
     marker] to the beginning of each line in *Ls*
-    is a [block quote](#block-quotes) containing *Bs*.
+    is a [block quote](#block-quotes) containing *Bs*. If some lines in *Ls*
+    are [blank lines](@), then any block quote marker may be used on these
+    blank lines without affecting the interpretation of which block quote
+    marker was prepended.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quotes) with contents *Bs*, then the result of deleting
@@ -3709,6 +3712,84 @@ The spaces after the `>` characters can be omitted:
 <h1>Foo</h1>
 <p>bar
 baz</p>
+</blockquote>
+````````````````````````````````
+
+
+Indentation is determined by the shortest marker (on a non-blank line):
+
+```````````````````````````````` example
+>- - asdf
+>
+>  - sdfg
+.
+<blockquote>
+<ul>
+<li>
+<ul>
+<li>
+<p>asdf</p>
+</li>
+<li>
+<p>sdfg</p>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+````````````````````````````````
+
+
+The following is equivalent to the above (but now using the longer marker):
+
+```````````````````````````````` example
+> - - asdf
+>
+>   - sdfg
+.
+<blockquote>
+<ul>
+<li>
+<ul>
+<li>
+<p>asdf</p>
+</li>
+<li>
+<p>sdfg</p>
+</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+````````````````````````````````
+
+
+List within a block quote, with the first item indented by three spaces:
+
+```````````````````````````````` example
+>   1. a
+>2. b
+.
+<blockquote>
+<ol>
+<li>a</li>
+<li>b</li>
+</ol>
+</blockquote>
+````````````````````````````````
+
+
+The shortest marker might not occur on the first line, meaning four spaces is too many:
+```````````````````````````````` example
+>    1. a
+>2. b
+.
+<blockquote>
+<pre><code>1. a
+</code></pre>
+<ol start="2">
+<li>b</li>
+</ol>
 </blockquote>
 ````````````````````````````````
 
