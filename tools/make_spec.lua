@@ -171,8 +171,8 @@ local create_anchors = function(doc, meta, to)
                        {'class', 'definition'}})
           if num ~= '' then
             local numspan = make_html_inline('span', {{'class','number'}})
-            node_append_child(numspan, make_text(num))
-            node_append_child(anchor, numspan)
+            cmark.node_append_child(numspan, make_text(num))
+            cmark.node_append_child(anchor, numspan)
           end
         end
       end
@@ -183,7 +183,7 @@ local create_anchors = function(doc, meta, to)
         child = cmark.node_next(child)
       end
       for _,child in ipairs(children) do
-        node_append_child(anchor, child)
+        cmark.node_append_child(anchor, child)
       end
       cmark.node_insert_before(cur, anchor)
       cmark.node_unlink(cur)
