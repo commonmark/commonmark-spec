@@ -851,8 +851,8 @@ one block element does not affect the inline parsing of any other.
 ## Container blocks and leaf blocks
 
 We can divide blocks into two types:
-[container blocks](@),
-which can contain other blocks, and [leaf blocks](@),
+[container blocks](#container-blocks),
+which can contain other blocks, and [leaf blocks](#leaf-blocks),
 which cannot.
 
 # Leaf blocks
