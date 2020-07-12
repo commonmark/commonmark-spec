@@ -13,7 +13,7 @@ except ImportError:
 from html.entities import name2codepoint
 import sys
 import re
-import cgi
+import html
 
 # Normalization code, adapted from
 # https://github.com/karlcow/markdown-testsuite/
@@ -66,7 +66,7 @@ class MyHTMLParser(HTMLParser):
                     self.output += ("=" + '"' +
                             urllib.quote(urllib.unquote(v), safe='/') + '"')
                 elif v != None:
-                    self.output += ("=" + '"' + cgi.escape(v,quote=True) + '"')
+                    self.output += ("=" + '"' + html.escape(v,quote=True) + '"')
         self.output += ">"
         self.last_tag = tag
         self.last = "starttag"
