@@ -2367,10 +2367,10 @@ the first line meets both the [start condition] and the [end
 condition], the block will contain just that line.
 
 1.  **Start condition:**  line begins with the string `<script`,
-`<pre`, or `<style` (case-insensitive), followed by a space, a tab,
-the string `>`, or the end of the line.\
+`<pre`, `<textarea`, or `<style` (case-insensitive), followed by a space,
+a tab, the string `>`, or the end of the line.\
 **End condition:**  line contains an end tag
-`</script>`, `</pre>`, or `</style>` (case-insensitive; it
+`</script>`, `</pre>`, `</textarea>`, or `</style>` (case-insensitive; it
 need not match the start tag).
 
 2.  **Start condition:** line begins with the string `<!--`.\
@@ -2759,6 +2759,26 @@ document.getElementById("demo").innerHTML = "Hello JavaScript!";
 <p>okay</p>
 ````````````````````````````````
 
+
+A textarea tag (type 1):
+
+```````````````````````````````` example
+<textarea>
+
+*foo*
+
+_bar_
+
+</textarea>
+.
+<textarea>
+
+*foo*
+
+_bar_
+
+</textarea>
+````````````````````````````````
 
 A style tag (type 1):
 
