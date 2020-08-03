@@ -307,7 +307,7 @@ A line containing no characters, or a line containing only spaces
 The following definitions of character classes will be used in this spec:
 
 A [zero-width space](@) character is a non-printing and usually invisible
-character (`U+000D`) (encodable in HTML as \&#x200B; or \&#8203;), which can be
+character (`U+200B`) (encodable in HTML as \&#x200B; or \&#8203;), which can be
 used, for instance, for special spacing effects in text (and which in Markdown
 can also be used to change the meaning of an adjacent character).
 
