@@ -3348,8 +3348,11 @@ case-insensitive (see [matches]).
 ````````````````````````````````
 
 
-Here is a link reference definition with no corresponding link.
-It contributes nothing to the document.
+Whether something is a [link reference definition] is
+independent of whether the link reference it defines is
+used in the document.  Thus, for example, the following
+document contains just a link reference definition, and
+no visible content:
 
 ```````````````````````````````` example
 [foo]: /url
@@ -3499,18 +3502,6 @@ are defined:
 <p><a href="/url">foo</a></p>
 <blockquote>
 </blockquote>
-````````````````````````````````
-
-
-Whether something is a [link reference definition] is
-independent of whether the link reference it defines is
-used in the document.  Thus, for example, the following
-document contains just a link reference definition, and
-no visible content:
-
-```````````````````````````````` example
-[foo]: /url
-.
 ````````````````````````````````
 
 
