@@ -2366,11 +2366,11 @@ block, if no line is encountered that meets the [end condition].  If
 the first line meets both the [start condition] and the [end
 condition], the block will contain just that line.
 
-1.  **Start condition:**  line begins with the string `<script`,
-`<pre`, `<textarea`, or `<style` (case-insensitive), followed by a space,
+1.  **Start condition:**  line begins with the string `<pre`,
+`<script`, `<style`, or `<textarea` (case-insensitive), followed by a space,
 a tab, the string `>`, or the end of the line.\
 **End condition:**  line contains an end tag
-`</script>`, `</pre>`, `</textarea>`, or `</style>` (case-insensitive; it
+`</pre>`, `</script>`, `</style>`, or `</textarea>` (case-insensitive; it
 need not match the start tag).
 
 2.  **Start condition:** line begins with the string `<!--`.\
@@ -2403,8 +2403,8 @@ the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
 7.  **Start condition:**  line begins with a complete [open tag]
-(with any [tag name] other than `script`,
-`style`, or `pre`) or a complete [closing tag],
+(with any [tag name] other than `pre`, `script`,
+`style`, or `textarea`) or a complete [closing tag],
 followed only by a space, a tab, or the end of the line.\
 **End condition:** line is followed by a [blank line].
 
@@ -2714,7 +2714,7 @@ rather than an [HTML block].)
 
 
 HTML tags designed to contain literal content
-(`script`, `style`, `pre`), comments, processing instructions,
+(`pre`, `script`, `style`, `textarea`), comments, processing instructions,
 and declarations are treated somewhat differently.
 Instead of ending at the first blank line, these blocks
 end at the first line containing a corresponding end tag.
