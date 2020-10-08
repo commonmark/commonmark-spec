@@ -2405,7 +2405,7 @@ the string `/>`.\
 7.  **Start condition:**  line begins with a complete [open tag]
 (with any [tag name] other than `pre`, `script`,
 `style`, or `textarea`) or a complete [closing tag],
-followed only by a space, a tab, or the end of the line.\
+followed by zero or more spaces and tabs, followed by the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 HTML blocks continue until they are closed by their appropriate
