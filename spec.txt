@@ -2369,8 +2369,8 @@ as raw HTML (and will not be escaped in HTML output).
 There are seven kinds of [HTML block], which can be defined by their
 start and end conditions.  The block begins with a line that meets a
 [start condition](@) (after up to three optional spaces of indentation).
-It ends with the first subsequent line that meets a matching [end
-condition](@), or the last line of the document, or the last line of
+It ends with the first subsequent line that meets a matching
+[end condition](@), or the last line of the document, or the last line of
 the [container block](#container-blocks) containing the current HTML
 block, if no line is encountered that meets the [end condition].  If
 the first line meets both the [start condition] and the [end
