@@ -1,3 +1,63 @@
+[PENDING 0.30]
+
+  * Add note clarifying that not every feature of HTML examples is normative
+    (#672).
+  * Move "Backslash escapes" and "Character references" to "Preliminaries"
+    (#600).  It was confusing having them in the "Inline" section, since
+    they also affect some block contexts (e.g. reference link definitions).
+  * Clarify wording in spec for character groups (#618, Titus Wormer, with
+    Johel Ernesto Guerror Peña).
+    + Remove line tabulation, form feed from whitespace
+    + Rename newline to line feed or line ending
+    + Reword spec to be more explicit about whitespace
+    + Rename `Punctuation` to `Unicode punctuation`
+    + Reword description of line breaks
+    + Link unicode punctuation
+    + Clarify link whitespace by describing "link information"
+    + Clarify link destination and title
+  * Add definition of ASCII control characters (#603, Titus Wormer).
+  * Fix wording in start condition of type 7 HTML (#665, Titus Wormer).
+  * Add `textarea` to list of literal HTML block tags (#657).
+    Like script, style, and pre, textarea blocks can contain
+    blank lines without the contents being interpret as commonmark.
+  * Add `textarea` to more cases (#667, Titus Wormer).
+  * Remove superfluous restrictions on declarations (#620, Titus Wormer).
+    HTML declarations need not be limited to all capital ASCII letters.
+  * Add inline link examples with empty link text (#636, jsteuer).
+  * Remove outdated restriction on list item (#627, Johel Ernesto Guerrero
+    Peña).  This is a holdover from the days when two blank lines
+    broke out of a list. Case missed by 780b981.
+  * Add example with unbalanced parens in link destination.
+  * Clarify that new blocks are added to *container* blocks. (#598, Jay
+    Weisskopf).
+  * Clarify language for backtick code spans (#589, Johel Ernesto Guerrero
+    Peña).
+  * Fix link text grouping sample (#584, Ashe Connor, Johel Ernesto
+    Guerrero Peña).
+  * Fix misleading text for full reference link (#581).  There is no
+    "first link label" here, just a link text.
+  * Use better example to test unicode case fold for reference links (#582).
+    The earlier test could be passed by implementations that just uppercase.
+  * Test new entity length constraints (#575, Miha Zupan).
+  * normalize.py: replace cgi.escape with html.escape (#656,
+    Christopher Fujino).
+  * tools/make_spec.lua:
+    + Fix unqualified calls to node_append_child.
+    + Remove extraneous href attribute on headings (#625, Christoph Päper).
+    + Properly handle cross-refs (#578).  Previously it broke in a few cases,
+      e.g. with soft breaks.
+    + Use unsafe mode so HTML isn't filtered out.
+    + Changes for compatibility with lua 5.3's new number type.
+  * CSS and HTML improvements in HTML version of spec
+    (#639, #641, 642, Andrei Korzhyts).
+  * Add documentation of the npm package to README.md (thanks to
+    Shawn Erquhart).
+  * Fix anchor definition for 'end condition'.
+  * Remove duplicate example (#660, Titus Wormer).
+  * Remove duplicate links in spec (#655, Levi Gruspe).
+  * Various typo fixes (#632, Scott Abbey; #623, Anthony Fok; #601, #617, #659,
+    Titus Wormer).
+
 [0.29]
 
   * Clarify that entities can't be used to indicate structure (#474).
