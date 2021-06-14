@@ -133,7 +133,7 @@ the canonical syntax description:
 -   It does not collapse adjacent bird-track blocks into a single
     blockquote:
 
-        > this is two
+        > these are two
 
         > blockquotes
 
