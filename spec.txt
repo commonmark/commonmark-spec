@@ -1,7 +1,7 @@
 ---
 title: CommonMark Spec
 author: John MacFarlane
-version: 0.30
+version: '0.30'
 date: '2021-06-19'
 license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
 ...
