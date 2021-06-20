@@ -15,6 +15,6 @@ _ update dingus:
 
 _ update site:
 
-    cd ../../CommonMark-site
+    cd ../../commonmark-spec-web
     make
     make upload
