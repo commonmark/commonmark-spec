@@ -1,4 +1,4 @@
-[PENDING 0.30]
+[0.30]
 
   * Add note clarifying that not every feature of HTML examples is normative
     (#672).
@@ -18,7 +18,7 @@
   * Add definition of ASCII control characters (#603, Titus Wormer).
   * Fix wording in start condition of type 7 HTML (#665, Titus Wormer).
   * Add `textarea` to list of literal HTML block tags (#657).
-    Like script, style, and pre, textarea blocks can contain
+    Like `script`, `style`, and `pre`, `textarea` blocks can contain
     blank lines without the contents being interpret as commonmark.
   * Add `textarea` to more cases (#667, Titus Wormer).
   * Remove superfluous restrictions on declarations (#620, Titus Wormer).
@@ -26,7 +26,7 @@
   * Add inline link examples with empty link text (#636, jsteuer).
   * Remove outdated restriction on list item (#627, Johel Ernesto Guerrero
     Peña).  This is a holdover from the days when two blank lines
-    broke out of a list. Case missed by 780b981.
+    broke out of a list.
   * Add example with unbalanced parens in link destination.
   * Clarify that new blocks are added to *container* blocks. (#598, Jay
     Weisskopf).
@@ -50,6 +50,8 @@
     + Changes for compatibility with lua 5.3's new number type.
   * CSS and HTML improvements in HTML version of spec
     (#639, #641, 642, Andrei Korzhyts).
+  * Revise emphasis parsing algorithm description in light of
+    commonmark/cmark#383.
   * Add documentation of the npm package to README.md (thanks to
     Shawn Erquhart).
   * Fix anchor definition for 'end condition'.
