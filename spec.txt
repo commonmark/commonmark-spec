@@ -8754,7 +8754,7 @@ a link to the URI, with the URI as the link's label.
 
 An [absolute URI](@),
 for these purposes, consists of a [scheme] followed by a colon (`:`)
-followed by zero or more characters other [ASCII control
+followed by zero or more characters other than [ASCII control
 characters][ASCII control character], [space], `<`, and `>`.
 If the URI includes these characters, they must be percent-encoded
 (e.g. `%20` for a space).
