@@ -1330,10 +1330,7 @@ interpretable as a [code fence], [ATX heading][ATX headings],
 
 A [setext heading underline](@) is a sequence of
 `=` characters or a sequence of `-` characters, with no more than 3
-spaces of indentation and any number of trailing spaces or tabs.  If a line
-containing a single `-` can be interpreted as an
-empty [list items], it should be interpreted this way
-and not as a [setext heading underline].
+spaces of indentation and any number of trailing spaces or tabs.
 
 The heading is a level 1 heading if `=` characters are used in
 the [setext heading underline], and a level 2 heading if `-`
