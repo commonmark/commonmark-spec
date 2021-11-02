@@ -4530,7 +4530,7 @@ inside the code block:
 
 Note that rules #1 and #2 only apply to two cases:  (a) cases
 in which the lines to be included in a list item begin with a
-characer other than a space or tab, and (b) cases in which
+character other than a space or tab, and (b) cases in which
 they begin with an indented code
 block.  In a case like the following, where the first block begins with
 three spaces of indentation, the rules do not allow us to form a list item by
