@@ -114,7 +114,7 @@ questions it does not answer:
     not require that.  This is hardly a "corner case," and divergences
     between implementations on this issue often lead to surprises for
     users in real documents. (See [this comment by John
-    Gruber](http://article.gmane.org/gmane.text.markdown.general/1997).)
+    Gruber](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/1997).)
 
 2.  Is a blank line needed before a block quote or heading?
     Most implementations do not require the blank line.  However,
@@ -122,7 +122,7 @@ questions it does not answer:
     also to ambiguities in parsing (note that some implementations
     put the heading inside the blockquote, while others do not).
     (John Gruber has also spoken [in favor of requiring the blank
-    lines](http://article.gmane.org/gmane.text.markdown.general/2146).)
+    lines](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2146).)
 
 3.  Is a blank line needed before an indented code block?
     (`Markdown.pl` requires it, but this is not mentioned in the
@@ -155,7 +155,7 @@ questions it does not answer:
     ```
 
     (There are some relevant comments by John Gruber
-    [here](http://article.gmane.org/gmane.text.markdown.general/2554).)
+    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
 
 5.  Can list markers be indented?  Can ordered list markers be right-aligned?
 
