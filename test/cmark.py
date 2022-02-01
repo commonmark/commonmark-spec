@@ -9,12 +9,12 @@ import os
 def pipe_through_prog(prog, text):
     p1 = Popen(prog.split(), stdout=PIPE, stdin=PIPE, stderr=PIPE)
     [result, err] = p1.communicate(input=text.encode('utf-8'))
-    return [p1.returncode, result.decode('utf-8'), err]
+    return [p1.returncode, result, err]
 
 def use_library(lib, text):
     textbytes = text.encode('utf-8')
     textlen = len(textbytes)
-    return [0, lib(textbytes, textlen, 0).decode('utf-8'), '']
+    return [0, lib(textbytes, textlen, 0), '']
 
 class CMark:
     def __init__(self, prog=None, library_dir=None):
