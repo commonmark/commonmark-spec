@@ -30,6 +30,8 @@ if __name__ == "__main__":
             default=False, help='filter stdin through normalizer for testing')
     parser.add_argument('-n', '--number', type=int, default=None,
             help='only consider the test with the given number')
+    parser.add_argument('--track', metavar='path',
+            help='track which test cases pass/fail in the given JSON file and only report changes')
     args = parser.parse_args(sys.argv[1:])
 
 def out(str):
@@ -38,12 +40,13 @@ def out(str):
 def print_test_header(test):
     out("Example %d (lines %d-%d) %s\n" % (test['example'], test['start_line'], test['end_line'], test['section']))
 
-def do_test(test, normalize):
+def do_test(test, normalize, prev_result):
     [retcode, actual_html_bytes, err] = cmark.to_html(test['markdown'])
     if retcode != 0:
-        print_test_header(test)
-        out("program returned error code %d\n" % retcode)
-        sys.stdout.buffer.write(err)
+        if prev_result != 'error':
+            print_test_header(test)
+            out("program returned error code %d\n" % retcode)
+            sys.stdout.buffer.write(err)
         return 'error'
 
     expected_html = test['html']
@@ -51,12 +54,13 @@ def do_test(test, normalize):
     try:
         actual_html = actual_html_bytes.decode('utf-8')
     except UnicodeDecodeError as e:
-        print_test_header(test)
-        out(test['markdown'] + '\n')
-        out("Unicode error: " + str(e) + '\n')
-        out("Expected: " + repr(expected_html) + '\n')
-        out("Got:      " + repr(actual_html_bytes) + '\n')
-        out('\n')
+        if prev_result != 'fail':
+            print_test_header(test)
+            out(test['markdown'] + '\n')
+            out("Unicode error: " + str(e) + '\n')
+            out("Expected: " + repr(expected_html) + '\n')
+            out("Got:      " + repr(actual_html_bytes) + '\n')
+            out('\n')
         return 'fail'
 
     if normalize:
@@ -64,15 +68,20 @@ def do_test(test, normalize):
         expected_html = normalize_html(expected_html) + '\n'
 
     if actual_html != expected_html:
-        print_test_header(test)
-        out(test['markdown'] + '\n')
-        expected_html_lines = expected_html.splitlines(True)
-        actual_html_lines = actual_html.splitlines(True)
-        for diffline in unified_diff(expected_html_lines, actual_html_lines,
-                        "expected HTML", "actual HTML"):
-            out(diffline)
-        out('\n')
+        if prev_result != 'fail':
+            print_test_header(test)
+            out(test['markdown'] + '\n')
+            expected_html_lines = expected_html.splitlines(True)
+            actual_html_lines = actual_html.splitlines(True)
+            for diffline in unified_diff(expected_html_lines, actual_html_lines,
+                            "expected HTML", "actual HTML"):
+                out(diffline)
+            out('\n')
         return 'fail'
+
+    if prev_result and prev_result != 'pass':
+        print_test_header(test)
+        print('fixed!')
 
     return 'pass'
 
@@ -139,8 +148,26 @@ if __name__ == "__main__":
         skipped = len(all_tests) - len(tests)
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
         result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
+
+        previous = {}
+
+        if args.track:
+            try:
+                with open(args.track) as f:
+                    previous = json.load(f)
+            except FileNotFoundError:
+                pass
+
+        results = {}
+
         for test in tests:
-            result = do_test(test, args.normalize)
+            result = do_test(test, args.normalize, previous.get(str(test['example'])))
             result_counts[result] += 1
+            results[test['example']] = result
+
+        if args.track:
+            with open(args.track, 'w') as f:
+                json.dump(results, f)
+
         out("{pass} passed, {fail} failed, {error} errored, {skip} skipped\n".format(**result_counts))
         exit(result_counts['fail'] + result_counts['error'])
