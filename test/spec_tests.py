@@ -35,38 +35,36 @@ if __name__ == "__main__":
 def out(str):
     sys.stdout.buffer.write(str.encode('utf-8')) 
 
-def print_test_header(headertext, example_number, start_line, end_line):
-    out("Example %d (lines %d-%d) %s\n" % (example_number,start_line,end_line,headertext))
+def print_test_header(test):
+    out("Example %d (lines %d-%d) %s\n" % (test['example'], test['start_line'], test['end_line'], test['section']))
 
-def do_test(test, normalize, result_counts):
+def do_test(test, normalize):
     [retcode, actual_html_bytes, err] = cmark.to_html(test['markdown'])
     if retcode != 0:
-        print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
+        print_test_header(test)
         out("program returned error code %d\n" % retcode)
         sys.stdout.buffer.write(err)
-        result_counts['error'] += 1
-        return
+        return 'error'
 
     expected_html = test['html']
 
     try:
         actual_html = actual_html_bytes.decode('utf-8')
     except UnicodeDecodeError as e:
-        print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
+        print_test_header(test)
         out(test['markdown'] + '\n')
         out("Unicode error: " + str(e) + '\n')
         out("Expected: " + repr(expected_html) + '\n')
         out("Got:      " + repr(actual_html_bytes) + '\n')
         out('\n')
-        result_counts['fail'] += 1
-        return
+        return 'fail'
 
     if normalize:
         actual_html = normalize_html(actual_html) + '\n'
         expected_html = normalize_html(expected_html) + '\n'
 
     if actual_html != expected_html:
-        print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
+        print_test_header(test)
         out(test['markdown'] + '\n')
         expected_html_lines = expected_html.splitlines(True)
         actual_html_lines = actual_html.splitlines(True)
@@ -74,10 +72,9 @@ def do_test(test, normalize, result_counts):
                         "expected HTML", "actual HTML"):
             out(diffline)
         out('\n')
-        result_counts['fail'] += 1
-        return
+        return 'fail'
 
-    result_counts['pass'] += 1
+    return 'pass'
 
 def get_tests(specfile):
     line_number = 0
@@ -143,6 +140,7 @@ if __name__ == "__main__":
         cmark = CMark(prog=args.program, library_dir=args.library_dir)
         result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
         for test in tests:
-            do_test(test, args.normalize, result_counts)
+            result = do_test(test, args.normalize)
+            result_counts[result] += 1
         out("{pass} passed, {fail} failed, {error} errored, {skip} skipped\n".format(**result_counts))
         exit(result_counts['fail'] + result_counts['error'])
