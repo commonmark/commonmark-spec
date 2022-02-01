@@ -40,39 +40,42 @@ def print_test_header(headertext, example_number, start_line, end_line):
 
 def do_test(test, normalize, result_counts):
     [retcode, actual_html, err] = cmark.to_html(test['markdown'])
-    if retcode == 0:
-        expected_html = test['html']
-        unicode_error = None
-        if normalize:
-            try:
-                passed = normalize_html(actual_html) == normalize_html(expected_html)
-            except UnicodeDecodeError as e:
-                unicode_error = e
-                passed = False
-        else:
-            passed = actual_html == expected_html
-        if passed:
-            result_counts['pass'] += 1
-        else:
-            print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
-            out(test['markdown'] + '\n')
-            if unicode_error:
-                out("Unicode error: " + str(unicode_error) + '\n')
-                out("Expected: " + repr(expected_html) + '\n')
-                out("Got:      " + repr(actual_html) + '\n')
-            else:
-                expected_html_lines = expected_html.splitlines(True)
-                actual_html_lines = actual_html.splitlines(True)
-                for diffline in unified_diff(expected_html_lines, actual_html_lines,
-                                "expected HTML", "actual HTML"):
-                    out(diffline)
-            out('\n')
-            result_counts['fail'] += 1
-    else:
+    if retcode != 0:
         print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
         out("program returned error code %d\n" % retcode)
         sys.stdout.buffer.write(err)
         result_counts['error'] += 1
+        return
+
+    expected_html = test['html']
+    unicode_error = None
+    if normalize:
+        try:
+            passed = normalize_html(actual_html) == normalize_html(expected_html)
+        except UnicodeDecodeError as e:
+            unicode_error = e
+            passed = False
+    else:
+        passed = actual_html == expected_html
+
+    if not passed:
+        print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
+        out(test['markdown'] + '\n')
+        if unicode_error:
+            out("Unicode error: " + str(unicode_error) + '\n')
+            out("Expected: " + repr(expected_html) + '\n')
+            out("Got:      " + repr(actual_html) + '\n')
+        else:
+            expected_html_lines = expected_html.splitlines(True)
+            actual_html_lines = actual_html.splitlines(True)
+            for diffline in unified_diff(expected_html_lines, actual_html_lines,
+                            "expected HTML", "actual HTML"):
+                out(diffline)
+        out('\n')
+        result_counts['fail'] += 1
+        return
+
+    result_counts['pass'] += 1
 
 def get_tests(specfile):
     line_number = 0
