@@ -62,11 +62,10 @@ def do_test(test, normalize, result_counts):
         return
 
     if normalize:
-        passed = normalize_html(actual_html) == normalize_html(expected_html)
-    else:
-        passed = actual_html == expected_html
+        actual_html = normalize_html(actual_html) + '\n'
+        expected_html = normalize_html(expected_html) + '\n'
 
-    if not passed:
+    if actual_html != expected_html:
         print_test_header(test['section'], test['example'], test['start_line'], test['end_line'])
         out(test['markdown'] + '\n')
         expected_html_lines = expected_html.splitlines(True)
