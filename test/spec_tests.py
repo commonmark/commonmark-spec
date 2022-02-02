@@ -146,7 +146,7 @@ if __name__ == "__main__":
         exit(0)
     else:
         skipped = len(all_tests) - len(tests)
-        cmark = CMark(prog=args.program, library_dir=args.library_dir)
+        cmark = CMark(prog=args.program, library_dir=args.library_dir, decode_html=False)
         result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
 
         previous = {}
