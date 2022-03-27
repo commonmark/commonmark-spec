@@ -2394,7 +2394,7 @@ followed by an ASCII letter.\
 `<![CDATA[`.\
 **End condition:** line contains the string `]]>`.
 
-6.  **Start condition:** line begins the string `<` or `</`
+6.  **Start condition:** line begins with the string `<` or `</`
 followed by one of the strings (case-insensitive) `address`,
 `article`, `aside`, `base`, `basefont`, `blockquote`, `body`,
 `caption`, `center`, `col`, `colgroup`, `dd`, `details`, `dialog`,
