@@ -8977,10 +8977,9 @@ A [closing tag](@) consists of the string `</`, a
 [tag name], optional spaces, tabs, and up to one line ending, and the character
 `>`.
 
-An [HTML comment](@) consists of `<!--` + *text* + `-->`,
-where *text* does not start with `>` or `->`, does not end with `-`,
-and does not contain `--`.  (See the
-[HTML5 spec](http://www.w3.org/TR/html5/syntax.html#comments).)
+An [HTML comment](@) consists of `<!-->`, `<!--->`, or  `<!--`, a string of
+characters not including the string `-->`, and `-->` (see the
+[HTML spec](https://html.spec.whatwg.org/multipage/parsing.html#markup-declaration-open-state)).
 
 A [processing instruction](@)
 consists of the string `<?`, a string
