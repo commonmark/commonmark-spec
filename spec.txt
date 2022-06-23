@@ -5354,7 +5354,7 @@ well.  ([reStructuredText](http://docutils.sourceforge.net/rst.html)
 takes a different approach, requiring blank lines before lists
 even inside other list items.)
 
-Interrupting a paragraph with an ordered list introduces an parsing
+Interrupting a paragraph with an ordered list introduces a parsing
 ambiguity. What looks like an ordered marker might instead be a
 a numeral at the end of a sentence, continuing rather than
 interrupting the paragraph:
