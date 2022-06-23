@@ -5354,7 +5354,7 @@ well.  ([reStructuredText](http://docutils.sourceforge.net/rst.html)
 takes a different approach, requiring blank lines before lists
 even inside other list items.)
 
-In order to solve of unwanted lists in paragraphs with
+In order to solve the problem of unwanted lists in paragraphs with
 hard-wrapped numerals, we allow only lists starting with `1` to
 interrupt paragraphs.  Thus,
 
