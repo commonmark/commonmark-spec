@@ -1964,7 +1964,7 @@ has been found, the code block contains all of the lines after the
 opening code fence until the end of the containing block (or
 document).  (An alternative spec would require backtracking in the
 event that a closing code fence is not found.  But this makes parsing
-much less efficient, and there seems to be no real down side to the
+much less efficient, and there seems to be no real downside to the
 behavior described here.)
 
 A fenced code block may interrupt a paragraph, and does not require
