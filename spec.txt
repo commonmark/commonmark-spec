@@ -9118,30 +9118,20 @@ Illegal attributes in closing tag:
 Comments:
 
 ```````````````````````````````` example
-foo <!-- this is a
-comment - with hyphen -->
+foo <!-- this is a --
+comment - with hyphens -->
 .
-<p>foo <!-- this is a
-comment - with hyphen --></p>
+<p>foo <!-- this is a --
+comment - with hyphens --></p>
 ````````````````````````````````
-
-
-```````````````````````````````` example
-foo <!-- not a comment -- two hyphens -->
-.
-<p>foo &lt;!-- not a comment -- two hyphens --&gt;</p>
-````````````````````````````````
-
-
-Not comments:
 
 ```````````````````````````````` example
 foo <!--> foo -->
 
-foo <!-- foo--->
+foo <!---> foo -->
 .
-<p>foo &lt;!--&gt; foo --&gt;</p>
-<p>foo &lt;!-- foo---&gt;</p>
+<p>foo <!--> foo --&gt;</p>
+<p>foo <!---> foo --&gt;</p>
 ````````````````````````````````
 
 
