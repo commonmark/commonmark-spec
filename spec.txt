@@ -4115,7 +4115,7 @@ The following rules define [list items]:
     blocks *Bs* starting with a character other than a space or tab, and *M* is
     a list marker of width *W* followed by 1 ≤ *N* ≤ 4 spaces of indentation,
     then the result of prepending *M* and the following spaces to the first line
-    of Ls*, and indenting subsequent lines of *Ls* by *W + N* spaces, is a
+    of *Ls*, and indenting subsequent lines of *Ls* by *W + N* spaces, is a
     list item with *Bs* as its contents.  The type of the list item
     (bullet or ordered) is determined by the type of its list marker.
     If the list item is ordered, then it is also assigned a start
