@@ -8435,7 +8435,7 @@ following closing bracket:
 ````````````````````````````````
 
 
-Full and compact references take precedence over shortcut
+Full and collapsed references take precedence over shortcut
 references:
 
 ```````````````````````````````` example
@@ -9660,7 +9660,7 @@ through the stack for an opening `[` or `![` delimiter.
   delimiter from the stack, and return a literal text node `]`.
 
 - If we find one and it's active, then we parse ahead to see if
-  we have an inline link/image, reference link/image, compact reference
+  we have an inline link/image, reference link/image, collapsed reference
   link/image, or shortcut reference link/image.
 
   + If we don't, then we remove the opening delimiter from the
