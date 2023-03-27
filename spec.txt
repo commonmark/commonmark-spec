@@ -6722,8 +6722,8 @@ with these examples:
 **Gomphocarpus (*Gomphocarpus physocarpus*, syn.
 *Asclepias physocarpa*)**
 .
-<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.
-<em>Asclepias physocarpa</em>)</strong></p>
+<p><b>Gomphocarpus (<i>Gomphocarpus physocarpus</i>, syn.
+<i>Asclepias physocarpa</i>)</b></p>
 ````````````````````````````````
 
 
