@@ -37,7 +37,7 @@ As Gruber writes:
 > (<http://daringfireball.net/projects/markdown/>)
 
 The point can be illustrated by comparing a sample of
-[AsciiDoc](http://www.methods.co.nz/asciidoc/) with
+[AsciiDoc](https://asciidoc.org/) with
 an equivalent sample of Markdown.  Here is a sample of
 AsciiDoc from the AsciiDoc manual:
 
