@@ -2608,7 +2608,7 @@ foo
 
 Everything until the next blank line or end of document
 gets included in the HTML block.  So, in the following
-example, what looks like a Markdown code block
+examples, what looks like a Markdown code block or block quote
 is actually part of the HTML block, which continues until a blank
 line or the end of the document is reached:
 
@@ -2622,6 +2622,15 @@ int x = 33;
 ``` c
 int x = 33;
 ```
+````````````````````````````````
+
+
+```````````````````````````````` example
+<div
+> not quoted text
+.
+<div
+> not quoted text
 ````````````````````````````````
 
 
@@ -9199,6 +9208,20 @@ foo <a href="\*">
 <a href="\"">
 .
 <p>&lt;a href=&quot;&quot;&quot;&gt;</p>
+````````````````````````````````
+
+
+A block quote can prevent a line from being parsed as inline HTML,
+even though line breaks are allowed in tags:
+
+```````````````````````````````` example
+<a
+> quoted text
+.
+<p>&lt;a</p>
+<blockquote>
+<p>quoted text</p>
+</blockquote>
 ````````````````````````````````
 
 
