@@ -316,9 +316,15 @@ A line containing no characters, or a line containing only spaces
 
 The following definitions of character classes will be used in this spec:
 
+A [zero-width space](@) character is a non-printing and usually invisible
+character (`U+200B`) (encodable in HTML as \&#x200B; or \&#8203;), which can be
+used, for instance, for special spacing effects in text (and which in Markdown
+can also be used to change the meaning of an adjacent character).
+
 A [Unicode whitespace character](@) is
 any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-line feed (`U+000A`), form feed (`U+000C`), or carriage return (`U+000D`).
+line feed (`U+000A`), form feed (`U+000C`), carriage return (`U+000D`),
+or [zero-width space].
 
 [Unicode whitespace](@) is a sequence of one or more
 [Unicode whitespace characters].
@@ -618,6 +624,51 @@ foo
 .
 <pre><code class="language-foo+bar">foo
 </code></pre>
+````````````````````````````````
+
+
+## Zero-width space
+
+For most use-cases requiring escapes it's worth considering using [backslash
+escapes], but [zero-width space] can be useful sometimes as well (to change the
+meaning of an adjacent character, etc.).
+
+Given differences in utilization of whitespace, zero-width space can be used to
+ensure emphasis, etc. in East Asian text:
+
+```````````````````````````````` example
+棕色*狐狸。*&#x200b;跳过
+.
+<p>棕色<em>狐狸。</em>​跳过</p>
+````````````````````````````````
+
+
+Zero-width space may also need to be used to achieve some emphasis effects 
+while satisfying Markdown's [emphasis and strong emphasis] rules:
+
+```````````````````````````````` example
+Hello *Super-*&#8203;**man**
+.
+<p>Hello <em>Super-</em>​<strong>man</strong></p>
+
+````````````````````````````````
+
+```````````````````````````````` example
+Hello ***Super***&#8203;**-man**
+.
+<p>Hello <em><strong>Super</strong></em>​<strong>-man</strong></p>
+
+````````````````````````````````
+
+
+Zero-width space can also be used to achieve some combined effects such as mixed
+bold/italic mark-up:
+
+```````````````````````````````` example
+**bold*bold-italic***&#x200B;*italic*&#x200B;***bold-italic*bold**
+.
+<p><strong>bold<em>bold-italic</em></strong>​<em>italic</em>​<strong><em>bold-italic</em>bold</strong></p>
+
 ````````````````````````````````
 
 
