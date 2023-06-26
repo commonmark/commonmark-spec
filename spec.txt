@@ -316,9 +316,9 @@ A line containing no characters, or a line containing only spaces
 
 The following definitions of character classes will be used in this spec:
 
-A [Unicode whitespace character](@) is
-any code point in the Unicode `Zs` general category, or a tab (`U+0009`),
-line feed (`U+000A`), form feed (`U+000C`), or carriage return (`U+000D`).
+A [Unicode whitespace character](@) is a character in the Unicode `Zs` general
+category, or a tab (`U+0009`), line feed (`U+000A`), form feed (`U+000C`), or
+carriage return (`U+000D`).
 
 [Unicode whitespace](@) is a sequence of one or more
 [Unicode whitespace characters].
@@ -337,9 +337,8 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `[`, `\`, `]`, `^`, `_`, `` ` `` (U+005B–0060), 
 `{`, `|`, `}`, or `~` (U+007B–007E).
 
-A [Unicode punctuation character](@) is an [ASCII
-punctuation character] or anything in
-the general Unicode categories  `Pc`, `Pd`, `Pe`, `Pf`, `Pi`, `Po`, or `Ps`.
+A [Unicode punctuation character](@) is a character in the Unicode `P`
+(puncuation) or `S` (symbol) general categories.
 
 ## Tabs
 
