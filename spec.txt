@@ -6342,6 +6342,21 @@ Unicode nonbreaking spaces count as whitespace, too:
 ````````````````````````````````
 
 
+Unicode symbols count as punctuation, too:
+
+```````````````````````````````` example
+*$*alpha.
+
+*£*bravo.
+
+*€*charlie.
+.
+<p>*$*alpha.</p>
+<p>*$*bravo.</p>
+<p>*$*charlie.</p>
+````````````````````````````````
+
+
 Intraword emphasis with `*` is permitted:
 
 ```````````````````````````````` example
