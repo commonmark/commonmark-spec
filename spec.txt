@@ -8309,7 +8309,7 @@ A [collapsed reference link](@)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document, followed by the string `[]`.
-The contents of the first link label are parsed as inlines,
+The contents of the link label are parsed as inlines,
 which are used as the link's text.  The link's URI and title are
 provided by the matching reference link definition.  Thus,
 `[foo][]` is equivalent to `[foo][foo]`.
@@ -8362,7 +8362,7 @@ A [shortcut reference link](@)
 consists of a [link label] that [matches] a
 [link reference definition] elsewhere in the
 document and is not followed by `[]` or a link label.
-The contents of the first link label are parsed as inlines,
+The contents of the link label are parsed as inlines,
 which are used as the link's text.  The link's URI and title
 are provided by the matching link reference definition.
 Thus, `[foo]` is equivalent to `[foo][]`.
