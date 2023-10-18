@@ -578,9 +578,9 @@ raw HTML:
 
 
 ```````````````````````````````` example
-<http://example.com?find=\*>
+<https://example.com?find=\*>
 .
-<p><a href="http://example.com?find=%5C*">http://example.com?find=\*</a></p>
+<p><a href="https://example.com?find=%5C*">https://example.com?find=\*</a></p>
 ````````````````````````````````
 
 
@@ -6054,18 +6054,18 @@ But this is an HTML tag:
 And this is code:
 
 ```````````````````````````````` example
-`<http://foo.bar.`baz>`
+`<https://foo.bar.`baz>`
 .
-<p><code>&lt;http://foo.bar.</code>baz&gt;`</p>
+<p><code>&lt;https://foo.bar.</code>baz&gt;`</p>
 ````````````````````````````````
 
 
 But this is an autolink:
 
 ```````````````````````````````` example
-<http://foo.bar.`baz>`
+<https://foo.bar.`baz>`
 .
-<p><a href="http://foo.bar.%60baz">http://foo.bar.`baz</a>`</p>
+<p><a href="https://foo.bar.%60baz">https://foo.bar.`baz</a>`</p>
 ````````````````````````````````
 
 
@@ -7442,16 +7442,16 @@ _a `_`_
 
 
 ```````````````````````````````` example
-**a<http://foo.bar/?q=**>
+**a<https://foo.bar/?q=**>
 .
-<p>**a<a href="http://foo.bar/?q=**">http://foo.bar/?q=**</a></p>
+<p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-__a<http://foo.bar/?q=__>
+__a<https://foo.bar/?q=__>
 .
-<p>__a<a href="http://foo.bar/?q=__">http://foo.bar/?q=__</a></p>
+<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>
 ````````````````````````````````
 
 
@@ -7699,13 +7699,13 @@ A link can contain fragment identifiers and queries:
 ```````````````````````````````` example
 [link](#fragment)
 
-[link](http://example.com#fragment)
+[link](https://example.com#fragment)
 
-[link](http://example.com?foo=3#frag)
+[link](https://example.com?foo=3#frag)
 .
 <p><a href="#fragment">link</a></p>
-<p><a href="http://example.com#fragment">link</a></p>
-<p><a href="http://example.com?foo=3#frag">link</a></p>
+<p><a href="https://example.com#fragment">link</a></p>
+<p><a href="https://example.com?foo=3#frag">link</a></p>
 ````````````````````````````````
 
 
@@ -7949,9 +7949,9 @@ and autolinks over link grouping:
 
 
 ```````````````````````````````` example
-[foo<http://example.com/?search=](uri)>
+[foo<https://example.com/?search=](uri)>
 .
-<p>[foo<a href="http://example.com/?search=%5D(uri)">http://example.com/?search=](uri)</a></p>
+<p>[foo<a href="https://example.com/?search=%5D(uri)">https://example.com/?search=](uri)</a></p>
 ````````````````````````````````
 
 
@@ -8105,11 +8105,11 @@ and autolinks over link grouping:
 
 
 ```````````````````````````````` example
-[foo<http://example.com/?search=][ref]>
+[foo<https://example.com/?search=][ref]>
 
 [ref]: /uri
 .
-<p>[foo<a href="http://example.com/?search=%5D%5Bref%5D">http://example.com/?search=][ref]</a></p>
+<p>[foo<a href="https://example.com/?search=%5D%5Bref%5D">https://example.com/?search=][ref]</a></p>
 ````````````````````````````````
 
 
@@ -8778,16 +8778,16 @@ by any combination of ASCII letters, digits, or the symbols plus
 Here are some valid autolinks:
 
 ```````````````````````````````` example
-<http://foo.bar.baz>
+<https://foo.bar.baz>
 .
-<p><a href="http://foo.bar.baz">http://foo.bar.baz</a></p>
+<p><a href="https://foo.bar.baz">https://foo.bar.baz</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-<http://foo.bar.baz/test?q=hello&id=22&boolean>
+<https://foo.bar.baz/test?q=hello&id=22&boolean>
 .
-<p><a href="http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>
+<p><a href="https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>
 ````````````````````````````````
 
 
@@ -8827,9 +8827,9 @@ with their syntax:
 
 
 ```````````````````````````````` example
-<http://../>
+<https://../>
 .
-<p><a href="http://../">http://../</a></p>
+<p><a href="https://../">https://../</a></p>
 ````````````````````````````````
 
 
@@ -8843,18 +8843,18 @@ with their syntax:
 Spaces are not allowed in autolinks:
 
 ```````````````````````````````` example
-<http://foo.bar/baz bim>
+<https://foo.bar/baz bim>
 .
-<p>&lt;http://foo.bar/baz bim&gt;</p>
+<p>&lt;https://foo.bar/baz bim&gt;</p>
 ````````````````````````````````
 
 
 Backslash-escapes do not work inside autolinks:
 
 ```````````````````````````````` example
-<http://example.com/\[\>
+<https://example.com/\[\>
 .
-<p><a href="http://example.com/%5C%5B%5C">http://example.com/\[\</a></p>
+<p><a href="https://example.com/%5C%5B%5C">https://example.com/\[\</a></p>
 ````````````````````````````````
 
 
@@ -8906,9 +8906,9 @@ These are not autolinks:
 
 
 ```````````````````````````````` example
-< http://foo.bar >
+< https://foo.bar >
 .
-<p>&lt; http://foo.bar &gt;</p>
+<p>&lt; https://foo.bar &gt;</p>
 ````````````````````````````````
 
 
@@ -8927,9 +8927,9 @@ These are not autolinks:
 
 
 ```````````````````````````````` example
-http://example.com
+https://example.com
 .
-<p>http://example.com</p>
+<p>https://example.com</p>
 ````````````````````````````````
 
 
