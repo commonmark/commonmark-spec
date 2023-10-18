@@ -3,7 +3,7 @@ title: CommonMark Spec
 author: John MacFarlane
 version: '0.30'
 date: '2021-06-19'
-license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+license: '[CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)'
 ...
 
 # Introduction
@@ -14,7 +14,7 @@ Markdown is a plain text format for writing structured documents,
 based on conventions for indicating formatting in email
 and usenet posts.  It was developed by John Gruber (with
 help from Aaron Swartz) and released in 2004 in the form of a
-[syntax description](http://daringfireball.net/projects/markdown/syntax)
+[syntax description](https://daringfireball.net/projects/markdown/syntax)
 and a Perl script (`Markdown.pl`) for converting Markdown to
 HTML.  In the next decade, dozens of implementations were
 developed in many languages.  Some extended the original
@@ -34,7 +34,7 @@ As Gruber writes:
 > Markdown-formatted document should be publishable as-is, as
 > plain text, without looking like it's been marked up with tags
 > or formatting instructions.
-> (<http://daringfireball.net/projects/markdown/>)
+> (<https://daringfireball.net/projects/markdown/>)
 
 The point can be illustrated by comparing a sample of
 [AsciiDoc](https://asciidoc.org/) with
@@ -103,7 +103,7 @@ source, not just in the processed document.
 ## Why is a spec needed?
 
 John Gruber's [canonical description of Markdown's
-syntax](http://daringfireball.net/projects/markdown/syntax)
+syntax](https://daringfireball.net/projects/markdown/syntax)
 does not specify the syntax unambiguously.  Here are some examples of
 questions it does not answer:
 
@@ -5349,7 +5349,7 @@ by itself should be a paragraph followed by a nested sublist.
 Since it is well established Markdown practice to allow lists to
 interrupt paragraphs inside list items, the [principle of
 uniformity] requires us to allow this outside list items as
-well.  ([reStructuredText](http://docutils.sourceforge.net/rst.html)
+well.  ([reStructuredText](https://docutils.sourceforge.net/rst.html)
 takes a different approach, requiring blank lines before lists
 even inside other list items.)
 
@@ -6098,7 +6098,7 @@ closing backtick strings to be equal in length:
 ## Emphasis and strong emphasis
 
 John Gruber's original [Markdown syntax
-description](http://daringfireball.net/projects/markdown/syntax#em) says:
+description](https://daringfireball.net/projects/markdown/syntax#em) says:
 
 > Markdown treats asterisks (`*`) and underscores (`_`) as indicators of
 > emphasis. Text wrapped with one `*` or `_` will be wrapped with an HTML
