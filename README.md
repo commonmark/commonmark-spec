@@ -185,7 +185,7 @@ The spec was written by John MacFarlane, drawing on
   ([peg-markdown](http://github.com/jgm/peg-markdown),
   [lunamark](http://github.com/jgm/lunamark))
 - a detailed examination of the differences between existing Markdown
-  implementations using [BabelMark 2](http://johnmacfarlane.net/babelmark2/),
+  implementations using [babelmark3](https://babelmark.github.io/),
   and
 - extensive discussions with David Greenspan, Jeff Atwood, Vicent
   Marti, Neil Williams, and Benjamin Dumke-von der Ehe.
