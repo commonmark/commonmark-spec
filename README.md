@@ -5,7 +5,7 @@ CommonMark is a rationalized version of Markdown syntax,
 with a [spec][the spec] and BSD-licensed reference
 implementations in C and JavaScript.
 
-[Try it now!](http://try.commonmark.org/)
+[Try it now!](https://spec.commonmark.org/dingus/)
 
 [the spec]:  http://spec.commonmark.org/
 
