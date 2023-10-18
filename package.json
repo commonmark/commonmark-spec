@@ -9,7 +9,6 @@
     "markdown"
   ],
   "repository": "commonmark/CommonMark",
-  "license": "MIT",
   "files": [
     "index.js",
     "spec.txt"
