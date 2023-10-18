@@ -6200,7 +6200,7 @@ Here are some examples of delimiter runs.
 (The idea of distinguishing left-flanking and right-flanking
 delimiter runs based on the character before and the character
 after comes from Roopesh Chander's
-[vfmd](http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags).
+[vfmd](https://web.archive.org/web/20220608143320/http://www.vfmd.org/vfmd-spec/specification/#procedure-for-identifying-emphasis-tags).
 vfmd uses the terminology "emphasis indicator string" instead of "delimiter
 run," and its rules for distinguishing left- and right-flanking runs
 are a bit more complex than the ones given here.)
