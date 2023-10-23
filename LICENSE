@@ -3,7 +3,7 @@ The CommonMark spec (spec.txt) and DTD (CommonMark.dtd) are
 Copyright (C) 2014-16 John MacFarlane
 
 Released under the Creative Commons CC-BY-SA 4.0 license:
-<http://creativecommons.org/licenses/by-sa/4.0/>.
+<https://creativecommons.org/licenses/by-sa/4.0/>.
 
 ---
 
