@@ -8778,9 +8778,9 @@ by any combination of ASCII letters, digits, or the symbols plus
 Here are some valid autolinks:
 
 ```````````````````````````````` example
-<https://foo.bar.baz>
+<http://foo.bar.baz>
 .
-<p><a href="https://foo.bar.baz">https://foo.bar.baz</a></p>
+<p><a href="http://foo.bar.baz">http://foo.bar.baz</a></p>
 ````````````````````````````````
 
 
