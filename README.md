@@ -5,11 +5,11 @@ CommonMark is a rationalized version of Markdown syntax,
 with a [spec][the spec] and BSD-licensed reference
 implementations in C and JavaScript.
 
-[Try it now!](http://try.commonmark.org/)
+[Try it now!](https://spec.commonmark.org/dingus/)
 
-[the spec]:  http://spec.commonmark.org/
+[the spec]:  https://spec.commonmark.org/
 
-For more details, see <http://commonmark.org>.
+For more details, see <https://commonmark.org>.
 
 This repository contains the spec itself, along with tools for
 running tests against the spec, and for creating HTML and PDF versions
@@ -80,7 +80,7 @@ quote, a code block, and each of the other structural elements that can
 make up a Markdown document.
 
 Because John Gruber's [canonical syntax
-description](http://daringfireball.net/projects/markdown/syntax) leaves
+description](https://daringfireball.net/projects/markdown/syntax) leaves
 many aspects of the syntax undetermined, writing a precise spec requires
 making a large number of decisions, many of them somewhat arbitrary.
 In making them, we have appealed to existing conventions and
@@ -168,9 +168,9 @@ Contributing
 ------------
 
 There is a [forum for discussing
-CommonMark](http://talk.commonmark.org); you should use it instead of
+CommonMark](https://talk.commonmark.org); you should use it instead of
 github issues for questions and possibly open-ended discussions.
-Use the [github issue tracker](http://github.com/commonmark/CommonMark/issues)
+Use the [github issue tracker](https://github.com/commonmark/CommonMark/issues)
 only for simple, clear, actionable issues.
 
 Authors
@@ -180,10 +180,10 @@ The spec was written by John MacFarlane, drawing on
 
 - his experience writing and maintaining Markdown implementations in several
   languages, including the first Markdown parser not based on regular
-  expression substitutions ([pandoc](http://github.com/jgm/pandoc)) and
+  expression substitutions ([pandoc](https://github.com/jgm/pandoc)) and
   the first markdown parsers based on PEG grammars
-  ([peg-markdown](http://github.com/jgm/peg-markdown),
-  [lunamark](http://github.com/jgm/lunamark))
+  ([peg-markdown](https://github.com/jgm/peg-markdown),
+  [lunamark](https://github.com/jgm/lunamark))
 - a detailed examination of the differences between existing Markdown
   implementations using [BabelMark 2](https://johnmacfarlane.net/babelmark2/),
   and

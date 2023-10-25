@@ -3,7 +3,7 @@ title: CommonMark Spec
 author: John MacFarlane
 version: '0.30'
 date: '2021-06-19'
-license: '[CC-BY-SA 4.0](http://creativecommons.org/licenses/by-sa/4.0/)'
+license: '[CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)'
 ...
 
 # Introduction
@@ -14,7 +14,7 @@ Markdown is a plain text format for writing structured documents,
 based on conventions for indicating formatting in email
 and usenet posts.  It was developed by John Gruber (with
 help from Aaron Swartz) and released in 2004 in the form of a
-[syntax description](http://daringfireball.net/projects/markdown/syntax)
+[syntax description](https://daringfireball.net/projects/markdown/syntax)
 and a Perl script (`Markdown.pl`) for converting Markdown to
 HTML.  In the next decade, dozens of implementations were
 developed in many languages.  Some extended the original
@@ -34,7 +34,7 @@ As Gruber writes:
 > Markdown-formatted document should be publishable as-is, as
 > plain text, without looking like it's been marked up with tags
 > or formatting instructions.
-> (<http://daringfireball.net/projects/markdown/>)
+> (<https://daringfireball.net/projects/markdown/>)
 
 The point can be illustrated by comparing a sample of
 [AsciiDoc](https://asciidoc.org/) with
@@ -103,7 +103,7 @@ source, not just in the processed document.
 ## Why is a spec needed?
 
 John Gruber's [canonical description of Markdown's
-syntax](http://daringfireball.net/projects/markdown/syntax)
+syntax](https://daringfireball.net/projects/markdown/syntax)
 does not specify the syntax unambiguously.  Here are some examples of
 questions it does not answer:
 
@@ -578,9 +578,9 @@ raw HTML:
 
 
 ```````````````````````````````` example
-<http://example.com?find=\*>
+<https://example.com?find=\*>
 .
-<p><a href="http://example.com?find=%5C*">http://example.com?find=\*</a></p>
+<p><a href="https://example.com?find=%5C*">https://example.com?find=\*</a></p>
 ````````````````````````````````
 
 
@@ -5349,7 +5349,7 @@ by itself should be a paragraph followed by a nested sublist.
 Since it is well established Markdown practice to allow lists to
 interrupt paragraphs inside list items, the [principle of
 uniformity] requires us to allow this outside list items as
-well.  ([reStructuredText](http://docutils.sourceforge.net/rst.html)
+well.  ([reStructuredText](https://docutils.sourceforge.net/rst.html)
 takes a different approach, requiring blank lines before lists
 even inside other list items.)
 
@@ -6054,18 +6054,18 @@ But this is an HTML tag:
 And this is code:
 
 ```````````````````````````````` example
-`<http://foo.bar.`baz>`
+`<https://foo.bar.`baz>`
 .
-<p><code>&lt;http://foo.bar.</code>baz&gt;`</p>
+<p><code>&lt;https://foo.bar.</code>baz&gt;`</p>
 ````````````````````````````````
 
 
 But this is an autolink:
 
 ```````````````````````````````` example
-<http://foo.bar.`baz>`
+<https://foo.bar.`baz>`
 .
-<p><a href="http://foo.bar.%60baz">http://foo.bar.`baz</a>`</p>
+<p><a href="https://foo.bar.%60baz">https://foo.bar.`baz</a>`</p>
 ````````````````````````````````
 
 
@@ -6098,7 +6098,7 @@ closing backtick strings to be equal in length:
 ## Emphasis and strong emphasis
 
 John Gruber's original [Markdown syntax
-description](http://daringfireball.net/projects/markdown/syntax#em) says:
+description](https://daringfireball.net/projects/markdown/syntax#em) says:
 
 > Markdown treats asterisks (`*`) and underscores (`_`) as indicators of
 > emphasis. Text wrapped with one `*` or `_` will be wrapped with an HTML
@@ -7442,16 +7442,16 @@ _a `_`_
 
 
 ```````````````````````````````` example
-**a<http://foo.bar/?q=**>
+**a<https://foo.bar/?q=**>
 .
-<p>**a<a href="http://foo.bar/?q=**">http://foo.bar/?q=**</a></p>
+<p>**a<a href="https://foo.bar/?q=**">https://foo.bar/?q=**</a></p>
 ````````````````````````````````
 
 
 ```````````````````````````````` example
-__a<http://foo.bar/?q=__>
+__a<https://foo.bar/?q=__>
 .
-<p>__a<a href="http://foo.bar/?q=__">http://foo.bar/?q=__</a></p>
+<p>__a<a href="https://foo.bar/?q=__">https://foo.bar/?q=__</a></p>
 ````````````````````````````````
 
 
@@ -7699,13 +7699,13 @@ A link can contain fragment identifiers and queries:
 ```````````````````````````````` example
 [link](#fragment)
 
-[link](http://example.com#fragment)
+[link](https://example.com#fragment)
 
-[link](http://example.com?foo=3#frag)
+[link](https://example.com?foo=3#frag)
 .
 <p><a href="#fragment">link</a></p>
-<p><a href="http://example.com#fragment">link</a></p>
-<p><a href="http://example.com?foo=3#frag">link</a></p>
+<p><a href="https://example.com#fragment">link</a></p>
+<p><a href="https://example.com?foo=3#frag">link</a></p>
 ````````````````````````````````
 
 
@@ -7949,9 +7949,9 @@ and autolinks over link grouping:
 
 
 ```````````````````````````````` example
-[foo<http://example.com/?search=](uri)>
+[foo<https://example.com/?search=](uri)>
 .
-<p>[foo<a href="http://example.com/?search=%5D(uri)">http://example.com/?search=](uri)</a></p>
+<p>[foo<a href="https://example.com/?search=%5D(uri)">https://example.com/?search=](uri)</a></p>
 ````````````````````````````````
 
 
@@ -8105,11 +8105,11 @@ and autolinks over link grouping:
 
 
 ```````````````````````````````` example
-[foo<http://example.com/?search=][ref]>
+[foo<https://example.com/?search=][ref]>
 
 [ref]: /uri
 .
-<p>[foo<a href="http://example.com/?search=%5D%5Bref%5D">http://example.com/?search=][ref]</a></p>
+<p>[foo<a href="https://example.com/?search=%5D%5Bref%5D">https://example.com/?search=][ref]</a></p>
 ````````````````````````````````
 
 
@@ -8785,9 +8785,9 @@ Here are some valid autolinks:
 
 
 ```````````````````````````````` example
-<http://foo.bar.baz/test?q=hello&id=22&boolean>
+<https://foo.bar.baz/test?q=hello&id=22&boolean>
 .
-<p><a href="http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">http://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>
+<p><a href="https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean">https://foo.bar.baz/test?q=hello&amp;id=22&amp;boolean</a></p>
 ````````````````````````````````
 
 
@@ -8827,9 +8827,9 @@ with their syntax:
 
 
 ```````````````````````````````` example
-<http://../>
+<https://../>
 .
-<p><a href="http://../">http://../</a></p>
+<p><a href="https://../">https://../</a></p>
 ````````````````````````````````
 
 
@@ -8843,18 +8843,18 @@ with their syntax:
 Spaces are not allowed in autolinks:
 
 ```````````````````````````````` example
-<http://foo.bar/baz bim>
+<https://foo.bar/baz bim>
 .
-<p>&lt;http://foo.bar/baz bim&gt;</p>
+<p>&lt;https://foo.bar/baz bim&gt;</p>
 ````````````````````````````````
 
 
 Backslash-escapes do not work inside autolinks:
 
 ```````````````````````````````` example
-<http://example.com/\[\>
+<https://example.com/\[\>
 .
-<p><a href="http://example.com/%5C%5B%5C">http://example.com/\[\</a></p>
+<p><a href="https://example.com/%5C%5B%5C">https://example.com/\[\</a></p>
 ````````````````````````````````
 
 
@@ -8906,9 +8906,9 @@ These are not autolinks:
 
 
 ```````````````````````````````` example
-< http://foo.bar >
+< https://foo.bar >
 .
-<p>&lt; http://foo.bar &gt;</p>
+<p>&lt; https://foo.bar &gt;</p>
 ````````````````````````````````
 
 
@@ -8927,9 +8927,9 @@ These are not autolinks:
 
 
 ```````````````````````````````` example
-http://example.com
+https://example.com
 .
-<p>http://example.com</p>
+<p>https://example.com</p>
 ````````````````````````````````
 
 
