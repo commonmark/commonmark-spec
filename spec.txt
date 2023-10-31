@@ -6352,8 +6352,8 @@ Unicode symbols count as punctuation, too:
 *€*charlie.
 .
 <p>*$*alpha.</p>
-<p>*$*bravo.</p>
-<p>*$*charlie.</p>
+<p>*£*bravo.</p>
+<p>*€*charlie.</p>
 ````````````````````````````````
 
 
