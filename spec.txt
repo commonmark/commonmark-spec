@@ -5933,7 +5933,7 @@ stripped in this way:
 ```````````````````````````````` example
 ` b `
 .
-<p><code> b </code></p>
+<p><code>b</code></p>
 ````````````````````````````````
 
 No stripping occurs if the code span contains only spaces:
