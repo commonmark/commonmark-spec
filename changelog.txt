@@ -1,6 +1,10 @@
+[0.31.2]
+
+  * Fix packaging bug (date not updated in spec.txt).
+
 [0.31.1]
 
-  * Fix packaging bug in 0.31 (spec version not updated in spec.txt).
+  * Fix packaging bug (spec version not updated in spec.txt).
 
 [0.31]
 
