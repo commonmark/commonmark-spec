@@ -1,6 +1,7 @@
 Release checklist
 
 _ update changelog.txt
+_ update version in spec.txt
 _ update version in package.json
 _ tag release
 _ git push
