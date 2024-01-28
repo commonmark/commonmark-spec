@@ -1,5 +1,10 @@
 [0.31]
 
+  * Relicense npm package under CC-BY-SA (Yukai Chou).
+  * Use archived vfmd link (Yukai Chou).
+  * Link to babelmark2 legacy page.
+  * Use https scheme in spec (including examples) (#751, Yukai Chou).
+  * Fix unicode symbols example in emphasis syntax (rhysd).
   * Remove confusing "first" before "link label."
   * Add symbols to unicode punctuation (Titus Wormer).
   * Update link to AsciiDoc (Jarno Elovirta).
