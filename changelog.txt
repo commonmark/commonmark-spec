@@ -1,3 +1,24 @@
+[0.31]
+
+  * Remove confusing "first" before "link label."
+  * Add symbols to unicode punctuation (Titus Wormer).
+  * Update link to AsciiDoc (Jarno Elovirta).
+  * Add `search` element to list of known block elements (Titus Wormer).
+  * Terminology: compact -> collapsed reference link.
+  * Correct emphasis typo (Mike Pennisi).
+  * Remove restrictive limitation on inline comments; now we match
+    the HTML spec (Titus Wormer).
+  * Fix spelling of "down side" to "downside" (Erik Duveblad).
+  * Fix typo (missing words) (Denis Howe).
+  * Remove `source` element as HTML block start condition (Lukas Spieß).
+  * Fix typo (Nicolas Hedger).
+  * `spec_tests.py` improvements (Martin Fischer): introduce `--track` option,
+    simplify code, show diffs of normalized HTML, fix UnicodeDecodeError catching.
+  * Use archived gmane links.
+  * Fix typo (#693, Salim B).
+  * Remove unnecessary lines from commonmark/commonmark-spec#95.
+  * Fix typo (#683, nadashin).
+
 [0.30]
 
   * Add note clarifying that not every feature of HTML examples is normative
