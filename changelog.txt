@@ -1,3 +1,7 @@
+[0.31.1]
+
+  * Fix packaging bug in 0.31 (spec version not updated in spec.txt).
+
 [0.31]
 
   * Relicense npm package under CC-BY-SA (Yukai Chou).
