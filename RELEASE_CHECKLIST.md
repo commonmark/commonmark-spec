@@ -6,6 +6,7 @@ _ tag release
 _ git push
 _ git push --tags
 _ github release
+- npm login
 _ npm publish
 _ update dingus:
 
