@@ -2355,7 +2355,82 @@ Closing code fences cannot have [info strings]:
 </code></pre>
 ````````````````````````````````
 
+## Fenced display blocks
 
+A [display fence](@) is a sequence
+of at least two consecutive dollar sign characters (`$`) 
+A [fenced display block](@) begins with a display fence,
+preceded by up to three spaces of indentation.
+
+Fenced display blocks follow the same rules as [Fenced code blocks]
+regarding the [info string], positioning, and content processing.
+
+Display blocks are intended to house code that is intended to be rendered
+rather than literally displayed. The [info string] can be used to specify
+the render engine. Example use cases are rendering TeX via MathML,
+a diagraming tool such as Marmaid or graphviz via a library, or a vector
+graphics tool.
+
+If no info string is specified, the display block should be processed as
+TeX and presented as MathML.
+
+If a rendering tool is not supported, the plain text should be presented
+exactly as an equivalent [Fenced code block]. If rendering fails, the
+engine may elect whether to present an error or fall back to rendering as
+a code block.
+
+Here is a simple example of TeX to MathML:
+
+```````````````````````````````` example
+$$
+ax^2 + bx + c
+$$
+.
+<math display="block" class="tml-display" style="display:block math;">
+  <mrow>
+    <mi>a</mi>
+    <msup>
+      <mi>x</mi>
+      <mn>2</mn>
+    </msup>
+    <mo>+</mo>
+    <mi>b</mi>
+    <mi>x</mi>
+    <mo>+</mo>
+    <mi>c</mi>
+  </mrow>
+</math>
+````````````````````````````````
+
+The language `tex` may optionally be specified:
+
+```````````````````````````````` example
+$$tex
+\frac{a}{b}
+$$
+.
+<math display="block" class="tml-display" style="display:block math;">
+  <mfrac>
+    <mi>a</mi>
+    <mi>b</mi>
+  </mfrac>
+</math>
+````````````````````````````````
+
+More than two `$` characters may be used
+
+```````````````````````````````` example
+$$$$$
+\frac{a}{b}
+$$$$$
+.
+<math display="block" class="tml-display" style="display:block math;">
+  <mfrac>
+    <mi>a</mi>
+    <mi>b</mi>
+  </mfrac>
+</math>
+````````````````````````````````
 
 ## HTML blocks
 
@@ -6094,6 +6169,37 @@ closing backtick strings to be equal in length:
 <p>`foo<code>bar</code></p>
 ````````````````````````````````
 
+## Display Spans
+
+A [dollar string](@) is a string of one or more dollar characters (`$`).
+
+A [display span](@) begins with a dollar string and ends with a dollar
+string of equal length. The contents of a display span should be
+preprocessed in an identical way as [Code spans].
+
+Display spans are meant to contain code that can directly be rendered.
+The renderer should by default treat display span contents as TeX, and
+render it as MathML. If the renderer does not support MathML, it should
+render display spans identical to code spans.
+
+This is a simple code span:
+
+```````````````````````````````` example
+$x = \frac{a}{b}$
+.
+<math>
+  <mrow>
+    <mi>x</mi>
+    <mo>=</mo>
+  </mrow>
+  <mrow>
+    <mfrac>
+      <mi>a</mi>
+      <mi>b</mi>
+    </mfrac>
+  </mrow>
+</math>
+````````````````````````````````
 
 ## Emphasis and strong emphasis
 
