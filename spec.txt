@@ -2730,12 +2730,12 @@ rather than an [HTML block].)
 
 ```````````````````````````````` example
 <del
->
+class="foo">
 *foo*
 </del>
 .
 <p><del
->
+class="foo">
 <em>foo</em>
 </del></p>
 ````````````````````````````````
