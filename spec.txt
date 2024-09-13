@@ -2411,7 +2411,8 @@ the string `/>`.\
 7.  **Start condition:**  line begins with a complete [open tag]
 (with any [tag name] other than `pre`, `script`,
 `style`, or `textarea`) or a complete [closing tag],
-followed by zero or more spaces and tabs, followed by the end of the line.\
+all on a single line, followed by zero or more spaces and tabs,
+followed by the end of the line.\
 **End condition:** line is followed by a [blank line].
 
 HTML blocks continue until they are closed by their appropriate
@@ -2716,7 +2717,7 @@ line).  So the contents get interpreted as CommonMark:
 ````````````````````````````````
 
 
-Finally, in this case, the `<del>` tags are interpreted
+Finally, in these cases, the `<del>` tags are interpreted
 as [raw HTML] *inside* the CommonMark paragraph.  (Because
 the tag is not on a line by itself, we get inline HTML
 rather than an [HTML block].)
@@ -2725,6 +2726,18 @@ rather than an [HTML block].)
 <del>*foo*</del>
 .
 <p><del><em>foo</em></del></p>
+````````````````````````````````
+
+```````````````````````````````` example
+<del
+>
+*foo*
+</del>
+.
+<p><del
+>
+<em>foo</em>
+</del></p>
 ````````````````````````````````
 
 
