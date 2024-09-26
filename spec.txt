@@ -3488,15 +3488,6 @@ bar
 <p><a href="/url">foo</a></p>
 ````````````````````````````````
 
-```````````````````````````````` example
-[foo]: /url
-===
-[foo]
-.
-<p>===
-<a href="/url">foo</a></p>
-````````````````````````````````
-
 
 Several [link reference definitions]
 can occur one after another, without intervening blank lines.
@@ -3506,7 +3497,6 @@ can occur one after another, without intervening blank lines.
 [bar]: /bar-url
   "bar"
 [baz]: /baz-url
-
 [foo],
 [bar],
 [baz]
@@ -3514,6 +3504,126 @@ can occur one after another, without intervening blank lines.
 <p><a href="/foo-url" title="foo">foo</a>,
 <a href="/bar-url" title="bar">bar</a>,
 <a href="/baz-url">baz</a></p>
+````````````````````````````````
+
+
+The text of a [link reference definition] can be interrupted by any block element
+that can interrupt a paragraph. These are not definitions at all,
+because what would be a multi-line title is interrupted
+by a heading, quoted text, and a fenced code block:
+
+```````````````````````````````` example
+[foo]: /url '
+# h1
+'
+
+[foo]: /url '
+> quote
+'
+
+[foo]: /url '
+```
+text
+```
+'
+
+[foo]
+.
+<p>[foo]: /url '</p>
+<h1>h1</h1>
+<p>'</p>
+<p>[foo]: /url '</p>
+<blockquote>
+<p>quote
+'</p>
+</blockquote>
+<p>[foo]: /url '</p>
+<pre><code>text
+</code></pre>
+<p>'</p>
+<p>[foo]</p>
+````````````````````````````````
+
+
+This isn't a two-line definition because the list interrupts the title,
+leaving a one-line definition:
+
+```````````````````````````````` example
+[foo]: /url
+'
+- list item
+'
+
+[foo]
+.
+<p>'</p>
+<ul>
+<li>list item
+'</li>
+</ul>
+<p><a href="/url">foo</a></p>
+````````````````````````````````
+
+
+It is also possible for the URL itself to be interrupted:
+
+```````````````````````````````` example
+[foo]:
+#
+[bar]: #
+[foo] [bar]
+.
+<p>[foo]:</p>
+<h1></h1>
+<p>[foo] <a href="#">bar</a></p>
+````````````````````````````````
+
+
+Because an indented code block cannot interrupt a paragraph,
+it also cannot interrupt a [link reference definition]:
+
+```````````````````````````````` example
+[foo]: /url '
+        not a code block
+'
+
+[foo]
+.
+<p><a href="/url" title="
+not a code block
+">foo</a></p>
+````````````````````````````````
+
+
+These are valid [link reference definitions],
+leaving no text for `===` to create a setext heading:
+
+```````````````````````````````` example
+[foo]: /url
+===
+[foo]
+.
+<p>===
+<a href="/url">foo</a></p>
+````````````````````````````````
+
+```````````````````````````````` example
+[foo]: /url 'bar'
+===
+[foo]
+.
+<p>===
+<a href="/url" title="bar">foo</a></p>
+````````````````````````````````
+
+```````````````````````````````` example
+[foo]: /url
+'bar'
+===
+[foo]
+.
+<p>===
+<a href="/url" title="bar">foo</a></p>
 ````````````````````````````````
 
 
@@ -3529,6 +3639,23 @@ are defined:
 .
 <p><a href="/url">foo</a></p>
 <blockquote>
+</blockquote>
+````````````````````````````````
+
+
+The text in a link reference definition can be continued
+using the same rules as for [paragraph continuation text]:
+
+```````````````````````````````` example
+> [foo]: /url '
+hello
+'
+> [foo]
+.
+<blockquote>
+<p><a href="/url" title="
+hello
+">foo</a></p>
 </blockquote>
 ````````````````````````````````
 
