@@ -7601,7 +7601,7 @@ the destination may be omitted:
 <p><a href=""></a></p>
 ````````````````````````````````
 
-The destination can only contain spaces if it is
+The destination can contain spaces only if it is
 enclosed in pointy brackets:
 
 ```````````````````````````````` example
