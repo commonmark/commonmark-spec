@@ -6328,9 +6328,9 @@ These rules can be illustrated through a series of examples.
 Rule 1:
 
 ```````````````````````````````` example
-*foo bar*
+* foo bar*
 .
-<p><em>foo bar</em></p>
+<ul><li>foo bar*</li></ul>
 ````````````````````````````````
 
 
