@@ -7602,7 +7602,7 @@ the destination may be omitted:
 ````````````````````````````````
 
 The destination can only contain spaces if it is
-enclosed in pointy brackets:
+enclosed in angle brackets:
 
 ```````````````````````````````` example
 [link](/my uri)
@@ -7617,7 +7617,7 @@ enclosed in pointy brackets:
 ````````````````````````````````
 
 The destination cannot contain line endings,
-even if enclosed in pointy brackets:
+even if enclosed in angle brackets:
 
 ```````````````````````````````` example
 [link](foo
@@ -7636,7 +7636,7 @@ bar>)</p>
 ````````````````````````````````
 
 The destination can contain `)` if it is enclosed
-in pointy brackets:
+in angle brackets:
 
 ```````````````````````````````` example
 [a](<b)c>)
@@ -7644,7 +7644,7 @@ in pointy brackets:
 <p><a href="b)c">a</a></p>
 ````````````````````````````````
 
-Pointy brackets that enclose links must be unescaped:
+Angle brackets that enclose links must be unescaped:
 
 ```````````````````````````````` example
 [link](<foo\>)
@@ -7652,7 +7652,7 @@ Pointy brackets that enclose links must be unescaped:
 <p>[link](&lt;foo&gt;)</p>
 ````````````````````````````````
 
-These are not links, because the opening pointy bracket
+These are not links, because the opening angle bracket
 is not matched properly:
 
 ```````````````````````````````` example
