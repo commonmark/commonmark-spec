@@ -9029,7 +9029,7 @@ A [CDATA section](@) consists of
 the string `<![CDATA[`, a string of characters not including the string
 `]]>`, and the string `]]>`.
 
-An [HTML tag](@) consists of an [open tag], a [closing tag],
+An [HTML tag](@) is an [open tag], a [closing tag],
 an [HTML comment], a [processing instruction], a [declaration],
 or a [CDATA section].
 
