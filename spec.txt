@@ -3728,9 +3728,9 @@ The following rules define [block quotes]:
     is a [block quote](#block-quotes) containing *Bs*.
 
     To prepend a [complete block quote marker] to a line, calculate its
-    indentation without the list marker at the current tab stop (N1),
+    indentation without the block quote marker at the current column (N1),
     then insert `>` at the start of the line, then calculate its indentation at
-    the same tab stop (N2, which will equal N1 unless the line starts with a tab),
+    the same column (N2, which will equal N1 unless the line starts with a tab),
     then add M=N1+1-N2 spaces of indentation (if M is negative, remove spaces).
 
     An [incomplete block quote marker] can be be used instead, but
