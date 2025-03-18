@@ -6185,6 +6185,8 @@ followed by [Unicode whitespace] or a [Unicode punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
+(Note:  If the [delimiter run] adjoins [ill-formed code unit subsequences](https://www.unicode.org/glossary/#ill_formed_code_unit_subsequence) (including isolated surrogate code units), both whether the [delimiter run] is a [left-flanking delimiter run] and whether it is a [right-flanking delimiter run] are [unspecified](http://eel.is/c++draft/defns.unspecified).)
+
 Here are some examples of delimiter runs.
 
   - left-flanking but not right-flanking:
