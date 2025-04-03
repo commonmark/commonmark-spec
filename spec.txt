@@ -1314,6 +1314,55 @@ ATX headings can be empty:
 <h3></h3>
 ````````````````````````````````
 
+### Heading identifiers
+
+Headings may be used to generate a table of contents (ToC). 
+Authors and readers commonly want to target links at headings. 
+Therefore, an implementation may choose to 
+add unique anchors to all headings 
+which are automatically generated from their textual content 
+
+```````````````````````````````` example
+# Foo
+## Bar
+## Baz
+.
+<h1 id="foo">Foo</h1>
+<h2 id="bar">Bar</h2>
+<h2 id="baz">Baz</h2>
+````````````````````````````````
+
+If necessary to disambiguate, 
+the textual content of their ancestral headings can also be used.
+
+```````````````````````````````` example
+# Foo
+## Bar
+# Quuz
+## Bar
+.
+<h1 id="foo">Foo</h1>
+<h2 id="bar_(foo)">Bar</h2>
+<h1 id="quuz">Quuz</h1>
+<h2 id="bar_(quuz)">Baz</h2>
+````````````````````````````````
+
+If that does not result in unique identifiers, 
+a counter may be added. 
+
+```````````````````````````````` example
+# Foo
+# Foo
+.
+<h1 id="foo-1">Foo</h1>
+<h1 id="foo-2">Foo</h1>
+````````````````````````````````
+
+The exact algorithm to generate the identifier is not mandated. 
+Implementations may choose to apply Unicode normalization, 
+case folding, white space collapsing, affix addition,
+romanization, removal of diacritic marks etc.
+as needed to conform to the requirements of the target language.
 
 ## Setext headings
 
