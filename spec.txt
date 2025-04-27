@@ -307,7 +307,7 @@ are not included. If an implementation meets a code point that is not
 included as a character or an
 [ill-formed code unit subsequence](https://www.unicode.org/glossary/#ill-formed_code_unit_subsequence)
 at the place where it expects a character, the behavior is
-[unspecified](http://eel.is/c++draft/defns.unspecified).
+[undefined](https://eel.is/c++draft/defns.undefined).
 
 This spec does not specify an encoding; it thinks of lines as composed
 of [characters] rather than bytes.  A conforming parser may be limited
