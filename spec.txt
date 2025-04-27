@@ -294,10 +294,20 @@ In the examples, the `→` character is used to represent tabs.
 Any sequence of [characters] is a valid CommonMark
 document.
 
-A [character](@) is a Unicode code point.  Although some
-code points (for example, combining accents) do not correspond to
-characters in an intuitive sense, all code points count as characters
-for purposes of this spec.
+A [character](@) is an
+[Unicode encoded character](https://www.unicode.org/glossary/#encoded_character)
+(or [assigned character](https://www.unicode.org/glossary/#assigned_character)).
+Although some code points (for example, combining accents) do not correspond to
+characters in an intuitive sense, all encoded characters count as characters
+for purposes of this spec. However,
+[surrogate code points](https://www.unicode.org/glossary/#surrogate_code_point),
+[reserved code points](https://www.unicode.org/glossary/#reserved_code_point),
+or [Unicode noncharacters](https://www.unicode.org/glossary/#noncharacter)
+are not included. If an implementation meets a code point that is not
+included as a character or an
+[ill-formed code unit subsequence](https://www.unicode.org/glossary/#ill-formed_code_unit_subsequence)
+at the place where it expects a character, the behavior is
+[unspecified](http://eel.is/c++draft/defns.unspecified).
 
 This spec does not specify an encoding; it thinks of lines as composed
 of [characters] rather than bytes.  A conforming parser may be limited
@@ -6184,8 +6194,6 @@ and either (2a) not preceded by a [Unicode punctuation character], or
 followed by [Unicode whitespace] or a [Unicode punctuation character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
-
-(Note:  If the [delimiter run] adjoins [ill-formed code unit subsequences](https://www.unicode.org/glossary/#ill_formed_code_unit_subsequence) (including isolated surrogate code units), both whether the [delimiter run] is a [left-flanking delimiter run] and whether it is a [right-flanking delimiter run] are [unspecified](http://eel.is/c++draft/defns.unspecified).)
 
 Here are some examples of delimiter runs.
 
