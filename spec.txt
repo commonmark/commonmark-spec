@@ -9757,8 +9757,8 @@ closers:
   (This will be the potential closer closest
   to the beginning of the input -- the first one in parse order.)
 
-- Now, look back in the stack (staying above stack_bottom and
-  the openers_bottom for this delimiter type) for the
+- Now, look back in the stack (staying above `stack_bottom` and
+  the `openers_bottom` for this delimiter type) for the
   first valid potential opener, where being "valid" requires that:
 
   + the token is a potential opener; and
