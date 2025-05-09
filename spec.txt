@@ -9757,19 +9757,25 @@ closers:
   (This will be the potential closer closest
   to the beginning of the input -- the first one in parse order.)
 
-- Now, look back in the stack (staying above stack_bottom and the openers_bottom for this delimiter type) for the first valid potential opener, where being "valid" requires that:
+- Now, look back in the stack (staying above stack_bottom and
+  the openers_bottom for this delimiter type) for the
+  first valid potential opener, where being "valid" requires that:
 
   + the token is a potential opener; and
 
-  + the token has the same delimiter type as the current potential closer; and
+  + the token has the same delimiter type as the current potential
+    closer; and
 
   + any of the following are true:
 
-    * the closer is not a potential opener and the opener is not a potential closer; or
+    * the closer is not a potential opener and the opener is not a
+      potential closer; or
 
-    * the original length of the closing delimiter run is a multiple of 3; or
+    * the original length of the closing delimiter run is a multiple
+      of 3; or
 
-    * the original length of the opening delimiter run + the original length of the closing delimiter run is not a multiple of 3
+    * the original length of the opening delimiter run + the original
+      length of the closing delimiter run is not a multiple of 3
 
 - If one is found:
 
