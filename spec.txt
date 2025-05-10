@@ -9759,7 +9759,23 @@ closers:
 
 - Now, look back in the stack (staying above `stack_bottom` and
   the `openers_bottom` for this delimiter type) for the
-  first matching potential opener ("matching" means same delimiter).
+  first valid potential opener, where being "valid" requires that:
+
+  + the token is a potential opener; and
+
+  + the token has the same delimiter type as the current potential
+    closer; and
+
+  + any of the following are true:
+
+    * the closer is not a potential opener and the opener is not a
+      potential closer; or
+
+    * the original length of the closing delimiter run is a multiple
+      of 3; or
+
+    * the original length of the opening delimiter run + the original
+      length of the closing delimiter run is not a multiple of 3
 
 - If one is found:
 
