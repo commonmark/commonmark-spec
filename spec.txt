@@ -6294,29 +6294,31 @@ The following rules define emphasis and strong emphasis:
     `_`-delimited emphasis or `__`-delimited strong emphasis, unless it
     is backslash-escaped.
 
-Where rules 1--12 above are compatible with multiple parsings,
+13. Implementers can emit `<i>` and `<b>` instead of `<em>` and `<strong>`.
+
+Where rules 1--13 above are compatible with multiple parsings,
 the following principles resolve ambiguity:
 
-13. The number of nestings should be minimized. Thus, for example,
+14. The number of nestings should be minimized. Thus, for example,
     an interpretation `<strong>...</strong>` is always preferred to
     `<em><em>...</em></em>`.
 
-14. An interpretation `<em><strong>...</strong></em>` is always
+15. An interpretation `<em><strong>...</strong></em>` is always
     preferred to `<strong><em>...</em></strong>`.
 
-15. When two potential emphasis or strong emphasis spans overlap,
+16. When two potential emphasis or strong emphasis spans overlap,
     so that the second begins before the first ends and ends after
     the first ends, the first takes precedence. Thus, for example,
     `*foo _bar* baz_` is parsed as `<em>foo _bar</em> baz_` rather
     than `*foo <em>bar* baz</em>`.
 
-16. When there are two potential emphasis or strong emphasis spans
+17. When there are two potential emphasis or strong emphasis spans
     with the same closing delimiter, the shorter one (the one that
     opens later) takes precedence. Thus, for example,
     `**foo **bar baz**` is parsed as `**foo <strong>bar baz</strong>`
     rather than `<strong>foo **bar baz</strong>`.
 
-17. Inline code spans, links, images, and HTML tags group more tightly
+18. Inline code spans, links, images, and HTML tags group more tightly
     than emphasis.  So, when there is a choice between an interpretation
     that contains one of these elements and one that does not, the
     former always wins.  Thus, for example, `*[foo*](bar)` is
@@ -6759,8 +6761,8 @@ with these examples:
 **Gomphocarpus (*Gomphocarpus physocarpus*, syn.
 *Asclepias physocarpa*)**
 .
-<p><strong>Gomphocarpus (<em>Gomphocarpus physocarpus</em>, syn.
-<em>Asclepias physocarpa</em>)</strong></p>
+<p><b>Gomphocarpus (<i>Gomphocarpus physocarpus</i>, syn.
+<i>Asclepias physocarpa</i>)</b></p>
 ````````````````````````````````
 
 
@@ -7308,7 +7310,7 @@ _foo____
 ````````````````````````````````
 
 
-Rule 13 implies that if you want emphasis nested directly inside
+Rule 14 implies that if you want emphasis nested directly inside
 emphasis, you must use different delimiters:
 
 ```````````````````````````````` example
@@ -7357,7 +7359,7 @@ ____foo____
 
 
 
-Rule 13 can be applied to arbitrarily long sequences of
+Rule 14 can be applied to arbitrarily long sequences of
 delimiters:
 
 ```````````````````````````````` example
@@ -7367,7 +7369,7 @@ delimiters:
 ````````````````````````````````
 
 
-Rule 14:
+Rule 15:
 
 ```````````````````````````````` example
 ***foo***
@@ -7383,7 +7385,7 @@ _____foo_____
 ````````````````````````````````
 
 
-Rule 15:
+Rule 16:
 
 ```````````````````````````````` example
 *foo _bar* baz_
@@ -7399,7 +7401,7 @@ Rule 15:
 ````````````````````````````````
 
 
-Rule 16:
+Rule 17:
 
 ```````````````````````````````` example
 **foo **bar baz**
@@ -7415,7 +7417,7 @@ Rule 16:
 ````````````````````````````````
 
 
-Rule 17:
+Rule 18:
 
 ```````````````````````````````` example
 *[bar*](/url)
