@@ -673,7 +673,7 @@ consist of `&#` + a string of 1--7 arabic digits + `;`. A
 numeric character reference is parsed as the corresponding
 number.  The parsed number is replaced with
 another Unicode scalar value according to 
-[the rules stipulated in HTML Living Standard](https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-end-state)
+[the rules stipulated in HTML5](https://html.spec.whatwg.org/multipage/parsing.html#numeric-character-reference-end-state)
 if applicable.  For example,
 [surrogate code points](https://www.unicode.org/glossary/#surrogate_code_point)
 and the code point `U+0000` will be replaced by `U+FFFD`.
@@ -689,7 +689,7 @@ and the code point `U+0000` will be replaced by `U+FFFD`.
 references](@) consist of `&#` +
 either `X` or `x` + a string of 1-6 hexadecimal digits + `;`.
 They too are parsed and sanitized as the corresponding Unicode scalar value
-according to the rules of HTML Living Standard
+according to the rules of HTML5
 (this time specified with a hexadecimal numeral instead of decimal).
 
 ```````````````````````````````` example
@@ -714,7 +714,7 @@ Here are some nonentities:
 ````````````````````````````````
 
 
-Although HTML Living Standard does accept some entity references
+Although HTML5 does accept some entity references
 without a trailing semicolon (such as `&copy`), these are not
 recognized here, because it makes the grammar too ambiguous:
 
@@ -725,7 +725,7 @@ recognized here, because it makes the grammar too ambiguous:
 ````````````````````````````````
 
 
-Strings that are not on the list of HTML Live Standard named entities are not
+Strings that are not on the list of HTML5 named entities are not
 recognized as entity references either:
 
 ```````````````````````````````` example
