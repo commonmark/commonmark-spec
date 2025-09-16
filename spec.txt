@@ -338,7 +338,7 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 `{`, `|`, `}`, or `~` (U+007B–007E).
 
 A [Unicode punctuation character](@) is a character in the Unicode `P`
-(puncuation) or `S` (symbol) general categories.
+(punctuation) or `S` (symbol) general categories.
 
 ## Tabs
 
