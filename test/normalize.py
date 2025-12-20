@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from html.parser import HTMLParser
-import urllib
+from urllib.parse import quote, unquote
 
 try:
     from html.parser import HTMLParseError
@@ -64,7 +64,7 @@ class MyHTMLParser(HTMLParser):
                 self.output += " " + k
                 if v in ['href','src']:
                     self.output += ("=" + '"' +
-                            urllib.quote(urllib.unquote(v), safe='/') + '"')
+                            quote(unquote(v), safe='/') + '"')
                 elif v != None:
                     self.output += ("=" + '"' + html.escape(v,quote=True) + '"')
         self.output += ">"
