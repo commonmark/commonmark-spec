@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from ctypes import CDLL, c_char_p, c_long
+from ctypes import CDLL, c_char_p, c_long, c_int
 from subprocess import *
 import platform
 import os
@@ -36,5 +36,5 @@ class CMark:
             cmark = CDLL(libpath)
             markdown = cmark.cmark_markdown_to_html
             markdown.restype = c_char_p
-            markdown.argtypes = [c_char_p, c_long]
+            markdown.argtypes = [c_char_p, c_long, c_int]
             self.to_html = lambda x: use_library(markdown, x)
