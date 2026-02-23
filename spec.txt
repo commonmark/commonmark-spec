@@ -5903,6 +5903,10 @@ following ways:
   or ends with backtick characters, which must be separated by
   whitespace from the opening or closing backtick strings.
 
+Inline code spans may optionally be directly preceded by an [info string]
+that is wrapped in single colon characters (`` :info:`code` ``). This
+info string may not contain backtick characters.
+
 This is a simple code span:
 
 ```````````````````````````````` example
@@ -6116,6 +6120,26 @@ closing backtick strings to be equal in length:
 <p>`foo<code>bar</code></p>
 ````````````````````````````````
 
+An [info string] can be wrapped in colon (`:`) characters and given
+directly before the inline code. This spec does not mandate what to
+do with the info string, but the first word is typically used to specify
+the language. In HTML output, this is typically indicated by adding a
+class to the `code` element consisting of `language-` followed by the
+language name.
+
+```````````````````````````````` example
+:python:`foo(x, a=100)`
+.
+<p><code class="language-python">foo(x, a=100)</code></p>
+````````````````````````````````
+
+The info string may not be separated from the opening backtick.
+
+```````````````````````````````` example
+:c: `printf("foo");`
+.
+<p>:c: <code class="language-c">printf("foo");</code></p>
+````````````````````````````````
 
 ## Emphasis and strong emphasis
 
