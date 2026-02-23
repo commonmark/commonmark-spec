@@ -2409,8 +2409,8 @@ the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
 7.  **Start condition:**  line begins with a complete [open tag]
-(with any [tag name] other than `pre`, `script`,
-`style`, or `textarea`) or a complete [closing tag],
+(with any [tag name] other than `pre`, `script`, `style`, `textarea`,
+`br`, `embed`, `img`, `input` or `wbr`) or a complete [closing tag],
 all on a single line, followed by zero or more spaces and tabs,
 followed by the end of the line.\
 **End condition:** line is followed by a [blank line].
