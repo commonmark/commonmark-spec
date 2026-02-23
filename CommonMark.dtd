@@ -46,7 +46,8 @@
 
 <!-- inline elements -->
 
-<!ELEMENT text (#PCDATA)
+<!ELEMENT text (#PCDATA)>
+<!ATTLIST text
           xml:space CDATA #FIXED "preserve">
 
 <!ELEMENT softbreak EMPTY>
