@@ -1942,7 +1942,7 @@ begins with a code fence, preceded by up to three spaces of indentation.
 The line with the opening code fence may optionally contain some text
 following the code fence; this is trimmed of leading and trailing
 spaces or tabs and called the [info string](@). If the [info string] comes
-after a backtick fence, it may not contain any backtick
+after a backtick fence, it must not contain any backtick
 characters.  (The reason for this restriction is that otherwise
 some inline code would be incorrectly interpreted as the
 beginning of a fenced code block.)
@@ -2448,7 +2448,7 @@ text remains verbatim — and regular parsing resumes, with a paragraph,
 emphasised `world` and inline and block HTML following.
 
 All types of [HTML blocks] except type 7 may interrupt
-a paragraph.  Blocks of type 7 may not interrupt a paragraph.
+a paragraph.  Blocks of type 7 cannot interrupt a paragraph.
 (This restriction is intended to prevent unwanted interpretation
 of long tags inside a wrapped paragraph as starting HTML blocks.)
 
@@ -3257,7 +3257,7 @@ line2
 ````````````````````````````````
 
 
-However, it may not contain a [blank line]:
+However, it must not contain a [blank line]:
 
 ```````````````````````````````` example
 [foo]: /url 'title
@@ -3284,7 +3284,7 @@ The title may be omitted:
 ````````````````````````````````
 
 
-The link destination may not be omitted:
+The link destination must not be omitted:
 
 ```````````````````````````````` example
 [foo]:
@@ -4432,7 +4432,7 @@ A start number may begin with 0s:
 ````````````````````````````````
 
 
-A start number may not be negative:
+A start number must not be negative:
 
 ```````````````````````````````` example
 -1. not ok
@@ -5547,7 +5547,7 @@ item:
 </ol>
 ````````````````````````````````
 
-Note, however, that list items may not be preceded by more than
+Note, however, that list items must not be preceded by more than
 three spaces of indentation.  Here `- e` is treated as a paragraph continuation
 line, because it is indented more than three spaces:
 
@@ -7494,7 +7494,7 @@ A [link text](@) consists of a sequence of zero or more
 inline elements enclosed by square brackets (`[` and `]`).  The
 following rules apply:
 
-- Links may not contain other links, at any level of nesting. If
+- Links cannot contain other links, at any level of nesting. If
   multiple otherwise valid link definitions appear nested inside each
   other, the inner-most definition is used.
 
@@ -7540,7 +7540,7 @@ A [link title](@)  consists of either
   (`(...)`), including a `(` or `)` character only if it is
   backslash-escaped.
 
-Although [link titles] may span multiple lines, they may not contain
+Although [link titles] may span multiple lines, they must not contain
 a [blank line].
 
 An [inline link](@) consists of a [link text] followed immediately
@@ -7906,7 +7906,7 @@ The link text may contain inline content:
 ````````````````````````````````
 
 
-However, links may not contain other links, at any level of nesting.
+However, links cannot contain other links, at any level of nesting.
 
 ```````````````````````````````` example
 [foo [bar](/uri)](/uri)
@@ -8064,7 +8064,7 @@ The link text may contain inline content:
 ````````````````````````````````
 
 
-However, links may not contain other links, at any level of nesting.
+However, links cannot contain other links, at any level of nesting.
 
 ```````````````````````````````` example
 [foo [bar](/uri)][ref]
