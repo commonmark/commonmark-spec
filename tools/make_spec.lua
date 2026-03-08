@@ -38,6 +38,7 @@ end
 local extract_references = function(doc)
   local cur, entering, node_type
   local refs = {}
+  local idents = {}
   for cur, entering, node_type in cmark.walk(doc) do
     if not entering and
         ((node_type == cmark.NODE_LINK and cmark.node_get_url(cur) == '@') or
@@ -48,19 +49,11 @@ local extract_references = function(doc)
         warn("duplicate reference " .. label)
       end
       refs[label] = ident
-      if not refs[label .. 's'] then
-        -- plural too
-        refs[label .. 's'] = ident
+      if idents[ident] then
+        warn("duplicate identifier " .. ident)
       end
+      idents[ident] = true
     end
-  end
-  -- check for duplicate IDs
-  local idents = {}
-  for _,id in pairs(refs) do
-    if idents[id] then
-      warn("duplicate identifier " .. id)
-    end
-    idents[#idents + 1] = id
   end
   return refs
 end
@@ -260,18 +253,20 @@ local create_anchors = function(doc, meta, to)
   meta.toc = make_toc(toc)
 end
 
-local to_ref = function(ref)
-  return '[' .. ref.label .. ']: #' .. ref.indent .. '\n'
-end
-
 local inp = io.read("*a")
 local doc1 = cmark.parse_string(inp, cmark.OPT_DEFAULT)
 local refs = extract_references(doc1)
 local refblock = '\n'
-for lab,ident in pairs(refs) do
-  refblock = refblock .. '[' .. lab .. ']: #' .. ident .. '\n'
-  -- refblock = refblock .. '[' .. lab .. 's]: #' .. ident .. '\n'
+local pluralrefblock = ''
+for lab, ident in pairs(refs) do
+  local lablow = string.lower(lab)
+  refblock = refblock .. '[' .. lablow .. ']: #' .. ident .. '\n'
+  if not (lab:match("s$") or refs[lab .. 's'] or refs[lablow .. 's']) then
+    -- plural form with lower priority:
+    pluralrefblock = pluralrefblock .. '[' .. lablow .. 's]: #' .. ident .. '\n'
+  end
 end
+refblock = refblock .. pluralrefblock
 -- append references and parse again
 local contents, meta, msg  = lcmark.convert(inp .. refblock, format,
                              { smart = true,
