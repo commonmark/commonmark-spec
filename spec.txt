@@ -721,16 +721,41 @@ recognized as entity references either:
 ````````````````````````````````
 
 
-Entity and numeric character references are recognized in any
-context besides code spans or code blocks, including
-URLs, [link titles], and [fenced code block][] [info strings]:
+Entity and numeric character references are treated as literal
+text in code spans and code blocks:
 
 ```````````````````````````````` example
-<a href="&ouml;&ouml;.html">
+`f&ouml;&ouml;`
 .
-<a href="&ouml;&ouml;.html">
+<p><code>f&amp;ouml;&amp;ouml;</code></p>
 ````````````````````````````````
 
+
+```````````````````````````````` example
+    f&ouml;f&ouml;
+.
+<pre><code>f&amp;ouml;f&amp;ouml;
+</code></pre>
+````````````````````````````````
+
+
+
+Entity and numeric character references are left uninterpreted
+in HTML blocks and raw HTML:
+
+```````````````````````````````` example
+<div id="&copy&asdf;">
+
+Link <a href="&copy&ouml;&ouml;.html">
+.
+<div id="&copy&asdf;">
+<p>Link <a href="&copy&ouml;&ouml;.html"></p>
+````````````````````````````````
+
+
+Entity and numeric character references are recognized in any
+any other context, including URLs, [link titles], and
+[fenced code block][] [info strings]:
 
 ```````````````````````````````` example
 [foo](/f&ouml;&ouml; "f&ouml;&ouml;")
@@ -754,24 +779,6 @@ foo
 ```
 .
 <pre><code class="language-föö">foo
-</code></pre>
-````````````````````````````````
-
-
-Entity and numeric character references are treated as literal
-text in code spans and code blocks:
-
-```````````````````````````````` example
-`f&ouml;&ouml;`
-.
-<p><code>f&amp;ouml;&amp;ouml;</code></p>
-````````````````````````````````
-
-
-```````````````````````````````` example
-    f&ouml;f&ouml;
-.
-<pre><code>f&amp;ouml;f&amp;ouml;
 </code></pre>
 ````````````````````````````````
 
@@ -9201,17 +9208,17 @@ foo <![CDATA[>&<]]>
 ````````````````````````````````
 
 
-Entity and numeric character references are preserved in HTML
+Entity and numeric character references are copied uninterpreted in HTML
 attributes:
 
 ```````````````````````````````` example
-foo <a href="&ouml;">
+foo <a href="&ouml;&copy">
 .
-<p>foo <a href="&ouml;"></p>
+<p>foo <a href="&ouml;&copy"></p>
 ````````````````````````````````
 
 
-Backslash escapes do not work in HTML attributes:
+Backslash escapes are also copied uninterpreted:
 
 ```````````````````````````````` example
 foo <a href="\*">
@@ -9219,6 +9226,9 @@ foo <a href="\*">
 <p>foo <a href="\*"></p>
 ````````````````````````````````
 
+
+Not interpreting backslash escapes can mean not recognizing
+a tag that HTML5 would recognize:
 
 ```````````````````````````````` example
 <a href="\"">
