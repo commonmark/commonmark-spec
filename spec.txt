@@ -294,10 +294,20 @@ In the examples, the `→` character is used to represent tabs.
 Any sequence of [characters] is a valid CommonMark
 document.
 
-A [character](@) is a Unicode code point.  Although some
-code points (for example, combining accents) do not correspond to
-characters in an intuitive sense, all code points count as characters
-for purposes of this spec.
+A [character](@) is an
+[Unicode encoded character](https://www.unicode.org/glossary/#encoded_character)
+(or [assigned character](https://www.unicode.org/glossary/#assigned_character)).
+Although some code points (for example, combining accents) do not correspond to
+characters in an intuitive sense, all encoded characters count as characters
+for purposes of this spec. However,
+[surrogate code points](https://www.unicode.org/glossary/#surrogate_code_point),
+[reserved code points](https://www.unicode.org/glossary/#reserved_code_point),
+or [Unicode noncharacters](https://www.unicode.org/glossary/#noncharacter)
+are not included. If an implementation meets a code unit that is not
+a part of a character, for example, a part of
+[ill-formed code unit subsequence](https://www.unicode.org/glossary/#ill-formed_code_unit_subsequence)
+at the place where it expects a character, the behavior is
+[undefined](https://eel.is/c++draft/defns.undefined).
 
 This spec does not specify an encoding; it thinks of lines as composed
 of [characters] rather than bytes.  A conforming parser may be limited
@@ -661,8 +671,9 @@ references and their corresponding code points.
 references](@)
 consist of `&#` + a string of 1--7 arabic digits + `;`. A
 numeric character reference is parsed as the corresponding
-Unicode character. Invalid Unicode code points will be replaced by
-the REPLACEMENT CHARACTER (`U+FFFD`).  For security reasons,
+number.  The parsed number will be replaced by
+the REPLACEMENT CHARACTER (`U+FFFD`) if it does not represent
+an Unicode scalar value. For security reasons,
 the code point `U+0000` will also be replaced by `U+FFFD`.
 
 ```````````````````````````````` example
@@ -675,8 +686,8 @@ the code point `U+0000` will also be replaced by `U+FFFD`.
 [Hexadecimal numeric character
 references](@) consist of `&#` +
 either `X` or `x` + a string of 1-6 hexadecimal digits + `;`.
-They too are parsed as the corresponding Unicode character (this
-time specified with a hexadecimal numeral instead of decimal).
+They too are parsed and sanitized as the corresponding Unicode scalar value
+(this time specified with a hexadecimal numeral instead of decimal).
 
 ```````````````````````````````` example
 &#X22; &#XD06; &#xcab;
