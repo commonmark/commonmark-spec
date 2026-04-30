@@ -2243,6 +2243,29 @@ aaa
 ````````````````````````````````
 
 
+Within a code fence, other block-level constructs such as lists or thematic
+breaks are ignored.
+
+```````````````````````````````` example
+```
+yaml:
+- A
+- yaml
+- list
+---
+another: "yaml doc"
+```
+.
+<pre><code>yaml:
+- A
+- yaml
+- list
+---
+another: &quot;yaml doc&quot;
+</code></pre>
+````````````````````````````````
+
+
 Fenced code blocks can interrupt paragraphs, and can be followed
 directly by paragraphs, without a blank line between:
 
