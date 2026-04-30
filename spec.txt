@@ -424,6 +424,30 @@ code block starting with two spaces.
 </blockquote>
 ````````````````````````````````
 
+As a consequence of tab stop calculations, wrapping a line in a
+block quote may involve removing spaces.
+
+```````````````````````````````` example
+ - →  this line has three spaces worth of indentation
+ - >→  if we just add a caret, we bump to the next tab stop and have six (but the quote eats one, so it's five)
+ - >→for a truly equivalent line, we need to remove spaces
+.
+<ul>
+<li>this line has three spaces worth of indentation</li>
+<li>
+<blockquote>
+<pre><code> if we just add a caret, we bump to the next tab stop and have six (but the quote eats one, so it's five)
+</code></pre>
+</blockquote>
+</li>
+<li>
+<blockquote>
+<p>for a truly equivalent line, we need to remove spaces</p>
+</blockquote>
+</li>
+</ul>
+````````````````````````````````
+
 ```````````````````````````````` example
 -→→foo
 .
@@ -3689,11 +3713,12 @@ these constructions.  (A recipe is provided below in the section entitled
 
 ## Block quotes
 
-A [block quote marker](@),
-optionally preceded by up to three spaces of indentation,
-consists of (a) the character `>` together with a following space of
-indentation, or (b) a single character `>` not followed by a space of
-indentation.
+A [block quote marker](@) is either complete or incomplete.
+A [complete block quote marker](@) consists of the character `>` together with
+a following space of indentation.
+An [incomplete block quote marker](@) consists of the character `>`, and
+cannot have a space or a tab after it.
+Any block quote marker may be preceded by up to three spaces of indentation.
 
 The following rules define [block quotes]:
 
@@ -3701,6 +3726,16 @@ The following rules define [block quotes]:
     of blocks *Bs*, then the result of prepending a [block quote
     marker] to the beginning of each line in *Ls*
     is a [block quote](#block-quotes) containing *Bs*.
+
+    To prepend a [complete block quote marker] to a line, calculate its
+    indentation without the block quote marker at the current column (N1),
+    then insert `>` at the start of the line, then calculate its indentation at
+    the same column (N2, which will equal N1 unless the line starts with a tab),
+    then add M=N1+1-N2 spaces of indentation (if M is negative, remove spaces).
+
+    An [incomplete block quote marker] can be be used instead, but
+    only if the line does not start with a space or tab. A single block quote
+    container can use a mix of both marker styles.
 
 2.  **Laziness.**  If a string of lines *Ls* constitute a [block
     quote](#block-quotes) with contents *Bs*, then the result of deleting
@@ -4095,15 +4130,20 @@ baz</p>
 ````````````````````````````````
 
 
-When including an indented code block in a block quote,
-remember that the [block quote marker] includes
-both the `>` and a following space of indentation.  So *five spaces* are needed
-after the `>`:
+When quoting an indented code block or multi-line list item,
+remember that the [complete block quote marker] must be used.
+So *five spaces* are needed after the `>`:
 
 ```````````````````````````````` example
 >     code
 
 >    not code
+
+>-   first paragraph in list item using an incomplete block quote marker
+>
+>     the second paragraph must use a complete block quote marker
+>
+>    not the third paragraph
 .
 <blockquote>
 <pre><code>code
@@ -4111,6 +4151,15 @@ after the `>`:
 </blockquote>
 <blockquote>
 <p>not code</p>
+</blockquote>
+<blockquote>
+<ul>
+<li>
+<p>first paragraph in list item using an incomplete block quote marker</p>
+<p>the second paragraph must use a complete block quote marker</p>
+</li>
+</ul>
+<p>not the third paragraph</p>
 </blockquote>
 ````````````````````````````````
 
