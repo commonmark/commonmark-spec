@@ -6,42 +6,45 @@ from difflib import unified_diff
 import argparse
 import re
 import json
+import os
 from cmark import CMark
 from normalize import normalize_html
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Run cmark tests.')
-    parser.add_argument('-p', '--program', dest='program', nargs='?', default=None,
-            help='program to test')
-    parser.add_argument('-s', '--spec', dest='spec', nargs='?', default='spec.txt',
-            help='path to spec')
-    parser.add_argument('-P', '--pattern', dest='pattern', nargs='?',
-            default=None, help='limit to sections matching regex pattern')
-    parser.add_argument('--library-dir', dest='library_dir', nargs='?',
-            default=None, help='directory containing dynamic library')
-    parser.add_argument('--no-normalize', dest='normalize',
-            action='store_const', const=False, default=True,
-            help='do not normalize HTML')
-    parser.add_argument('-d', '--dump-tests', dest='dump_tests',
-            action='store_const', const=True, default=False,
-            help='dump tests in JSON format')
-    parser.add_argument('--debug-normalization', dest='debug_normalization',
-            action='store_const', const=True,
-            default=False, help='filter stdin through normalizer for testing')
-    parser.add_argument('-n', '--number', type=int, default=None,
-            help='only consider the test with the given number')
-    parser.add_argument('--track', metavar='path',
-            help='track which test cases pass/fail in the given JSON file and only report changes')
-    args = parser.parse_args(sys.argv[1:])
+parser = argparse.ArgumentParser(description='Run cmark tests.')
+parser.add_argument('-p', '--program', dest='program', nargs='?', default=None,
+        help='program to test')
+parser.add_argument('-s', '--spec', dest='spec', nargs='?', default='spec.txt',
+        help='path to spec')
+parser.add_argument('-P', '--pattern', dest='pattern', nargs='?',
+        default=None, help='limit to sections matching regex pattern')
+parser.add_argument('--library-dir', dest='library_dir', nargs='?',
+        default=None, help='directory containing dynamic library')
+parser.add_argument('--no-normalize', dest='normalize',
+        action='store_const', const=False, default=True,
+        help='do not normalize HTML')
+parser.add_argument('-d', '--dump-tests', dest='dump_tests',
+        action='store_const', const=True, default=False,
+        help='dump tests in JSON format')
+parser.add_argument('--debug-normalization', dest='debug_normalization',
+        action='store_const', const=True,
+        default=False, help='filter stdin through normalizer for testing')
+parser.add_argument('-n', '--number', type=int, default=None,
+        help='only consider the test with the given number')
+parser.add_argument('--track', metavar='path',
+        help='track which test cases pass/fail in the given JSON file and only report changes')
+parser.add_argument('--fuzz-corpus',
+        help='convert test cases to fuzz corpus')
+args = parser.parse_args(sys.argv[1:])
 
 def out(str):
     sys.stdout.buffer.write(str.encode('utf-8')) 
 
 def print_test_header(test):
-    out("Example %d (lines %d-%d) %s\n" % (test['example'], test['start_line'], test['end_line'], test['section']))
+    out("Example %d (lines %d-%d) %s\n"
+        % (test['example'], test['start_line'], test['end_line'], test['section']))
 
-def do_test(test, normalize, prev_result):
-    [retcode, actual_html_bytes, err] = cmark.to_html(test['markdown'])
+def do_test(converter, test, normalize, prev_result):
+    [retcode, actual_html_bytes, err] = converter(test['markdown'])
     if retcode != 0:
         if prev_result != 'error':
             print_test_header(test)
@@ -52,7 +55,7 @@ def do_test(test, normalize, prev_result):
     expected_html = test['html']
 
     try:
-        actual_html = actual_html_bytes.decode('utf-8')
+        actual_html = actual_html_bytes
     except UnicodeDecodeError as e:
         if prev_result != 'fail':
             print_test_header(test)
@@ -136,17 +139,31 @@ if __name__ == "__main__":
         exit(0)
 
     all_tests = get_tests(args.spec)
+
+    if args.fuzz_corpus:
+        i = 1
+        base = os.path.basename(args.spec)
+        (name, ext) = os.path.splitext(base)
+        for test in all_tests:
+            filename = os.path.join(args.fuzz_corpus, '%s.%d' % (name, i))
+            with open(filename, 'wb') as f:
+                f.write(b'\0' * 8) # options header
+                f.write(test['markdown'].encode())
+            i += 1
+        exit(0)
+
     if args.pattern:
         pattern_re = re.compile(args.pattern, re.IGNORECASE)
     else:
         pattern_re = re.compile('.')
-    tests = [ test for test in all_tests if re.search(pattern_re, test['section']) and (not args.number or test['example'] == args.number) ]
+    tests = [ test for test in all_tests if re.search(pattern_re, test['section'])
+                and (not args.number or test['example'] == args.number) ]
     if args.dump_tests:
         out(json.dumps(tests, ensure_ascii=False, indent=2))
         exit(0)
     else:
         skipped = len(all_tests) - len(tests)
-        cmark = CMark(prog=args.program, library_dir=args.library_dir)
+        converter = CMark(prog=args.program, library_dir=args.library_dir).to_html
         result_counts = {'pass': 0, 'fail': 0, 'error': 0, 'skip': skipped}
 
         previous = {}
@@ -161,7 +178,7 @@ if __name__ == "__main__":
         results = {}
 
         for test in tests:
-            result = do_test(test, args.normalize, previous.get(str(test['example'])))
+            result = do_test(converter, test, args.normalize, previous.get(str(test['example'])))
             result_counts[result] += 1
             results[test['example']] = result
 
