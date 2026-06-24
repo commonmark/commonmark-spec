@@ -2408,9 +2408,9 @@ by a space, a tab, the end of the line, the string `>`, or
 the string `/>`.\
 **End condition:** line is followed by a [blank line].
 
-7.  **Start condition:**  line begins with a complete [open tag]
+7.  **Start condition:**  line begins with a [complete open tag]
 (with any [tag name] other than `pre`, `script`,
-`style`, or `textarea`) or a complete [closing tag],
+`style`, or `textarea`) or a [complete closing tag],
 all on a single line, followed by zero or more spaces and tabs,
 followed by the end of the line.\
 **End condition:** line is followed by a [blank line].
@@ -9015,6 +9015,12 @@ an optional `/` character, and a `>` character.
 A [closing tag](@) consists of the string `</`, a
 [tag name], optional spaces, tabs, and up to one line ending, and the character
 `>`.
+
+A [complete open tag](@) consists of an [open tag] whose final `>` character
+occurs on the same line as its opening `<` character.
+
+A [complete closing tag](@) consists of a [closing tag] whose final `>` character
+occurs on the same line as its opening `</` string.
 
 An [HTML comment](@) consists of `<!-->`, `<!--->`, or  `<!--`, a string of
 characters not including the string `-->`, and `-->` (see the
