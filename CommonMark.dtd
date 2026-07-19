@@ -28,7 +28,7 @@
 <!ELEMENT code_block (#PCDATA)>
 <!ATTLIST code_block
           xml:space CDATA #FIXED "preserve"
-          fence (backtick|tilde) #IMPLIED
+          type (indent|backtick|tilde) #IMPLIED
           info CDATA #IMPLIED>
 
 <!ELEMENT paragraph (%inline;)*>
