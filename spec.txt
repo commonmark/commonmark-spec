@@ -6403,6 +6403,47 @@ a**😀。**b
 <p>a**😀。**b</p>
 ````````````````````````````````
 
+Halfwidth and fullwidth punctuation can each supply CJK adjacency:
+
+```````````````````````````````` example
+a**｢x｣**b
+.
+<p>a<strong>｢x｣</strong>b</p>
+````````````````````````````````
+
+```````````````````````````````` example
+a**（x）**b
+.
+<p>a<strong>（x）</strong>b</p>
+````````````````````````````````
+
+Decomposed Hangul syllables also count as CJK, even when their
+East Asian width is neutral:
+
+```````````````````````````````` example
+가**(a)**
+.
+<p>가<strong>(a)</strong></p>
+````````````````````````````````
+
+The CJK classification includes characters outside the Basic Multilingual
+Plane:
+
+```````````````````````````````` example
+𰻞𰻞**(ビャンビャン)**麺
+.
+<p>𰻞𰻞<strong>(ビャンビャン)</strong>麺</p>
+````````````````````````````````
+
+The `Emoji` property alone does not exclude a character from the CJK
+classification when it lacks `Emoji_Presentation`:
+
+```````````````````````````````` example
+a**〰a**a
+.
+<p>a<strong>〰a</strong>a</p>
+````````````````````````````````
+
 These rules can be illustrated through a series of examples.
 
 Rule 1:
