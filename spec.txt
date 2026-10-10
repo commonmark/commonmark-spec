@@ -303,6 +303,9 @@ This spec does not specify an encoding; it thinks of lines as composed
 of [characters] rather than bytes.  A conforming parser may be limited
 to a certain encoding.
 
+A byte order mark (`U+FEFF`) at the very start of the document is
+ignored. Anywhere else, `U+FEFF` is an ordinary character.
+
 A [line](@) is a sequence of zero or more [characters]
 other than line feed (`U+000A`) or carriage return (`U+000D`),
 followed by a [line ending] or by the end of file.
