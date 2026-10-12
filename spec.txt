@@ -343,6 +343,14 @@ is `!`, `"`, `#`, `$`, `%`, `&`, `'`, `(`, `)`,
 A [Unicode punctuation character](@) is a character in the Unicode `P`
 (punctuation) or `S` (symbol) general categories.
 
+A [CJK character](@) is an
+[assigned Unicode character](https://www.unicode.org/glossary/#assigned_character)
+that meets either of these conditions:
+
+  - its `East_Asian_Width` property is `W`, `F`, or `H`, and it does not
+    have the `Emoji_Presentation` property;
+  - its `Script` property is `Hangul`.
+
 ## Tabs
 
 Tabs in lines are not expanded to [spaces].  However,
@@ -6176,7 +6184,8 @@ A [left-flanking delimiter run](@) is
 a [delimiter run] that is (1) not followed by [Unicode whitespace],
 and either (2a) not followed by a [Unicode punctuation character], or
 (2b) followed by a [Unicode punctuation character] and
-preceded by [Unicode whitespace] or a [Unicode punctuation character].
+preceded by [Unicode whitespace] or a [Unicode punctuation character], or
+(2c) preceded or followed by a [CJK character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
@@ -6184,7 +6193,8 @@ A [right-flanking delimiter run](@) is
 a [delimiter run] that is (1) not preceded by [Unicode whitespace],
 and either (2a) not preceded by a [Unicode punctuation character], or
 (2b) preceded by a [Unicode punctuation character] and
-followed by [Unicode whitespace] or a [Unicode punctuation character].
+followed by [Unicode whitespace] or a [Unicode punctuation character], or
+(2c) preceded or followed by a [CJK character].
 For purposes of this definition, the beginning and the end of
 the line count as Unicode whitespace.
 
@@ -6325,6 +6335,117 @@ the following principles resolve ambiguity:
     former always wins.  Thus, for example, `*[foo*](bar)` is
     parsed as `*<a href="bar">foo*</a>` rather than as
     `<em>[foo</em>](bar)`.
+
+CJK adjacency changes flanking when punctuation would otherwise prevent a
+delimiter run from opening or closing emphasis:
+
+```````````````````````````````` example
+これは**「重要なこと」**です。
+.
+<p>これは<strong>「重要なこと」</strong>です。</p>
+````````````````````````````````
+
+```````````````````````````````` example
+这是**我想做的事。**所以继续。
+.
+<p>这是<strong>我想做的事。</strong>所以继续。</p>
+````````````````````````````````
+
+```````````````````````````````` example
+문서를 작성할 때 **마크다운(Markdown)**을 사용하세요.
+.
+<p>문서를 작성할 때 <strong>마크다운(Markdown)</strong>을 사용하세요.</p>
+````````````````````````````````
+
+The same flanking definition applies to single delimiters:
+
+```````````````````````````````` example
+語*「引用」*語
+.
+<p>語<em>「引用」</em>語</p>
+````````````````````````````````
+
+Only the characters next to each delimiter run determine the CJK alternative.
+The content itself may use ASCII punctuation:
+
+```````````````````````````````` example
+語**(ABC)**語
+.
+<p>語<strong>(ABC)</strong>語</p>
+````````````````````````````````
+
+Ambiguous-width punctuation does not trigger the CJK alternative:
+
+```````````````````````````````` example
+a**“x”**b
+.
+<p>a**“x”**b</p>
+````````````````````````````````
+
+The additional restrictions on underscore delimiters remain unchanged:
+
+```````````````````````````````` example
+語__「強調」__語
+.
+<p>語__「強調」__語</p>
+````````````````````````````````
+
+CJK adjacency does not override the whitespace conditions:
+
+```````````````````````````````` example
+語** 強調**語
+.
+<p>語** 強調**語</p>
+````````````````````````````````
+
+Default emoji presentation does not count as CJK by itself:
+
+```````````````````````````````` example
+a**😀。**b
+.
+<p>a**😀。**b</p>
+````````````````````````````````
+
+Halfwidth and fullwidth punctuation can each supply CJK adjacency:
+
+```````````````````````````````` example
+a**｢x｣**b
+.
+<p>a<strong>｢x｣</strong>b</p>
+````````````````````````````````
+
+```````````````````````````````` example
+a**（x）**b
+.
+<p>a<strong>（x）</strong>b</p>
+````````````````````````````````
+
+Decomposed Hangul syllables also count as CJK, even when their
+East Asian width is neutral:
+
+```````````````````````````````` example
+가**(a)**
+.
+<p>가<strong>(a)</strong></p>
+````````````````````````````````
+
+The CJK classification includes characters outside the Basic Multilingual
+Plane:
+
+```````````````````````````````` example
+𰻞𰻞**(ビャンビャン)**麺
+.
+<p>𰻞𰻞<strong>(ビャンビャン)</strong>麺</p>
+````````````````````````````````
+
+The `Emoji` property alone does not exclude a character from the CJK
+classification when it lacks `Emoji_Presentation`:
+
+```````````````````````````````` example
+a**〰a**a
+.
+<p>a<strong>〰a</strong>a</p>
+````````````````````````````````
 
 These rules can be illustrated through a series of examples.
 
